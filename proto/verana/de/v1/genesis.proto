@@ -1,0 +1,32 @@
+syntax = "proto3";
+package verana.de.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "verana/de/v1/params.proto";
+import "verana/de/v1/types.proto";
+
+option go_package = "github.com/verana-labs/verana/x/de/types";
+
+// GenesisState defines the de module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  // operator_authorizations is a list of all OperatorAuthorization objects
+  repeated OperatorAuthorization operator_authorizations = 2 [(gogoproto.nullable) = false];
+
+  // fee_grants is a list of all FeeGrant objects
+  repeated FeeGrant fee_grants = 3 [(gogoproto.nullable) = false];
+
+  // vs_operator_authorizations is a list of all VSOperatorAuthorization objects
+  repeated VSOperatorAuthorization vs_operator_authorizations = 4 [(gogoproto.nullable) = false];
+
+  // Field 5 (operator_authorization_usages) was removed: runtime spend balances
+  // are now on-object on OperatorAuthorization (issue #324 Phase 1).
+  reserved 5;
+  reserved "operator_authorization_usages";
+}

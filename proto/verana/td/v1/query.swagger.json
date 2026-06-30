@@ -1,0 +1,199 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "verana/td/v1/query.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Query"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/td/v1/params": {
+      "get": {
+        "summary": "Parameters queries the parameters of the module.",
+        "operationId": "Query_Params",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.td.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/verana/td/v1/get/{corporation_id}": {
+      "get": {
+        "operationId": "Query_GetTrustDeposit",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.td.v1.QueryGetTrustDepositResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "corporation_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "verana.td.v1.Params": {
+      "type": "object",
+      "properties": {
+        "trust_deposit_reclaim_burn_rate": {
+          "type": "string"
+        },
+        "trust_deposit_share_value": {
+          "type": "string"
+        },
+        "trust_deposit_rate": {
+          "type": "string"
+        },
+        "wallet_user_agent_reward_rate": {
+          "type": "string"
+        },
+        "user_agent_reward_rate": {
+          "type": "string"
+        },
+        "trust_deposit_max_yield_rate": {
+          "type": "string",
+          "title": "trust_deposit_max_yield_rate is the maximum annualized yield rate (e.g. 0.15 for 15%)"
+        },
+        "yield_intermediate_pool": {
+          "type": "string",
+          "title": "yield_intermediate_pool is the Bech32 string for the Yield Intermediate Pool module account"
+        },
+        "trust_deposit_block_reward_share": {
+          "type": "string",
+          "title": "trust_deposit_block_reward_share is the fraction of block rewards allocated to trust deposit yield (e.g. \"0.2\" for 20%)"
+        }
+      },
+      "description": "Params defines the parameters for the module."
+    },
+    "verana.td.v1.QueryGetTrustDepositResponse": {
+      "type": "object",
+      "properties": {
+        "trust_deposit": {
+          "$ref": "#/definitions/verana.td.v1.TrustDeposit"
+        }
+      },
+      "title": "QueryGetTrustDepositResponse is response type for the GetTrustDeposit RPC method"
+    },
+    "verana.td.v1.QueryParamsResponse": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "$ref": "#/definitions/verana.td.v1.Params",
+          "description": "params holds all the parameters of this module."
+        }
+      },
+      "description": "QueryParamsResponse is response type for the Query/Params RPC method."
+    },
+    "verana.td.v1.TrustDeposit": {
+      "type": "object",
+      "properties": {
+        "share": {
+          "type": "string"
+        },
+        "deposit": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "slashed_deposit": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "repaid_deposit": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "last_slashed": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_repaid": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "slash_count": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "corporation_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "corporation_id is the registered Corporation id that owns this trust deposit (primary key)."
+        },
+        "refunded": {
+          "type": "string",
+          "format": "uint64",
+          "description": "refunded is the amount eligible to be recycled/reclaimed (was \"claimable\")."
+        }
+      },
+      "title": "TrustDeposit represents a corporation's trust deposit"
+    }
+  }
+}

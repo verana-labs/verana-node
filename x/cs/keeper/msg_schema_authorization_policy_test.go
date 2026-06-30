@@ -1,0 +1,380 @@
+package keeper_test
+
+import (
+	"testing"
+	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	keepertest "github.com/verana-labs/verana/testutil/keeper"
+	"github.com/verana-labs/verana/x/cs/keeper"
+	"github.com/verana-labs/verana/x/cs/types"
+)
+
+// validJsonSchemaForPolicy is a minimal valid JSON schema used in policy tests.
+const validJsonSchemaForPolicy = `{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PolicyTestSchema",
+  "description": "Schema for authorization policy tests",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" }
+  },
+  "required": ["name"],
+  "additionalProperties": false
+}`
+
+func TestCreateSchemaAuthorizationPolicy_HappyPath(t *testing.T) {
+	k, mockTrk, rawCtx := keepertest.CredentialschemaKeeper(t)
+	ms := keeper.NewMsgServerImpl(k)
+
+	corporation := sdk.AccAddress([]byte("corp_policy_________")).String()
+	operator := sdk.AccAddress([]byte("oper_policy_________")).String()
+	trID := mockTrk.CreateMockEcosystem(corporation, "did:example:happypath")
+
+	now := time.Now().UTC()
+	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
+	goCtx := sdk.WrapSDKContext(sdkCtx)
+
+	// Create credential schema
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
+	require.NoError(t, err)
+
+	// [MOD-CS-MSG-5-3] Create schema authorization policy — effective_from/until are null at creation.
+	msg := &types.MsgCreateSchemaAuthorizationPolicy{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER,
+		Url:         "https://example.com/policy",
+		DigestSri:   "sha256-abc123",
+	}
+
+	resp, err := ms.CreateSchemaAuthorizationPolicy(goCtx, msg)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.NotZero(t, resp.Id)
+
+	// Verify stored policy
+	policy, err := k.SchemaAuthorizationPolicies.Get(goCtx, resp.Id)
+	require.NoError(t, err)
+	require.Equal(t, schemaResp.Id, policy.SchemaId)
+	require.Equal(t, types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER, policy.Role)
+	require.Equal(t, "https://example.com/policy", policy.Url)
+	require.Equal(t, "sha256-abc123", policy.DigestSri)
+	require.Equal(t, uint32(1), policy.Version)
+	require.False(t, policy.Revoked)
+	// Spec v4 draft 13: effective_from starts null (pending).
+	require.Nil(t, policy.EffectiveFrom)
+	require.Nil(t, policy.EffectiveUntil)
+}
+
+// [MOD-CS-MSG-5] a second create while a draft already exists overwrites that
+// draft in place; a new version is only minted after the draft is activated.
+func TestCreateSchemaAuthorizationPolicy_OverwriteDraft(t *testing.T) {
+	k, mockTrk, rawCtx := keepertest.CredentialschemaKeeper(t)
+	ms := keeper.NewMsgServerImpl(k)
+
+	corporation := sdk.AccAddress([]byte("corp_overwrite______")).String()
+	operator := sdk.AccAddress([]byte("oper_overwrite______")).String()
+	trID := mockTrk.CreateMockEcosystem(corporation, "did:example:overwrite")
+
+	now := time.Now().UTC()
+	goCtx := sdk.WrapSDKContext(sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now))
+
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
+	require.NoError(t, err)
+
+	role := types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER
+	mk := func(url, digest string) *types.MsgCreateSchemaAuthorizationPolicy {
+		return &types.MsgCreateSchemaAuthorizationPolicy{
+			Corporation: corporation, Operator: operator, SchemaId: schemaResp.Id, Role: role, Url: url, DigestSri: digest,
+		}
+	}
+
+	resp1, err := ms.CreateSchemaAuthorizationPolicy(goCtx, mk("https://example.com/v1", "sha256-v1"))
+	require.NoError(t, err)
+	resp2, err := ms.CreateSchemaAuthorizationPolicy(goCtx, mk("https://example.com/v2", "sha256-v2"))
+	require.NoError(t, err)
+
+	require.Equal(t, resp1.Id, resp2.Id)
+	p, err := k.SchemaAuthorizationPolicies.Get(goCtx, resp1.Id)
+	require.NoError(t, err)
+	require.Equal(t, uint32(1), p.Version)
+	require.Equal(t, "https://example.com/v2", p.Url)
+	require.Equal(t, "sha256-v2", p.DigestSri)
+
+	list, err := k.ListSchemaAuthorizationPolicies(goCtx, &types.QueryListSchemaAuthorizationPoliciesRequest{SchemaId: schemaResp.Id, Role: role})
+	require.NoError(t, err)
+	require.Len(t, list.Policies, 1)
+}
+
+// [MOD-CS-MSG-5/6] a new version is minted only after the current draft is
+// activated; [MOD-CS-QRY-6] the list is ordered by ascending version.
+func TestCreateSchemaAuthorizationPolicy_VersionIncrement(t *testing.T) {
+	k, mockTrk, rawCtx := keepertest.CredentialschemaKeeper(t)
+	ms := keeper.NewMsgServerImpl(k)
+
+	corporation := sdk.AccAddress([]byte("corp_policy2________")).String()
+	operator := sdk.AccAddress([]byte("oper_policy2________")).String()
+	trID := mockTrk.CreateMockEcosystem(corporation, "did:example:version-inc")
+
+	now := time.Now().UTC()
+	goCtx := sdk.WrapSDKContext(sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now))
+
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
+	require.NoError(t, err)
+
+	role := types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER
+	activate := func() {
+		_, err := ms.IncreaseActiveSchemaAuthorizationPolicyVersion(goCtx, &types.MsgIncreaseActiveSchemaAuthorizationPolicyVersion{
+			Corporation: corporation, Operator: operator, SchemaId: schemaResp.Id, Role: role,
+		})
+		require.NoError(t, err)
+	}
+	create := func(url string) uint64 {
+		resp, err := ms.CreateSchemaAuthorizationPolicy(goCtx, &types.MsgCreateSchemaAuthorizationPolicy{
+			Corporation: corporation, Operator: operator, SchemaId: schemaResp.Id, Role: role, Url: url, DigestSri: "sha256-x",
+		})
+		require.NoError(t, err)
+		return resp.Id
+	}
+
+	id1 := create("https://example.com/v1")
+	activate()
+	id2 := create("https://example.com/v2")
+	activate()
+
+	require.NotEqual(t, id1, id2)
+	p1, _ := k.SchemaAuthorizationPolicies.Get(goCtx, id1)
+	p2, _ := k.SchemaAuthorizationPolicies.Get(goCtx, id2)
+	require.Equal(t, uint32(1), p1.Version)
+	require.Equal(t, uint32(2), p2.Version)
+
+	// [MOD-CS-MSG-6] activating v2 deactivates v1.
+	require.NotNil(t, p1.EffectiveFrom)
+	require.NotNil(t, p1.EffectiveUntil)
+	require.NotNil(t, p2.EffectiveFrom)
+	require.Nil(t, p2.EffectiveUntil)
+
+	list, err := k.ListSchemaAuthorizationPolicies(goCtx, &types.QueryListSchemaAuthorizationPoliciesRequest{SchemaId: schemaResp.Id, Role: role})
+	require.NoError(t, err)
+	require.Len(t, list.Policies, 2)
+	require.Equal(t, uint32(1), list.Policies[0].Version)
+	require.Equal(t, uint32(2), list.Policies[1].Version)
+}
+
+func TestCreateSchemaAuthorizationPolicy_SchemaNotFound(t *testing.T) {
+	k, mockTrk, rawCtx := keepertest.CredentialschemaKeeper(t)
+	ms := keeper.NewMsgServerImpl(k)
+
+	corporation := sdk.AccAddress([]byte("corp_notfound_______")).String()
+	operator := sdk.AccAddress([]byte("oper_notfound_______")).String()
+	_ = mockTrk
+
+	now := time.Now().UTC()
+	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
+	goCtx := sdk.WrapSDKContext(sdkCtx)
+
+	msg := &types.MsgCreateSchemaAuthorizationPolicy{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    9999, // non-existent schema
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER,
+		Url:         "https://example.com/policy",
+		DigestSri:   "sha256-abc",
+	}
+
+	resp, err := ms.CreateSchemaAuthorizationPolicy(goCtx, msg)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "credential schema not found")
+	require.Nil(t, resp)
+
+	_ = k
+}
+
+func TestCreateSchemaAuthorizationPolicy_WrongCorporation(t *testing.T) {
+	k, mockTrk, rawCtx := keepertest.CredentialschemaKeeper(t)
+	ms := keeper.NewMsgServerImpl(k)
+
+	corporation := sdk.AccAddress([]byte("corp_wrong__________")).String()
+	wrongCorp := sdk.AccAddress([]byte("wrong_corp__________")).String()
+	operator := sdk.AccAddress([]byte("oper_wrong__________")).String()
+	trID := mockTrk.CreateMockEcosystem(corporation, "did:example:wrongcorp")
+
+	now := time.Now().UTC()
+	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
+	goCtx := sdk.WrapSDKContext(sdkCtx)
+
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
+	require.NoError(t, err)
+
+	msg := &types.MsgCreateSchemaAuthorizationPolicy{
+		Corporation: wrongCorp, // wrong corporation
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER,
+		Url:         "https://example.com/policy",
+		DigestSri:   "sha256-abc",
+	}
+
+	resp, err := ms.CreateSchemaAuthorizationPolicy(goCtx, msg)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "does not control")
+	require.Nil(t, resp)
+
+	_ = k
+}
+
+func TestRevokeSchemaAuthorizationPolicy_HappyPath(t *testing.T) {
+	k, mockTrk, rawCtx := keepertest.CredentialschemaKeeper(t)
+	ms := keeper.NewMsgServerImpl(k)
+
+	corporation := sdk.AccAddress([]byte("corp_revoke_________")).String()
+	operator := sdk.AccAddress([]byte("oper_revoke_________")).String()
+	trID := mockTrk.CreateMockEcosystem(corporation, "did:example:revoke")
+
+	now := time.Now().UTC()
+	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
+	goCtx := sdk.WrapSDKContext(sdkCtx)
+
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
+	require.NoError(t, err)
+
+	// [MOD-CS-MSG-5-3] Policy is created pending (effective_from null).
+	createMsg := &types.MsgCreateSchemaAuthorizationPolicy{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER,
+		Url:         "https://example.com/policy",
+		DigestSri:   "sha256-abc",
+	}
+	policyResp, err := ms.CreateSchemaAuthorizationPolicy(goCtx, createMsg)
+	require.NoError(t, err)
+
+	policy, err := k.SchemaAuthorizationPolicies.Get(goCtx, policyResp.Id)
+	require.NoError(t, err)
+	require.Equal(t, uint32(1), policy.Version)
+
+	// [MOD-CS-MSG-6] Activate the policy so it can be revoked per spec.
+	_, err = ms.IncreaseActiveSchemaAuthorizationPolicyVersion(goCtx, &types.MsgIncreaseActiveSchemaAuthorizationPolicyVersion{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER,
+	})
+	require.NoError(t, err)
+
+	// Revoke it
+	revokeMsg := &types.MsgRevokeSchemaAuthorizationPolicy{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER,
+		Version:     1,
+	}
+	revokeResp, err := ms.RevokeSchemaAuthorizationPolicy(goCtx, revokeMsg)
+	require.NoError(t, err)
+	require.NotNil(t, revokeResp)
+
+	// Verify revoked
+	policy, err = k.SchemaAuthorizationPolicies.Get(goCtx, policyResp.Id)
+	require.NoError(t, err)
+	require.True(t, policy.Revoked)
+}
+
+func TestRevokeSchemaAuthorizationPolicy_AlreadyRevoked(t *testing.T) {
+	k, mockTrk, rawCtx := keepertest.CredentialschemaKeeper(t)
+	ms := keeper.NewMsgServerImpl(k)
+
+	corporation := sdk.AccAddress([]byte("corp_alrdy_revoked__")).String()
+	operator := sdk.AccAddress([]byte("oper_alrdy_revoked__")).String()
+	trID := mockTrk.CreateMockEcosystem(corporation, "did:example:already-revoked")
+
+	now := time.Now().UTC()
+	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
+	goCtx := sdk.WrapSDKContext(sdkCtx)
+
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
+	require.NoError(t, err)
+
+	// Create pending policy, then activate so revoke is valid.
+	createMsg := &types.MsgCreateSchemaAuthorizationPolicy{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER,
+		Url:         "https://example.com/policy",
+		DigestSri:   "sha256-abc",
+	}
+	_, err = ms.CreateSchemaAuthorizationPolicy(goCtx, createMsg)
+	require.NoError(t, err)
+
+	_, err = ms.IncreaseActiveSchemaAuthorizationPolicyVersion(goCtx, &types.MsgIncreaseActiveSchemaAuthorizationPolicyVersion{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER,
+	})
+	require.NoError(t, err)
+
+	revokeMsg := &types.MsgRevokeSchemaAuthorizationPolicy{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER,
+		Version:     1,
+	}
+
+	// First revoke succeeds
+	_, err = ms.RevokeSchemaAuthorizationPolicy(goCtx, revokeMsg)
+	require.NoError(t, err)
+
+	// Second revoke must fail with already revoked
+	_, err = ms.RevokeSchemaAuthorizationPolicy(goCtx, revokeMsg)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "already revoked")
+
+	_ = k
+}
+
+func TestRevokeSchemaAuthorizationPolicy_NotFound(t *testing.T) {
+	k, mockTrk, rawCtx := keepertest.CredentialschemaKeeper(t)
+	ms := keeper.NewMsgServerImpl(k)
+
+	corporation := sdk.AccAddress([]byte("corp_notfound2______")).String()
+	operator := sdk.AccAddress([]byte("oper_notfound2______")).String()
+	trID := mockTrk.CreateMockEcosystem(corporation, "did:example:notfound2")
+
+	now := time.Now().UTC()
+	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
+	goCtx := sdk.WrapSDKContext(sdkCtx)
+
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
+	require.NoError(t, err)
+
+	// Try to revoke version 99 which does not exist
+	revokeMsg := &types.MsgRevokeSchemaAuthorizationPolicy{
+		Corporation: corporation,
+		Operator:    operator,
+		SchemaId:    schemaResp.Id,
+		Role:        types.SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER,
+		Version:     99,
+	}
+
+	resp, err := ms.RevokeSchemaAuthorizationPolicy(goCtx, revokeMsg)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "no policy found")
+	require.Nil(t, resp)
+
+	_ = k
+}

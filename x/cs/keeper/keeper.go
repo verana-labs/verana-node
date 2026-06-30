@@ -1,0 +1,182 @@
+package keeper
+
+import (
+	"fmt"
+
+	"cosmossdk.io/collections"
+
+	"cosmossdk.io/core/store"
+	"cosmossdk.io/log"
+	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/verana-labs/verana/x/cs/types"
+)
+
+type (
+	Keeper struct {
+		cdc          codec.BinaryCodec
+		storeService store.KVStoreService
+		logger       log.Logger
+
+		// the address capable of executing a MsgUpdateParams message. Typically, this
+		// should be the x/gov module account.
+		authority        string
+		bankKeeper       types.BankKeeper
+		ecosystemKeeper  types.EcosystemKeeper
+		coKeeper         types.CorporationKeeper
+		delegationKeeper types.DelegationKeeper
+
+		// State management
+		Schema collections.Schema
+		//Params           collections.Item[types.Params]
+		CredentialSchema             collections.Map[uint64, types.CredentialSchema]
+		Counter                      collections.Map[string, uint64]
+		SchemaAuthorizationPolicies  collections.Map[uint64, types.SchemaAuthorizationPolicy]
+	}
+)
+
+func NewKeeper(
+	cdc codec.BinaryCodec,
+	storeService store.KVStoreService,
+	logger log.Logger,
+	authority string,
+	bankKeeper types.BankKeeper,
+	ecosystemKeeper types.EcosystemKeeper,
+	coKeeper types.CorporationKeeper,
+	delegationKeeper types.DelegationKeeper,
+) Keeper {
+	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+		panic(fmt.Sprintf("invalid authority address: %s", authority))
+	}
+
+	sb := collections.NewSchemaBuilder(storeService)
+
+	k := Keeper{
+		cdc:              cdc,
+		storeService:     storeService,
+		logger:           logger,
+		authority:        authority,
+		bankKeeper:       bankKeeper,
+		ecosystemKeeper:  ecosystemKeeper,
+		coKeeper:         coKeeper,
+		delegationKeeper: delegationKeeper,
+
+		// Initialize collections
+		CredentialSchema: collections.NewMap(
+			sb,
+			types.CredentialSchemaKey,
+			"credential_schema",
+			collections.Uint64Key,
+			codec.CollValue[types.CredentialSchema](cdc),
+		),
+		Counter: collections.NewMap(
+			sb,
+			types.CounterKey,
+			"counter",
+			collections.StringKey,
+			collections.Uint64Value,
+		),
+		SchemaAuthorizationPolicies: collections.NewMap(
+			sb,
+			types.SchemaAuthorizationPolicyKey,
+			"schema_authorization_policy",
+			collections.Uint64Key,
+			codec.CollValue[types.SchemaAuthorizationPolicy](cdc),
+		),
+	}
+
+	schema, err := sb.Build()
+	if err != nil {
+		panic(err)
+	}
+	k.Schema = schema
+
+	return k
+}
+
+// GetAuthority returns the module's authority.
+func (k Keeper) GetAuthority() string {
+	return k.authority
+}
+
+// Logger returns a module-specific logger.
+func (k Keeper) Logger() log.Logger {
+	return k.logger.With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+
+// GetCredentialSchemaById GetCredentialSchema returns a credential schema by ID
+func (k Keeper) GetCredentialSchemaById(ctx sdk.Context, id uint64) (types.CredentialSchema, error) {
+	return k.CredentialSchema.Get(ctx, id)
+}
+
+// SetCredentialSchema sets a credential schema
+func (k Keeper) SetCredentialSchema(ctx sdk.Context, schema types.CredentialSchema) error {
+	return k.CredentialSchema.Set(ctx, schema.Id, schema)
+}
+
+// DeleteCredentialSchema deletes a credential schema
+func (k Keeper) DeleteCredentialSchema(ctx sdk.Context, id uint64) error {
+	return k.CredentialSchema.Remove(ctx, id)
+}
+
+// IterateCredentialSchemas iterates over all credential schemas
+func (k Keeper) IterateCredentialSchemas(ctx sdk.Context, fn func(schema types.CredentialSchema) (stop bool)) error {
+	return k.CredentialSchema.Walk(ctx, nil, func(key uint64, value types.CredentialSchema) (bool, error) {
+		return fn(value), nil
+	})
+}
+
+func (k Keeper) GetNextID(ctx sdk.Context, entityType string) (uint64, error) {
+	currentID, err := k.Counter.Get(ctx, entityType)
+	if err != nil {
+		currentID = 0
+	}
+
+	nextID := currentID + 1
+	err = k.Counter.Set(ctx, entityType, nextID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to set counter: %w", err)
+	}
+
+	return nextID, nil
+}
+
+func CreateMsgWithValidityPeriods(authority string, operator string, ecosystemID uint64, jsonSchema string, issuerGrantor, verifierGrantor, issuer, verifier, holder uint32, issuerMode, verifierMode, holderMode uint32, pricingAssetType uint32, pricingAsset string, digestAlgorithm string) *types.MsgCreateCredentialSchema {
+	msg := &types.MsgCreateCredentialSchema{
+		Corporation:                             authority,
+		Operator:                                operator,
+		EcosystemId:                             ecosystemID,
+		JsonSchema:                              jsonSchema,
+		IssuerGrantorValidationValidityPeriod:   &types.OptionalUInt32{Value: issuerGrantor},
+		VerifierGrantorValidationValidityPeriod: &types.OptionalUInt32{Value: verifierGrantor},
+		IssuerValidationValidityPeriod:          &types.OptionalUInt32{Value: issuer},
+		VerifierValidationValidityPeriod:        &types.OptionalUInt32{Value: verifier},
+		HolderValidationValidityPeriod:          &types.OptionalUInt32{Value: holder},
+		IssuerOnboardingMode:                    issuerMode,
+		VerifierOnboardingMode:                  verifierMode,
+		HolderOnboardingMode:                    holderMode,
+		PricingAssetType:                        pricingAssetType,
+		PricingAsset:                            pricingAsset,
+		DigestAlgorithm:                         digestAlgorithm,
+	}
+
+	return msg
+}
+
+func CreateUpdateMsgWithValidityPeriods(authority string, operator string, id uint64, issuerGrantor, verifierGrantor, issuer, verifier, holder uint32) *types.MsgUpdateCredentialSchema {
+	msg := &types.MsgUpdateCredentialSchema{
+		Corporation: authority,
+		Operator:    operator,
+		Id:          id,
+	}
+
+	// Set optional fields using wrapper messages (0 is valid - means never expires)
+	msg.IssuerGrantorValidationValidityPeriod = &types.OptionalUInt32{Value: issuerGrantor}
+	msg.VerifierGrantorValidationValidityPeriod = &types.OptionalUInt32{Value: verifierGrantor}
+	msg.IssuerValidationValidityPeriod = &types.OptionalUInt32{Value: issuer}
+	msg.VerifierValidationValidityPeriod = &types.OptionalUInt32{Value: verifier}
+	msg.HolderValidationValidityPeriod = &types.OptionalUInt32{Value: holder}
+
+	return msg
+}

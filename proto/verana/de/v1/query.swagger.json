@@ -1,0 +1,448 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "verana/de/v1/query.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Query"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/verana-labs/verana/de/v1/params": {
+      "get": {
+        "summary": "Parameters queries the parameters of the module.",
+        "operationId": "Query_Params",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/verana/de/v1/operator-authorizations": {
+      "get": {
+        "summary": "ListOperatorAuthorizations returns operator authorizations matching optional filters.",
+        "operationId": "Query_ListOperatorAuthorizations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.QueryListOperatorAuthorizationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "corporation_id",
+            "description": "corporation_id filters by the corporation that granted the authorization.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "operator",
+            "description": "operator filters by the operator account that received the authorization.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "response_max_size",
+            "description": "response_max_size limits the number of results. Must be 1-1024, defaults to 64.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/verana/de/v1/operator-authorizations/{id}": {
+      "get": {
+        "summary": "[MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.",
+        "operationId": "Query_GetOperatorAuthorization",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.QueryGetOperatorAuthorizationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "id is the OperatorAuthorization id to fetch.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/verana/de/v1/vs-operator-authorizations": {
+      "get": {
+        "summary": "ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.",
+        "operationId": "Query_ListVSOperatorAuthorizations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.QueryListVSOperatorAuthorizationsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "corporation_id",
+            "description": "corporation_id filters by the corporation that granted the authorization.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "vs_operator",
+            "description": "vs_operator filters by the VS operator account.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "response_max_size",
+            "description": "response_max_size limits the number of results. Must be 1-1024, defaults to 64.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/verana/de/v1/vs-operator-authorizations/{id}": {
+      "get": {
+        "summary": "[MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.",
+        "operationId": "Query_GetVSOperatorAuthorization",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.QueryGetVSOperatorAuthorizationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "id is the VSOperatorAuthorization id to fetch.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "cosmos.base.v1beta1.Coin": {
+      "type": "object",
+      "properties": {
+        "denom": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string"
+        }
+      },
+      "description": "Coin defines a token with a denomination and an amount.\n\nNOTE: The amount field is an Int which implements the custom method\nsignatures required by gogoproto."
+    },
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "verana.de.v1.OperatorAuthorization": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "id is the own uint64 key of this OperatorAuthorization."
+        },
+        "corporation_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "corporation_id is the id of the corporation granting the authorization. The\n(corporation_id, operator) tuple MUST be unique."
+        },
+        "operator": {
+          "type": "string",
+          "description": "operator is the account receiving the authorization."
+        },
+        "msg_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "msg_types is the list of module message types this authorization applies to."
+        },
+        "spend_limit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "spend_limit is the maximum amount of funds the grantee is allowed to spend."
+        },
+        "remaining_spend": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "remaining_spend is the runtime balance for spend_limit. Present iff\nspend_limit is set."
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time",
+          "description": "expiration is the timestamp after which the authorization is no longer\nvalid."
+        },
+        "period": {
+          "type": "string",
+          "description": "period is the reset period for spend_limit. If set, expiration MUST also be set."
+        }
+      },
+      "description": "OperatorAuthorization is the operator-delegation record. Per spec v4-rc2 it is\nkeyed by its own uint64 id; (corporation_id, operator) is a unique secondary\nindex."
+    },
+    "verana.de.v1.Params": {
+      "type": "object",
+      "description": "Params defines the parameters for the module."
+    },
+    "verana.de.v1.ParticipantAuthorizationRecord": {
+      "type": "object",
+      "properties": {
+        "participant_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "participant_id is the id of the Participant this record applies to. Globally\nunique across all ParticipantAuthorizationRecord entries."
+        },
+        "msg_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "msg_types is the list of delegable message types the vs_operator is\nauthorized for on behalf of corporation. Mandatory, frozen at create."
+        },
+        "spend_limit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "spend_limit is the maximum amount the vs_operator is allowed to spend."
+        },
+        "remaining_spend": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "remaining_spend is the runtime balance for spend_limit. Present iff\nspend_limit is set."
+        },
+        "fee_spend_limit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "fee_spend_limit is the maximum total amount of transaction fees that can be\nspent by vs_operator."
+        },
+        "remaining_fee_spend": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "remaining_fee_spend is the runtime balance for fee_spend_limit. Present iff\nfee_spend_limit is set."
+        },
+        "with_feegrant": {
+          "type": "boolean",
+          "description": "with_feegrant indicates the corporation pays the transaction fees for\nvs_operator."
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time",
+          "description": "expiration is the authorization window boundary. A record created before\nvalidation is disabled with expiration = now()."
+        },
+        "period": {
+          "type": "string",
+          "description": "period is the reset period for spend_limit and fee_spend_limit."
+        }
+      },
+      "description": "ParticipantAuthorizationRecord is a per-participant VS-operator authorization\nnested inside a VSOperatorAuthorization. Keyed by participant_id, which is\nglobally unique across all records of all VSOperatorAuthorizations."
+    },
+    "verana.de.v1.QueryGetOperatorAuthorizationResponse": {
+      "type": "object",
+      "properties": {
+        "operator_authorization": {
+          "$ref": "#/definitions/verana.de.v1.OperatorAuthorization"
+        }
+      },
+      "description": "QueryGetOperatorAuthorizationResponse is the response type for the\nQuery/GetOperatorAuthorization RPC method."
+    },
+    "verana.de.v1.QueryGetVSOperatorAuthorizationResponse": {
+      "type": "object",
+      "properties": {
+        "vs_operator_authorization": {
+          "$ref": "#/definitions/verana.de.v1.VSOperatorAuthorization"
+        }
+      },
+      "description": "QueryGetVSOperatorAuthorizationResponse is the response type for the\nQuery/GetVSOperatorAuthorization RPC method."
+    },
+    "verana.de.v1.QueryListOperatorAuthorizationsResponse": {
+      "type": "object",
+      "properties": {
+        "operator_authorizations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/verana.de.v1.OperatorAuthorization"
+          }
+        }
+      },
+      "description": "QueryListOperatorAuthorizationsResponse is the response type for the\nQuery/ListOperatorAuthorizations RPC method."
+    },
+    "verana.de.v1.QueryListVSOperatorAuthorizationsResponse": {
+      "type": "object",
+      "properties": {
+        "vs_operator_authorizations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/verana.de.v1.VSOperatorAuthorization"
+          }
+        }
+      },
+      "description": "QueryListVSOperatorAuthorizationsResponse is the response type for the\nQuery/ListVSOperatorAuthorizations RPC method."
+    },
+    "verana.de.v1.QueryParamsResponse": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "$ref": "#/definitions/verana.de.v1.Params",
+          "description": "params holds all the parameters of this module."
+        }
+      },
+      "description": "QueryParamsResponse is response type for the Query/Params RPC method."
+    },
+    "verana.de.v1.VSOperatorAuthorization": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "id is the own uint64 key of this VSOperatorAuthorization."
+        },
+        "corporation_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "corporation_id is the id of the corporation granting the authorization. The\n(corporation_id, vs_operator) tuple MUST be unique."
+        },
+        "vs_operator": {
+          "type": "string",
+          "description": "vs_operator is the operator account receiving the authorization."
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/verana.de.v1.ParticipantAuthorizationRecord"
+          },
+          "description": "records is the list of per-participant authorization records granted to\nvs_operator by corporation_id."
+        }
+      },
+      "description": "VSOperatorAuthorization is the VS-operator delegation, keyed by its own uint64\nid; (corporation_id, vs_operator) is a unique secondary index. The entry\nexists iff it has at least one record."
+    }
+  }
+}

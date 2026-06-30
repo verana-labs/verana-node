@@ -1,0 +1,116 @@
+syntax = "proto3";
+package verana.cs.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/verana-labs/verana/x/cs/types";
+
+// IssuerOnboardingMode defines how issuers are onboarded for a credential schema.
+enum IssuerOnboardingMode {
+  ISSUER_ONBOARDING_MODE_UNSPECIFIED = 0;
+  // Anyone can self-create an issuer permission
+  ISSUER_ONBOARDING_MODE_OPEN = 1;
+  // Requires validation from ecosystem
+  ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS = 2;
+  // Requires validation from a grantor
+  ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS = 3;
+}
+
+// VerifierOnboardingMode defines how verifiers are onboarded for a credential schema.
+enum VerifierOnboardingMode {
+  VERIFIER_ONBOARDING_MODE_UNSPECIFIED = 0;
+  // Anyone can self-create a verifier permission
+  VERIFIER_ONBOARDING_MODE_OPEN = 1;
+  // Requires validation from ecosystem
+  VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS = 2;
+  // Requires validation from a grantor
+  VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS = 3;
+}
+
+// HolderOnboardingMode defines how holders are onboarded for a credential schema.
+enum HolderOnboardingMode {
+  HOLDER_ONBOARDING_MODE_UNSPECIFIED = 0;
+  // Holders go through the issuer validation process
+  HOLDER_ONBOARDING_MODE_ISSUER_VALIDATION_PROCESS = 1;
+  // Anyone can self-create a holder permission without validation
+  HOLDER_ONBOARDING_MODE_PERMISSIONLESS = 2;
+}
+
+// PricingAssetType defines the type of asset used for paying business fees
+enum PricingAssetType {
+  // Default to prevent accidental omission
+  PRICING_ASSET_TYPE_UNSPECIFIED = 0;
+  // Trust Unit (non-transferable token for fee definitions)
+  TU = 1;
+  // Native blockchain token or IBC asset
+  COIN = 2;
+  // Fiat currency (off-chain settlement)
+  FIAT = 3;
+}
+
+// SchemaAuthorizationPolicyRole defines the role for a schema authorization policy.
+enum SchemaAuthorizationPolicyRole {
+  SCHEMA_AUTHORIZATION_POLICY_ROLE_UNSPECIFIED = 0;
+  SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER = 1;
+  SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER = 2;
+}
+
+// SchemaAuthorizationPolicy defines a versioned policy document attached to a credential schema role.
+message SchemaAuthorizationPolicy {
+  uint64 id = 1;
+  uint64 schema_id = 2;
+  SchemaAuthorizationPolicyRole role = 3;
+  string url = 4;
+  string digest_sri = 5;
+  // [MOD-CS-MSG-5-3] effective_from is null at creation; set to now at MOD-CS-MSG-6 activation.
+  google.protobuf.Timestamp effective_from = 6 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp effective_until = 7 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  bool revoked = 8;
+  google.protobuf.Timestamp created = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  uint32 version = 10;
+}
+
+// CredentialSchema defines the structure for a credential schema.
+// `ecosystem_id` is the v4-rc2 replacement for the legacy `tr_id` field (issue
+// #305): the owning subject is now an Ecosystem, identified by its uint64 id.
+message CredentialSchema {
+  uint64 id = 1;
+  reserved 2; // tr_id removed in v4-rc2
+  google.protobuf.Timestamp created = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp modified = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp archived = 5 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
+  string json_schema = 7;
+  uint32 issuer_grantor_validation_validity_period = 8;
+  uint32 verifier_grantor_validation_validity_period = 9;
+  uint32 issuer_validation_validity_period = 10;
+  uint32 verifier_validation_validity_period = 11;
+  uint32 holder_validation_validity_period = 12;
+  IssuerOnboardingMode issuer_onboarding_mode = 13;
+  VerifierOnboardingMode verifier_onboarding_mode = 14;
+  PricingAssetType pricing_asset_type = 15;
+  string pricing_asset = 16;
+  string digest_algorithm = 17;
+  HolderOnboardingMode holder_onboarding_mode = 18;
+  uint64 ecosystem_id = 19;
+}
