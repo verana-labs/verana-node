@@ -46,3 +46,4 @@ docs/superpowers/
 .worktrees/
 .claude-agents/audit/
 .claude
+journey_results/
