@@ -1,0 +1,58 @@
+package types
+
+import (
+	"context"
+	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+// AccountKeeper defines the expected interface for the Account module.
+type AccountKeeper interface {
+	GetAccount(context.Context, sdk.AccAddress) sdk.AccountI // only used for simulation
+	// Methods imported from account should be defined here
+}
+
+// BankKeeper defines the expected interface for the Bank module.
+type BankKeeper interface {
+	SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
+	SendCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	SendCoinsFromModuleToAccount(ctx context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx context.Context, senderModule, recipientModule string, amt sdk.Coins) error
+	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins
+	BurnCoins(ctx context.Context, name string, amt sdk.Coins) error
+}
+
+// ParamSubspace defines the expected Subspace interface for parameters.
+type ParamSubspace interface {
+	Get(context.Context, []byte, interface{})
+	Set(context.Context, []byte, interface{})
+}
+
+// MintKeeper defines the expected interface for the Mint module.
+// Mint keeper has Params collections.Item[types.Params] where Params has BlocksPerYear field
+type MintKeeper interface {
+	// GetBlocksPerYear returns the blocks_per_year parameter from mint module
+	GetBlocksPerYear(ctx context.Context) (uint64, error)
+}
+
+// DelegationKeeper defines the expected interface for the Delegation (DE) module.
+// Used to perform [AUTHZ-CHECK] for (authority, operator) pairs.
+type DelegationKeeper interface {
+	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time) error
+}
+
+// CorporationView is the read shape MOD-TD needs about a Corporation subject
+// for AUTHZ-CHECK-5: the signing corporation policy_address resolved to its id.
+type CorporationView struct {
+	Id            uint64
+	PolicyAddress string
+}
+
+// CorporationKeeper backs AUTHZ-CHECK-5 for MOD-TD delegable messages: resolve
+// the signing `corporation` policy_address to its registered Corporation, or
+// abort with ErrCorporationNotRegistered (referencing MOD-CO-MSG-1).
+type CorporationKeeper interface {
+	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+}

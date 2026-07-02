@@ -1,0 +1,47 @@
+syntax = "proto3";
+package verana.td.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "verana/td/v1/params.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/td/types";
+
+// GenesisState defines the trustdeposit module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+
+  repeated TrustDepositRecord trust_deposits = 2 [(gogoproto.nullable) = false];
+
+  // dust is the accumulated fractional yield carried forward
+  string dust = 3;
+}
+
+// TrustDepositRecord defines a trust deposit entry for genesis state
+message TrustDepositRecord {
+  // Field 1 ("corporation", account string) and field 4 ("claimable") reserved per v4-rc3.
+  reserved 1, 4;
+  reserved "corporation", "claimable";
+  string share = 2 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.moretags) = "yaml:\"share\"",
+    (gogoproto.nullable) = false
+  ];
+  uint64 deposit = 3;
+  // corporation_id is the registered Corporation id that owns this trust deposit.
+  uint64 corporation_id = 5;
+  // refunded is the amount eligible to be recycled/reclaimed (was "claimable").
+  uint64 refunded = 6;
+  // cumulative slash accounting (MUST persist across genesis; gate the slash-unpaid invariant).
+  uint64 slashed_deposit = 7;
+  uint64 repaid_deposit = 8;
+  google.protobuf.Timestamp last_slashed = 9 [(gogoproto.stdtime) = true];
+  google.protobuf.Timestamp last_repaid = 10 [(gogoproto.stdtime) = true];
+  uint64 slash_count = 11;
+}

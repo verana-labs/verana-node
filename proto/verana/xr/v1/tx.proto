@@ -1,0 +1,191 @@
+syntax = "proto3";
+package verana.xr.v1;
+
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "verana/xr/v1/params.proto";
+import "verana/cs/v1/types.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/xr/types";
+
+// ExchangeRate defines the storage type for an exchange rate entry.
+message ExchangeRate {
+  uint64 id = 1;
+  verana.cs.v1.PricingAssetType base_asset_type = 2;
+  string base_asset = 3;
+  verana.cs.v1.PricingAssetType quote_asset_type = 4;
+  string quote_asset = 5;
+  string rate = 6;
+  uint32 rate_scale = 7;
+  google.protobuf.Duration validity_duration = 8 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  google.protobuf.Timestamp expires = 9 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  bool state = 10;
+  google.protobuf.Timestamp updated = 11 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+}
+
+// ExchangeRateAuthorization designates which operator account is authorized to
+// push fresh values for a given ExchangeRate, with optional anti-spam
+// (min_interval) and circuit-breaker (max_deviation_bps) bounds. Keyed by
+// (xr_id, operator). Zero min_interval / max_deviation_bps means "unset".
+message ExchangeRateAuthorization {
+  uint64 xr_id = 1;
+  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  google.protobuf.Timestamp expiration = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Duration min_interval = 4 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  uint32 max_deviation_bps = 5;
+}
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  // UpdateParams defines a (governance) operation for updating the module
+  // parameters. The authority defaults to the x/gov module account.
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+
+  // CreateExchangeRate defines a governance operation for creating an exchange rate.
+  rpc CreateExchangeRate(MsgCreateExchangeRate) returns (MsgCreateExchangeRateResponse);
+
+  // UpdateExchangeRate defines an operator operation for updating an exchange rate.
+  rpc UpdateExchangeRate(MsgUpdateExchangeRate) returns (MsgUpdateExchangeRateResponse);
+
+  // SetExchangeRateState defines a governance operation for enabling or disabling an exchange rate.
+  rpc SetExchangeRateState(MsgSetExchangeRateState) returns (MsgSetExchangeRateStateResponse);
+
+  // GrantExchangeRateAuthorization defines a governance operation authorizing an
+  // operator to update a given exchange rate. [MOD-XR-MSG-4]
+  rpc GrantExchangeRateAuthorization(MsgGrantExchangeRateAuthorization) returns (MsgGrantExchangeRateAuthorizationResponse);
+
+  // RevokeExchangeRateAuthorization defines a governance operation revoking an
+  // operator's authorization for a given exchange rate. [MOD-XR-MSG-5]
+  rpc RevokeExchangeRateAuthorization(MsgRevokeExchangeRateAuthorization) returns (MsgRevokeExchangeRateAuthorizationResponse);
+}
+
+// MsgCreateExchangeRate is the Msg/CreateExchangeRate request type.
+message MsgCreateExchangeRate {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "verana/x/xr/MsgCreateExchangeRate";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  verana.cs.v1.PricingAssetType base_asset_type = 2;
+  string base_asset = 3;
+  verana.cs.v1.PricingAssetType quote_asset_type = 4;
+  string quote_asset = 5;
+  string rate = 6;
+  uint32 rate_scale = 7;
+  google.protobuf.Duration validity_duration = 8 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  bool state = 9;
+}
+
+// MsgCreateExchangeRateResponse defines the response for MsgCreateExchangeRate.
+message MsgCreateExchangeRateResponse {
+  uint64 id = 1;
+}
+
+// MsgUpdateExchangeRate is the Msg/UpdateExchangeRate request type. [MOD-XR-MSG-2]
+message MsgUpdateExchangeRate {
+  option (cosmos.msg.v1.signer) = "operator";
+  option (amino.name) = "verana/x/xr/MsgUpdateExchangeRate";
+
+  // operator is the authorized operator executing this message.
+  string operator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // id is the exchange rate entry to update.
+  uint64 id = 2;
+
+  // rate is the new exchange rate value.
+  string rate = 3;
+}
+
+// MsgUpdateExchangeRateResponse defines the response for MsgUpdateExchangeRate.
+message MsgUpdateExchangeRateResponse {}
+
+// MsgUpdateParams is the Msg/UpdateParams request type.
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "verana/x/xr/MsgUpdateParams";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // params defines the module parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgSetExchangeRateState is the Msg/SetExchangeRateState request type.
+message MsgSetExchangeRateState {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "verana/x/xr/MsgSetExchangeRateState";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // id is the exchange rate entry to toggle.
+  uint64 id = 2;
+
+  // state is the desired state: true for enabled, false for disabled.
+  bool state = 3;
+}
+
+// MsgSetExchangeRateStateResponse defines the response for MsgSetExchangeRateState.
+message MsgSetExchangeRateStateResponse {}
+
+// MsgGrantExchangeRateAuthorization is the Msg/GrantExchangeRateAuthorization request type. [MOD-XR-MSG-4]
+message MsgGrantExchangeRateAuthorization {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "verana/x/xr/MsgGrantXrAuthz";
+
+  // authority is the gov module account.
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // xr_id is the exchange rate the operator is authorized to update.
+  uint64 xr_id = 2;
+
+  // operator is the account authorized to update the exchange rate.
+  string operator = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // expiration is when the authorization expires (must be in the future).
+  google.protobuf.Timestamp expiration = 4 [(gogoproto.stdtime) = true, (gogoproto.nullable) = true];
+
+  // min_interval is the minimum time between successful updates (optional anti-spam).
+  google.protobuf.Duration min_interval = 5 [(gogoproto.stdduration) = true, (gogoproto.nullable) = true];
+
+  // max_deviation_bps is the max allowed rate change in basis points, (0, 10000] (optional circuit breaker).
+  uint32 max_deviation_bps = 6;
+}
+
+// MsgGrantExchangeRateAuthorizationResponse defines the response for MsgGrantExchangeRateAuthorization.
+message MsgGrantExchangeRateAuthorizationResponse {}
+
+// MsgRevokeExchangeRateAuthorization is the Msg/RevokeExchangeRateAuthorization request type. [MOD-XR-MSG-5]
+message MsgRevokeExchangeRateAuthorization {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "verana/x/xr/MsgRevokeXrAuthz";
+
+  // authority is the gov module account.
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // xr_id is the exchange rate the authorization is for.
+  uint64 xr_id = 2;
+
+  // operator is the account whose authorization is revoked.
+  string operator = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// MsgRevokeExchangeRateAuthorizationResponse defines the response for MsgRevokeExchangeRateAuthorization.
+message MsgRevokeExchangeRateAuthorizationResponse {}
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+message MsgUpdateParamsResponse {}

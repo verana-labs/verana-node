@@ -1,0 +1,27 @@
+package types
+
+import (
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	// this line is used by starport scaffolding # 1
+)
+
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "verana/x/td/MsgUpdateParams")
+	legacy.RegisterAminoMsg(cdc, &MsgReclaimTrustDepositYield{}, "verana/x/td/MsgReclaimTrustDepositYield")
+	legacy.RegisterAminoMsg(cdc, &MsgSlashTrustDeposit{}, "verana/x/td/MsgSlashTrustDeposit")
+	legacy.RegisterAminoMsg(cdc, &MsgRepaySlashedTrustDeposit{}, "verana/x/td/MsgRepaySlashedTrustDeposit")
+}
+
+func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgUpdateParams{},
+		&MsgReclaimTrustDepositYield{},
+		&MsgSlashTrustDeposit{},
+		&MsgRepaySlashedTrustDeposit{},
+	)
+	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
+}

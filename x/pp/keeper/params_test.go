@@ -1,0 +1,18 @@
+package keeper_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/pp/types"
+)
+
+func TestGetParams(t *testing.T) {
+	k, _, _, _, ctx, _ := keepertest.ParticipantKeeper(t)
+	params := types.DefaultParams()
+
+	require.NoError(t, k.SetParams(ctx, params))
+	require.EqualValues(t, params, k.GetParams(ctx))
+}
