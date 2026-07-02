@@ -167,6 +167,13 @@ sed_inplace 's/swagger = false/swagger = true/' "$APP_TOML_PATH"
 sed_inplace 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/' "$APP_TOML_PATH"
 sed_inplace 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/' "$CONFIG_TOML_PATH"
 
+# Optionally shorten block time (used by CI to speed up the test harness).
+# Leaves the binary default untouched unless TIMEOUT_COMMIT is provided.
+if [ -n "${TIMEOUT_COMMIT:-}" ]; then
+  log "Setting timeout_commit = ${TIMEOUT_COMMIT} for faster blocks..."
+  sed_inplace "s/^timeout_commit = \".*\"/timeout_commit = \"${TIMEOUT_COMMIT}\"/" "$CONFIG_TOML_PATH"
+fi
+
 if "$BINARY" query staking validator "$SECONDARY_OPERATOR_ADDRESS" --node "$PRIMARY_RPC" >/dev/null 2>&1; then
   log "Validator ${SECONDARY_OPERATOR_ADDRESS} already exists on-chain, skipping create-validator tx."
 else

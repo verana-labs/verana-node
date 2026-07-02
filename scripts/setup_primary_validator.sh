@@ -147,6 +147,24 @@ with open(config_toml, 'w') as f:
     f.write(c)
 PYEOF
 
+# Optionally shorten block time (used by CI to speed up the test harness).
+# Leaves the binary default untouched unless TIMEOUT_COMMIT is provided.
+if [ -n "${TIMEOUT_COMMIT:-}" ]; then
+    log "Setting timeout_commit = ${TIMEOUT_COMMIT} for faster blocks..."
+    python3 - <<'PYEOF'
+import os, re
+
+config_toml = os.path.join(os.path.expanduser("~"), ".verana", "config", "config.toml")
+tc = os.environ["TIMEOUT_COMMIT"]
+with open(config_toml) as f:
+    c = f.read()
+c = re.sub(r'(?m)^timeout_commit = ".*"', 'timeout_commit = "%s"' % tc, c)
+with open(config_toml, "w") as f:
+    f.write(c)
+print("Set timeout_commit = %s" % tc)
+PYEOF
+fi
+
 # Initialize YieldIntermediatePool module account with 1 uvna to prevent invariant violations
 # This addresses the issue where empty module accounts break invariants when receiving funds
 # See: https://github.com/cosmos/cosmos-sdk/issues/25315
