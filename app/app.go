@@ -442,7 +442,6 @@ func (app *App) setupUpgradeStoreLoaders() {
 	}
 }
 
-// Add setupUpgradeHandlers function
 func (app *App) setupUpgradeHandlers() {
 	for _, u := range upgrades.Upgrades {
 		app.UpgradeKeeper.SetUpgradeHandler(
