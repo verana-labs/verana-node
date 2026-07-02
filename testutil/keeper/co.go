@@ -17,8 +17,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/co/keeper"
-	"github.com/verana-labs/verana/x/co/types"
+	"github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/co/types"
 )
 
 // CoKeeper returns a MOD-CO keeper wired with caller-supplied delegation,

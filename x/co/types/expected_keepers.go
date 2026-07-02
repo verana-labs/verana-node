@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/group"
 
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // DelegationKeeper is the minimum surface MOD-CO needs from x/de for

@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"io"
 
-	_ "github.com/verana-labs/verana/x/co/module" // import for side-effects
-	_ "github.com/verana-labs/verana/x/cs/module" // import for side-effects
-	demodulekeeper "github.com/verana-labs/verana/x/de/keeper"
-	dimodulekeeper "github.com/verana-labs/verana/x/di/keeper"
-	_ "github.com/verana-labs/verana/x/ec/module" // import for side-effects
-	_ "github.com/verana-labs/verana/x/gf/module" // import for side-effects
-	_ "github.com/verana-labs/verana/x/pp/module" // import for side-effects
-	_ "github.com/verana-labs/verana/x/td/module" // import for side-effects
-	xrmodulekeeper "github.com/verana-labs/verana/x/xr/keeper"
+	_ "github.com/verana-labs/verana-node/x/co/module" // import for side-effects
+	_ "github.com/verana-labs/verana-node/x/cs/module" // import for side-effects
+	demodulekeeper "github.com/verana-labs/verana-node/x/de/keeper"
+	dimodulekeeper "github.com/verana-labs/verana-node/x/di/keeper"
+	_ "github.com/verana-labs/verana-node/x/ec/module" // import for side-effects
+	_ "github.com/verana-labs/verana-node/x/gf/module" // import for side-effects
+	_ "github.com/verana-labs/verana-node/x/pp/module" // import for side-effects
+	_ "github.com/verana-labs/verana-node/x/td/module" // import for side-effects
+	xrmodulekeeper "github.com/verana-labs/verana-node/x/xr/keeper"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	"github.com/verana-labs/verana/app/upgrades"
+	"github.com/verana-labs/verana-node/app/upgrades"
 
 	"cosmossdk.io/x/evidence"
 	"cosmossdk.io/x/upgrade"
@@ -106,20 +106,20 @@ import (
 	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
-	comodulekeeper "github.com/verana-labs/verana/x/co/keeper"
-	ecmodulekeeper "github.com/verana-labs/verana/x/ec/keeper"
-	gfmodulekeeper "github.com/verana-labs/verana/x/gf/keeper"
+	comodulekeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	ecmodulekeeper "github.com/verana-labs/verana-node/x/ec/keeper"
+	gfmodulekeeper "github.com/verana-labs/verana-node/x/gf/keeper"
 
-	credentialschemamodulekeeper "github.com/verana-labs/verana/x/cs/keeper"
+	credentialschemamodulekeeper "github.com/verana-labs/verana-node/x/cs/keeper"
 
-	participantmodulekeeper "github.com/verana-labs/verana/x/pp/keeper"
-	trustdepositmodulekeeper "github.com/verana-labs/verana/x/td/keeper"
+	participantmodulekeeper "github.com/verana-labs/verana-node/x/pp/keeper"
+	trustdepositmodulekeeper "github.com/verana-labs/verana-node/x/td/keeper"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 
 	protocolpoolkeeper "github.com/cosmos/cosmos-sdk/x/protocolpool/keeper"
-	"github.com/verana-labs/verana/docs"
+	"github.com/verana-labs/verana-node/docs"
 )
 
 const (

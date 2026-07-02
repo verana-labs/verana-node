@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // corpKeeperRef is a stable container for the CorporationKeeper interface,

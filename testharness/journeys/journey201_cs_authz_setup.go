@@ -9,7 +9,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 const (

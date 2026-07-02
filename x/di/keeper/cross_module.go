@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 
-	cokeeper "github.com/verana-labs/verana/x/co/keeper"
-	"github.com/verana-labs/verana/x/di/types"
+	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/di/types"
 )
 
 // CoAsDICorporationKeeper adapts the concrete x/co keeper to

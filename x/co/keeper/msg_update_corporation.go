@@ -7,7 +7,7 @@ import (
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/co/types"
+	"github.com/verana-labs/verana-node/x/co/types"
 )
 
 // UpdateCorporation implements MOD-CO-MSG-2.

@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/verana-labs/verana/x/cs/types"
+	"github.com/verana-labs/verana-node/x/cs/types"
 )
 
 // getSchemaAuthPoliciesForRole returns all policies for (schema_id, role).

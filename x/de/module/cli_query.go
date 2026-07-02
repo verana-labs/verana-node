@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/verana-labs/verana/x/de/types"
+	"github.com/verana-labs/verana-node/x/de/types"
 )
 
 // GetQueryCmd implements the autocli.HasCustomQueryCommand interface.

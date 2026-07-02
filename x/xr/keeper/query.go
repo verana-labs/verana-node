@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 var _ types.QueryServer = queryServer{}

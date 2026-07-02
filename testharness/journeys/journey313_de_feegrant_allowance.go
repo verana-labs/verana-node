@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunDeFeegrantAllowanceJourney implements Journey 313: AUTHZ-CHECK-2 fee grant.

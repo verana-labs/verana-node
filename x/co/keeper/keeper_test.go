@@ -15,9 +15,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/co/keeper"
-	"github.com/verana-labs/verana/x/co/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/co/types"
 )
 
 func TestNewKeeper_PanicsOnInvalidAuthority(t *testing.T) {

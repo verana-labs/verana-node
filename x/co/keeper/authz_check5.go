@@ -5,7 +5,7 @@ import (
 
 	"cosmossdk.io/errors"
 
-	"github.com/verana-labs/verana/x/co/types"
+	"github.com/verana-labs/verana-node/x/co/types"
 )
 
 // ResolveCorporationByPolicyAddress implements AUTHZ-CHECK-5 (Corporation

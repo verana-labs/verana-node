@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) error {

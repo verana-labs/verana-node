@@ -13,11 +13,11 @@ import (
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cschema "github.com/verana-labs/verana/x/cs/types"
-	detypes "github.com/verana-labs/verana/x/de/types"
-	permtypes "github.com/verana-labs/verana/x/pp/types"
+	cschema "github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
+	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunPermissionRecordEnforcementJourney implements Journey 314: AUTHZ-CHECK-3

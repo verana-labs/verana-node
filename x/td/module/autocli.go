@@ -3,7 +3,7 @@ package trustdeposit
 import (
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 
-	modulev1 "github.com/verana-labs/verana/api/verana/td/v1"
+	modulev1 "github.com/verana-labs/verana-node/api/verana/td/v1"
 )
 
 // AutoCLIOptions implements the autocli.HasAutoCLIConfig interface.

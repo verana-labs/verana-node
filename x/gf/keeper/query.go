@@ -1,6 +1,6 @@
 package keeper
 
-import "github.com/verana-labs/verana/x/gf/types"
+import "github.com/verana-labs/verana-node/x/gf/types"
 
 type querier struct {
 	Keeper

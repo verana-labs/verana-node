@@ -8,9 +8,9 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	xrtypes "github.com/verana-labs/verana/x/xr/types"
+	xrtypes "github.com/verana-labs/verana-node/x/xr/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunXrUpdateExchangeRateJourney implements Journey 602: XR Update Exchange Rate (operator)

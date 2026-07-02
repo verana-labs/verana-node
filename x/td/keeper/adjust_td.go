@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/verana-labs/verana/x/td/types"
+	"github.com/verana-labs/verana-node/x/td/types"
 )
 
 // AdjustTrustDeposit adjusts a corporation's trust deposit. `account` is the

@@ -3,7 +3,7 @@ package di
 import (
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 
-	"github.com/verana-labs/verana/x/di/types"
+	"github.com/verana-labs/verana-node/x/di/types"
 )
 
 // AutoCLIOptions implements the autocli.HasAutoCLIConfig interface.

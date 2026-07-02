@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/co/types"
+	"github.com/verana-labs/verana-node/x/co/types"
 )
 
 func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) error {

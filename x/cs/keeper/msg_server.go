@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/verana-labs/verana/x/cs/types"
+	"github.com/verana-labs/verana-node/x/cs/types"
 )
 
 type msgServer struct {

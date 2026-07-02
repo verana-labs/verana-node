@@ -10,7 +10,7 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "verana/de/v1/params.proto";
 
-option go_package = "github.com/verana-labs/verana/x/de/types";
+option go_package = "github.com/verana-labs/verana-node/x/de/types";
 
 // Msg defines the Msg service.
 service Msg {

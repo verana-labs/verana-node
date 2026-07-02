@@ -5,9 +5,9 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	credentialschematypes "github.com/verana-labs/verana/x/cs/types"
-	detypes "github.com/verana-labs/verana/x/de/types"
-	"github.com/verana-labs/verana/x/pp/types"
+	credentialschematypes "github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 func (ms msgServer) validateParticipantChecks(ctx sdk.Context, msg *types.MsgStartParticipantOP) (types.Participant, error) {

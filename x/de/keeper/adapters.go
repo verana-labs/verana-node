@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/verana-labs/verana/x/de/types"
+	"github.com/verana-labs/verana-node/x/de/types"
 )
 
 // corpKeeperRef is a stable container for the CorporationKeeper interface,

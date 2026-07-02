@@ -5,14 +5,14 @@ import (
 	"fmt"
 
 	"cosmossdk.io/math"
-	credentialschematypes "github.com/verana-labs/verana/x/cs/types"
+	credentialschematypes "github.com/verana-labs/verana-node/x/cs/types"
 
 	"time"
 
 	"cosmossdk.io/collections"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/verana-labs/verana/x/pp/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // maxInt64AsUint64 is the highest uint64 that still fits in a signed int64.

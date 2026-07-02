@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
 const (

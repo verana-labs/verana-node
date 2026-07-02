@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/cs/keeper"
+	"github.com/verana-labs/verana-node/x/cs/keeper"
 )
 
 // [MOD-CS-MSG-1] json_schema is stored preserving the submitter's property

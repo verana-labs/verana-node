@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 import "verana/xr/v1/params.proto";
 import "verana/xr/v1/tx.proto";
 
-option go_package = "github.com/verana-labs/verana/x/xr/types";
+option go_package = "github.com/verana-labs/verana-node/x/xr/types";
 
 // GenesisState defines the xr module's genesis state.
 message GenesisState {

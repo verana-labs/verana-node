@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/verana-labs/verana/x/de/types"
+	"github.com/verana-labs/verana-node/x/de/types"
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.

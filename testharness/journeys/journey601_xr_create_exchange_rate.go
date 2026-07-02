@@ -12,10 +12,10 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	xrtypes "github.com/verana-labs/verana/x/xr/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	xrtypes "github.com/verana-labs/verana-node/x/xr/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // submitXrGovProposal submits a governance proposal containing an XR message,

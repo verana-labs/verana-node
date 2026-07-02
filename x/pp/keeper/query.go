@@ -9,9 +9,9 @@ import (
 
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/verana-labs/verana/util/validation"
-	credentialschematypes "github.com/verana-labs/verana/x/cs/types"
-	"github.com/verana-labs/verana/x/pp/types"
+	"github.com/verana-labs/verana-node/util/validation"
+	credentialschematypes "github.com/verana-labs/verana-node/x/cs/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

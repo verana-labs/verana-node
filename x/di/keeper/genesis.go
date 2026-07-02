@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/verana-labs/verana/x/di/types"
+	"github.com/verana-labs/verana-node/x/di/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.

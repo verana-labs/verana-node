@@ -7,9 +7,9 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	ditypes "github.com/verana-labs/verana/x/di/types"
+	ditypes "github.com/verana-labs/verana-node/x/di/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunDiStoreDigestJourney implements Journey 501: DI Store Digest

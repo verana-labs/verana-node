@@ -20,17 +20,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	protocolpooltypes "github.com/cosmos/cosmos-sdk/x/protocolpool/types"
-	cotypes "github.com/verana-labs/verana/x/co/types"
-	detypes "github.com/verana-labs/verana/x/de/types"
-	ectypes "github.com/verana-labs/verana/x/ec/types"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
-	tdtypes "github.com/verana-labs/verana/x/td/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
+	ectypes "github.com/verana-labs/verana-node/x/ec/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
+	tdtypes "github.com/verana-labs/verana-node/x/td/types"
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cschema "github.com/verana-labs/verana/x/cs/types"
-	permtypes "github.com/verana-labs/verana/x/pp/types"
+	cschema "github.com/verana-labs/verana-node/x/cs/types"
+	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 )
 
 const (

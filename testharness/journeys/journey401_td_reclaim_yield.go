@@ -9,9 +9,9 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	tdtypes "github.com/verana-labs/verana/x/td/types"
+	tdtypes "github.com/verana-labs/verana-node/x/td/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // queryTrustDepositByAddr queries the trust deposit for an arbitrary address

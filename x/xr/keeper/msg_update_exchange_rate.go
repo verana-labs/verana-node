@@ -9,7 +9,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 // UpdateExchangeRate implements [MOD-XR-MSG-2] Update Exchange Rate.

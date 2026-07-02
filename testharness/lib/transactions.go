@@ -14,9 +14,9 @@ import (
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cschema "github.com/verana-labs/verana/x/cs/types"
-	"github.com/verana-labs/verana/x/ec/types"
-	permtypes "github.com/verana-labs/verana/x/pp/types"
+	cschema "github.com/verana-labs/verana-node/x/cs/types"
+	"github.com/verana-labs/verana-node/x/ec/types"
+	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // SendBankTransaction sends tokens from one account to another

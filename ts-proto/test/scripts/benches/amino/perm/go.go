@@ -23,7 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
-	permtypes "github.com/verana-labs/verana/x/pp/types"
+	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 )
 
 func main() {

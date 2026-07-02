@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // AccountKeeper defines the expected interface for the Account module

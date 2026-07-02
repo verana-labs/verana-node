@@ -7,8 +7,8 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	detypes "github.com/verana-labs/verana/x/de/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // MockExchangeRateKeeper is an identity price oracle for tests: it returns the

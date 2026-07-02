@@ -6,7 +6,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/verana-labs/verana/util/validation"
+	"github.com/verana-labs/verana-node/util/validation"
 )
 
 // allowedDigestAlgorithms is the set of accepted hash algorithm identifiers.

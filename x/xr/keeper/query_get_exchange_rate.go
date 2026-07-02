@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	"github.com/verana-labs/verana/x/xr/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 func (q queryServer) GetExchangeRate(ctx context.Context, req *types.QueryGetExchangeRateRequest) (*types.QueryGetExchangeRateResponse, error) {

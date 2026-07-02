@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/ec/types"
+	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
 func TestGetParams(t *testing.T) {

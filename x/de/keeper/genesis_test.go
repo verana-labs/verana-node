@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/verana-labs/verana/x/de/types"
+	"github.com/verana-labs/verana-node/x/de/types"
 
 	"github.com/stretchr/testify/require"
 )

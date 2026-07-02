@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	gftypes "github.com/verana-labs/verana/x/gf/types"
-	"github.com/verana-labs/verana/x/ec/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
+	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
 // mockDelegation: configurable AUTHZ-CHECK result. Default returns nil (auth granted).

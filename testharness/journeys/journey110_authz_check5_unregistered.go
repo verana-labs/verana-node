@@ -8,9 +8,9 @@ import (
 	"cosmossdk.io/math"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	detypes "github.com/verana-labs/verana/x/de/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 const authzCheck5UnregName = "authz5_unregistered"

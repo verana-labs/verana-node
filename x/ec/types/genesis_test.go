@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/ec/types"
+	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
 func validEco(id uint64, did string, corpID uint64) types.Ecosystem {

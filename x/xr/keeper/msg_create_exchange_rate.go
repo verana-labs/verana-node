@@ -8,8 +8,8 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	"github.com/verana-labs/verana/x/xr/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreateExchangeRate) (*types.MsgCreateExchangeRateResponse, error) {

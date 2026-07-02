@@ -5,10 +5,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	cokeeper "github.com/verana-labs/verana/x/co/keeper"
-	eckeeper "github.com/verana-labs/verana/x/ec/keeper"
-	ectypes "github.com/verana-labs/verana/x/ec/types"
-	"github.com/verana-labs/verana/x/pp/types"
+	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	eckeeper "github.com/verana-labs/verana-node/x/ec/keeper"
+	ectypes "github.com/verana-labs/verana-node/x/ec/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // EcAsParticipantEcosystemKeeper adapts x/ec keeper to participanttypes.EcosystemKeeper,

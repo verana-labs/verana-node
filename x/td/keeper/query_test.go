@@ -6,8 +6,8 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/td/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/td/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

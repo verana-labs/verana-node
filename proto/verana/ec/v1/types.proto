@@ -7,7 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "verana/gf/v1/types.proto";
 
-option go_package = "github.com/verana-labs/verana/x/ec/types";
+option go_package = "github.com/verana-labs/verana-node/x/ec/types";
 
 // Ecosystem is the VPR-level entity introduced in spec v4-rc2 as the
 // replacement for the legacy Trust Registry concept. An Ecosystem is

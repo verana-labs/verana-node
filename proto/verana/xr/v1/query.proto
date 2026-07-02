@@ -10,7 +10,7 @@ import "verana/xr/v1/params.proto";
 import "verana/xr/v1/tx.proto";
 import "verana/cs/v1/types.proto";
 
-option go_package = "github.com/verana-labs/verana/x/xr/types";
+option go_package = "github.com/verana-labs/verana-node/x/xr/types";
 
 // Query defines the gRPC querier service.
 service Query {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunEcosystemQueriesJourney implements Journey 025: Comprehensive EC + GF query coverage.

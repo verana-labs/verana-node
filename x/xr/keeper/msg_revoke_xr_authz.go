@@ -9,7 +9,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 // RevokeExchangeRateAuthorization implements [MOD-XR-MSG-5] Revoke Exchange Rate Authorization.

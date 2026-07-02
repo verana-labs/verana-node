@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	permtypes "github.com/verana-labs/verana/x/pp/types"
+	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cotypes "github.com/verana-labs/verana/x/co/types"
-	cschema "github.com/verana-labs/verana/x/cs/types"
-	ectypes "github.com/verana-labs/verana/x/ec/types"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	cschema "github.com/verana-labs/verana-node/x/cs/types"
+	ectypes "github.com/verana-labs/verana-node/x/ec/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // QueryEcosystem gets an ecosystem by ID

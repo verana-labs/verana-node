@@ -7,9 +7,9 @@ import (
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	cokeeper "github.com/verana-labs/verana/x/co/keeper"
-	"github.com/verana-labs/verana/x/ec/types"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/ec/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // EcAsGFEcosystemKeeper adapts the MOD-ES keeper to gftypes.EcosystemKeeper,

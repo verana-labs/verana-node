@@ -6,7 +6,7 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunEcosystemUpdateJourney implements Journey 023: UpdateEcosystem for ec-alpha.

@@ -3,10 +3,10 @@ package keeper
 import (
 	"context"
 
-	cokeeper "github.com/verana-labs/verana/x/co/keeper"
-	"github.com/verana-labs/verana/x/cs/types"
-	eckeeper "github.com/verana-labs/verana/x/ec/keeper"
-	ectypes "github.com/verana-labs/verana/x/ec/types"
+	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/cs/types"
+	eckeeper "github.com/verana-labs/verana-node/x/ec/keeper"
+	ectypes "github.com/verana-labs/verana-node/x/ec/types"
 )
 
 // EcAsCSEcosystemKeeper adapts x/ec keeper to cstypes.EcosystemKeeper. The

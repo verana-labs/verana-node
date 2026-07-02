@@ -7,7 +7,7 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunEcosystemCreateJourney implements Journey 020: CreateEcosystem (ec-alpha) for Corp A.

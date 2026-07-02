@@ -20,11 +20,11 @@ import (
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	"github.com/stretchr/testify/require"
 
-	cotypes "github.com/verana-labs/verana/x/co/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 
-	"github.com/verana-labs/verana/x/co/keeper"
-	gfkeeper "github.com/verana-labs/verana/x/gf/keeper"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/co/keeper"
+	gfkeeper "github.com/verana-labs/verana-node/x/gf/keeper"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // minimal stub keepers for building a real gfkeeper.Keeper instance.

@@ -18,9 +18,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	cotypes "github.com/verana-labs/verana/x/co/types"
-	"github.com/verana-labs/verana/x/td/keeper"
-	"github.com/verana-labs/verana/x/td/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	"github.com/verana-labs/verana-node/x/td/keeper"
+	"github.com/verana-labs/verana-node/x/td/types"
 )
 
 // MockTDCorporationKeeper backs AUTHZ-CHECK-5 in MOD-TD tests. It resolves any

@@ -6,8 +6,8 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	"github.com/verana-labs/verana/x/pp/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // resolvePricing maps a schema's pricing asset to the on-chain settlement of a

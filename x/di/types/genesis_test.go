@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/verana-labs/verana/x/di/types"
+	"github.com/verana-labs/verana-node/x/di/types"
 )
 
 func TestGenesisState_Validate(t *testing.T) {

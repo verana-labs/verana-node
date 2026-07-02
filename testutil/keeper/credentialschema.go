@@ -19,9 +19,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/cs/keeper"
-	"github.com/verana-labs/verana/x/cs/types"
-	ectypes "github.com/verana-labs/verana/x/ec/types"
+	"github.com/verana-labs/verana-node/x/cs/keeper"
+	"github.com/verana-labs/verana-node/x/cs/types"
+	ectypes "github.com/verana-labs/verana-node/x/ec/types"
 )
 
 // MockBankKeeper is a mock implementation of types.BankKeeper

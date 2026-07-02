@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/co/keeper"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/co/keeper"
 )
 
 func TestCoAsGFCorporationKeeper(t *testing.T) {

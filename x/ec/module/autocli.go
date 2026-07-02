@@ -3,7 +3,7 @@ package ecosystem // renamed from trustregistry per issue #305
 import (
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 
-	modulev1 "github.com/verana-labs/verana/api/verana/ec/v1"
+	modulev1 "github.com/verana-labs/verana-node/api/verana/ec/v1"
 )
 
 // AutoCLIOptions implements autocli.HasAutoCLIConfig.

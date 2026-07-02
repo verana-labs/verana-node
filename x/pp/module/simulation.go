@@ -8,9 +8,9 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/verana-labs/verana/testutil/sample"
-	participantsimulation "github.com/verana-labs/verana/x/pp/simulation"
-	"github.com/verana-labs/verana/x/pp/types"
+	"github.com/verana-labs/verana-node/testutil/sample"
+	participantsimulation "github.com/verana-labs/verana-node/x/pp/simulation"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // avoid unused import issue

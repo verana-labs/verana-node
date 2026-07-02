@@ -7,13 +7,13 @@ import (
 	"strconv"
 	"time"
 
-	credentialschematypes "github.com/verana-labs/verana/x/cs/types"
-	detypes "github.com/verana-labs/verana/x/de/types"
+	credentialschematypes "github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/verana-labs/verana/x/pp/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 type msgServer struct {

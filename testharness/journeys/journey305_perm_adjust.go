@@ -8,9 +8,9 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	permtypes "github.com/verana-labs/verana/x/pp/types"
+	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunPermissionAdjustJourney implements Journey 305: Test AdjustPermission

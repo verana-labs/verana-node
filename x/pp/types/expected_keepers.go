@@ -6,9 +6,9 @@ import (
 
 	"cosmossdk.io/math"
 
-	credentialschematypes "github.com/verana-labs/verana/x/cs/types"
-	detypes "github.com/verana-labs/verana/x/de/types"
-	ectypes "github.com/verana-labs/verana/x/ec/types"
+	credentialschematypes "github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
+	ectypes "github.com/verana-labs/verana-node/x/ec/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

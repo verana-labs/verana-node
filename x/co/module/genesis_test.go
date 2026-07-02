@@ -21,13 +21,13 @@ import (
 
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 
-	modulev1 "github.com/verana-labs/verana/api/verana/co/module/v1"
-	co "github.com/verana-labs/verana/x/co/module"
-	"github.com/verana-labs/verana/x/co/types"
-	dekeeper "github.com/verana-labs/verana/x/de/keeper"
-	detypes "github.com/verana-labs/verana/x/de/types"
-	gfkeeper "github.com/verana-labs/verana/x/gf/keeper"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	modulev1 "github.com/verana-labs/verana-node/api/verana/co/module/v1"
+	co "github.com/verana-labs/verana-node/x/co/module"
+	"github.com/verana-labs/verana-node/x/co/types"
+	dekeeper "github.com/verana-labs/verana-node/x/de/keeper"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
+	gfkeeper "github.com/verana-labs/verana-node/x/gf/keeper"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 func TestAppModuleBasic_TrivialMethods(t *testing.T) {

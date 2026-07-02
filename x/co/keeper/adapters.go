@@ -6,9 +6,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 
-	"github.com/verana-labs/verana/x/co/types"
-	gfkeeper "github.com/verana-labs/verana/x/gf/keeper"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/co/types"
+	gfkeeper "github.com/verana-labs/verana-node/x/gf/keeper"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // GroupKeeperAdapter narrows the SDK's x/group keeper down to the

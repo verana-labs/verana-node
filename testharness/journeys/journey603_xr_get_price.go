@@ -6,10 +6,10 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	xrtypes "github.com/verana-labs/verana/x/xr/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	xrtypes "github.com/verana-labs/verana-node/x/xr/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunXrGetPriceJourney implements Journey 603: XR Get Price

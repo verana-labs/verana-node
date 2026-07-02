@@ -14,8 +14,8 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 
-	"github.com/verana-labs/verana/x/de/keeper"
-	"github.com/verana-labs/verana/x/de/types"
+	"github.com/verana-labs/verana-node/x/de/keeper"
+	"github.com/verana-labs/verana-node/x/de/types"
 )
 
 var (

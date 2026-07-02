@@ -57,7 +57,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/verana-labs/verana.git"
+    "url": "git+https://github.com/verana-labs/verana-node.git"
   },
   "publishConfig": {
     "access": "public"

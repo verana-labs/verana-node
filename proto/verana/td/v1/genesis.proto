@@ -7,7 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "verana/td/v1/params.proto";
 
-option go_package = "github.com/verana-labs/verana/x/td/types";
+option go_package = "github.com/verana-labs/verana-node/x/td/types";
 
 // GenesisState defines the trustdeposit module's genesis state.
 message GenesisState {

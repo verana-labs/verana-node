@@ -7,8 +7,8 @@ import (
 	clienthelpers "cosmossdk.io/client/v2/helpers"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	"github.com/verana-labs/verana/app"
-	"github.com/verana-labs/verana/cmd/veranad/cmd"
+	"github.com/verana-labs/verana-node/app"
+	"github.com/verana-labs/verana-node/cmd/veranad/cmd"
 )
 
 func main() {

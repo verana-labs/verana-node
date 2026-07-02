@@ -1,6 +1,6 @@
 package keeper
 
-import "github.com/verana-labs/verana/x/co/types"
+import "github.com/verana-labs/verana-node/x/co/types"
 
 type msgServer struct {
 	Keeper

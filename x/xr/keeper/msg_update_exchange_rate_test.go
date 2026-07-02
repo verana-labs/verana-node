@@ -7,9 +7,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	"github.com/verana-labs/verana/x/xr/keeper"
-	"github.com/verana-labs/verana/x/xr/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	"github.com/verana-labs/verana-node/x/xr/keeper"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 // stdOperator is the operator address reused across update tests.

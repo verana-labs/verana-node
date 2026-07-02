@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/td/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/td/types"
 )
 
 func TestGetParams(t *testing.T) {

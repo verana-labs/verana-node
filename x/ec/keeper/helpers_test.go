@@ -19,9 +19,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/ec/keeper"
-	"github.com/verana-labs/verana/x/ec/types"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/ec/keeper"
+	"github.com/verana-labs/verana-node/x/ec/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // stubDelegationKeeper / stubCorporationKeeper / stubGFKeeper provide the

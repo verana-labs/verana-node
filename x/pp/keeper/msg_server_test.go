@@ -9,13 +9,13 @@ import (
 	"github.com/google/uuid"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cstypes "github.com/verana-labs/verana/x/cs/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/pp/keeper"
-	"github.com/verana-labs/verana/x/pp/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/pp/keeper"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 func setupMsgServer(t testing.TB) (keeper.Keeper, types.MsgServer, *keepertest.MockCredentialSchemaKeeper, *keepertest.MockParticipantEcosystemKeeper, context.Context) {

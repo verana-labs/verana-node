@@ -18,12 +18,12 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
-	modulev1 "github.com/verana-labs/verana/api/verana/ec/module"
-	cokeeper "github.com/verana-labs/verana/x/co/keeper"
-	"github.com/verana-labs/verana/x/ec/keeper"
-	"github.com/verana-labs/verana/x/ec/types"
-	gfkeeper "github.com/verana-labs/verana/x/gf/keeper"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	modulev1 "github.com/verana-labs/verana-node/api/verana/ec/module"
+	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/ec/keeper"
+	"github.com/verana-labs/verana-node/x/ec/types"
+	gfkeeper "github.com/verana-labs/verana-node/x/gf/keeper"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 var (

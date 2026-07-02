@@ -21,11 +21,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	ectypes "github.com/verana-labs/verana/x/ec/types"
-	"github.com/verana-labs/verana/x/pp/keeper"
-	"github.com/verana-labs/verana/x/pp/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	ectypes "github.com/verana-labs/verana-node/x/ec/types"
+	"github.com/verana-labs/verana-node/x/pp/keeper"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // TrackingBankKeeper tracks all balance changes for verification

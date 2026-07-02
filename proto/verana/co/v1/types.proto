@@ -7,7 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "verana/gf/v1/types.proto";
 
-option go_package = "github.com/verana-labs/verana/x/co/types";
+option go_package = "github.com/verana-labs/verana-node/x/co/types";
 
 // Corporation is the VPR-level entity that represents a legal/organizational
 // authority acting in the registry. Identified by its uint64 id everywhere

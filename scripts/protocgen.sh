@@ -38,9 +38,9 @@ fi
     done
 
     # Move generated files from nested structure to correct location
-    if [ -d "github.com/verana-labs/verana/x" ]; then
+    if [ -d "github.com/verana-labs/verana-node/x" ]; then
       echo "  Moving gogo generated files to x/ directory..."
-      cp -r github.com/verana-labs/verana/x/* ../x/
+      cp -r github.com/verana-labs/verana-node/x/* ../x/
       rm -rf github.com
     fi
   fi
@@ -65,9 +65,9 @@ done
 
 # Move grpc-gateway generated files from project root to x/ directory
 # (grpc-gateway plugin in buf.gen.gogo.yaml outputs to ".." which is the project root)
-if [ -d "$home/github.com/verana-labs/verana/x" ]; then
+if [ -d "$home/github.com/verana-labs/verana-node/x" ]; then
   echo "  Moving grpc-gateway generated files to x/ directory..."
-  cp -r "$home/github.com/verana-labs/verana/x/"* "$home/x/"
+  cp -r "$home/github.com/verana-labs/verana-node/x/"* "$home/x/"
 fi
 
 # Clean up any remaining github.com directory in project root

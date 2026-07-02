@@ -5,7 +5,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/verana-labs/verana/x/pp/types";
+option go_package = "github.com/verana-labs/verana-node/x/pp/types";
 
 // Participant roles
 enum ParticipantRole {

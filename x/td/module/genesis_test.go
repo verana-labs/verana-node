@@ -6,10 +6,10 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/testutil/nullify"
-	trustdeposit "github.com/verana-labs/verana/x/td/module"
-	"github.com/verana-labs/verana/x/td/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/testutil/nullify"
+	trustdeposit "github.com/verana-labs/verana-node/x/td/module"
+	"github.com/verana-labs/verana-node/x/td/types"
 )
 
 func TestGenesis(t *testing.T) {

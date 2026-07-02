@@ -9,10 +9,10 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	credentialschemakeeper "github.com/verana-labs/verana/x/cs/keeper"
-	ecosystem "github.com/verana-labs/verana/x/ec/keeper"
-	participant "github.com/verana-labs/verana/x/pp/keeper"
-	trustdeposit "github.com/verana-labs/verana/x/td/keeper"
+	credentialschemakeeper "github.com/verana-labs/verana-node/x/cs/keeper"
+	ecosystem "github.com/verana-labs/verana-node/x/ec/keeper"
+	participant "github.com/verana-labs/verana-node/x/pp/keeper"
+	trustdeposit "github.com/verana-labs/verana-node/x/td/keeper"
 )
 
 type BaseAppParamManager interface {

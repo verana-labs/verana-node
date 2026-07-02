@@ -1,4 +1,4 @@
-module github.com/verana-labs/verana
+module github.com/verana-labs/verana-node
 
 go 1.26.4
 

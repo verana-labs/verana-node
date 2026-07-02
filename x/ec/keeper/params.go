@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/runtime"
 
-	"github.com/verana-labs/verana/x/ec/types"
+	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
 // GetParams returns the module parameters.

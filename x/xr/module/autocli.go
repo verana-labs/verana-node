@@ -3,7 +3,7 @@ package xr
 import (
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 // AutoCLIOptions implements the autocli.HasAutoCLIConfig interface.

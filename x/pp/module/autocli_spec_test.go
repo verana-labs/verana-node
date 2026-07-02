@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	participant "github.com/verana-labs/verana/x/pp/module"
+	participant "github.com/verana-labs/verana-node/x/pp/module"
 )
 
 // TestAutocli_CreateRootParticipant_HasNoNonSpecFlags locks in the spec shape

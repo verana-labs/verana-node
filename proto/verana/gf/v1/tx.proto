@@ -7,7 +7,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "verana/gf/v1/params.proto";
 
-option go_package = "github.com/verana-labs/verana/x/gf/types";
+option go_package = "github.com/verana-labs/verana-node/x/gf/types";
 
 // Msg defines the Msg service.
 service Msg {

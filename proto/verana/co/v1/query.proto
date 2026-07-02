@@ -9,7 +9,7 @@ import "google/protobuf/timestamp.proto";
 import "verana/co/v1/params.proto";
 import "verana/co/v1/types.proto";
 
-option go_package = "github.com/verana-labs/verana/x/co/types";
+option go_package = "github.com/verana-labs/verana-node/x/co/types";
 
 // Query defines the Query service.
 service Query {

@@ -6,10 +6,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	cotypes "github.com/verana-labs/verana/x/co/types"
-	"github.com/verana-labs/verana/x/td/keeper"
-	"github.com/verana-labs/verana/x/td/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	"github.com/verana-labs/verana-node/x/td/keeper"
+	"github.com/verana-labs/verana-node/x/td/types"
 )
 
 // TestAuthzCheck5_TrustDeposit verifies AUTHZ-CHECK-5 on the MOD-TD delegable

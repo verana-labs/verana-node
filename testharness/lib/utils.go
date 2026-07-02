@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
-	"github.com/verana-labs/verana/x/ec/types"
+	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
 // PrettyJSON formats a proto message as indented JSON

@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 import "verana/de/v1/params.proto";
 import "verana/de/v1/types.proto";
 
-option go_package = "github.com/verana-labs/verana/x/de/types";
+option go_package = "github.com/verana-labs/verana-node/x/de/types";
 
 // GenesisState defines the de module's genesis state.
 message GenesisState {

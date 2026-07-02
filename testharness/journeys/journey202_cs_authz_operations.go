@@ -7,9 +7,9 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cschema "github.com/verana-labs/verana/x/cs/types"
+	cschema "github.com/verana-labs/verana-node/x/cs/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunCredentialSchemaAuthzOperationsJourney implements Journey 202: Test all CS operations with operator authorization.

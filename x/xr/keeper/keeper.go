@@ -9,7 +9,7 @@ import (
 	corestore "cosmossdk.io/core/store"
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 type Keeper struct {

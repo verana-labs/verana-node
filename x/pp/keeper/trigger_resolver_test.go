@@ -8,9 +8,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/pp/keeper"
-	"github.com/verana-labs/verana/x/pp/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/pp/keeper"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // helper: an active HOLDER participant.

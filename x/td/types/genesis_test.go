@@ -6,7 +6,7 @@ import (
 	"cosmossdk.io/math"
 
 	"github.com/stretchr/testify/require"
-	"github.com/verana-labs/verana/x/td/types"
+	"github.com/verana-labs/verana-node/x/td/types"
 )
 
 func TestGenesisState_Validate(t *testing.T) {

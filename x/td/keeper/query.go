@@ -7,7 +7,7 @@ import (
 
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/verana-labs/verana/x/td/types"
+	"github.com/verana-labs/verana-node/x/td/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

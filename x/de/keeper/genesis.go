@@ -7,7 +7,7 @@ import (
 
 	"cosmossdk.io/collections"
 
-	"github.com/verana-labs/verana/x/de/types"
+	"github.com/verana-labs/verana-node/x/de/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.

@@ -6,8 +6,8 @@ import (
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/ec/keeper"
-	"github.com/verana-labs/verana/x/ec/types"
+	"github.com/verana-labs/verana-node/x/ec/keeper"
+	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
 // InitGenesis loads Ecosystem entries + the (did, corp_id) consistency index

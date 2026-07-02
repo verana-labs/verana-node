@@ -7,8 +7,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/verana-labs/verana/testharness/journeys"
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/journeys"
+	"github.com/verana-labs/verana-node/testharness/lib"
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 )

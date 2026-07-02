@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/de/keeper"
-	"github.com/verana-labs/verana/x/de/types"
+	"github.com/verana-labs/verana-node/x/de/keeper"
+	"github.com/verana-labs/verana-node/x/de/types"
 )
 
 func TestParamsQuery(t *testing.T) {

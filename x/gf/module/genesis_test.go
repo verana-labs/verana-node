@@ -15,10 +15,10 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	modulev1 "github.com/verana-labs/verana/api/verana/gf/module/v1"
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	gf "github.com/verana-labs/verana/x/gf/module"
-	"github.com/verana-labs/verana/x/gf/types"
+	modulev1 "github.com/verana-labs/verana-node/api/verana/gf/module/v1"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	gf "github.com/verana-labs/verana-node/x/gf/module"
+	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
 func TestModuleInitExportGenesis_RoundTrip(t *testing.T) {

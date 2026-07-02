@@ -3,7 +3,7 @@ package types
 import (
 	"cosmossdk.io/errors"
 
-	"github.com/verana-labs/verana/util/validation"
+	"github.com/verana-labs/verana-node/util/validation"
 )
 
 // DefaultGenesis returns the default genesis state.

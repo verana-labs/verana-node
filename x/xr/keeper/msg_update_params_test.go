@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/xr/keeper"
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/keeper"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 func TestMsgUpdateParams(t *testing.T) {

@@ -9,8 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/verana-labs/verana/x/xr/keeper"
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/keeper"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 var _ depinject.OnePerModuleType = AppModule{}

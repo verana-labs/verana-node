@@ -20,10 +20,10 @@ import (
 
 	// this line is used by starport scaffolding # 1
 
-	modulev1 "github.com/verana-labs/verana/api/verana/cs/module"
-	cokeeper "github.com/verana-labs/verana/x/co/keeper"
-	"github.com/verana-labs/verana/x/cs/keeper"
-	"github.com/verana-labs/verana/x/cs/types"
+	modulev1 "github.com/verana-labs/verana-node/api/verana/cs/module"
+	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/cs/keeper"
+	"github.com/verana-labs/verana-node/x/cs/types"
 )
 
 var (

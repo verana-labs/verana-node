@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/google/uuid"
-	"github.com/verana-labs/verana/util/validation"
+	"github.com/verana-labs/verana-node/util/validation"
 )
 
 // VSOA per-role permitted msg_types (spec v4-rc2 MOD-PP-MSG-1/7/14).

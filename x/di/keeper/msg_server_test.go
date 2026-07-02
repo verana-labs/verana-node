@@ -13,10 +13,10 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/di/keeper"
-	module "github.com/verana-labs/verana/x/di/module"
-	"github.com/verana-labs/verana/x/di/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/di/keeper"
+	module "github.com/verana-labs/verana-node/x/di/module"
+	"github.com/verana-labs/verana-node/x/di/types"
 )
 
 // initFixtureWithMock creates a test fixture with a MockDelegationKeeper wired in.

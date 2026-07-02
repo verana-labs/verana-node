@@ -19,11 +19,11 @@ import (
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
-	modulev1 "github.com/verana-labs/verana/api/verana/co/module/v1"
-	cokeeper "github.com/verana-labs/verana/x/co/keeper"
-	"github.com/verana-labs/verana/x/co/types"
-	dekeeper "github.com/verana-labs/verana/x/de/keeper"
-	gfkeeper "github.com/verana-labs/verana/x/gf/keeper"
+	modulev1 "github.com/verana-labs/verana-node/api/verana/co/module/v1"
+	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/co/types"
+	dekeeper "github.com/verana-labs/verana-node/x/de/keeper"
+	gfkeeper "github.com/verana-labs/verana-node/x/gf/keeper"
 )
 
 var (

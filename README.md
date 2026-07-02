@@ -1,10 +1,10 @@
 # Verana Blockchain
 
 [![Project Status: Active -- The project has reached a stable, usable state and is being actively developed.](https://img.shields.io/badge/repo%20status-Active-green.svg?style=flat-square)](https://www.repostatus.org/#active)
-[![GoDoc](https://img.shields.io/badge/godoc-reference-blue?style=flat-square&logo=go)](https://pkg.go.dev/github.com/verana-labs/verana)
-[![Go Report Card](https://goreportcard.com/badge/github.com/verana-labs/verana?style=flat-square)](https://goreportcard.com/report/github.com/verana-labs/verana)
-[![Version](https://img.shields.io/github/tag/verana-labs/verana.svg?style=flat-square)](https://github.com/verana-labs/verana/releases/latest)
-[![License: AGPL-3.0](https://img.shields.io/github/license/verana-labs/verana.svg?style=flat-square)](https://github.com/verana-labs/verana/blob/main/LICENSE)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue?style=flat-square&logo=go)](https://pkg.go.dev/github.com/verana-labs/verana-node)
+[![Go Report Card](https://goreportcard.com/badge/github.com/verana-labs/verana-node?style=flat-square)](https://goreportcard.com/report/github.com/verana-labs/verana-node)
+[![Version](https://img.shields.io/github/tag/verana-labs/verana.svg?style=flat-square)](https://github.com/verana-labs/verana-node/releases/latest)
+[![License: AGPL-3.0](https://img.shields.io/github/license/verana-labs/verana.svg?style=flat-square)](https://github.com/verana-labs/verana-node/blob/main/LICENSE)
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.com/invite/edjaFn252q)
 
 Verana Blockchain is a Verifiable Public Registry (VPR) providing foundational infrastructure for decentralized trust ecosystems. As a sovereign Layer 1 appchain built on the Cosmos SDK, Verana enables trustless verification of credentials and services across ecosystems through a standardized trust registry framework.
@@ -91,7 +91,7 @@ While Verana can run on lower-spec hardware, you may experience reduced performa
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/verana-labs/verana.git
+git clone https://github.com/verana-labs/verana-node.git
 cd verana
 ```
 

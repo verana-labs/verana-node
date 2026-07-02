@@ -6,8 +6,8 @@ import (
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	cotypes "github.com/verana-labs/verana/x/co/types"
-	"github.com/verana-labs/verana/x/cs/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	"github.com/verana-labs/verana-node/x/cs/types"
 )
 
 // checkSchemaOwnership enforces that the signing corporation is the

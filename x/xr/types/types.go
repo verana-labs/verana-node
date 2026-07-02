@@ -8,7 +8,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 )
 
 var iso4217Regex = regexp.MustCompile(`^[A-Z]{3}$`)

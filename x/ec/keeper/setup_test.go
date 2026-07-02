@@ -17,8 +17,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/ec/keeper"
-	"github.com/verana-labs/verana/x/ec/types"
+	"github.com/verana-labs/verana-node/x/ec/keeper"
+	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
 // ecKeeper builds an in-memory x/ec keeper wired against the provided

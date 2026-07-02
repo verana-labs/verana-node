@@ -13,10 +13,10 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	cotypes "github.com/verana-labs/verana/x/co/types"
-	"github.com/verana-labs/verana/x/di/keeper"
-	module "github.com/verana-labs/verana/x/di/module"
-	"github.com/verana-labs/verana/x/di/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	"github.com/verana-labs/verana-node/x/di/keeper"
+	module "github.com/verana-labs/verana-node/x/di/module"
+	"github.com/verana-labs/verana-node/x/di/types"
 )
 
 // mockCorpKeeper backs AUTHZ-CHECK-5 in MOD-DI tests. It resolves any signing

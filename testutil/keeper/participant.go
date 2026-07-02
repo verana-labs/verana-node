@@ -19,10 +19,10 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	ectypes "github.com/verana-labs/verana/x/ec/types"
-	"github.com/verana-labs/verana/x/pp/keeper"
-	"github.com/verana-labs/verana/x/pp/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	ectypes "github.com/verana-labs/verana-node/x/ec/types"
+	"github.com/verana-labs/verana-node/x/pp/keeper"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 func ParticipantKeeper(t testing.TB) (keeper.Keeper, *MockCredentialSchemaKeeper, *MockParticipantEcosystemKeeper, *MockParticipantCorporationKeeper, sdk.Context, *MockDelegationKeeper) {

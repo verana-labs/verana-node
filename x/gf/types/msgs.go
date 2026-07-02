@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/verana-labs/verana/util/validation"
+	"github.com/verana-labs/verana-node/util/validation"
 )
 
 // ValidateBasic on MsgUpdateParams: authority must be present.

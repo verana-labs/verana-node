@@ -32,7 +32,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/app"
+	"github.com/verana-labs/verana-node/app"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunEcosystemArchiveJourney implements Journey 024: ArchiveEcosystem (archive + unarchive) for ec-alpha.

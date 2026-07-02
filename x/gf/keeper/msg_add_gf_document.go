@@ -8,7 +8,7 @@ import (
 	cerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // subjectKind is an internal tag for which owner the request targets.

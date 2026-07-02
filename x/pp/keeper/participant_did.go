@@ -6,7 +6,7 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 
-	"github.com/verana-labs/verana/x/pp/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // assertDIDCorporationConsistent enforces the per-Participant

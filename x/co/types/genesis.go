@@ -3,7 +3,7 @@ package types
 import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/verana-labs/verana/util/validation"
+	"github.com/verana-labs/verana-node/util/validation"
 )
 
 func DefaultGenesis() *GenesisState {

@@ -13,9 +13,9 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/verana-labs/verana/x/xr/keeper"
-	module "github.com/verana-labs/verana/x/xr/module"
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/keeper"
+	module "github.com/verana-labs/verana-node/x/xr/module"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 type fixture struct {

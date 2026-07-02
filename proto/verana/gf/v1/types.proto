@@ -6,7 +6,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/verana-labs/verana/x/gf/types";
+option go_package = "github.com/verana-labs/verana-node/x/gf/types";
 
 // GovernanceFrameworkVersion represents a versioned governance framework owned
 // by either an Ecosystem (ecosystem_id set, corporation empty) or a Corporation

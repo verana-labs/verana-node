@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // Local stub keepers for module-level tests (the module pkg can't import

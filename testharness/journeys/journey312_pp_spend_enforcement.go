@@ -11,11 +11,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cschema "github.com/verana-labs/verana/x/cs/types"
-	detypes "github.com/verana-labs/verana/x/de/types"
-	permtypes "github.com/verana-labs/verana/x/pp/types"
+	cschema "github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
+	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunPermissionSpendEnforcementJourney implements Journey 312: AUTHZ-CHECK-1

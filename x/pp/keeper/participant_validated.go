@@ -6,8 +6,8 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cstypes "github.com/verana-labs/verana/x/cs/types"
-	"github.com/verana-labs/verana/x/pp/types"
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 func getValidityPeriod(participantType uint32, cs cstypes.CredentialSchema) uint32 {

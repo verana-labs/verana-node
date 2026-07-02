@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // StubCorporationKeeper is the pre-wiring default for the corp-keeper

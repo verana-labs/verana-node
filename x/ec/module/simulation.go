@@ -8,9 +8,9 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/verana-labs/verana/testutil/sample"
-	ecosystemsimulation "github.com/verana-labs/verana/x/ec/simulation"
-	"github.com/verana-labs/verana/x/ec/types"
+	"github.com/verana-labs/verana-node/testutil/sample"
+	ecosystemsimulation "github.com/verana-labs/verana-node/x/ec/simulation"
+	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
 var (

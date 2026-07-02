@@ -8,7 +8,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/verana-labs/verana/x/xr/types"
+	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
 func (ms msgServer) SetExchangeRateState(ctx context.Context, msg *types.MsgSetExchangeRateState) (*types.MsgSetExchangeRateStateResponse, error) {

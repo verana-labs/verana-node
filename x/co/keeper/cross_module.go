@@ -6,8 +6,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	detypes "github.com/verana-labs/verana/x/de/types"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // CoAsGFCorporationKeeper adapts the MOD-CO keeper to MOD-GF's CorporationKeeper

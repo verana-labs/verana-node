@@ -8,8 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/de/keeper"
-	"github.com/verana-labs/verana/x/de/types"
+	"github.com/verana-labs/verana-node/x/de/keeper"
+	"github.com/verana-labs/verana-node/x/de/types"
 )
 
 func setupMsgServer(t *testing.T) (*fixture, types.MsgServer, sdk.Context) {

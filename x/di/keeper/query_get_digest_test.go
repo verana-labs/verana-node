@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/di/keeper"
-	"github.com/verana-labs/verana/x/di/types"
+	"github.com/verana-labs/verana-node/x/di/keeper"
+	"github.com/verana-labs/verana-node/x/di/types"
 )
 
 func TestGetDigest_NilRequest(t *testing.T) {

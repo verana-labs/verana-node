@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/verana-labs/verana/x/gf/types"
+	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
 func (q querier) GetGovernanceFrameworkVersion(goCtx context.Context, req *types.QueryGetGovernanceFrameworkVersionRequest) (*types.QueryGetGovernanceFrameworkVersionResponse, error) {

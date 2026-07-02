@@ -7,8 +7,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/group"
 
-	cotypes "github.com/verana-labs/verana/x/co/types"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // mockDelegation lets a test pre-program AUTHZ-CHECK-1 results.

@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/verana-labs/verana/x/pp/types"
+	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
 // TestMsgSelfCreateParticipant_ValidateBasic exercises the mandatory fields

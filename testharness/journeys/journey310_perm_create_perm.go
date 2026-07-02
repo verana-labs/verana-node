@@ -9,10 +9,10 @@ import (
 	"cosmossdk.io/math"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
-	cschema "github.com/verana-labs/verana/x/cs/types"
-	permtypes "github.com/verana-labs/verana/x/pp/types"
+	cschema "github.com/verana-labs/verana-node/x/cs/types"
+	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
-	"github.com/verana-labs/verana/testharness/lib"
+	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
 // RunPermissionCreatePermJourney implements Journey 310: Test CreatePermission (Self Create)

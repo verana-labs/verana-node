@@ -4,7 +4,7 @@ package verana.pp.v1;
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/verana-labs/verana/x/pp/types";
+option go_package = "github.com/verana-labs/verana-node/x/pp/types";
 
 // Params defines the parameters for the module.
 message Params {

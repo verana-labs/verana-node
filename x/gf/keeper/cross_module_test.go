@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/gf/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // TestCreateInitialGFVersionForCorporation_SetsActiveSince pins the spec

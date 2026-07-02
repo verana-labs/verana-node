@@ -6,9 +6,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	cotypes "github.com/verana-labs/verana/x/co/types"
-	"github.com/verana-labs/verana/x/de/keeper"
-	"github.com/verana-labs/verana/x/de/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	"github.com/verana-labs/verana-node/x/de/keeper"
+	"github.com/verana-labs/verana-node/x/de/types"
 )
 
 // TestAuthzCheck5_OperatorAuthorization verifies AUTHZ-CHECK-5 on the MOD-DE

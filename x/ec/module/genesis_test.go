@@ -19,10 +19,10 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	ecosystem "github.com/verana-labs/verana/x/ec/module"
-	"github.com/verana-labs/verana/x/ec/keeper"
-	"github.com/verana-labs/verana/x/ec/types"
-	gftypes "github.com/verana-labs/verana/x/gf/types"
+	ecosystem "github.com/verana-labs/verana-node/x/ec/module"
+	"github.com/verana-labs/verana-node/x/ec/keeper"
+	"github.com/verana-labs/verana-node/x/ec/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 type genStub struct{}

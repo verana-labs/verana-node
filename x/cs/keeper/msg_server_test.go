@@ -11,9 +11,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	keepertest "github.com/verana-labs/verana/testutil/keeper"
-	"github.com/verana-labs/verana/x/cs/keeper"
-	"github.com/verana-labs/verana/x/cs/types"
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	"github.com/verana-labs/verana-node/x/cs/keeper"
+	"github.com/verana-labs/verana-node/x/cs/types"
 )
 
 func setupMsgServer(t testing.TB) (*keeper.Keeper, types.MsgServer, *keepertest.MockEcosystemKeeper, context.Context) {

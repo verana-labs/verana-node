@@ -4,7 +4,7 @@ package verana.co.v1;
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/verana-labs/verana/x/co/types";
+option go_package = "github.com/verana-labs/verana-node/x/co/types";
 
 // Params defines the parameters for the x/co module.
 // The module has no parameters at this time; the message is kept for forward
