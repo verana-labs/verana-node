@@ -66,8 +66,6 @@ jobs:
     env:
       TEST_HARNESS_PATH: ./testharness
       VALIDATOR_COUNT: "2"
-      # Shorten block time to speed up the tx-heavy harness journeys (CI only).
-      TIMEOUT_COMMIT: "500ms"
 
     steps:
       - name: Checkout this repository
@@ -106,7 +104,6 @@ jobs:
             -w /workspace \
             -e TEST_HARNESS_PATH \
             -e VALIDATOR_COUNT \
-            -e TIMEOUT_COMMIT \
             verana-node:ci \
             /bin/bash -lc 'set -e
               # veranad is already baked into the image from the build-veranad job.
