@@ -167,6 +167,9 @@ func (ms msgServer) IncreaseActiveSchemaAuthorizationPolicyVersion(goCtx context
 	if draft == nil {
 		return nil, fmt.Errorf("no draft policy exists for schema_id %d and role %s", msg.SchemaId, msg.Role)
 	}
+	if draft.Url == "" || draft.DigestSri == "" {
+		return nil, fmt.Errorf("draft policy for schema_id %d role %s is missing url or digest_sri", msg.SchemaId, msg.Role)
+	}
 
 	// [MOD-CS-MSG-6-3] activate the draft and deactivate the previously active version.
 	draft.EffectiveFrom = &now
