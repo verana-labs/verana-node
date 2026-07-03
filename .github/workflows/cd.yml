@@ -274,8 +274,8 @@ jobs:
 
   build-canonical-image:
     runs-on: ubuntu-latest
-    needs: build-binaries-s3
-    if: needs.build-binaries-s3.result == 'success'
+    needs: build-binaries
+    if: needs.build-binaries.result == 'success'
     permissions:
       contents: read
     steps:
@@ -306,13 +306,13 @@ jobs:
           file: docker/veranad.Dockerfile
           push: true
           tags: |
-            ${{ env.CANONICAL_IMAGE_NAME }}:${{ needs.build-binaries-s3.outputs.version }}
+            ${{ env.CANONICAL_IMAGE_NAME }}:${{ needs.build-binaries.outputs.version }}
           build-args: |
             USE_PREBUILT=true
             PREBUILT_BINARY=binaries/veranad-linux-amd64
 
   discord-notify:
-    needs: [resolve-version, build-binaries-s3, publish-ts-proto, build-canonical-image]
+    needs: [resolve-version, build-binaries, publish-ts-proto, build-canonical-image]
     if: needs.resolve-version.outputs.new-release-published == 'true' && needs.resolve-version.outputs.release-type == 'stable'
     permissions:
       contents: read
