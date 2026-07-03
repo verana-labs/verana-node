@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"cosmossdk.io/collections"
 	cerrors "cosmossdk.io/errors"
@@ -75,9 +76,11 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeIncreaseGFActive,
 		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", msg.EcosystemId)),
 		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
 		sdk.NewAttribute(types.AttributeKeyVersion, fmt.Sprintf("%d", nextVersion)),
+		sdk.NewAttribute(types.AttributeKeyActiveSince, now.Format(time.RFC3339)),
 	))
 
 	return &types.MsgIncreaseActiveGovernanceFrameworkVersionResponse{}, nil

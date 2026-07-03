@@ -81,6 +81,7 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 		types.EventTypeCreateEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 		sdk.NewAttribute(types.AttributeKeyDID, msg.Did),
 		sdk.NewAttribute(types.AttributeKeyLanguage, msg.Language),
 	))
@@ -149,6 +150,7 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		types.EventTypeUpdateEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 		sdk.NewAttribute(types.AttributeKeyDID, ec.Did),
 	))
 
@@ -201,6 +203,8 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 		types.EventTypeArchiveEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+		sdk.NewAttribute(types.AttributeKeyDID, ec.Did),
 		sdk.NewAttribute(types.AttributeKeyArchiveStatus, status),
 	))
 

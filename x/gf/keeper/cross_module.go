@@ -73,10 +73,13 @@ func (k Keeper) CreateInitialGFVersionForCorporation(
 	if err := k.GFDocument.Set(ctx, gfd.Id, gfd); err != nil {
 		return fmt.Errorf("persist gfd: %w", err)
 	}
+	if err := k.GFDocumentByGFVLang.Set(ctx, collections.Join(gfv.Id, language), gfd.Id); err != nil {
+		return fmt.Errorf("persist gfd index: %w", err)
+	}
 
 	sdkCtx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddGFDocument,
-		sdk.NewAttribute(types.AttributeKeyCorporation, fmt.Sprintf("%d", corpID)),
+		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", corpID)),
 		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
 		sdk.NewAttribute(types.AttributeKeyGFDocID, fmt.Sprintf("%d", gfd.Id)),
 		sdk.NewAttribute(types.AttributeKeyVersion, "1"),
@@ -146,6 +149,9 @@ func (k Keeper) CreateInitialGFVersionForEcosystem(
 	}
 	if err := k.GFDocument.Set(ctx, gfd.Id, gfd); err != nil {
 		return fmt.Errorf("persist gfd: %w", err)
+	}
+	if err := k.GFDocumentByGFVLang.Set(ctx, collections.Join(gfv.Id, language), gfd.Id); err != nil {
+		return fmt.Errorf("persist gfd index: %w", err)
 	}
 
 	sdkCtx.EventManager().EmitEvent(sdk.NewEvent(

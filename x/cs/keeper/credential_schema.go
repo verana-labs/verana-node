@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/verana-labs/verana-node/x/cs/types"
@@ -128,6 +129,15 @@ func (ms msgServer) executeCreateCredentialSchema(ctx sdk.Context, schemaID uint
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, fmt.Sprintf("%d", msg.EcosystemId)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyIssuerGrantorValidationValidityPeriod, fmt.Sprintf("%d", msg.IssuerGrantorValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyVerifierGrantorValidationValidityPeriod, fmt.Sprintf("%d", msg.VerifierGrantorValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyIssuerValidationValidityPeriod, fmt.Sprintf("%d", msg.IssuerValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyVerifierValidationValidityPeriod, fmt.Sprintf("%d", msg.VerifierValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyHolderValidationValidityPeriod, fmt.Sprintf("%d", msg.HolderValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyPricingAssetType, fmt.Sprintf("%d", msg.PricingAssetType)),
+			sdk.NewAttribute(types.AttributeKeyPricingAsset, msg.PricingAsset),
+			sdk.NewAttribute(types.AttributeKeyDigestAlgorithm, msg.DigestAlgorithm),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().Format(time.RFC3339)),
 		),
 	)
 

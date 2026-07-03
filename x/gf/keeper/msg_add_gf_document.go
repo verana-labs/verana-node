@@ -230,11 +230,14 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddGFDocument,
 		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", msg.EcosystemId)),
 		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
 		sdk.NewAttribute(types.AttributeKeyGFDocID, fmt.Sprintf("%d", gfd.Id)),
 		sdk.NewAttribute(types.AttributeKeyVersion, fmt.Sprintf("%d", msg.Version)),
 		sdk.NewAttribute(types.AttributeKeyLanguage, msg.DocLanguage),
+		sdk.NewAttribute(types.AttributeKeyDocURL, msg.DocUrl),
+		sdk.NewAttribute(types.AttributeKeyDocDigestSRI, msg.DocDigestSri),
 	))
 
 	return &types.MsgAddGovernanceFrameworkDocumentResponse{}, nil
