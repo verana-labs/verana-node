@@ -16,9 +16,6 @@ permissions:
   pull-requests: write  # Required by release-please
 
 env:
-  OVH_S3_APPLICATION_KEY: ${{ secrets.OVH_S3_APPLICATION_KEY }}
-  OVH_S3_APPLICATION_SECRET: ${{ secrets.OVH_S3_APPLICATION_SECRET }}
-  BUCKET_NAME: 'utc-public-bucket'
   BINARY_NAME: 'veranad'
   DH_USERNAME: ${{ secrets.DOCKER_HUB_LOGIN }}
   DH_TOKEN: ${{ secrets.DOCKER_HUB_PWD }}
@@ -35,7 +32,7 @@ jobs:
       generate-notes: true
       release-title: Release
 
-  build-binaries-s3:
+  build-binaries:
     runs-on: ubuntu-latest
     needs: [resolve-version]
     if: needs.resolve-version.outputs.new-release-published == 'true'
@@ -113,49 +110,12 @@ jobs:
           md5sum binaries/${{env.BINARY_NAME}}-darwin-arm64 >> binaries/checksums/md5sums.txt
           cat binaries/checksums/md5sums.txt
 
-      - name: Generate COMMIT info
-        run: |
-          mkdir -p binaries/checksums
-          echo VERSION=$VERSION >> binaries/checksums/commit.sha1
-          echo COMMIT=$(git rev-parse --long HEAD) >> binaries/checksums/commit.sha1
-          cat binaries/checksums/commit.sha1
-
       - name: Upload linux-amd64 binary artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: veranad-linux-amd64
           path: binaries/${{env.BINARY_NAME}}-linux-amd64
           if-no-files-found: error
-
-      - name: Install s3cmd
-        run: sudo apt-get install s3cmd
-
-      - name: Configure s3cmd
-        run: s3cmd --access_key=$OVH_S3_APPLICATION_KEY --secret_key=$OVH_S3_APPLICATION_SECRET --region=bhs --host=s3.bhs.io.cloud.ovh.net --host-bucket=HOST_BUCKET --ssl --no-encrypt --dump-config 2>&1 | tee /home/runner/.s3cfg
-
-      - name: Upload binaries to OVH
-        run: |
-          s3cmd put binaries/${{env.BINARY_NAME}}-linux-amd64 s3://$BUCKET_NAME/binaries/${{ env.VERSION }}/${{env.BINARY_NAME}}-${{ env.COMMIT }}-linux-amd64 --acl-public
-          s3cmd put binaries/${{env.BINARY_NAME}}-linux-arm64 s3://$BUCKET_NAME/binaries/${{ env.VERSION }}/${{env.BINARY_NAME}}-${{ env.COMMIT }}-linux-arm64 --acl-public
-          s3cmd put binaries/${{env.BINARY_NAME}}-darwin-amd64 s3://$BUCKET_NAME/binaries/${{ env.VERSION }}/${{env.BINARY_NAME}}-${{ env.COMMIT }}-darwin-amd64 --acl-public
-          s3cmd put binaries/${{env.BINARY_NAME}}-darwin-arm64 s3://$BUCKET_NAME/binaries/${{ env.VERSION }}/${{env.BINARY_NAME}}-${{ env.COMMIT }}-darwin-arm64 --acl-public
-          s3cmd put binaries/checksums/commit.sha1 s3://$BUCKET_NAME/binaries/${{ env.VERSION }}/${{ env.COMMIT }}.sha1 --acl-public
-          s3cmd put binaries/checksums/md5sums.txt s3://$BUCKET_NAME/binaries/${{ env.VERSION }}/md5sums.txt --acl-public
-
-      - name: Update manifest.json
-        run: |
-          # Create or update manifest.json
-          cat > manifest.json <<EOL
-          {
-            "linux-amd64": "${{env.BINARY_NAME}}-${{ env.VERSION }}-${{ env.COMMIT }}-linux-amd64",
-            "linux-arm64": "${{env.BINARY_NAME}}-${{ env.VERSION }}-${{ env.COMMIT }}-linux-arm64",
-            "darwin-amd64": "${{env.BINARY_NAME}}-${{ env.VERSION }}-${{ env.COMMIT }}-darwin-amd64",
-            "darwin-arm64": "${{env.BINARY_NAME}}-${{ env.VERSION }}-${{ env.COMMIT }}-darwin-arm64"
-          }
-          EOL
-
-          # Upload manifest.json to S3
-          s3cmd put manifest.json s3://$BUCKET_NAME/binaries/manifest.json --acl-public --force
 
       - name: Verify release assets exist
         run: |
@@ -287,7 +247,6 @@ jobs:
 
       - name: Publish ts-proto package
         working-directory: ts-proto
-        continue-on-error: true
         run: |
           if [ "$RELEASE_TYPE" = "stable" ]; then
             npm publish --provenance
@@ -315,8 +274,8 @@ jobs:
 
   build-canonical-image:
     runs-on: ubuntu-latest
-    needs: build-binaries-s3
-    if: needs.build-binaries-s3.result == 'success'
+    needs: build-binaries
+    if: needs.build-binaries.result == 'success'
     permissions:
       contents: read
     steps:
@@ -347,13 +306,13 @@ jobs:
           file: docker/veranad.Dockerfile
           push: true
           tags: |
-            ${{ env.CANONICAL_IMAGE_NAME }}:${{ needs.build-binaries-s3.outputs.version }}
+            ${{ env.CANONICAL_IMAGE_NAME }}:${{ needs.build-binaries.outputs.version }}
           build-args: |
             USE_PREBUILT=true
             PREBUILT_BINARY=binaries/veranad-linux-amd64
 
   discord-notify:
-    needs: [resolve-version, build-binaries-s3, publish-ts-proto, build-canonical-image]
+    needs: [resolve-version, build-binaries, publish-ts-proto, build-canonical-image]
     if: needs.resolve-version.outputs.new-release-published == 'true' && needs.resolve-version.outputs.release-type == 'stable'
     permissions:
       contents: read
