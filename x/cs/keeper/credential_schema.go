@@ -84,13 +84,15 @@ func validateValidityPeriodsWithParams(msg *types.MsgCreateCredentialSchema, par
 }
 
 func (ms msgServer) executeCreateCredentialSchema(ctx sdk.Context, schemaID uint64, msg *types.MsgCreateCredentialSchema) error {
-	// Inject canonical $id into the JSON schema, preserving the submitter's
-	// property order. The spec defines NO sorted/JCS canonicalization for
-	// json_schema; alphabetizing keys (json.Unmarshal->map->json.Marshal) breaks
-	// the indexer, which relies on the documented field order.
+	// [MOD-CS-MSG-1-3] Inject the canonical $id, then JCS-canonicalize before
+	// storing: the spec requires the schema be saved canonized.
 	processedJsonSchema, err := types.InjectCanonicalID(msg.JsonSchema, ctx.ChainID(), schemaID)
 	if err != nil {
 		return fmt.Errorf("failed to process JSON schema: %w", err)
+	}
+	processedJsonSchema, err = types.CanonicalizeJCS(processedJsonSchema)
+	if err != nil {
+		return fmt.Errorf("failed to canonicalize JSON schema: %w", err)
 	}
 
 	// [MOD-CS-MSG-1-3] Create the credential schema

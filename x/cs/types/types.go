@@ -8,6 +8,7 @@ import (
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/gowebpki/jcs"
 )
 
 // JsonSchemaMetaSchema Official meta-schema for Draft 2020-12
@@ -563,11 +564,7 @@ func trimLeadingWhitespace(s string) string {
 // as defined in RFC 8785: keys sorted alphabetically, no insignificant whitespace.
 // json.Marshal on interface{} sorts map keys in Unicode code point order, satisfying JCS.
 func CanonicalizeJCS(schemaJSON string) (string, error) {
-	var doc interface{}
-	if err := json.Unmarshal([]byte(schemaJSON), &doc); err != nil {
-		return "", fmt.Errorf("failed to parse JSON for JCS canonicalization: %w", err)
-	}
-	canonical, err := json.Marshal(doc)
+	canonical, err := jcs.Transform([]byte(schemaJSON))
 	if err != nil {
 		return "", fmt.Errorf("failed to JCS-canonicalize JSON: %w", err)
 	}
