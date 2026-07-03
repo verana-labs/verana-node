@@ -39,13 +39,15 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
+	// AUTHZ-CHECK-5 before AUTHZ-CHECK-1 so an unregistered corporation yields
+	// the specific ErrCorporationNotRegistered, not a masked authz error.
 	co, ok := ms.coKeeper.ResolveByPolicyAddress(ctx, msg.Corporation)
 	if !ok {
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
+	}
+
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
 	if err := ms.assertDIDConsistent(ctx, msg.Did, co.Id, 0); err != nil {
@@ -65,6 +67,11 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 		Archived:      false,
 		Language:      msg.Language,
 		ActiveVersion: 1,
+	}
+	if has, err := ms.Ecosystem.Has(ctx, ec.Id); err != nil {
+		return nil, fmt.Errorf("check ecosystem id %d: %w", ec.Id, err)
+	} else if has {
+		return nil, fmt.Errorf("ecosystem id %d already exists (counter desync)", ec.Id)
 	}
 	if err := ms.Ecosystem.Set(ctx, ec.Id, ec); err != nil {
 		return nil, fmt.Errorf("persist ecosystem: %w", err)
@@ -104,13 +111,15 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
+	// AUTHZ-CHECK-5 before AUTHZ-CHECK-1 so an unregistered corporation yields
+	// the specific ErrCorporationNotRegistered, not a masked authz error.
 	co, ok := ms.coKeeper.ResolveByPolicyAddress(ctx, msg.Corporation)
 	if !ok {
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
+	}
+
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
 	ec, err := ms.Ecosystem.Get(ctx, msg.Id)
@@ -165,13 +174,15 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
+	// AUTHZ-CHECK-5 before AUTHZ-CHECK-1 so an unregistered corporation yields
+	// the specific ErrCorporationNotRegistered, not a masked authz error.
 	co, ok := ms.coKeeper.ResolveByPolicyAddress(ctx, msg.Corporation)
 	if !ok {
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
+	}
+
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
 	ec, err := ms.Ecosystem.Get(ctx, msg.Id)
