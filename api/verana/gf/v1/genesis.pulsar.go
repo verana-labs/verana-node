@@ -117,10 +117,12 @@ func (x *_GenesisState_3_list) IsValid() bool {
 }
 
 var (
-	md_GenesisState           protoreflect.MessageDescriptor
-	fd_GenesisState_params    protoreflect.FieldDescriptor
-	fd_GenesisState_versions  protoreflect.FieldDescriptor
-	fd_GenesisState_documents protoreflect.FieldDescriptor
+	md_GenesisState             protoreflect.MessageDescriptor
+	fd_GenesisState_params      protoreflect.FieldDescriptor
+	fd_GenesisState_versions    protoreflect.FieldDescriptor
+	fd_GenesisState_documents   protoreflect.FieldDescriptor
+	fd_GenesisState_gfv_counter protoreflect.FieldDescriptor
+	fd_GenesisState_gfd_counter protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -129,6 +131,8 @@ func init() {
 	fd_GenesisState_params = md_GenesisState.Fields().ByName("params")
 	fd_GenesisState_versions = md_GenesisState.Fields().ByName("versions")
 	fd_GenesisState_documents = md_GenesisState.Fields().ByName("documents")
+	fd_GenesisState_gfv_counter = md_GenesisState.Fields().ByName("gfv_counter")
+	fd_GenesisState_gfd_counter = md_GenesisState.Fields().ByName("gfd_counter")
 }
 
 var _ protoreflect.Message = (*fastReflection_GenesisState)(nil)
@@ -214,6 +218,18 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
+	if x.GfvCounter != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GfvCounter)
+		if !f(fd_GenesisState_gfv_counter, value) {
+			return
+		}
+	}
+	if x.GfdCounter != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GfdCounter)
+		if !f(fd_GenesisState_gfd_counter, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -235,6 +251,10 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return len(x.Versions) != 0
 	case "verana.gf.v1.GenesisState.documents":
 		return len(x.Documents) != 0
+	case "verana.gf.v1.GenesisState.gfv_counter":
+		return x.GfvCounter != uint64(0)
+	case "verana.gf.v1.GenesisState.gfd_counter":
+		return x.GfdCounter != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.GenesisState"))
@@ -257,6 +277,10 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.Versions = nil
 	case "verana.gf.v1.GenesisState.documents":
 		x.Documents = nil
+	case "verana.gf.v1.GenesisState.gfv_counter":
+		x.GfvCounter = uint64(0)
+	case "verana.gf.v1.GenesisState.gfd_counter":
+		x.GfdCounter = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.GenesisState"))
@@ -288,6 +312,12 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_3_list{list: &x.Documents}
 		return protoreflect.ValueOfList(listValue)
+	case "verana.gf.v1.GenesisState.gfv_counter":
+		value := x.GfvCounter
+		return protoreflect.ValueOfUint64(value)
+	case "verana.gf.v1.GenesisState.gfd_counter":
+		value := x.GfdCounter
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.GenesisState"))
@@ -318,6 +348,10 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_3_list)
 		x.Documents = *clv.list
+	case "verana.gf.v1.GenesisState.gfv_counter":
+		x.GfvCounter = value.Uint()
+	case "verana.gf.v1.GenesisState.gfd_counter":
+		x.GfdCounter = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.GenesisState"))
@@ -355,6 +389,10 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_3_list{list: &x.Documents}
 		return protoreflect.ValueOfList(value)
+	case "verana.gf.v1.GenesisState.gfv_counter":
+		panic(fmt.Errorf("field gfv_counter of message verana.gf.v1.GenesisState is not mutable"))
+	case "verana.gf.v1.GenesisState.gfd_counter":
+		panic(fmt.Errorf("field gfd_counter of message verana.gf.v1.GenesisState is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.GenesisState"))
@@ -377,6 +415,10 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "verana.gf.v1.GenesisState.documents":
 		list := []*GovernanceFrameworkDocument{}
 		return protoreflect.ValueOfList(&_GenesisState_3_list{list: &list})
+	case "verana.gf.v1.GenesisState.gfv_counter":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "verana.gf.v1.GenesisState.gfd_counter":
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.GenesisState"))
@@ -462,6 +504,12 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if x.GfvCounter != 0 {
+			n += 1 + runtime.Sov(uint64(x.GfvCounter))
+		}
+		if x.GfdCounter != 0 {
+			n += 1 + runtime.Sov(uint64(x.GfdCounter))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -490,6 +538,16 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.GfdCounter != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GfdCounter))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.GfvCounter != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GfvCounter))
+			i--
+			dAtA[i] = 0x20
 		}
 		if len(x.Documents) > 0 {
 			for iNdEx := len(x.Documents) - 1; iNdEx >= 0; iNdEx-- {
@@ -690,6 +748,44 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GfvCounter", wireType)
+				}
+				x.GfvCounter = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GfvCounter |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GfdCounter", wireType)
+				}
+				x.GfdCounter = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GfdCounter |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -744,9 +840,11 @@ type GenesisState struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Params    *Params                        `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
-	Versions  []*GovernanceFrameworkVersion  `protobuf:"bytes,2,rep,name=versions,proto3" json:"versions,omitempty"`
-	Documents []*GovernanceFrameworkDocument `protobuf:"bytes,3,rep,name=documents,proto3" json:"documents,omitempty"`
+	Params     *Params                        `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
+	Versions   []*GovernanceFrameworkVersion  `protobuf:"bytes,2,rep,name=versions,proto3" json:"versions,omitempty"`
+	Documents  []*GovernanceFrameworkDocument `protobuf:"bytes,3,rep,name=documents,proto3" json:"documents,omitempty"`
+	GfvCounter uint64                         `protobuf:"varint,4,opt,name=gfv_counter,json=gfvCounter,proto3" json:"gfv_counter,omitempty"`
+	GfdCounter uint64                         `protobuf:"varint,5,opt,name=gfd_counter,json=gfdCounter,proto3" json:"gfd_counter,omitempty"`
 }
 
 func (x *GenesisState) Reset() {
@@ -790,6 +888,20 @@ func (x *GenesisState) GetDocuments() []*GovernanceFrameworkDocument {
 	return nil
 }
 
+func (x *GenesisState) GetGfvCounter() uint64 {
+	if x != nil {
+		return x.GfvCounter
+	}
+	return 0
+}
+
+func (x *GenesisState) GetGfdCounter() uint64 {
+	if x != nil {
+		return x.GfdCounter
+	}
+	return 0
+}
+
 var File_verana_gf_v1_genesis_proto protoreflect.FileDescriptor
 
 var file_verana_gf_v1_genesis_proto_rawDesc = []byte{
@@ -801,7 +913,7 @@ var file_verana_gf_v1_genesis_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76,
 	0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18,
 	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xec, 0x01, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
+	0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xae, 0x02, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
 	0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x61, 0x72,
 	0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x76, 0x65, 0x72, 0x61,
 	0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42,
@@ -816,18 +928,22 @@ var file_verana_gf_v1_genesis_proto_rawDesc = []byte{
 	0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65,
 	0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x44, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e,
 	0x74, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x09, 0x64, 0x6f,
-	0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x42, 0xac, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x42, 0x0c, 0x47, 0x65,
-	0x6e, 0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d,
-	0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76,
-	0x31, 0x3b, 0x67, 0x66, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x47, 0x58, 0xaa, 0x02, 0x0c, 0x56,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x47, 0x66, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x5c, 0x47, 0x66, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72,
-	0x61, 0x6e, 0x61, 0x5c, 0x47, 0x66, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a,
-	0x47, 0x66, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x67, 0x66, 0x76, 0x5f, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x67, 0x66,
+	0x76, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x67, 0x66, 0x64, 0x5f,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x67,
+	0x66, 0x64, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0xac, 0x01, 0x0a, 0x10, 0x63, 0x6f,
+	0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x42, 0x0c,
+	0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38,
+	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f,
+	0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66,
+	0x2f, 0x76, 0x31, 0x3b, 0x67, 0x66, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x47, 0x58, 0xaa, 0x02,
+	0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x47, 0x66, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c,
+	0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x47, 0x66, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x47, 0x66, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x3a, 0x3a, 0x47, 0x66, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

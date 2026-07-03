@@ -13,4 +13,6 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
   repeated GovernanceFrameworkVersion versions = 2 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
   repeated GovernanceFrameworkDocument documents = 3 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  uint64 gfv_counter = 4;
+  uint64 gfd_counter = 5;
 }

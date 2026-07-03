@@ -1,6 +1,7 @@
 package ecosystem
 
 import (
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/collections"
@@ -47,6 +48,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	if v, err := k.Counter.Get(ctx, "ec"); err == nil {
 		gs.Counters = append(gs.Counters, types.Counter{EntityType: "ec", Value: v})
+	} else if !errors.Is(err, collections.ErrNotFound) {
+		panic(fmt.Sprintf("get ec counter: %s", err))
 	}
 
 	return gs

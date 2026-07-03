@@ -35,6 +35,7 @@ func TestGenesis_Validate(t *testing.T) {
 			validCorp(1, "cosmos1aaa", "did:example:1"),
 			validCorp(2, "cosmos1bbb", "did:example:2"),
 		},
+		CorporationCounter: 2,
 	}
 	require.NoError(t, good.Validate())
 

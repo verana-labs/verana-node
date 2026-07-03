@@ -23,6 +23,7 @@ func (gs GenesisState) Validate() error {
 	ids := map[uint64]struct{}{}
 	addrs := map[string]struct{}{}
 	dids := map[string]struct{}{}
+	var maxID uint64
 	for _, co := range gs.Corporations {
 		if co.Id == 0 {
 			return ErrCorporationNotFound.Wrap("corporation id must be > 0")
@@ -64,6 +65,12 @@ func (gs GenesisState) Validate() error {
 		if co.ActiveVersion == 0 {
 			return ErrInvalidActiveVersion.Wrapf("corporation %d: active_version must be >= 1", co.Id)
 		}
+		if co.Id > maxID {
+			maxID = co.Id
+		}
+	}
+	if gs.CorporationCounter < maxID {
+		return ErrInvalidTimestamp.Wrapf("corporation_counter %d is less than the highest corporation id %d", gs.CorporationCounter, maxID)
 	}
 	return nil
 }

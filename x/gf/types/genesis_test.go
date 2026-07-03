@@ -77,9 +77,11 @@ func TestGenesisValidate(t *testing.T) {
 				{Id: 2, CorporationId: 9, Version: 1},
 			},
 			Documents: []types.GovernanceFrameworkDocument{
-				{Id: 1, GfvId: 1, Language: "en"},
-				{Id: 2, GfvId: 2, Language: "fr"},
+				{Id: 1, GfvId: 1, Language: "en", Url: "https://example.com/1", DigestSri: "sha256-abc123"},
+				{Id: 2, GfvId: 2, Language: "fr", Url: "https://example.com/2", DigestSri: "sha256-def456"},
 			},
+			GfvCounter: 2,
+			GfdCounter: 2,
 		}
 		require.NoError(t, gs.Validate())
 	})
