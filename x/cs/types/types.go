@@ -724,13 +724,20 @@ func (m *MsgCreateSchemaAuthorizationPolicy) ValidateBasic() error {
 	if m.Url == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url is required")
 	}
-	if !isValidHTTPURL(m.Url) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url must be a valid http(s) URI")
+	if !isValidURI(m.Url) {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url must be a valid URI")
 	}
 	if m.DigestSri == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "digest_sri is required")
 	}
 	return nil
+}
+
+// isValidURI accepts any absolute URI (MOD-CS-MSG-5: "non-empty valid URI"),
+// not only http(s).
+func isValidURI(s string) bool {
+	u, err := url.ParseRequestURI(s)
+	return err == nil && u.Scheme != ""
 }
 
 func isValidHTTPURL(s string) bool {
