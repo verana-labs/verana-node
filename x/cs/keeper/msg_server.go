@@ -84,11 +84,6 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 		return nil, fmt.Errorf("credential schema not found: %w", err)
 	}
 
-	// [MOD-CS-MSG-2-2-1] Archived schemas cannot be updated
-	if cs.Archived != nil {
-		return nil, fmt.Errorf("cannot update an archived credential schema")
-	}
-
 	// [MOD-CS-MSG-2-2-1] Check ecosystem authority
 	if err := ms.checkSchemaOwnership(ctx, cs, msg.Corporation); err != nil {
 		return nil, err

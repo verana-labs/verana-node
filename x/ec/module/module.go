@@ -23,7 +23,6 @@ import (
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	"github.com/verana-labs/verana-node/x/ec/types"
 	gfkeeper "github.com/verana-labs/verana-node/x/gf/keeper"
-	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 var (
@@ -192,11 +191,4 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 
 	m := NewAppModule(in.Cdc, k, in.AccountKeeper, in.BankKeeper)
 	return ModuleOutputs{EcosystemKeeper: k, Module: m}
-}
-
-// ProvideEcosystemKeeperForGF supplies the gftypes.EcosystemKeeper that MOD-GF
-// depends on, backed by the real x/ec keeper. Replaces the interim
-// gfkeeper.NewTRAsEcosystemKeeper adapter that returned CorporationID=0.
-func ProvideEcosystemKeeperForGF(k keeper.Keeper) gftypes.EcosystemKeeper {
-	return keeper.NewEcAsGFEcosystemKeeper(k)
 }

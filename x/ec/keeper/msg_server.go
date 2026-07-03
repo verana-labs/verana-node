@@ -69,8 +69,8 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 	if err := ms.Ecosystem.Set(ctx, ec.Id, ec); err != nil {
 		return nil, fmt.Errorf("persist ecosystem: %w", err)
 	}
-	if err := ms.EcosystemByDIDCorp.Set(ctx, collections.Join(msg.Did, co.Id), ec.Id); err != nil {
-		return nil, fmt.Errorf("persist (did,corp) index: %w", err)
+	if err := ms.EcosystemByDIDCorp.Set(ctx, collections.Join(msg.Did, ec.Id), co.Id); err != nil {
+		return nil, fmt.Errorf("persist (did,id) index: %w", err)
 	}
 
 	if err := ms.gfKeeper.CreateInitialGFVersionForEcosystem(ctx, ec.Id, msg.Language, msg.DocUrl, msg.DocDigestSri); err != nil {
@@ -131,11 +131,12 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		return nil, err
 	}
 
-	if err := ms.EcosystemByDIDCorp.Remove(ctx, collections.Join(ec.Did, co.Id)); err != nil {
-		return nil, fmt.Errorf("remove old (did,corp) index: %w", err)
+	// Keyed by ec.Id so a sibling still holding ec.Did keeps its own row.
+	if err := ms.EcosystemByDIDCorp.Remove(ctx, collections.Join(ec.Did, ec.Id)); err != nil {
+		return nil, fmt.Errorf("remove old (did,id) index: %w", err)
 	}
-	if err := ms.EcosystemByDIDCorp.Set(ctx, collections.Join(msg.Did, co.Id), ec.Id); err != nil {
-		return nil, fmt.Errorf("set new (did,corp) index: %w", err)
+	if err := ms.EcosystemByDIDCorp.Set(ctx, collections.Join(msg.Did, ec.Id), co.Id); err != nil {
+		return nil, fmt.Errorf("set new (did,id) index: %w", err)
 	}
 
 	ec.Did = msg.Did
@@ -206,17 +207,13 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 	return &types.MsgArchiveEcosystemResponse{}, nil
 }
 
-// assertDIDConsistent enforces the per-Ecosystem (did, corporation_id)
-// consistency invariant by iterating the (did, *) prefix in
-// EcosystemByDIDCorp. selfID, if non-zero, is the id of the row being
-// updated and is excluded from the check (so a no-op rotation to a did the
-// caller already owns does not trip the invariant). On any conflicting
-// owner found, returns ErrDIDOwnershipConflict.
+// assertDIDConsistent rejects a did already controlled by a different
+// corporation. selfID, if non-zero, excludes the ecosystem being updated.
 func (k Keeper) assertDIDConsistent(ctx context.Context, did string, ownerCorpID uint64, selfID uint64) error {
 	rng := collections.NewPrefixedPairRange[string, uint64](did)
 	iter, err := k.EcosystemByDIDCorp.Iterate(ctx, rng)
 	if err != nil {
-		return fmt.Errorf("iterate (did,corp) index: %w", err)
+		return fmt.Errorf("iterate (did,id) index: %w", err)
 	}
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
@@ -224,15 +221,15 @@ func (k Keeper) assertDIDConsistent(ctx context.Context, did string, ownerCorpID
 		if err != nil {
 			return fmt.Errorf("iter key: %w", err)
 		}
-		ecID, err := iter.Value()
+		corpID, err := iter.Value()
 		if err != nil {
 			return fmt.Errorf("iter value: %w", err)
 		}
-		if selfID != 0 && ecID == selfID {
+		if selfID != 0 && key.K2() == selfID {
 			continue
 		}
-		if key.K2() != ownerCorpID {
-			return errors.Wrapf(types.ErrDIDOwnershipConflict, "did %q controlled by corporation %d", did, key.K2())
+		if corpID != ownerCorpID {
+			return errors.Wrapf(types.ErrDIDOwnershipConflict, "did %q controlled by corporation %d", did, corpID)
 		}
 	}
 	return nil

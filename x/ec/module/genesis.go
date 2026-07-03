@@ -20,8 +20,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, gs types.GenesisState) {
 		if err := k.Ecosystem.Set(ctx, ec.Id, ec); err != nil {
 			panic(fmt.Sprintf("set ecosystem %d: %s", ec.Id, err))
 		}
-		if err := k.EcosystemByDIDCorp.Set(ctx, collections.Join(ec.Did, ec.CorporationId), ec.Id); err != nil {
-			panic(fmt.Sprintf("set (did,corp) index for ecosystem %d: %s", ec.Id, err))
+		if err := k.EcosystemByDIDCorp.Set(ctx, collections.Join(ec.Did, ec.Id), ec.CorporationId); err != nil {
+			panic(fmt.Sprintf("set (did,id) index for ecosystem %d: %s", ec.Id, err))
 		}
 	}
 	for _, c := range gs.Counters {

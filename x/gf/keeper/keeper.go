@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/collections"
@@ -120,6 +121,9 @@ func (k Keeper) Logger() log.Logger {
 func (k Keeper) GetNextID(ctx sdk.Context, entityType string) (uint64, error) {
 	current, err := k.Counter.Get(ctx, entityType)
 	if err != nil {
+		if !errors.Is(err, collections.ErrNotFound) {
+			return 0, fmt.Errorf("failed to read counter: %w", err)
+		}
 		current = 0
 	}
 	next := current + 1

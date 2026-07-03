@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	tCorp   = "cosmos1corp00000000000000000000000000000abc"
-	tOp     = "cosmos1op0000000000000000000000000000000abc"
-	tAuth   = "cosmos1auth0000000000000000000000000000abc"
+	tCorp   = "cosmos14wcc52lpsxwuxxhqjxrhvuumhm0xr6z247un93"
+	tOp     = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn"
+	tAuth   = "cosmos1lyfknrsmxhlr7rflvuz6x7jjjpnx4s5uywj78f"
 	tURL    = "https://example.com/gf.html"
 	tDigest = "sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26"
 )

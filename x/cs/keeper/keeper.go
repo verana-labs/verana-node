@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/collections"
@@ -130,6 +131,9 @@ func (k Keeper) IterateCredentialSchemas(ctx sdk.Context, fn func(schema types.C
 func (k Keeper) GetNextID(ctx sdk.Context, entityType string) (uint64, error) {
 	currentID, err := k.Counter.Get(ctx, entityType)
 	if err != nil {
+		if !errors.Is(err, collections.ErrNotFound) {
+			return 0, fmt.Errorf("failed to read counter: %w", err)
+		}
 		currentID = 0
 	}
 

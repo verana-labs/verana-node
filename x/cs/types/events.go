@@ -6,6 +6,7 @@ const (
 	EventTypeCreateCredentialSchema  = "create_credential_schema"
 	EventTypeUpdateCredentialSchema  = "update_credential_schema"
 	EventTypeArchiveCredentialSchema = "archive_credential_schema"
+	EventTypeUpdateParams            = "update_params"
 
 	// Attribute keys
 	AttributeKeyId                                      = "credential_schema_id"
@@ -22,4 +23,5 @@ const (
 	AttributeKeyPricingAssetType                        = "pricing_asset_type"
 	AttributeKeyPricingAsset                            = "pricing_asset"
 	AttributeKeyDigestAlgorithm                         = "digest_algorithm"
+	AttributeKeyAuthority                               = "authority"
 )

@@ -13,6 +13,6 @@ const (
 var (
 	ParamsKey             = collections.NewPrefix(1)
 	EcosystemKey          = collections.NewPrefix(2) // id → Ecosystem
-	EcosystemByDIDCorpKey = collections.NewPrefix(3) // (did, corporation_id) → id (per-Ecosystem consistency-invariant index)
+	EcosystemByDIDCorpKey = collections.NewPrefix(3) // (did, ecosystem_id) → corporation_id (per-Ecosystem consistency-invariant index)
 	CounterKey            = collections.NewPrefix(4)
 )

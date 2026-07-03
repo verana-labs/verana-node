@@ -91,6 +91,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params:            types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{validSchema},
+				SchemaCounter:     1,
 			},
 			valid: true,
 		},

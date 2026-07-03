@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	testCorp     = "cosmos1corp00000000000000000000000000000abc"
-	testOperator = "cosmos1op0000000000000000000000000000000abc"
+	testCorp     = "cosmos14wcc52lpsxwuxxhqjxrhvuumhm0xr6z247un93"
+	testOperator = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn"
 	testDigest   = "sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26"
 	testURL      = "https://example.com/gf-v1.html"
 )

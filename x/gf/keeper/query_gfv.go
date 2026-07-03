@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"sort"
+	"strings"
 
 	"cosmossdk.io/collections"
 	"google.golang.org/grpc/codes"
@@ -133,15 +134,19 @@ func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *typ
 
 func (q querier) collectDocs(ctx context.Context, gfvID uint64, preferredLang string) ([]types.GovernanceFrameworkDocument, error) {
 	var out []types.GovernanceFrameworkDocument
-	var preferred *types.GovernanceFrameworkDocument
+	var preferred, lowest *types.GovernanceFrameworkDocument
 	if err := q.GFDocument.Walk(ctx, nil, func(_ uint64, d types.GovernanceFrameworkDocument) (bool, error) {
 		if d.GfvId != gfvID {
 			return false, nil
 		}
 		if preferredLang != "" {
-			if d.Language == preferredLang && preferred == nil {
+			if preferred == nil && strings.EqualFold(d.Language, preferredLang) {
 				cp := d
 				preferred = &cp
+			}
+			if lowest == nil || d.Id < lowest.Id {
+				cp := d
+				lowest = &cp
 			}
 			return false, nil
 		}
@@ -150,18 +155,17 @@ func (q querier) collectDocs(ctx context.Context, gfvID uint64, preferredLang st
 	}); err != nil {
 		return nil, err
 	}
+	// Spec MOD-GF-QRY: exactly one document per version when a preferred language
+	// is set — the match if present, else the lowest-id document.
 	if preferredLang != "" {
-		if preferred != nil {
+		switch {
+		case preferred != nil:
 			return []types.GovernanceFrameworkDocument{*preferred}, nil
+		case lowest != nil:
+			return []types.GovernanceFrameworkDocument{*lowest}, nil
+		default:
+			return nil, nil
 		}
-		// Fall back to all docs if preferred language not present (spec QRY-1-3 says "preferring").
-		_ = q.GFDocument.Walk(ctx, nil, func(_ uint64, d types.GovernanceFrameworkDocument) (bool, error) {
-			if d.GfvId == gfvID {
-				out = append(out, d)
-			}
-			return false, nil
-		})
-		return out, nil
 	}
 	return out, nil
 }

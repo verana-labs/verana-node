@@ -2,12 +2,19 @@ package types
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/verana-labs/verana-node/util/validation"
 )
+
+// allowedDecisionPolicyTypes are the x/group decision policies MOD-CO-MSG-1 permits.
+var allowedDecisionPolicyTypes = map[string]struct{}{
+	"/cosmos.group.v1.ThresholdDecisionPolicy":  {},
+	"/cosmos.group.v1.PercentageDecisionPolicy": {},
+}
 
 // UnpackInterfaces implements UnpackInterfacesMessage so the codec resolves
 // `decision_policy` (a google.protobuf.Any wrapping a group.DecisionPolicy)
@@ -53,9 +60,15 @@ func (m *MsgCreateCorporation) ValidateBasic() error {
 		if mem.Weight == "" {
 			return errors.Wrapf(ErrInvalidMembers, "members[%d].weight is required", i)
 		}
+		if w, err := math.LegacyNewDecFromStr(mem.Weight); err != nil || !w.IsPositive() {
+			return errors.Wrapf(ErrInvalidMembers, "members[%d].weight must be a positive decimal", i)
+		}
 	}
 	if m.DecisionPolicy == nil {
 		return errors.Wrap(ErrInvalidDecisionPolicy, "decision_policy is required")
+	}
+	if _, ok := allowedDecisionPolicyTypes[m.DecisionPolicy.TypeUrl]; !ok {
+		return errors.Wrapf(ErrInvalidDecisionPolicy, "unsupported decision_policy type %q", m.DecisionPolicy.TypeUrl)
 	}
 	if m.Did == "" {
 		return errors.Wrap(ErrInvalidDID, "did is required")

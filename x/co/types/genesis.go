@@ -61,6 +61,9 @@ func (gs GenesisState) Validate() error {
 		if co.Modified.Before(co.Created) {
 			return ErrInvalidTimestamp.Wrapf("corporation %d: modified (%s) is before created (%s)", co.Id, co.Modified, co.Created)
 		}
+		if co.ActiveVersion == 0 {
+			return ErrInvalidActiveVersion.Wrapf("corporation %d: active_version must be >= 1", co.Id)
+		}
 	}
 	return nil
 }

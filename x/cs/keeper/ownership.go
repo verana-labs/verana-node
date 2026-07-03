@@ -27,7 +27,7 @@ func (k Keeper) checkSchemaOwnership(ctx sdk.Context, cs types.CredentialSchema,
 			"signing account %s has not been registered as the policy_address of a Corporation (see MOD-CO-MSG-1)", signingCorp)
 	}
 	if ec.CorporationId != co.Id {
-		return fmt.Errorf("corporation %d does not control the ecosystem (%d) that owns this credential schema", co.Id, ec.CorporationId)
+		return fmt.Errorf("corporation %d does not control the ecosystem (%d) that owns this credential schema", co.Id, cs.EcosystemId)
 	}
 	return nil
 }
@@ -47,7 +47,7 @@ func (k Keeper) checkCreateSchemaOwnership(ctx sdk.Context, ecosystemID uint64, 
 			"signing account %s has not been registered as the policy_address of a Corporation (see MOD-CO-MSG-1)", signingCorp)
 	}
 	if ec.CorporationId != co.Id {
-		return fmt.Errorf("corporation %d does not control ecosystem %d", co.Id, ec.CorporationId)
+		return fmt.Errorf("corporation %d does not control ecosystem %d", co.Id, ecosystemID)
 	}
 	return nil
 }

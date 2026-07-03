@@ -66,11 +66,9 @@ func (k Keeper) ListCredentialSchemas(goCtx context.Context, req *types.QueryLis
 		// Ensure canonical $id is present in the JSON schema
 		schemaWithCanonicalID, err := types.EnsureCanonicalID(schema.JsonSchema, ctx.ChainID(), schema.Id)
 		if err != nil {
-			// Log error but don't fail the entire query
-			k.Logger().Error("failed to ensure canonical ID", "schema_id", schema.Id, "error", err)
-		} else {
-			schema.JsonSchema = schemaWithCanonicalID
+			return true, status.Error(codes.Internal, fmt.Sprintf("failed to ensure canonical ID: %v", err))
 		}
+		schema.JsonSchema = schemaWithCanonicalID
 
 		schemas = append(schemas, schema)
 		return false, nil
@@ -80,8 +78,11 @@ func (k Keeper) ListCredentialSchemas(goCtx context.Context, req *types.QueryLis
 		return nil, err
 	}
 
-	// Sort by modified timestamp descending (spec: results MUST be ordered by modified DESC)
-	sort.Slice(schemas, func(i, j int) bool {
+	// Sort by modified DESC, id ASC on ties (spec: ordered by modified DESC; stable for same-block ties).
+	sort.SliceStable(schemas, func(i, j int) bool {
+		if schemas[i].Modified.Equal(schemas[j].Modified) {
+			return schemas[i].Id < schemas[j].Id
+		}
 		return schemas[i].Modified.After(schemas[j].Modified)
 	})
 
