@@ -49,7 +49,7 @@ func (k Keeper) CreateInitialGFVersionForCorporation(
 		CorporationId: corpID,
 		Created:       now,
 		Version:       1,
-		ActiveSince:   now, // MOD-CO MSG-1 seed: v1 is born active per spec.
+		ActiveSince:   &now, // MOD-CO MSG-1 seed: v1 is born active per spec.
 	}
 	if err := k.GFVersion.Set(ctx, gfv.Id, gfv); err != nil {
 		return fmt.Errorf("persist gfv: %w", err)
@@ -126,7 +126,7 @@ func (k Keeper) CreateInitialGFVersionForEcosystem(
 		EcosystemId: ecID,
 		Created:     now,
 		Version:     1,
-		ActiveSince: now, // MOD-ES MSG-1 seed: v1 is born active per spec.
+		ActiveSince: &now, // MOD-ES MSG-1 seed: v1 is born active per spec.
 	}
 	if err := k.GFVersion.Set(ctx, gfv.Id, gfv); err != nil {
 		return fmt.Errorf("persist gfv: %w", err)

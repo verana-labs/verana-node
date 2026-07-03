@@ -57,7 +57,7 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 
 	// Execute MOD-GF-MSG-2-3.
 	now := ctx.BlockTime()
-	gfv.ActiveSince = now
+	gfv.ActiveSince = &now
 	if err := ms.GFVersion.Set(ctx, gfv.Id, gfv); err != nil {
 		return nil, fmt.Errorf("persist gfv: %w", err)
 	}

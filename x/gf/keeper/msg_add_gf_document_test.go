@@ -99,7 +99,7 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 			require.Equal(t, uint64(1), gfv.CorporationId)
 			require.Zero(t, gfv.EcosystemId)
 			require.Equal(t, uint32(1), gfv.Version)
-			require.True(t, gfv.ActiveSince.IsZero())
+			require.Nil(t, gfv.ActiveSince, "draft version is null until activation")
 			return false, nil
 		})
 		require.Equal(t, 1, gfvCount)
