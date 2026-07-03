@@ -135,9 +135,12 @@ func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *typ
 func (q querier) collectDocs(ctx context.Context, gfvID uint64, preferredLang string) ([]types.GovernanceFrameworkDocument, error) {
 	var out []types.GovernanceFrameworkDocument
 	var preferred, lowest *types.GovernanceFrameworkDocument
-	if err := q.GFDocument.Walk(ctx, nil, func(_ uint64, d types.GovernanceFrameworkDocument) (bool, error) {
-		if d.GfvId != gfvID {
-			return false, nil
+	// Iterate only this version's documents via the (gfv_id, *) index.
+	rng := collections.NewPrefixedPairRange[uint64, string](gfvID)
+	if err := q.GFDocumentByGFVLang.Walk(ctx, rng, func(_ collections.Pair[uint64, string], id uint64) (bool, error) {
+		d, err := q.GFDocument.Get(ctx, id)
+		if err != nil {
+			return true, err
 		}
 		if preferredLang != "" {
 			if preferred == nil && strings.EqualFold(d.Language, preferredLang) {

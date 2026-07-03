@@ -22,4 +22,5 @@ var (
 	// Secondary indexes for O(1) lookups by (owner, version).
 	GFVersionByEcosystemKey   = collections.NewPrefix(5) // (ecosystem_id, version) -> gfv_id
 	GFVersionByCorporationKey = collections.NewPrefix(6) // (corporation,  version) -> gfv_id
+	GFDocumentByGFVLangKey    = collections.NewPrefix(7) // (gfv_id, language) -> gfd_id
 )

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/collections"
@@ -191,26 +192,19 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 		}
 	}
 
-	// Upsert the document for (gfv, language).
-	var existingGFD types.GovernanceFrameworkDocument
-	hasExisting := false
-	if err := ms.GFDocument.Walk(ctx, nil, func(_ uint64, doc types.GovernanceFrameworkDocument) (bool, error) {
-		if doc.GfvId == gfv.Id && doc.Language == msg.DocLanguage {
-			existingGFD = doc
-			hasExisting = true
-			return true, nil
-		}
-		return false, nil
-	}); err != nil {
-		return nil, fmt.Errorf("walk gfd: %w", err)
-	}
-
+	// Upsert the document for (gfv, language) via the (gfv_id, language) index.
+	idxKey := collections.Join(gfv.Id, msg.DocLanguage)
 	var gfd types.GovernanceFrameworkDocument
-	if hasExisting {
-		gfd = existingGFD
+	existingID, err := ms.GFDocumentByGFVLang.Get(ctx, idxKey)
+	switch {
+	case err == nil:
+		gfd, err = ms.GFDocument.Get(ctx, existingID)
+		if err != nil {
+			return nil, fmt.Errorf("load gfd %d: %w", existingID, err)
+		}
 		gfd.Url = msg.DocUrl
 		gfd.DigestSri = msg.DocDigestSri
-	} else {
+	case errors.Is(err, collections.ErrNotFound):
 		nextID, err := ms.GetNextID(ctx, "gfd")
 		if err != nil {
 			return nil, err
@@ -223,6 +217,11 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 			Url:       msg.DocUrl,
 			DigestSri: msg.DocDigestSri,
 		}
+		if err := ms.GFDocumentByGFVLang.Set(ctx, idxKey, gfd.Id); err != nil {
+			return nil, fmt.Errorf("index gfd: %w", err)
+		}
+	default:
+		return nil, fmt.Errorf("lookup gfd: %w", err)
 	}
 	if err := ms.GFDocument.Set(ctx, gfd.Id, gfd); err != nil {
 		return nil, fmt.Errorf("persist gfd: %w", err)

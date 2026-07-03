@@ -33,6 +33,9 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) error {
 		if err := k.GFDocument.Set(ctx, gfd.Id, gfd); err != nil {
 			return err
 		}
+		if err := k.GFDocumentByGFVLang.Set(ctx, collections.Join(gfd.GfvId, gfd.Language), gfd.Id); err != nil {
+			return err
+		}
 		if gfd.Id > maxGFD {
 			maxGFD = gfd.Id
 		}

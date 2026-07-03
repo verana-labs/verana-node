@@ -46,15 +46,9 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	}
 
 	// Spec MOD-GF-MSG-2-2-1: a document for subject.language MUST exist on this version.
-	hasDefaultLang := false
-	if err := ms.GFDocument.Walk(ctx, nil, func(_ uint64, doc types.GovernanceFrameworkDocument) (bool, error) {
-		if doc.GfvId == gfv.Id && doc.Language == sub.language {
-			hasDefaultLang = true
-			return true, nil
-		}
-		return false, nil
-	}); err != nil {
-		return nil, fmt.Errorf("walk gfd: %w", err)
+	hasDefaultLang, err := ms.GFDocumentByGFVLang.Has(ctx, collections.Join(gfv.Id, sub.language))
+	if err != nil {
+		return nil, fmt.Errorf("lookup gfd: %w", err)
 	}
 	if !hasDefaultLang {
 		return nil, types.ErrMissingDefaultLang
