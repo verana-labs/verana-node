@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"cosmossdk.io/collections"
 	errorsmod "cosmossdk.io/errors"
@@ -62,7 +61,7 @@ func (k Keeper) GetPrice(ctx context.Context, baseAssetType cstypes.PricingAsset
 	}
 
 	// Look up exchange rate by pair
-	pairKey := fmt.Sprintf("%d:%s:%d:%s", baseAssetType, baseAsset, quoteAssetType, quoteAsset)
+	pairKey := buildPairKey(baseAssetType, baseAsset, quoteAssetType, quoteAsset)
 	id, err := k.PairIndex.Get(ctx, pairKey)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {

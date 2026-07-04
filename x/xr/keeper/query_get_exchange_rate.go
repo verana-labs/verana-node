@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"cosmossdk.io/collections"
 
@@ -40,7 +39,7 @@ func (q queryServer) GetExchangeRate(ctx context.Context, req *types.QueryGetExc
 			return nil, status.Error(codes.InvalidArgument, "must provide id or all of base_asset_type, base_asset, quote_asset_type, quote_asset")
 		}
 
-		pairKey := fmt.Sprintf("%d:%s:%d:%s", req.BaseAssetType, req.BaseAsset, req.QuoteAssetType, req.QuoteAsset)
+		pairKey := buildPairKey(req.BaseAssetType, req.BaseAsset, req.QuoteAssetType, req.QuoteAsset)
 		id, err := q.k.PairIndex.Get(ctx, pairKey)
 		if err != nil {
 			if errors.Is(err, collections.ErrNotFound) {

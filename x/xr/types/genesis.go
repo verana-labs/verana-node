@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -23,10 +24,43 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
+	rateIDs := make(map[uint64]struct{}, len(gs.ExchangeRates))
+	pairs := make(map[string]struct{}, len(gs.ExchangeRates))
+	var maxID uint64
+	for _, xr := range gs.ExchangeRates {
+		if xr.Id == 0 {
+			return fmt.Errorf("exchange rate has zero id")
+		}
+		if _, dup := rateIDs[xr.Id]; dup {
+			return fmt.Errorf("duplicate exchange rate id %d", xr.Id)
+		}
+		rateIDs[xr.Id] = struct{}{}
+		if rate, err := math.LegacyNewDecFromStr(xr.Rate); err != nil || !rate.IsPositive() {
+			return fmt.Errorf("exchange rate %d has invalid rate %q", xr.Id, xr.Rate)
+		}
+		if xr.RateScale > 18 {
+			return fmt.Errorf("exchange rate %d has rate_scale %d > 18", xr.Id, xr.RateScale)
+		}
+		pairKey := fmt.Sprintf("%d|%s|%d|%s", xr.BaseAssetType, xr.BaseAsset, xr.QuoteAssetType, xr.QuoteAsset)
+		if _, dup := pairs[pairKey]; dup {
+			return fmt.Errorf("duplicate exchange rate pair %s", pairKey)
+		}
+		pairs[pairKey] = struct{}{}
+		if xr.Id > maxID {
+			maxID = xr.Id
+		}
+	}
+	if gs.NextExchangeRateId < maxID {
+		return fmt.Errorf("next_exchange_rate_id %d is less than the highest exchange rate id %d", gs.NextExchangeRateId, maxID)
+	}
+
 	seen := make(map[string]struct{}, len(gs.ExchangeRateAuthorizations))
 	for _, a := range gs.ExchangeRateAuthorizations {
 		if a.XrId == 0 {
 			return fmt.Errorf("exchange rate authorization has zero xr_id")
+		}
+		if _, ok := rateIDs[a.XrId]; !ok {
+			return fmt.Errorf("exchange rate authorization references unknown xr_id %d", a.XrId)
 		}
 		if _, err := sdk.AccAddressFromBech32(a.Operator); err != nil {
 			return fmt.Errorf("exchange rate authorization for xr_id %d has invalid operator: %w", a.XrId, err)

@@ -96,6 +96,9 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 	return &types.MsgCreateExchangeRateResponse{Id: id}, nil
 }
 
+// buildPairKey uses '|' as the delimiter — illegal in SDK denoms, so distinct
+// asset pairs can never collide into the same key (unlike ':', which is legal
+// inside a denom).
 func buildPairKey(baseType cstypes.PricingAssetType, baseAsset string, quoteType cstypes.PricingAssetType, quoteAsset string) string {
-	return fmt.Sprintf("%d:%s:%d:%s", baseType, baseAsset, quoteType, quoteAsset)
+	return fmt.Sprintf("%d|%s|%d|%s", baseType, baseAsset, quoteType, quoteAsset)
 }
