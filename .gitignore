@@ -47,3 +47,6 @@ docs/superpowers/
 .claude-agents/audit/
 .claude
 journey_results/
+
+# Agent / planning scratch (never commit)
+docs/audit/
