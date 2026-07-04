@@ -606,7 +606,6 @@ func (ms msgServer) createOrUpdateSession(ctx sdk.Context, msg *types.MsgCreateO
 // findBeneficiaries gets the set of participants that should receive fees
 func (ms msgServer) findBeneficiaries(ctx sdk.Context, issuerParticipantId, verifierParticipantId uint64) ([]types.Participant, error) {
 	var foundParticipants []types.Participant
-	var schemaID uint64
 
 	// Helper function to check if a participant is already in the slice
 	containsParticipant := func(id uint64) bool {
@@ -618,57 +617,14 @@ func (ms msgServer) findBeneficiaries(ctx sdk.Context, issuerParticipantId, veri
 		return false
 	}
 
-	// Get schema ID from either issuer or verifier participant
-	if issuerParticipantId != 0 {
-		issuerParticipant, err := ms.Participant.Get(ctx, issuerParticipantId)
-		if err != nil {
-			return nil, fmt.Errorf("issuer participant not found: %w", err)
-		}
-		schemaID = issuerParticipant.SchemaId
-	} else if verifierParticipantId != 0 {
-		verifierParticipant, err := ms.Participant.Get(ctx, verifierParticipantId)
-		if err != nil {
-			return nil, fmt.Errorf("verifier participant not found: %w", err)
-		}
-		schemaID = verifierParticipant.SchemaId
-	} else {
+	if issuerParticipantId == 0 && verifierParticipantId == 0 {
 		return nil, fmt.Errorf("at least one of issuer_participant_id or verifier_participant_id must be provided")
 	}
 
-	// Get schema to check participant management mode
-	cs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, schemaID)
-	if err != nil {
-		return nil, fmt.Errorf("credential schema not found: %w", err)
-	}
+	// MOD-PP-QRY-4-3 has no OPEN-mode special case: self-created OPEN participants
+	// carry validator_participant_id = ECOSYSTEM, so the walks below include it.
 
-	// Check if schema is configured with OPEN participant management mode
-	isOpenMode := false
-	if (issuerParticipantId != 0 && cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN) ||
-		(verifierParticipantId != 0 && cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN) {
-		isOpenMode = true
-	}
-
-	// For OPEN mode, find the ECOSYSTEM participant
-	if isOpenMode {
-		// Find ECOSYSTEM participant for this schema
-		err = ms.Participant.Walk(ctx, nil, func(id uint64, participant types.Participant) (bool, error) {
-			if participant.SchemaId == schemaID &&
-				participant.Role == types.ParticipantRole_ECOSYSTEM &&
-				participant.Revoked == nil && participant.Slashed == nil {
-				foundParticipants = append(foundParticipants, participant)
-				return true, nil // Stop iteration once found
-			}
-			return false, nil
-		})
-
-		if err != nil {
-			return nil, fmt.Errorf("failed to query ECOSYSTEM participant: %w", err)
-		}
-
-		return foundParticipants, nil
-	}
-
-	// Process issuer participant hierarchy if provided (non-OPEN mode)
+	// Process issuer participant hierarchy if provided.
 	if issuerParticipantId != 0 {
 		issuerParticipant, err := ms.Participant.Get(ctx, issuerParticipantId)
 		if err != nil {
