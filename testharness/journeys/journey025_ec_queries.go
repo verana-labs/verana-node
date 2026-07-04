@@ -97,7 +97,7 @@ func RunEcosystemQueriesJourney(ctx context.Context, client cosmosclient.Client)
 	}
 	fmt.Printf("✅ Step 4: ListGFVs returned %d GFV(s) for ec-alpha\n", len(gfvResp.Versions))
 	for _, gfv := range gfvResp.Versions {
-		isActive := !gfv.ActiveSince.IsZero()
+		isActive := gfv.ActiveSince != nil
 		fmt.Printf("  GFV ID=%d version=%d active=%v\n", gfv.Id, gfv.Version, isActive)
 	}
 
@@ -107,7 +107,7 @@ func RunEcosystemQueriesJourney(ctx context.Context, client cosmosclient.Client)
 		return fmt.Errorf("step 4b ListGFVs(activeOnly) failed: %w", err)
 	}
 	for _, gfv := range activeResp.Versions {
-		if gfv.ActiveSince.IsZero() {
+		if gfv.ActiveSince == nil {
 			return fmt.Errorf("step 4b failed: inactive GFV returned with activeOnly=true")
 		}
 	}
@@ -131,7 +131,7 @@ func RunEcosystemQueriesJourney(ctx context.Context, client cosmosclient.Client)
 		if err != nil {
 			return fmt.Errorf("step 5 GetGFV failed: %w", err)
 		}
-		isActive := !singleGFVResp.Version.ActiveSince.IsZero()
+		isActive := singleGFVResp.Version.ActiveSince != nil
 		fmt.Printf("✅ Step 5: GFV ID=%d version=%d active=%v docs=%d\n",
 			singleGFVResp.Version.Id,
 			singleGFVResp.Version.Version,
