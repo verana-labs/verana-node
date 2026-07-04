@@ -178,11 +178,10 @@ func TestStoreDigest_DuplicateDigest(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 
-	// Store second time — should fail (duplicate rejected to preserve created timestamp)
+	// Store second time — idempotent no-op success (spec MOD-DI-MSG-1-3).
 	resp2, err := ms.StoreDigest(f.ctx, msg)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "already exists")
-	require.Nil(t, resp2)
+	require.NoError(t, err)
+	require.NotNil(t, resp2)
 
 	// Verify digest still present
 	stored, err := f.keeper.Digests.Get(f.ctx, digest)
@@ -220,12 +219,11 @@ func TestStoreDigestModuleCall(t *testing.T) {
 			errMsg:          "digest must not be empty",
 		},
 		{
-			name:            "duplicate digest fails",
+			name:            "duplicate digest is idempotent no-op",
 			authority:       authority,
 			digest:          "sha256-modulecall",
 			digestAlgorithm: "sha256",
-			wantErr:         true,
-			errMsg:          "already exists",
+			wantErr:         false,
 		},
 	}
 

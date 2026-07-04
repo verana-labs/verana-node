@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/di/types"
@@ -37,9 +36,11 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, err
 	}
 
-	// [MOD-DI-MSG-1-3] Execution — prevent duplicate (would overwrite created timestamp)
-	if has, _ := ms.Keeper.Digests.Has(ctx, msg.Digest); has {
-		return nil, errorsmod.Wrap(types.ErrDigestAlreadyExists, msg.Digest)
+	// [MOD-DI-MSG-1-3] A duplicate digest is an idempotent no-op (returns success).
+	if has, err := ms.Keeper.Digests.Has(ctx, msg.Digest); err != nil {
+		return nil, err
+	} else if has {
+		return &types.MsgStoreDigestResponse{}, nil
 	}
 
 	// [MOD-DI-MSG-1-3] Execution — Create Digest record
@@ -82,9 +83,11 @@ func (k Keeper) StoreDigestModuleCall(ctx context.Context, authority, digest, di
 		return types.ErrDigestEmpty
 	}
 
-	// prevent duplicate (would overwrite created timestamp)
-	if has, _ := k.Digests.Has(ctx, digest); has {
-		return errorsmod.Wrap(types.ErrDigestAlreadyExists, digest)
+	// A duplicate digest is an idempotent no-op.
+	if has, err := k.Digests.Has(ctx, digest); err != nil {
+		return err
+	} else if has {
+		return nil
 	}
 
 	d := types.Digest{
