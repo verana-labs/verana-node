@@ -610,7 +610,11 @@ func (ms msgServer) executeCancelParticipantVPLastRequest(ctx sdk.Context, parti
 
 	// Handle current fees if any
 	if participant.OpCurrentFees > 0 {
-		// Transfer escrowed fees back to the applicant
+		// Fees were escrowed in the schema's fee denom (MSG-1/2), so refund in it.
+		cs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, participant.SchemaId)
+		if err != nil {
+			return fmt.Errorf("failed to load credential schema: %w", err)
+		}
 		granteeAddr, err := sdk.AccAddressFromBech32(corpAcct)
 		if err != nil {
 			return fmt.Errorf("invalid grantee address: %w", err)
@@ -620,12 +624,11 @@ func (ms msgServer) executeCancelParticipantVPLastRequest(ctx sdk.Context, parti
 		if err != nil {
 			return err
 		}
-		// Transfer fees from module escrow account to applicant account
 		err = ms.bankKeeper.SendCoinsFromModuleToAccount(
 			ctx,
-			types.ModuleName, // Module escrow account
-			granteeAddr,      // Applicant account
-			sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, currentFeesI64)),
+			types.ModuleName,
+			granteeAddr,
+			sdk.NewCoins(sdk.NewInt64Coin(feeDenomForSchema(cs), currentFeesI64)),
 		)
 		if err != nil {
 			return fmt.Errorf("failed to refund fees: %w", err)
