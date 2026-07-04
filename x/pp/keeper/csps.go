@@ -634,7 +634,9 @@ func (ms msgServer) findBeneficiaries(ctx sdk.Context, issuerParticipantId, veri
 		// Follow the validator chain up
 		if issuerParticipant.ValidatorParticipantId != 0 {
 			currentParticipantID := issuerParticipant.ValidatorParticipantId
-			for currentParticipantID != 0 {
+			visited := map[uint64]bool{}
+			for currentParticipantID != 0 && !visited[currentParticipantID] {
+				visited[currentParticipantID] = true
 				currentParticipant, err := ms.Participant.Get(ctx, currentParticipantID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to get participant: %w", err)
@@ -669,7 +671,9 @@ func (ms msgServer) findBeneficiaries(ctx sdk.Context, issuerParticipantId, veri
 
 		if verifierParticipant.ValidatorParticipantId != 0 {
 			currentParticipantID := verifierParticipant.ValidatorParticipantId
-			for currentParticipantID != 0 {
+			visited := map[uint64]bool{}
+			for currentParticipantID != 0 && !visited[currentParticipantID] {
+				visited[currentParticipantID] = true
 				currentParticipant, err := ms.Participant.Get(ctx, currentParticipantID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to get participant: %w", err)

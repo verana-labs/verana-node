@@ -365,12 +365,10 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 					// ISSUER_GRANTOR: can set 0-1 (100% discount)
 					// Already validated range above
 				} else if applicantParticipant.Role == types.ParticipantRole_ISSUER {
-					// ISSUER in GRANTOR mode: if validator_participant.issuance_fee_discount is defined,
-					// can only set 0 to validator_participant.issuance_fee_discount inclusive
-					if validatorParticipant.IssuanceFeeDiscount > 0 {
-						if msg.IssuanceFeeDiscount > validatorParticipant.IssuanceFeeDiscount {
-							return nil, fmt.Errorf("issuance_fee_discount cannot exceed validator's discount of %d", validatorParticipant.IssuanceFeeDiscount)
-						}
+					// ISSUER in GRANTOR mode: capped at the validator's discount
+					// (a validator discount of 0 permits only 0).
+					if msg.IssuanceFeeDiscount > validatorParticipant.IssuanceFeeDiscount {
+						return nil, fmt.Errorf("issuance_fee_discount cannot exceed validator's discount of %d", validatorParticipant.IssuanceFeeDiscount)
 					}
 				} else {
 					return nil, fmt.Errorf("issuance_fee_discount can only be set on ISSUER_GRANTOR or ISSUER participants in GRANTOR mode")
@@ -400,12 +398,10 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 					// VERIFIER_GRANTOR: can set 0-1 (100% discount)
 					// Already validated range above
 				} else if applicantParticipant.Role == types.ParticipantRole_VERIFIER {
-					// VERIFIER in GRANTOR mode: if validator_participant.verification_fee_discount is defined,
-					// can only set 0 to validator_participant.verification_fee_discount inclusive
-					if validatorParticipant.VerificationFeeDiscount > 0 {
-						if msg.VerificationFeeDiscount > validatorParticipant.VerificationFeeDiscount {
-							return nil, fmt.Errorf("verification_fee_discount cannot exceed validator's discount of %d", validatorParticipant.VerificationFeeDiscount)
-						}
+					// VERIFIER in GRANTOR mode: capped at the validator's discount
+					// (a validator discount of 0 permits only 0).
+					if msg.VerificationFeeDiscount > validatorParticipant.VerificationFeeDiscount {
+						return nil, fmt.Errorf("verification_fee_discount cannot exceed validator's discount of %d", validatorParticipant.VerificationFeeDiscount)
 					}
 				} else {
 					return nil, fmt.Errorf("verification_fee_discount can only be set on VERIFIER_GRANTOR or VERIFIER participants in GRANTOR mode")
@@ -1116,12 +1112,10 @@ func (ms msgServer) RevokeParticipant(goCtx context.Context, msg *types.MsgRevok
 		return nil, fmt.Errorf("failed to revoke participant: %w", err)
 	}
 
-	// [MOD-PP-MSG-9-3] If applicant_participant.type is ISSUER or VERIFIER:
-	// Delete authorization for applicant_participant.vs_operator
-	if applicantParticipant.Role == types.ParticipantRole_ISSUER || applicantParticipant.Role == types.ParticipantRole_VERIFIER {
-		if err := ms.revokeVSOperatorAuthorization(ctx, applicantParticipant); err != nil {
-			return nil, fmt.Errorf("failed to revoke VS operator authorization: %w", err)
-		}
+	// [MOD-PP-MSG-9-3] Revoke any VSOA record for this participant (no-op if none);
+	// applies to every role, not just ISSUER/VERIFIER.
+	if err := ms.revokeVSOperatorAuthorization(ctx, applicantParticipant); err != nil {
+		return nil, fmt.Errorf("failed to revoke VS operator authorization: %w", err)
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -1197,7 +1191,9 @@ func (ms msgServer) checkValidatorAncestorOption(ctx sdk.Context, authority stri
 		return false
 	}
 
-	for currentValidatorParticipantId != 0 {
+	visited := map[uint64]bool{}
+	for currentValidatorParticipantId != 0 && !visited[currentValidatorParticipantId] {
+		visited[currentValidatorParticipantId] = true
 		// load validator_participant from validator_participant.validator_participant_id
 		validatorParticipant, err := ms.Keeper.GetParticipantByID(ctx, currentValidatorParticipantId)
 		if err != nil {
@@ -1411,12 +1407,10 @@ func (ms msgServer) SlashParticipantTrustDeposit(goCtx context.Context, msg *typ
 		return nil, fmt.Errorf("failed to slash participant trust deposit: %w", err)
 	}
 
-	// [MOD-PP-MSG-12-3] If applicant_participant.type is ISSUER or VERIFIER:
-	// Delete authorization for applicant_participant.vs_operator
-	if applicantParticipant.Role == types.ParticipantRole_ISSUER || applicantParticipant.Role == types.ParticipantRole_VERIFIER {
-		if err := ms.revokeVSOperatorAuthorization(ctx, applicantParticipant); err != nil {
-			return nil, fmt.Errorf("failed to revoke VS operator authorization: %w", err)
-		}
+	// [MOD-PP-MSG-12-3] Revoke any VSOA record for this participant (no-op if none),
+	// regardless of role.
+	if err := ms.revokeVSOperatorAuthorization(ctx, applicantParticipant); err != nil {
+		return nil, fmt.Errorf("failed to revoke VS operator authorization: %w", err)
 	}
 
 	// Emit event
