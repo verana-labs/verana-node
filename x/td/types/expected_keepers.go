@@ -41,6 +41,7 @@ type MintKeeper interface {
 // Used to perform [AUTHZ-CHECK] for (authority, operator) pairs.
 type DelegationKeeper interface {
 	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time) error
+	ConsumeOperatorSpend(ctx context.Context, corporation, operator, msgTypeURL string, now time.Time, amount sdk.Coins) error
 }
 
 // CorporationView is the read shape MOD-TD needs about a Corporation subject

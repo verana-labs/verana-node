@@ -284,6 +284,13 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	// [MOD-TD-MSG-6-3] add amount to the TrustDeposit account (slashed coins were
 	// already burned at slash time per MOD-TD-MSG-5-3).
 	transferCoins := sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(msg.Deposit)))
+	// AUTHZ-CHECK-1 step 3: debit the operator's spend limit for the committed funds.
+	if err := ms.Keeper.delegationKeeper.ConsumeOperatorSpend(
+		ctx, msg.Corporation, msg.Operator,
+		"/verana.td.v1.MsgRepaySlashedTrustDeposit", now, transferCoins,
+	); err != nil {
+		return nil, fmt.Errorf("failed to consume operator spend: %w", err)
+	}
 	if err := ms.Keeper.bankKeeper.SendCoinsFromAccountToModule(
 		ctx,
 		corporationAddr,
