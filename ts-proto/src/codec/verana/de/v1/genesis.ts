@@ -8,6 +8,7 @@
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
 import { FeeGrant, OperatorAuthorization, VSOperatorAuthorization } from "./types";
+import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
 
@@ -23,10 +24,20 @@ export interface GenesisState {
   feeGrants: FeeGrant[];
   /** vs_operator_authorizations is a list of all VSOperatorAuthorization objects */
   vsOperatorAuthorizations: VSOperatorAuthorization[];
+  /** Id sequences, exported so ids are never re-issued after a delete. */
+  operatorAuthorizationSeq: number;
+  vsoaSeq: number;
 }
 
 function createBaseGenesisState(): GenesisState {
-  return { params: undefined, operatorAuthorizations: [], feeGrants: [], vsOperatorAuthorizations: [] };
+  return {
+    params: undefined,
+    operatorAuthorizations: [],
+    feeGrants: [],
+    vsOperatorAuthorizations: [],
+    operatorAuthorizationSeq: 0,
+    vsoaSeq: 0,
+  };
 }
 
 export const GenesisState = {
@@ -42,6 +53,12 @@ export const GenesisState = {
     }
     for (const v of message.vsOperatorAuthorizations) {
       VSOperatorAuthorization.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.operatorAuthorizationSeq !== 0) {
+      writer.uint32(48).uint64(message.operatorAuthorizationSeq);
+    }
+    if (message.vsoaSeq !== 0) {
+      writer.uint32(56).uint64(message.vsoaSeq);
     }
     return writer;
   },
@@ -81,6 +98,20 @@ export const GenesisState = {
 
           message.vsOperatorAuthorizations.push(VSOperatorAuthorization.decode(reader, reader.uint32()));
           continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.operatorAuthorizationSeq = longToNumber(reader.uint64() as Long);
+          continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.vsoaSeq = longToNumber(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -102,6 +133,10 @@ export const GenesisState = {
       vsOperatorAuthorizations: globalThis.Array.isArray(object?.vsOperatorAuthorizations)
         ? object.vsOperatorAuthorizations.map((e: any) => VSOperatorAuthorization.fromJSON(e))
         : [],
+      operatorAuthorizationSeq: isSet(object.operatorAuthorizationSeq)
+        ? globalThis.Number(object.operatorAuthorizationSeq)
+        : 0,
+      vsoaSeq: isSet(object.vsoaSeq) ? globalThis.Number(object.vsoaSeq) : 0,
     };
   },
 
@@ -119,6 +154,12 @@ export const GenesisState = {
     if (message.vsOperatorAuthorizations?.length) {
       obj.vsOperatorAuthorizations = message.vsOperatorAuthorizations.map((e) => VSOperatorAuthorization.toJSON(e));
     }
+    if (message.operatorAuthorizationSeq !== 0) {
+      obj.operatorAuthorizationSeq = Math.round(message.operatorAuthorizationSeq);
+    }
+    if (message.vsoaSeq !== 0) {
+      obj.vsoaSeq = Math.round(message.vsoaSeq);
+    }
     return obj;
   },
 
@@ -135,6 +176,8 @@ export const GenesisState = {
     message.feeGrants = object.feeGrants?.map((e) => FeeGrant.fromPartial(e)) || [];
     message.vsOperatorAuthorizations =
       object.vsOperatorAuthorizations?.map((e) => VSOperatorAuthorization.fromPartial(e)) || [];
+    message.operatorAuthorizationSeq = object.operatorAuthorizationSeq ?? 0;
+    message.vsoaSeq = object.vsoaSeq ?? 0;
     return message;
   },
 };
@@ -150,6 +193,21 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (long.lt(globalThis.Number.MIN_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -90,7 +90,11 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 		SpendLimit:     msg.AuthzSpendLimit,
 		RemainingSpend: msg.AuthzSpendLimit,
 		Expiration:     msg.Expiration,
-		Period:         msg.AuthzSpendLimitPeriod,
+	}
+	// period is ignored without a spend limit; storing it otherwise would make
+	// the authorization auto-renew its expiration forever.
+	if len(msg.AuthzSpendLimit) > 0 {
+		oa.Period = msg.AuthzSpendLimitPeriod
 	}
 	if err := ms.OperatorAuthorizations.Set(ctx, oaID, oa); err != nil {
 		return nil, fmt.Errorf("failed to set OperatorAuthorization: %w", err)

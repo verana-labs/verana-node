@@ -24,9 +24,12 @@ var VPRDelegableMsgTypes = map[string]bool{
 	"/verana.gf.v1.MsgAddGovernanceFrameworkDocument":           true,
 	"/verana.gf.v1.MsgIncreaseActiveGovernanceFrameworkVersion": true,
 	// Credential Schema (CS)
-	"/verana.cs.v1.MsgCreateCredentialSchema":  true,
-	"/verana.cs.v1.MsgUpdateCredentialSchema":  true,
-	"/verana.cs.v1.MsgArchiveCredentialSchema": true,
+	"/verana.cs.v1.MsgCreateCredentialSchema":                         true,
+	"/verana.cs.v1.MsgUpdateCredentialSchema":                         true,
+	"/verana.cs.v1.MsgArchiveCredentialSchema":                        true,
+	"/verana.cs.v1.MsgCreateSchemaAuthorizationPolicy":                true,
+	"/verana.cs.v1.MsgIncreaseActiveSchemaAuthorizationPolicyVersion": true,
+	"/verana.cs.v1.MsgRevokeSchemaAuthorizationPolicy":                true,
 	// Permission (PERM) - CreateOrUpdatePermissionSession included for VSOA fee grants
 	"/verana.pp.v1.MsgStartParticipantOP":                  true,
 	"/verana.pp.v1.MsgRenewParticipantOP":                  true,
