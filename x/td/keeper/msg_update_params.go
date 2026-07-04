@@ -15,6 +15,12 @@ func (ms msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdatePara
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// trust_deposit_share_value is protocol state the BeginBlocker mutates each
+	// block, not a governable parameter — preserve the live value so a params
+	// update cannot reset it and corrupt every holder's yield.
+	req.Params.TrustDepositShareValue = ms.GetParams(ctx).TrustDepositShareValue
+
 	if err := ms.SetParams(ctx, req.Params); err != nil {
 		return nil, err
 	}
