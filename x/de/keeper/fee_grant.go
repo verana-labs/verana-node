@@ -85,10 +85,13 @@ func (k Keeper) GrantFeeAllowance(
 		var inner feegrant.FeeAllowanceI
 		if len(spendLimit) > 0 && period != nil {
 			inner = &feegrant.PeriodicAllowance{
+				// Basic bounds the whole grant so it actually expires; without it
+				// the allowance keeps resetting each period forever.
+				Basic:            feegrant.BasicAllowance{SpendLimit: spendLimit, Expiration: expiration},
 				Period:           *period,
 				PeriodSpendLimit: spendLimit,
 				PeriodCanSpend:   spendLimit,
-				PeriodReset:      *expiration,
+				PeriodReset:      now.Add(*period),
 			}
 		} else {
 			inner = &feegrant.BasicAllowance{SpendLimit: spendLimit, Expiration: expiration}
