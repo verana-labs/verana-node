@@ -110,6 +110,7 @@ type DelegationKeeper interface {
 	GrantVSOperatorAuthorization(ctx context.Context, corporationID uint64, vsOperator string, record detypes.ParticipantAuthorizationRecord) error
 	// [MOD-DE-MSG-6] revoke a VS operator authorization record by participant id.
 	RevokeVSOperatorAuthorization(ctx context.Context, participantID uint64) error
-	// [MOD-DE-MSG-9] update a record's expiration by participant id.
-	UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration time.Time) error
+	// [MOD-DE-MSG-9] update a record's expiration by participant id; nil means
+	// the record never expires.
+	UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration *time.Time) error
 }

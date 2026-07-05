@@ -44,10 +44,10 @@ func TestMsgCreateRootParticipant_ValidateBasic(t *testing.T) {
 		{"schema_id = 0", func(m *types.MsgCreateRootParticipant) { m.SchemaId = 0 }, "schema ID cannot be 0"},
 		{"empty did", func(m *types.MsgCreateRootParticipant) { m.Did = "" }, "DID is required"},
 		{"malformed did", func(m *types.MsgCreateRootParticipant) { m.Did = "not-a-did" }, "invalid DID format"},
-		{"vsoa params without effective_until", func(m *types.MsgCreateRootParticipant) {
+		{"vsoa params without effective_until (never-expiring)", func(m *types.MsgCreateRootParticipant) {
 			m.VsOperator = validAddr
 			m.VsOperatorAuthzMsgTypes = []string{types.MsgSetParticipantOPToValidatedTypeURL}
-		}, "effective_until is required"},
+		}, ""},
 		{"vsoa params with effective_until", func(m *types.MsgCreateRootParticipant) {
 			m.VsOperator = validAddr
 			m.VsOperatorAuthzMsgTypes = []string{types.MsgSetParticipantOPToValidatedTypeURL}

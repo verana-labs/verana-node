@@ -247,11 +247,8 @@ func (msg *MsgCreateRootParticipant) ValidateBasic() error {
 				return fmt.Errorf("msg_type %s is not permitted for root participant (only SetParticipantOPToValidated)", mt)
 			}
 		}
-		// The record is active immediately with expiration = effective_until; the
-		// spec requires record.expiration, so effective_until MUST be set.
-		if msg.EffectiveUntil == nil {
-			return fmt.Errorf("effective_until is required when vs_operator_authz params are set")
-		}
+		// effective_until may be nil: the record is then active with no expiration
+		// (AUTHZ-CHECK-3 treats nil as never-expired).
 	}
 	if msg.VsOperator != "" {
 		if _, err := sdk.AccAddressFromBech32(msg.VsOperator); err != nil {
@@ -431,11 +428,8 @@ func (msg *MsgSelfCreateParticipant) ValidateBasic() error {
 	if err := validateVSOperatorAuthz(msg.Role, msg.VsOperator, msg.VsOperatorAuthzMsgTypes, anyParam); err != nil {
 		return err
 	}
-	// OPEN mode creates the record active immediately with expiration =
-	// effective_until; the spec requires record.expiration, so it MUST be set.
-	if anyParam && msg.EffectiveUntil == nil {
-		return fmt.Errorf("effective_until is required when vs_operator_authz params are set")
-	}
+	// effective_until may be nil: the record is then active with no expiration
+	// (AUTHZ-CHECK-3 treats nil as never-expired).
 
 	return nil
 }

@@ -138,6 +138,37 @@ func TestGrantOperatorAuthorization_MutualExclusivity(t *testing.T) {
 	require.ErrorIs(t, err, types.ErrVSOperatorAuthzExists)
 }
 
+// [MOD-DE-MSG-3] The operator path: an operator authorized for the de grant
+// message can grant on the corporation's behalf; an unauthorized one cannot.
+func TestGrantOperatorAuthorization_OperatorPath(t *testing.T) {
+	_, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	operator := acc("operator____________")
+	grantee := acc("grantee_____________")
+
+	// Corp authorizes the operator for the de grant message (group-proposal path).
+	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
+		Corporation: corporation, Operator: corporation, Grantee: operator,
+		MsgTypes: []string{"/verana.de.v1.MsgGrantOperatorAuthorization"},
+	})
+	require.NoError(t, err)
+
+	// The authorized operator grants to a third party on the corporation's behalf.
+	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
+		Corporation: corporation, Operator: operator, Grantee: grantee,
+		MsgTypes: []string{mtEcosystem},
+	})
+	require.NoError(t, err)
+
+	// An unauthorized operator is rejected by AUTHZ-CHECK-1.
+	stranger := acc("stranger____________")
+	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
+		Corporation: corporation, Operator: stranger, Grantee: grantee,
+		MsgTypes: []string{mtEcosystem},
+	})
+	require.Error(t, err)
+}
+
 func TestRevokeOperatorAuthorization(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
@@ -259,14 +290,19 @@ func TestUpdateVSOperatorAuthorizationExpiration(t *testing.T) {
 		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtValidated}, Expiration: &now}))
 
 	future := now.Add(48 * time.Hour)
-	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 10, future))
+	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 10, &future))
 	vsoaID, _ := k.VSOAByParticipant.Get(ctx, 10)
 	vsoa, _ := k.VSOperatorAuthorizations.Get(ctx, vsoaID)
 	require.NotNil(t, vsoa.Records[0].Expiration)
 	require.True(t, vsoa.Records[0].Expiration.Equal(future))
 
+	// A nil expiration marks the record as never-expiring.
+	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 10, nil))
+	vsoa, _ = k.VSOperatorAuthorizations.Get(ctx, vsoaID)
+	require.Nil(t, vsoa.Records[0].Expiration)
+
 	// No-op when no record exists.
-	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 999, future))
+	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 999, &future))
 }
 
 // [MOD-DE-MSG-5-5] Recompute drives the chain-level fee allowance from records.

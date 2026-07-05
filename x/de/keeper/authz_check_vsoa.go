@@ -74,7 +74,9 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		return fmt.Errorf("%w: %s", types.ErrAuthzMsgTypeNotFound, msgType)
 	}
 
-	// 4. Cycle / expiration.
+	// 4. Cycle / expiration. A nil expiration means the record never expires;
+	// a concrete expiration <= now is dead (the disabled state set at MOD-PP-MSG-1
+	// uses a concrete now, so it stays dead here).
 	if rec.Period != nil && *rec.Period > 0 && rec.Expiration != nil && !rec.Expiration.After(now) {
 		if len(rec.SpendLimit) > 0 {
 			rec.RemainingSpend = rec.SpendLimit
@@ -87,7 +89,7 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
 			return fmt.Errorf("failed to persist cycle reset: %w", err)
 		}
-	} else if rec.Expiration == nil || !rec.Expiration.After(now) {
+	} else if rec.Expiration != nil && !rec.Expiration.After(now) {
 		return types.ErrAuthzExpired
 	}
 

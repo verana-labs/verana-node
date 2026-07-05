@@ -10,7 +10,7 @@ func DefaultGenesis() *GenesisState {
 		Params:              DefaultParams(),
 		Participants:        []Participant{},
 		ParticipantSessions: []ParticipantSession{},
-		NextParticipantId:   0,
+		NextParticipantId:   1,
 	}
 }
 
@@ -149,10 +149,10 @@ func validateParticipantTimestamps(participant Participant) error {
 		}
 	}
 
-	// If adjusted time exists, it should be after created time
+	// adjusted may equal created (same-block create+adjust); only reject if before.
 	if participant.Adjusted != nil && participant.Created != nil {
-		if !participant.Created.Before(*participant.Adjusted) {
-			return fmt.Errorf("adjusted timestamp must be after created timestamp for participant ID %d", participant.Id)
+		if participant.Adjusted.Before(*participant.Created) {
+			return fmt.Errorf("adjusted timestamp must not be before created timestamp for participant ID %d", participant.Id)
 		}
 	}
 

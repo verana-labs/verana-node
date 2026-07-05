@@ -195,8 +195,10 @@ func (k Keeper) RevokeVSOperatorAuthorization(ctx context.Context, participantID
 
 // UpdateVSOperatorAuthorizationExpiration implements [MOD-DE-MSG-9]. Locates the
 // record by participant_id and updates its expiration; a no-op when no record
-// exists.
-func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration time.Time) error {
+// exists. A nil newExpiration means the record never expires (AUTHZ-CHECK-3
+// treats nil as never-expired), which activates a never-expiring participant's
+// record disabled at MOD-PP-MSG-1.
+func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration *time.Time) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, participantID)
@@ -209,10 +211,14 @@ func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, par
 		return fmt.Errorf("failed to load VSOperatorAuthorization %d: %w", vsoaID, err)
 	}
 
-	exp := newExpiration
+	var exp *time.Time
+	if newExpiration != nil {
+		e := *newExpiration
+		exp = &e
+	}
 	for i := range vsoa.Records {
 		if vsoa.Records[i].ParticipantId == participantID {
-			vsoa.Records[i].Expiration = &exp
+			vsoa.Records[i].Expiration = exp
 			break
 		}
 	}
@@ -246,15 +252,23 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 	now := sdk.UnwrapSDKContext(ctx).BlockTime()
 
 	var maxExpire *time.Time
+	perpetual := false // a live record with no expiration
 	seen := make(map[string]bool)
 	feegrantMsgTypes := make([]string, 0)
 	for _, r := range vsoa.Records {
-		if !r.WithFeegrant || r.Expiration == nil || !r.Expiration.After(now) {
+		if !r.WithFeegrant {
 			continue
 		}
-		if maxExpire == nil || r.Expiration.After(*maxExpire) {
-			e := *r.Expiration
-			maxExpire = &e
+		switch {
+		case r.Expiration == nil:
+			perpetual = true
+		case r.Expiration.After(now):
+			if maxExpire == nil || r.Expiration.After(*maxExpire) {
+				e := *r.Expiration
+				maxExpire = &e
+			}
+		default:
+			continue // expired
 		}
 		for _, mt := range r.MsgTypes {
 			if !seen[mt] {
@@ -264,8 +278,14 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 		}
 	}
 
-	if maxExpire == nil {
+	if !perpetual && maxExpire == nil {
 		return k.RevokeFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator)
 	}
-	return k.GrantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, maxExpire, nil, nil)
+	// A perpetual record grants an allowance with no expiration; otherwise it
+	// expires at the latest record expiration.
+	expiration := maxExpire
+	if perpetual {
+		expiration = nil
+	}
+	return k.GrantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, expiration, nil, nil)
 }

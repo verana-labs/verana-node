@@ -122,20 +122,19 @@ func (k Keeper) CreateParticipant(ctx sdk.Context, participant types.Participant
 	return id, nil
 }
 
-// getNextParticipantID gets the next available participant ID
+// getNextParticipantID returns the next id to allocate. The counter stores
+// next-id (not last-id) so it matches the next_participant_id genesis field.
 func (k Keeper) getNextParticipantID(ctx sdk.Context) (uint64, error) {
 	id, err := k.ParticipantCounter.Get(ctx)
-	if err != nil {
-		id = 0
+	if err != nil || id == 0 {
+		id = 1
 	}
 
-	nextID := id + 1
-	err = k.ParticipantCounter.Set(ctx, nextID)
-	if err != nil {
+	if err := k.ParticipantCounter.Set(ctx, id+1); err != nil {
 		return 0, fmt.Errorf("failed to set participant counter: %w", err)
 	}
 
-	return nextID, nil
+	return id, nil
 }
 
 func (k Keeper) UpdateParticipant(ctx sdk.Context, participant types.Participant) error {

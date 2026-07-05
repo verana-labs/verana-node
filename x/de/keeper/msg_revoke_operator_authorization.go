@@ -18,22 +18,26 @@ func (ms msgServer) RevokeOperatorAuthorization(goCtx context.Context, msg *type
 
 	// [MOD-DE-MSG-4-2] Basic checks (stateful).
 
-	// [AUTHZ-CHECK-1] Verify operator authorization for this (corporation, operator) pair.
-	if err := ms.CheckOperatorAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Operator,
-		"/verana.de.v1.MsgRevokeOperatorAuthorization",
-		now,
-	); err != nil {
-		return nil, err
-	}
-
 	// [AUTHZ-CHECK-5] Signing corporation account MUST be a registered Corporation;
 	// resolve it to co.id.
 	co, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
 	if err != nil {
 		return nil, err
+	}
+
+	// [AUTHZ-CHECK-1] The operator is the signer. When it equals the corporation
+	// policy_address the corporation is acting alone (group proposal) and the
+	// check is skipped; otherwise the operator's delegation MUST cover this msg.
+	if msg.Operator != msg.Corporation {
+		if err := ms.CheckOperatorAuthorization(
+			ctx,
+			msg.Corporation,
+			msg.Operator,
+			"/verana.de.v1.MsgRevokeOperatorAuthorization",
+			now,
+		); err != nil {
+			return nil, err
+		}
 	}
 
 	// An OperatorAuthorization MUST exist for (co.id, grantee).

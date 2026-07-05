@@ -36,7 +36,7 @@ var VPRDelegableMsgTypes = map[string]bool{
 	"/verana.pp.v1.MsgSetParticipantOPToValidated":         true,
 	"/verana.pp.v1.MsgCancelParticipantOPLastRequest":      true,
 	"/verana.pp.v1.MsgCreateRootParticipant":               true,
-	"/verana.pp.v1.MsgSetParticipantEffectiveUntil":                   true,
+	"/verana.pp.v1.MsgSetParticipantEffectiveUntil":        true,
 	"/verana.pp.v1.MsgRevokeParticipant":                   true,
 	"/verana.pp.v1.MsgSlashParticipantTrustDeposit":        true,
 	"/verana.pp.v1.MsgRepayParticipantSlashedTrustDeposit": true,
@@ -67,11 +67,9 @@ func (msg *MsgGrantOperatorAuthorization) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// operator is optional; if present, must be valid
-	if msg.Operator != "" {
-		if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-			return fmt.Errorf("invalid operator address: %w", err)
-		}
+	// operator is the signer; mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
+		return fmt.Errorf("invalid operator address: %w", err)
 	}
 
 	// grantee is mandatory
@@ -143,11 +141,9 @@ func (msg *MsgRevokeOperatorAuthorization) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// operator is optional; if present, must be valid
-	if msg.Operator != "" {
-		if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-			return fmt.Errorf("invalid operator address: %w", err)
-		}
+	// operator is the signer; mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
+		return fmt.Errorf("invalid operator address: %w", err)
 	}
 
 	// grantee is mandatory

@@ -200,11 +200,10 @@ func (ms msgServer) executeSetParticipantVPToValidated(
 	}
 
 	// [MOD-PP-MSG-3-3] Activate any disabled VSOA record by syncing its expiration
-	// to the participant's effective_until via [MOD-DE-MSG-9]. No-op if no record.
-	if applicantParticipant.EffectiveUntil != nil {
-		if err := ms.delegationKeeper.UpdateVSOperatorAuthorizationExpiration(ctx, applicantParticipant.Id, *applicantParticipant.EffectiveUntil); err != nil {
-			return nil, fmt.Errorf("failed to update VS operator authorization expiration: %w", err)
-		}
+	// to the participant's effective_until via [MOD-DE-MSG-9], unconditionally: a
+	// nil effective_until means the record never expires. No-op if no record.
+	if err := ms.delegationKeeper.UpdateVSOperatorAuthorizationExpiration(ctx, applicantParticipant.Id, applicantParticipant.EffectiveUntil); err != nil {
+		return nil, fmt.Errorf("failed to update VS operator authorization expiration: %w", err)
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{

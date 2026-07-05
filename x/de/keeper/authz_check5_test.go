@@ -26,7 +26,7 @@ func TestAuthzCheck5_OperatorAuthorization(t *testing.T) {
 	t.Run("GrantOperatorAuthorization: unregistered corporation aborts", func(t *testing.T) {
 		_, err := ms.GrantOperatorAuthorization(f.ctx, &types.MsgGrantOperatorAuthorization{
 			Corporation: corp,
-			Operator:    "",
+			Operator:    corp, // group-proposal path: operator == corporation
 			Grantee:     grantee,
 			MsgTypes:    []string{"/verana.ec.v1.MsgCreateEcosystem"},
 		})
@@ -36,7 +36,7 @@ func TestAuthzCheck5_OperatorAuthorization(t *testing.T) {
 	t.Run("RevokeOperatorAuthorization: unregistered corporation aborts", func(t *testing.T) {
 		_, err := ms.RevokeOperatorAuthorization(f.ctx, &types.MsgRevokeOperatorAuthorization{
 			Corporation: corp,
-			Operator:    "",
+			Operator:    corp, // group-proposal path: operator == corporation
 			Grantee:     grantee,
 		})
 		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)

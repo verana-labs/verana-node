@@ -37,22 +37,20 @@ export interface MsgUpdateParamsResponse {
  * to a grantee on behalf of a corporation.
  *
  * Signer semantics (spec draft 13 "corporation + operator OR group proposal"):
- * - Primary signer is `corporation` — either a group policy address (group
- *   proposal path) or a plain account that delegates to the corporation.
- * - When `operator` is non-empty, the AUTHZ-CHECK in the handler verifies
- *   the operator's delegation from the corporation covers this message type.
- * - When `operator` is empty, the corporation is acting alone (group proposal
- *   path) and AUTHZ-CHECK is skipped.
- * Cosmos SDK requires a single `cosmos.msg.v1.signer` field so the dual-signer
- * semantics from the spec are enforced at the handler level, not at ante.
+ * The signer is `operator` (consistent with the other delegable modules).
+ * - Group-proposal path: the corporation's group policy account executes the
+ *   message, so `operator` equals `corporation` (the policy_address) and the
+ *   handler skips AUTHZ-CHECK-1 (the corporation is acting alone).
+ * - Operator path: an individual `operator` signs; the handler resolves the
+ *   corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to
+ *   verify the operator's delegation covers this message type.
  */
 export interface MsgGrantOperatorAuthorization {
-  /** corporation is the group account granting the authorization. */
+  /** corporation is the policy_address of the corporation granting the authorization. */
   corporation: string;
   /**
-   * operator is the optional account authorized by the corporation to run this
-   * Msg on its behalf. Empty when the message is signed directly by the
-   * corporation via a group proposal.
+   * operator is the signer: an authorized operator, or the corporation's
+   * policy_address itself on the group-proposal path.
    */
   operator: string;
   /** grantee is the account that receives the authorization from authority. */
@@ -102,11 +100,11 @@ export interface MsgGrantOperatorAuthorizationResponse {
  * semantics as MsgGrantOperatorAuthorization (see above).
  */
 export interface MsgRevokeOperatorAuthorization {
-  /** corporation is the group account revoking the authorization. */
+  /** corporation is the policy_address of the corporation revoking the authorization. */
   corporation: string;
   /**
-   * operator is the optional account authorized by the corporation to run this
-   * Msg on its behalf.
+   * operator is the signer: an authorized operator, or the corporation's
+   * policy_address itself on the group-proposal path.
    */
   operator: string;
   /** grantee is the account whose authorization is being revoked. */

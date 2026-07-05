@@ -79,7 +79,7 @@ type GrantVSOACall struct {
 
 type UpdateVSOACall struct {
 	ParticipantID uint64
-	NewExpiration time.Time
+	NewExpiration *time.Time
 }
 
 func (m *MockDelegationKeeper) Reset() {
@@ -128,7 +128,7 @@ func (m *MockDelegationKeeper) RevokeVSOperatorAuthorization(_ context.Context, 
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) UpdateVSOperatorAuthorizationExpiration(_ context.Context, participantID uint64, newExpiration time.Time) error {
+func (m *MockDelegationKeeper) UpdateVSOperatorAuthorizationExpiration(_ context.Context, participantID uint64, newExpiration *time.Time) error {
 	m.UpdateVSOACalls = append(m.UpdateVSOACalls, UpdateVSOACall{ParticipantID: participantID, NewExpiration: newExpiration})
 	return m.ErrToReturn
 }
