@@ -24,6 +24,14 @@ type fixture struct {
 	addressCodec address.Codec
 }
 
+// mockBankKeeper treats every denom as existing on-chain.
+type mockBankKeeper struct{}
+
+func (mockBankKeeper) SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins {
+	return sdk.NewCoins()
+}
+func (mockBankKeeper) HasSupply(context.Context, string) bool { return true }
+
 func initFixture(t *testing.T) *fixture {
 	t.Helper()
 
@@ -41,6 +49,7 @@ func initFixture(t *testing.T) *fixture {
 		encCfg.Codec,
 		addressCodec,
 		authority,
+		mockBankKeeper{},
 	)
 
 	// Initialize params

@@ -17,7 +17,9 @@ type AuthKeeper interface {
 // BankKeeper defines the expected interface for the Bank module.
 type BankKeeper interface {
 	SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
-	// Methods imported from bank should be defined here
+	// HasSupply reports whether a denom is recognized on-chain; used by the
+	// [MOD-XR-MSG-1-2-1] COIN existence check.
+	HasSupply(context.Context, string) bool
 }
 
 // ParamSubspace defines the expected Subspace interface for parameters.

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -38,6 +39,14 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expectedAuthorityStr, msg.Authority)
 	}
 
+	// [MOD-XR-MSG-1-2-1] COIN assets MUST exist on-chain.
+	if err := ms.assertCoinAssetExists(ctx, msg.BaseAssetType, msg.BaseAsset, "base"); err != nil {
+		return nil, err
+	}
+	if err := ms.assertCoinAssetExists(ctx, msg.QuoteAssetType, msg.QuoteAsset, "quote"); err != nil {
+		return nil, err
+	}
+
 	// Check pair uniqueness
 	pairKey := buildPairKey(msg.BaseAssetType, msg.BaseAsset, msg.QuoteAssetType, msg.QuoteAsset)
 	_, err = ms.PairIndex.Get(ctx, pairKey)
@@ -66,8 +75,8 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 		ValidityDuration: msg.ValidityDuration,
 		Expires:          blockTime.Add(msg.ValidityDuration),
 		// [MOD-XR-MSG-1-3] entry starts disabled; enabled via gov SetExchangeRateState.
-		State:            false,
-		Updated:          blockTime,
+		State:   false,
+		Updated: blockTime,
 	}
 
 	// Store in collection
@@ -101,4 +110,20 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 // inside a denom).
 func buildPairKey(baseType cstypes.PricingAssetType, baseAsset string, quoteType cstypes.PricingAssetType, quoteAsset string) string {
 	return fmt.Sprintf("%d|%s|%d|%s", baseType, baseAsset, quoteType, quoteAsset)
+}
+
+// assertCoinAssetExists implements the [MOD-XR-MSG-1-2-1] on-chain existence check
+// for a COIN asset: the denom must be recognized by the chain (have supply).
+// factory/ denoms are rejected — this chain has no tokenfactory module.
+func (ms msgServer) assertCoinAssetExists(ctx context.Context, at cstypes.PricingAssetType, asset, side string) error {
+	if at != cstypes.PricingAssetType_COIN {
+		return nil
+	}
+	if strings.HasPrefix(asset, "factory/") {
+		return errorsmod.Wrapf(types.ErrInvalidRequest, "%s_asset %q: tokenfactory denoms are not supported", side, asset)
+	}
+	if !ms.bankKeeper.HasSupply(ctx, asset) {
+		return errorsmod.Wrapf(types.ErrInvalidRequest, "%s_asset %q does not exist on-chain", side, asset)
+	}
+	return nil
 }
