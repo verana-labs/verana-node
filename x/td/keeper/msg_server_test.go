@@ -1061,7 +1061,7 @@ func TestAdjustTrustDepositOnBehalf(t *testing.T) {
 			},
 		},
 		{
-			name:    "Existing TD increased on behalf",
+			name:    "Existing TD increased on behalf recycles refunded first",
 			account: testAccString,
 			funder:  funder,
 			amount:  200,
@@ -1081,10 +1081,38 @@ func TestAdjustTrustDepositOnBehalf(t *testing.T) {
 			check: func() {
 				td, err := k.TrustDeposit.Get(ctx, corpID)
 				require.NoError(t, err)
-				require.Equal(t, uint64(1200), td.Deposit) // 1000 + 200
-				require.Equal(t, uint64(100), td.Refunded) // unchanged
-				expectedShare := math.LegacyNewDec(1200)   // 1000 + 200/1.0
+				// 100 refunded is reused; funder adds only the 100 shortfall.
+				require.Equal(t, uint64(1100), td.Deposit)
+				require.Equal(t, uint64(0), td.Refunded)
+				expectedShare := math.LegacyNewDec(1100) // 1000 + 100/1.0
 				require.True(t, td.Share.Equal(expectedShare), "expected %s, got %s", expectedShare, td.Share)
+			},
+		},
+		{
+			name:    "Refunded fully covers on-behalf increase (no transfer)",
+			account: testAccString,
+			funder:  funder,
+			amount:  150,
+			setup: func() {
+				err := k.SetParams(ctx, defaultTestParams())
+				require.NoError(t, err)
+				td := types.TrustDeposit{
+					CorporationId: corpID,
+					Share:         math.LegacyNewDec(1000),
+					Deposit:       1000,
+					Refunded:      400,
+				}
+				err = k.TrustDeposit.Set(ctx, corpID, td)
+				require.NoError(t, err)
+			},
+			expErr: false,
+			check: func() {
+				td, err := k.TrustDeposit.Get(ctx, corpID)
+				require.NoError(t, err)
+				// Fully covered by refunded: deposit/share unchanged, refunded drops by 150.
+				require.Equal(t, uint64(1000), td.Deposit)
+				require.Equal(t, uint64(250), td.Refunded)
+				require.True(t, td.Share.Equal(math.LegacyNewDec(1000)))
 			},
 		},
 		{

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/verana-labs/verana-node/x/td/types"
 )
@@ -199,10 +200,10 @@ func (k Keeper) AdjustTrustDeposit(ctx sdk.Context, account string, augend int64
 	return nil
 }
 
-// AdjustTrustDepositOnBehalf increases the trust deposit of `account` using funds from `funder`.
-// Unlike AdjustTrustDeposit, this transfers coins directly from the funder to the TD module,
-// bypassing the refunded recycling logic. This is used when a third party (e.g., a fee payer)
-// funds another account's trust deposit increase during CSPS fee distribution.
+// AdjustTrustDepositOnBehalf increases the trust deposit of `account` using funds
+// from a third-party `funder` (e.g. a CSPS fee payer). Like AdjustTrustDeposit it
+// reuses the target's `refunded` credit first [MOD-TD-MSG-1-3] and the funder
+// covers only the shortfall; when `refunded` is 0 the funder pays the full amount.
 //
 // Only positive amounts are supported (increase only).
 func (k Keeper) AdjustTrustDepositOnBehalf(ctx sdk.Context, account string, funder sdk.AccAddress, amount int64) error {
@@ -225,24 +226,23 @@ func (k Keeper) AdjustTrustDepositOnBehalf(ctx sdk.Context, account string, fund
 	if exists && td.SlashedDeposit > 0 && td.RepaidDeposit < td.SlashedDeposit {
 		return fmt.Errorf("trust deposit has been slashed and not repaid")
 	}
-
-	// Get global share value parameter
-	params := k.GetParams(ctx)
-	shareValue := params.TrustDepositShareValue
-
-	augendShare := k.AmountToShare(uint64(amount), shareValue)
-
-	// Load or create trust deposit for account
 	if !exists {
-		td = types.TrustDeposit{
-			CorporationId: corpID,
-			Deposit:       uint64(amount),
-			Share:         augendShare,
-			Refunded:      0,
-		}
-	} else {
-		td.Deposit += uint64(amount)
-		td.Share = td.Share.Add(augendShare)
+		td = types.TrustDeposit{CorporationId: corpID, Share: math.LegacyZeroDec()}
+	}
+
+	shareValue := k.GetParams(ctx).TrustDepositShareValue
+
+	// Reuse refunded credit first; the funder only funds the remaining shortfall.
+	reused := uint64(amount)
+	if td.Refunded < reused {
+		reused = td.Refunded
+	}
+	td.Refunded -= reused
+	shortfall := uint64(amount) - reused
+
+	if shortfall > 0 {
+		td.Deposit += shortfall
+		td.Share = td.Share.Add(k.AmountToShare(shortfall, shareValue))
 	}
 
 	// Save trust deposit BEFORE bank transfer
@@ -250,14 +250,16 @@ func (k Keeper) AdjustTrustDepositOnBehalf(ctx sdk.Context, account string, fund
 		return fmt.Errorf("failed to save trust deposit: %w", err)
 	}
 
-	// Transfer from funder to TD module
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(
-		ctx,
-		funder,
-		types.ModuleName,
-		sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, amount)),
-	); err != nil {
-		return fmt.Errorf("failed to transfer tokens from funder: %w", err)
+	// Transfer the shortfall from funder to TD module.
+	if shortfall > 0 {
+		if err := k.bankKeeper.SendCoinsFromAccountToModule(
+			ctx,
+			funder,
+			types.ModuleName,
+			sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(shortfall))),
+		); err != nil {
+			return fmt.Errorf("failed to transfer tokens from funder: %w", err)
+		}
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -269,6 +271,7 @@ func (k Keeper) AdjustTrustDepositOnBehalf(ctx sdk.Context, account string, fund
 			sdk.NewAttribute(types.AttributeKeyAdjustmentType, "increase_on_behalf"),
 			sdk.NewAttribute(types.AttributeKeyNewAmount, strconv.FormatUint(td.Deposit, 10)),
 			sdk.NewAttribute(types.AttributeKeyNewShare, td.Share.String()),
+			sdk.NewAttribute(types.AttributeKeyNewRefunded, strconv.FormatUint(td.Refunded, 10)),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
