@@ -2467,7 +2467,7 @@ func GrantOperatorAuthorizationWithSpendViaGroup(
 ) error {
 	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantOperatorAuthorization{
 		Corporation:           policyAddr,
-		Operator:              "",
+		Operator:              policyAddr, // group-proposal path: operator == corporation policy_address
 		Grantee:               granteeAddr,
 		MsgTypes:              msgTypes,
 		AuthzSpendLimit:       authzSpendLimit,
@@ -2490,7 +2490,7 @@ func GrantOperatorAuthorizationWithFeegrantViaGroup(
 ) error {
 	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantOperatorAuthorization{
 		Corporation:              policyAddr,
-		Operator:                 "",
+		Operator:                 policyAddr, // group-proposal path: operator == corporation policy_address
 		Grantee:                  granteeAddr,
 		MsgTypes:                 msgTypes,
 		WithFeegrant:             true,
@@ -2536,8 +2536,8 @@ func submitGrantOpAuthzViaGroup(
 }
 
 // GrantSelfDelegation grants an operator self-delegation so they can execute messages
-// with corporation=operator (same address). MsgGrantOperatorAuthorization has signer="corporation",
-// and operator="" bypasses the AUTHZ-CHECK.
+// with corporation=operator (same address). MsgGrantOperatorAuthorization has signer="operator";
+// operator == corporation bypasses AUTHZ-CHECK-1 (corporation acting alone).
 func GrantSelfDelegation(
 	client cosmosclient.Client,
 	ctx context.Context,
@@ -2551,7 +2551,7 @@ func GrantSelfDelegation(
 
 	msg := &detypes.MsgGrantOperatorAuthorization{
 		Corporation: addr,
-		Operator:    "",
+		Operator:    addr,
 		Grantee:     addr,
 		MsgTypes:    msgTypes,
 	}
