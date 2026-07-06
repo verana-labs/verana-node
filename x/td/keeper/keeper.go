@@ -74,7 +74,6 @@ func (k Keeper) Logger() log.Logger {
 	return k.logger.With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-
 // GetTrustDepositMap returns the TrustDeposit collections.Map for migration purposes.
 func (k Keeper) GetTrustDepositMap() collections.Map[uint64, types.TrustDeposit] {
 	return k.TrustDeposit

@@ -28,21 +28,26 @@ func (k Keeper) BeginBlocker(ctx context.Context) error {
 		return nil
 	}
 
-	// Get yield intermediate pool address
+	// Get yield intermediate pool address. A misconfigured (non-bech32) param
+	// must not be silently masked by a fallback address: skip distribution.
 	yieldIntermediatePoolAddr, err := sdk.AccAddressFromBech32(params.YieldIntermediatePool)
 	if err != nil {
-		// If invalid, try to derive from module name
-		yieldIntermediatePoolAddr = authtypes.NewModuleAddress(types.YieldIntermediatePool)
+		k.Logger().Error("invalid yield_intermediate_pool address, skipping yield distribution", "value", params.YieldIntermediatePool, "error", err)
+		return nil
 	}
 
 	// Get trust deposit module address
 	trustDepositAddr := authtypes.NewModuleAddress(types.ModuleName)
 
-	// Get current dust (defaults to zero if not set)
+	// Get current dust (defaults to zero if not set or unparsable — never panic here).
 	dustStr, err := k.Dust.Get(ctx)
 	dust := math.LegacyZeroDec()
 	if err == nil && dustStr != "" {
-		dust, _ = math.LegacyNewDecFromStr(dustStr)
+		if parsed, perr := math.LegacyNewDecFromStr(dustStr); perr == nil {
+			dust = parsed
+		} else {
+			k.Logger().Error("invalid dust value, resetting to zero", "value", dustStr, "error", perr)
+		}
 	}
 
 	// Get trust deposit balance before transfer
@@ -111,13 +116,21 @@ func (k Keeper) BeginBlocker(ctx context.Context) error {
 	// Adjust Trust Deposit Share Value
 	// trust_deposit_share_value = (trust_deposit_after / trust_deposit_before) * trust_deposit_share_value
 	if !trustDepositBalanceDec.IsZero() {
+		oldShareValue := params.TrustDepositShareValue
 		shareValueMultiplier := trustDepositBalanceAfterDec.Quo(trustDepositBalanceDec)
-		newShareValue := params.TrustDepositShareValue.Mul(shareValueMultiplier)
+		newShareValue := oldShareValue.Mul(shareValueMultiplier)
 		params.TrustDepositShareValue = newShareValue
 		if err := k.SetParams(ctx, params); err != nil {
 			k.Logger().Error("failed to update trust deposit share value", "error", err)
 			return err
 		}
+		sdkCtx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				types.EventTypeYieldDistribution,
+				sdk.NewAttribute(types.AttributeKeyOldShareValue, oldShareValue.String()),
+				sdk.NewAttribute(types.AttributeKeyNewShareValue, newShareValue.String()),
+			),
+		)
 	}
 
 	// Update dust: remainder from the transfer

@@ -92,7 +92,10 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 		return nil, fmt.Errorf("failed to execute participant VP: %w", err)
 	}
 
-	corporationID, _ := ms.corpIDFromAccount(ctx, msg.Corporation)
+	corporationID, err := ms.corpIDFromAccount(ctx, msg.Corporation)
+	if err != nil {
+		return nil, err
+	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeStartParticipantOP,
@@ -813,9 +816,7 @@ func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *type
 }
 
 // [MOD-PP-MSG-7-3] Create Root Participant execution
-// Spec v4 draft 13: participant.type is hardcoded to ECOSYSTEM. vs_operator is not
-// set on root participants; only on participants created via StartParticipantOP or
-// SelfCreateParticipant.
+// Spec v4 draft 13: participant.type is hardcoded to ECOSYSTEM.
 func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.MsgCreateRootParticipant, now time.Time) (uint64, error) {
 	corporationId, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
@@ -1259,7 +1260,10 @@ func (ms msgServer) executeRevokeParticipant(ctx sdk.Context, participant types.
 		if err != nil {
 			return err
 		}
-		depositI64 := int64(participant.Deposit)
+		depositI64, err := uint64ToInt64(participant.Deposit, "revoke_release_deposit")
+		if err != nil {
+			return err
+		}
 		if err := ms.trustDeposit.AdjustTrustDeposit(ctx, corpAcct, -depositI64, "participant_revoke_release_deposit"); err != nil {
 			return fmt.Errorf("failed to release trust deposit on revocation: %w", err)
 		}
@@ -1641,6 +1645,10 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	}
 	if validatorParticipant.EffectiveUntil != nil && !now.Before(*validatorParticipant.EffectiveUntil) {
 		return nil, fmt.Errorf("validator participant is expired")
+	}
+	// Must be active or future: effective_from set (an unset effective_from is INACTIVE).
+	if validatorParticipant.EffectiveFrom == nil {
+		return nil, fmt.Errorf("validator participant is not active or future")
 	}
 
 	// [MOD-PP-MSG-14-2-1] effective_from is optional; if provided it MUST be in

@@ -46,6 +46,10 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("repaid_deposit exceeds slashed_deposit for corporation_id %d: %d > %d",
 				td.CorporationId, td.RepaidDeposit, td.SlashedDeposit)
 		}
+
+		if td.Share.IsNil() || td.Share.IsNegative() {
+			return fmt.Errorf("invalid share for corporation_id %d: %s", td.CorporationId, td.Share.String())
+		}
 	}
 
 	return nil

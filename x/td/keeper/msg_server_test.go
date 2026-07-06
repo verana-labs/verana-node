@@ -708,7 +708,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			check: func() {
 				td, err := k.TrustDeposit.Get(ctx, corpID)
 				require.NoError(t, err)
-				require.Equal(t, uint64(1100), td.Deposit)      // 800 + 300
+				require.Equal(t, uint64(1100), td.Deposit)       // 800 + 300
 				require.Equal(t, uint64(500), td.RepaidDeposit)  // 200 + 300
 				require.Equal(t, uint64(500), td.SlashedDeposit) // cumulative
 			},

@@ -80,6 +80,10 @@ func (gs GenesisState) Validate() error {
 			gs.NextParticipantId, maxParticipantId)
 	}
 
+	if err := validateNoValidatorCycles(gs.Participants); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -106,6 +110,10 @@ func validateParticipant(participant Participant, allParticipants []Participant)
 
 	// Validate validator participant reference
 	if participant.ValidatorParticipantId != 0 {
+		if participant.ValidatorParticipantId == participant.Id {
+			return fmt.Errorf("participant ID %d references itself as validator", participant.Id)
+		}
+
 		validatorFound := false
 
 		// Check if validator participant exists
@@ -122,6 +130,25 @@ func validateParticipant(participant Participant, allParticipants []Participant)
 		}
 	}
 
+	return nil
+}
+
+// validateNoValidatorCycles rejects cyclic validator_participant_id chains, which
+// would loop forever during message execution [PPB-MAJ-2].
+func validateNoValidatorCycles(participants []Participant) error {
+	validatorOf := make(map[uint64]uint64, len(participants))
+	for _, p := range participants {
+		validatorOf[p.Id] = p.ValidatorParticipantId
+	}
+	for _, p := range participants {
+		visited := map[uint64]bool{p.Id: true}
+		for cur := p.ValidatorParticipantId; cur != 0; cur = validatorOf[cur] {
+			if visited[cur] {
+				return fmt.Errorf("validator cycle detected involving participant ID %d", p.Id)
+			}
+			visited[cur] = true
+		}
+	}
 	return nil
 }
 

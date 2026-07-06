@@ -63,4 +63,3 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 		},
 	}
 }
-

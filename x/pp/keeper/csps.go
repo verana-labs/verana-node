@@ -287,9 +287,10 @@ func (ms msgServer) buildSessionFeePlan(ctx sdk.Context, msg *types.MsgCreateOrU
 		} else {
 			fee = participant.IssuanceFees
 		}
-		// beneficiary_fee_in_pricing_asset = participant.fee × (1 - discount)
+		// beneficiary_fee_in_pricing_asset = participant.fee × (1 - discount).
+		// Computed via math.Int to avoid uint64 overflow on large fees.
 		if executorDiscount > 0 {
-			fee = (fee * (discountScale - executorDiscount)) / discountScale
+			fee = math.NewIntFromUint64(fee).MulRaw(int64(discountScale - executorDiscount)).QuoRaw(discountScale).Uint64()
 		}
 		if fee == 0 {
 			continue

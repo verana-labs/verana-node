@@ -1,9 +1,11 @@
 package keeper
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/verana-labs/verana-node/x/td/types"
@@ -37,8 +39,11 @@ func (k Keeper) AdjustTrustDeposit(ctx sdk.Context, account string, augend int64
 
 	// Load existing trust deposit if it exists
 	td, err := k.TrustDeposit.Get(ctx, corpID)
+	if err != nil && !errors.Is(err, collections.ErrNotFound) {
+		return fmt.Errorf("failed to load trust deposit: %w", err)
+	}
 
-	if err != nil {
+	if errors.Is(err, collections.ErrNotFound) {
 		// If trust deposit doesn't exist and trying to decrease, abort
 		if augend < 0 {
 			return fmt.Errorf("cannot decrease non-existent trust deposit")
@@ -80,6 +85,7 @@ func (k Keeper) AdjustTrustDeposit(ctx sdk.Context, account string, augend int64
 				sdk.NewAttribute(types.AttributeKeyAdjustmentType, "increase"),
 				sdk.NewAttribute(types.AttributeKeyNewAmount, strconv.FormatUint(td.Deposit, 10)),
 				sdk.NewAttribute(types.AttributeKeyNewShare, td.Share.String()),
+				sdk.NewAttribute(types.AttributeKeyNewRefunded, strconv.FormatUint(td.Refunded, 10)),
 				sdk.NewAttribute(types.AttributeKeyReason, reason),
 				sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 			),
@@ -222,6 +228,9 @@ func (k Keeper) AdjustTrustDepositOnBehalf(ctx sdk.Context, account string, fund
 
 	// Check if account has an existing TD with unrepaid slash
 	td, err := k.TrustDeposit.Get(ctx, corpID)
+	if err != nil && !errors.Is(err, collections.ErrNotFound) {
+		return fmt.Errorf("failed to load trust deposit: %w", err)
+	}
 	exists := err == nil
 	if exists && td.SlashedDeposit > 0 && td.RepaidDeposit < td.SlashedDeposit {
 		return fmt.Errorf("trust deposit has been slashed and not repaid")

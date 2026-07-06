@@ -79,9 +79,9 @@ func (k Keeper) ListParticipants(goCtx context.Context, req *types.QueryListPart
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// [MOD-PP-QRY-1-3] ordered by modified asc, then capped to response_max_size.
+	// [MOD-PP-QRY-1-3] ordered by modified asc (nil sorts first), then capped.
 	sort.Slice(participants, func(i, j int) bool {
-		return participants[i].Modified.Before(*participants[j].Modified)
+		return lessModified(participants[i].Modified, participants[j].Modified)
 	})
 	if len(participants) > int(maxSize) {
 		participants = participants[:maxSize]
@@ -186,9 +186,9 @@ func (k Keeper) ListParticipantSessions(ctx context.Context, req *types.QueryLis
 		return nil, status.Error(codes.Internal, "failed to list sessions")
 	}
 
-	// Sort by modified time ascending
+	// Sort by modified time ascending (nil sorts first)
 	sort.Slice(sessions, func(i, j int) bool {
-		return sessions[i].Modified.Before(*sessions[j].Modified)
+		return lessModified(sessions[i].Modified, sessions[j].Modified)
 	})
 
 	return &types.QueryListParticipantSessionsResponse{
@@ -454,13 +454,27 @@ func (k Keeper) FindBeneficiaries(goCtx context.Context, req *types.QueryFindBen
 		}
 	}
 
-	// Convert map to array
+	// Convert map to array, sorted by participant id for deterministic output.
 	participants := make([]types.Participant, 0, len(foundParticipantMap))
 	for _, participant := range foundParticipantMap {
 		participants = append(participants, participant)
 	}
+	sort.Slice(participants, func(i, j int) bool {
+		return participants[i].Id < participants[j].Id
+	})
 
 	return &types.QueryFindBeneficiariesResponse{
 		Participants: participants,
 	}, nil
+}
+
+// lessModified orders by Modified ascending with nil sorting first.
+func lessModified(a, b *time.Time) bool {
+	if a == nil {
+		return b != nil
+	}
+	if b == nil {
+		return false
+	}
+	return a.Before(*b)
 }

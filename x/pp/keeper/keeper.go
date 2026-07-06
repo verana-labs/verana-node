@@ -160,10 +160,9 @@ func IsValidParticipant(participant types.Participant, checkTime time.Time) erro
 		return fmt.Errorf("participant is slashed since %v", participant.Slashed)
 	}
 
-	// Check if participant is revoked (REVOKED state)
-	// Spec: "else if `revoked` is lower than now(), => `participant_state` is `REVOKED`"
-	// This means revoked < now(), so we check checkTime.After(*participant.Revoked)
-	if participant.Revoked != nil && checkTime.After(*participant.Revoked) {
+	// Check if participant is revoked (REVOKED state). Glossary: an active
+	// participant has revoked == null, so a revocation set this block also aborts.
+	if participant.Revoked != nil {
 		return fmt.Errorf("participant is revoked since %v", participant.Revoked)
 	}
 

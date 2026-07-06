@@ -306,6 +306,19 @@ func (msg *MsgRevokeParticipant) ValidateBasic() error {
 	return nil
 }
 
+func (msg *MsgTriggerResolver) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
+		return fmt.Errorf("invalid corporation address: %w", err)
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
+		return fmt.Errorf("invalid operator address: %w", err)
+	}
+	if msg.Id == 0 {
+		return fmt.Errorf("participant ID cannot be 0")
+	}
+	return nil
+}
+
 func (msg *MsgCreateOrUpdateParticipantSession) ValidateBasic() error {
 	// [MOD-PP-MSG-10-2] authority (group): signature must be verified
 	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
