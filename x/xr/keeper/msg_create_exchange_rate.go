@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -99,6 +100,10 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 			sdk.NewAttribute(types.AttributeKeyBaseAsset, msg.BaseAsset),
 			sdk.NewAttribute(types.AttributeKeyQuoteAssetType, msg.QuoteAssetType.String()),
 			sdk.NewAttribute(types.AttributeKeyQuoteAsset, msg.QuoteAsset),
+			sdk.NewAttribute(types.AttributeKeyRate, msg.Rate),
+			sdk.NewAttribute(types.AttributeKeyRateScale, fmt.Sprintf("%d", msg.RateScale)),
+			sdk.NewAttribute(types.AttributeKeyValidityDuration, msg.ValidityDuration.String()),
+			sdk.NewAttribute(types.AttributeKeyExpires, xr.Expires.UTC().Format(time.RFC3339Nano)),
 		),
 	)
 

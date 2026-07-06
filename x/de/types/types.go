@@ -13,8 +13,7 @@ import (
 // VSOA fee grants. Note: CreateOrUpdatePermissionSession is explicitly
 // excluded from operator authorization msg_types (see ValidateBasic).
 var VPRDelegableMsgTypes = map[string]bool{
-	// Corporation (CO)
-	"/verana.co.v1.MsgCreateCorporation": true,
+	// Corporation (CO) — MsgCreateCorporation is non-delegable (any account signs).
 	"/verana.co.v1.MsgUpdateCorporation": true,
 	// Ecosystem (EC) — renamed from Trust Registry (TR) in v4-rc2 (#305)
 	"/verana.ec.v1.MsgCreateEcosystem":  true,
@@ -110,12 +109,7 @@ func (msg *MsgGrantOperatorAuthorization) ValidateBasic() error {
 		return fmt.Errorf("expiration must be set when authz_spend_limit_period is set")
 	}
 
-	// feegrant fields must be empty when with_feegrant is false
-	if !msg.WithFeegrant {
-		if !msg.FeegrantSpendLimit.IsZero() {
-			return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "feegrant_spend_limit must be empty when with_feegrant is false")
-		}
-	}
+	// feegrant_spend_limit is ignored when with_feegrant is false (spec MOD-DE-MSG-3-2).
 
 	// feegrant_spend_limit if specified must be valid and all-positive (only relevant if with_feegrant)
 	if msg.WithFeegrant && len(msg.FeegrantSpendLimit) > 0 && !msg.FeegrantSpendLimit.IsValid() {

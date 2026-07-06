@@ -201,8 +201,8 @@ func TestCreateExchangeRate_InvalidRate(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := []struct {
-		name string
-		rate string
+		name   string
+		rate   string
 		errMsg string
 	}{
 		{"zero rate", "0", "strictly greater than 0"},

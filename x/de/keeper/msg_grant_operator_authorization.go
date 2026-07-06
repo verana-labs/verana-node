@@ -110,6 +110,11 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 			return nil, fmt.Errorf("failed to revoke fee allowance: %w", err)
 		}
 	} else {
+		// period is ignored when feegrant_spend_limit is not set (MOD-DE-MSG-3-2).
+		feegrantPeriod := msg.FeegrantSpendLimitPeriod
+		if len(msg.FeegrantSpendLimit) == 0 {
+			feegrantPeriod = nil
+		}
 		if err := ms.GrantFeeAllowance(
 			ctx,
 			co.Id,
@@ -117,7 +122,7 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 			msg.MsgTypes,
 			msg.Expiration,
 			msg.FeegrantSpendLimit,
-			msg.FeegrantSpendLimitPeriod,
+			feegrantPeriod,
 		); err != nil {
 			return nil, fmt.Errorf("failed to grant fee allowance: %w", err)
 		}

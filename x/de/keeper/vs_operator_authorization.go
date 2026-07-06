@@ -25,6 +25,21 @@ func (k Keeper) GrantVSOperatorAuthorization(
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	// [MOD-DE-MSG-5-2] Basic checks.
+	if corporationID == 0 {
+		return fmt.Errorf("corporation_id cannot be 0")
+	}
+	if vsOperator == "" {
+		return fmt.Errorf("vs_operator cannot be empty")
+	}
+	if len(record.SpendLimit) > 0 && !record.SpendLimit.IsValid() {
+		return fmt.Errorf("invalid spend_limit")
+	}
+	if len(record.FeeSpendLimit) > 0 && !record.FeeSpendLimit.IsValid() {
+		return fmt.Errorf("invalid fee_spend_limit")
+	}
+	if record.Period != nil && *record.Period <= 0 {
+		return fmt.Errorf("period must be a positive duration")
+	}
 
 	// record.participant_id MUST NOT already exist anywhere (global uniqueness).
 	if record.ParticipantId == 0 {
