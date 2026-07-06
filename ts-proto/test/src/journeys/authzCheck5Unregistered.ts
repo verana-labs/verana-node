@@ -93,7 +93,8 @@ async function main() {
     typeUrl: typeUrls.MsgGrantOperatorAuthorization,
     value: MsgGrantOperatorAuthorization.fromPartial({
       corporation: account.address,
-      operator: "", // self-grant: AUTHZ-CHECK-1 short-circuits, AUTHZ-CHECK-5 is the gate
+      // self-grant (operator == corporation): AUTHZ-CHECK-1 skipped, AUTHZ-CHECK-5 is the gate
+      operator: account.address,
       grantee: account.address,
       msgTypes: [typeUrls.MsgStoreDigest],
       withFeegrant: false,

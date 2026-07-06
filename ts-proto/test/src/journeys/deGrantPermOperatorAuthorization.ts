@@ -138,8 +138,8 @@ async function main() {
 
   // The corporation policy_address cannot sign directly; the corp's sole group
   // member (SIGNER_INDEX, matching co-create) submits an x/group proposal carrying
-  // the inner MsgGrantOperatorAuthorization (operator="" = corporation acts alone)
-  // and votes YES with EXEC_TRY so the policy executes it (threshold=1, weight=1).
+  // the inner MsgGrantOperatorAuthorization (operator == corporation policy_address
+  // = corporation acts alone) and votes YES with EXEC_TRY so the policy executes it.
   const signerWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, SIGNER_INDEX);
   const signerAccount = await getAccountInfo(signerWallet);
   const client = await createSigningClient(signerWallet);
@@ -147,7 +147,7 @@ async function main() {
   const innerMsgValue = MsgGrantOperatorAuthorization.encode(
     MsgGrantOperatorAuthorization.fromPartial({
       corporation: authorityAddress,
-      operator: "",
+      operator: authorityAddress,
       grantee: operatorAccount.address,
       msgTypes: allMsgTypes,
       withFeegrant: false,
