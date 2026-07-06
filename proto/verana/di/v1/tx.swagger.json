@@ -127,11 +127,7 @@
         },
         "digest": {
           "type": "string",
-          "description": "digest is the digest string to store."
-        },
-        "digest_algorithm": {
-          "type": "string",
-          "description": "digest_algorithm is the hash algorithm used to produce the digest (e.g. \"sha2-256\")."
+          "description": "digest is the digest string to store (SRI format; the algorithm is encoded\nin the prefix, e.g. sha256-/sha384-/sha512-)."
         }
       },
       "description": "[MOD-DI-MSG-1] MsgStoreDigest stores a digest on behalf of a corporation."

@@ -40,7 +40,7 @@ func RunDiStoreDigestJourney(ctx context.Context, client cosmosclient.Client) er
 	// =========================================================================
 	fmt.Println("\n--- Step 2: Operator tries StoreDigest without auth (expect failure) ---")
 
-	testDigest := fmt.Sprintf("sha256-test-digest-%d", time.Now().UnixNano())
+	testDigest := fmt.Sprintf("sha256-testdigest%d", time.Now().UnixNano())
 	storeMsg := &ditypes.MsgStoreDigest{
 		Authority: policyAddr,
 		Operator:  operatorAddr,

@@ -337,7 +337,10 @@ export const QueryGetDigestResponse = {
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
-  /** [MOD-DI-QRY-1] GetDigest returns a stored digest by its digest string. */
+  /**
+   * [MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a
+   * query-string parameter (not a path segment) so SRI base64 (/, +, =) is safe.
+   */
   GetDigest(request: QueryGetDigestRequest): Promise<QueryGetDigestResponse>;
 }
 

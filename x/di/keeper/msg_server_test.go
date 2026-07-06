@@ -142,7 +142,7 @@ func TestStoreDigest_AuthzSuccess(t *testing.T) {
 
 	authority := sdk.AccAddress([]byte("authority_address_")).String()
 	operator := sdk.AccAddress([]byte("operator_address__")).String()
-	digest := "sha256-authz-success"
+	digest := "sha256-authzsuccess"
 
 	resp, err := ms.StoreDigest(f.ctx, &types.MsgStoreDigest{
 		Authority: authority,
@@ -196,40 +196,43 @@ func TestStoreDigestModuleCall(t *testing.T) {
 	authority := sdk.AccAddress([]byte("authority_address_")).String()
 
 	testCases := []struct {
-		name            string
-		authority       string
-		digest          string
-		digestAlgorithm string
-		wantErr         bool
-		errMsg          string
+		name      string
+		authority string
+		digest    string
+		wantErr   bool
+		errMsg    string
 	}{
 		{
-			name:            "valid digest stored",
-			authority:       authority,
-			digest:          "sha256-modulecall",
-			digestAlgorithm: "sha256",
-			wantErr:         false,
+			name:      "valid digest stored",
+			authority: authority,
+			digest:    "sha256-modulecall",
+			wantErr:   false,
 		},
 		{
-			name:            "empty digest rejected",
-			authority:       authority,
-			digest:          "",
-			digestAlgorithm: "sha256",
-			wantErr:         true,
-			errMsg:          "digest must not be empty",
+			name:      "empty digest rejected",
+			authority: authority,
+			digest:    "",
+			wantErr:   true,
+			errMsg:    "digest must not be empty",
 		},
 		{
-			name:            "duplicate digest is idempotent no-op",
-			authority:       authority,
-			digest:          "sha256-modulecall",
-			digestAlgorithm: "sha256",
-			wantErr:         false,
+			name:      "non-SRI digest rejected",
+			authority: authority,
+			digest:    "not-a-valid-sri",
+			wantErr:   true,
+			errMsg:    "SRI",
+		},
+		{
+			name:      "duplicate digest is idempotent no-op",
+			authority: authority,
+			digest:    "sha256-modulecall",
+			wantErr:   false,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := f.keeper.StoreDigestModuleCall(f.ctx, tc.authority, tc.digest, tc.digestAlgorithm)
+			err := f.keeper.StoreDigestModuleCall(f.ctx, tc.authority, tc.digest)
 			if tc.wantErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errMsg)

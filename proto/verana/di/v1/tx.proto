@@ -53,10 +53,10 @@ message MsgStoreDigest {
   string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // operator is the account authorized by the corporation to run this Msg.
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // digest is the digest string to store.
+  // digest is the digest string to store (SRI format; the algorithm is encoded
+  // in the prefix, e.g. sha256-/sha384-/sha512-).
   string digest = 3;
-  // digest_algorithm is the hash algorithm used to produce the digest (e.g. "sha2-256").
-  string digest_algorithm = 5;
+  reserved 4, 5; // removed digest_algorithm
 }
 
 // MsgStoreDigestResponse defines the response for MsgStoreDigest.
@@ -64,13 +64,12 @@ message MsgStoreDigestResponse {}
 
 // Digest is the stored digest record.
 message Digest {
-  // digest is the digest string.
+  // digest is the digest string (SRI format).
   string digest = 1;
   // created is the timestamp when the digest was stored.
   google.protobuf.Timestamp created = 2 [
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false
   ];
-  // digest_algorithm is the hash algorithm used to produce the digest (e.g. "sha2-256").
-  string digest_algorithm = 3;
+  reserved 3; // removed digest_algorithm
 }

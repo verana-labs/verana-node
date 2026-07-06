@@ -3,8 +3,13 @@ package types
 const (
 	EventTypeStoreDigest = "store_digest"
 
-	AttributeKeyAuthority = "authority"
-	AttributeKeyOperator  = "operator"
-	AttributeKeyDigest    = "digest"
-	AttributeKeyTimestamp = "timestamp"
+	AttributeKeyCorporation = "corporation"
+	AttributeKeyOperator    = "operator"
+	AttributeKeyDigest      = "digest"
+	AttributeKeySource      = "source"
+	AttributeKeyTimestamp   = "timestamp"
+
+	// AttributeValueSourceMsg / SourceModuleCall distinguish the two entry points.
+	AttributeValueSourceMsg        = "msg"
+	AttributeValueSourceModuleCall = "module_call"
 )
