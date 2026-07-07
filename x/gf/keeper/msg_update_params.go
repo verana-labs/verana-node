@@ -21,5 +21,9 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 	if err := ms.SetParams(ctx, msg.Params); err != nil {
 		return nil, err
 	}
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeUpdateParams,
+		sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority),
+	))
 	return &types.MsgUpdateParamsResponse{}, nil
 }

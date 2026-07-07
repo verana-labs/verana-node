@@ -105,7 +105,7 @@ func RunEcGFAddGFDJourney(ctx context.Context, client cosmosclient.Client) error
 	}
 	fmt.Printf("✅ Step 4: ListGFVs returned %d GFV(s) for ec-alpha\n", len(listResp.Versions))
 	for _, gfv := range listResp.Versions {
-		isActive := !gfv.ActiveSince.IsZero()
+		isActive := gfv.ActiveSince != nil
 		fmt.Printf("  GFV ID=%d version=%d active=%v\n", gfv.Id, gfv.Version, isActive)
 	}
 

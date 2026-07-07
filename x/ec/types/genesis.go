@@ -99,5 +99,10 @@ func (gs GenesisState) Validate() error {
 			return errors.Wrapf(ErrInvalidSubject, "ec counter (%d) is less than max ecosystem id (%d)", c.Value, maxEcID)
 		}
 	}
+	if len(gs.Ecosystems) > 0 {
+		if _, ok := seenCounter["ec"]; !ok {
+			return errors.Wrap(ErrInvalidSubject, "ec counter is required when ecosystems exist")
+		}
+	}
 	return nil
 }

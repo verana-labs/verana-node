@@ -143,7 +143,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	}
 	fmt.Printf("✅ Step 4: ListGFVs returned %d GFV(s) for Corp A\n", len(listResp.Versions))
 	for _, gfv := range listResp.Versions {
-		isActive := !gfv.ActiveSince.IsZero()
+		isActive := gfv.ActiveSince != nil
 		fmt.Printf("  GFV ID=%d version=%d active=%v\n", gfv.Id, gfv.Version, isActive)
 	}
 
@@ -154,7 +154,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 		return fmt.Errorf("step 4b ListGFVs activeOnly failed: %w", err)
 	}
 	for _, gfv := range listActiveResp.Versions {
-		if gfv.ActiveSince.IsZero() {
+		if gfv.ActiveSince == nil {
 			return fmt.Errorf("step 4b failed: inactive GFV returned with activeOnly=true")
 		}
 	}
@@ -179,7 +179,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 		if err != nil {
 			return fmt.Errorf("step 5 GetGFV failed: %w", err)
 		}
-		isActive := !gfvResp.Version.ActiveSince.IsZero()
+		isActive := gfvResp.Version.ActiveSince != nil
 		fmt.Printf("✅ Step 5: GetGFV ID=%d version=%d active=%v\n",
 			gfvResp.Version.Id, gfvResp.Version.Version, isActive)
 	}

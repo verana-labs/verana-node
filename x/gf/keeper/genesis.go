@@ -33,9 +33,18 @@ func (k Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) error {
 		if err := k.GFDocument.Set(ctx, gfd.Id, gfd); err != nil {
 			return err
 		}
+		if err := k.GFDocumentByGFVLang.Set(ctx, collections.Join(gfd.GfvId, gfd.Language), gfd.Id); err != nil {
+			return err
+		}
 		if gfd.Id > maxGFD {
 			maxGFD = gfd.Id
 		}
+	}
+	if maxGFV < gs.GfvCounter {
+		maxGFV = gs.GfvCounter
+	}
+	if maxGFD < gs.GfdCounter {
+		maxGFD = gs.GfdCounter
 	}
 	if err := k.Counter.Set(ctx, "gfv", maxGFV); err != nil {
 		return err
@@ -50,13 +59,35 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	gs := &types.GenesisState{
 		Params: k.GetParams(ctx),
 	}
-	_ = k.GFVersion.Walk(ctx, nil, func(_ uint64, gfv types.GovernanceFrameworkVersion) (bool, error) {
+	if err := k.GFVersion.Walk(ctx, nil, func(_ uint64, gfv types.GovernanceFrameworkVersion) (bool, error) {
 		gs.Versions = append(gs.Versions, gfv)
 		return false, nil
-	})
-	_ = k.GFDocument.Walk(ctx, nil, func(_ uint64, gfd types.GovernanceFrameworkDocument) (bool, error) {
+	}); err != nil {
+		panic(err)
+	}
+	if err := k.GFDocument.Walk(ctx, nil, func(_ uint64, gfd types.GovernanceFrameworkDocument) (bool, error) {
 		gs.Documents = append(gs.Documents, gfd)
 		return false, nil
-	})
+	}); err != nil {
+		panic(err)
+	}
+	if c, err := k.Counter.Get(ctx, "gfv"); err == nil {
+		gs.GfvCounter = c
+	} else {
+		for _, gfv := range gs.Versions {
+			if gfv.Id > gs.GfvCounter {
+				gs.GfvCounter = gfv.Id
+			}
+		}
+	}
+	if c, err := k.Counter.Get(ctx, "gfd"); err == nil {
+		gs.GfdCounter = c
+	} else {
+		for _, gfd := range gs.Documents {
+			if gfd.Id > gs.GfdCounter {
+				gs.GfdCounter = gfd.Id
+			}
+		}
+	}
 	return gs
 }

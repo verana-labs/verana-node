@@ -17,4 +17,6 @@ message GenesisState {
   ];
   repeated CredentialSchema credential_schemas = 2 [(gogoproto.nullable) = false];
   uint64 schema_counter = 3;
+  repeated SchemaAuthorizationPolicy schema_authorization_policies = 4 [(gogoproto.nullable) = false];
+  uint64 schema_authorization_policy_counter = 5;
 }

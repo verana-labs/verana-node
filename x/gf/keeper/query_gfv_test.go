@@ -34,15 +34,20 @@ func TestQueryGetGovernanceFrameworkVersion_PreferredLanguageFallbackWhenNoMatch
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
 	require.NoError(t, err)
+	frMsg := validMsg(testCorp, testOperator, 0, 1)
+	frMsg.DocLanguage = "fr"
+	frMsg.DocUrl = "https://example.com/gf-v1-fr.html"
+	_, err = ms.AddGovernanceFrameworkDocument(ctx, frMsg)
+	require.NoError(t, err)
 
 	qs := keeper.NewQueryServerImpl(k)
-	// Ask for "es" which doesn't exist — must fall back to all docs.
+	// Ask for "es" which doesn't exist — must return exactly one doc, not all.
 	resp, err := qs.GetGovernanceFrameworkVersion(ctx, &types.QueryGetGovernanceFrameworkVersionRequest{
 		Id:                1,
 		PreferredLanguage: "es",
 	})
 	require.NoError(t, err)
-	require.NotEmpty(t, resp.Version.Documents, "must fall back to all docs when preferred language is absent")
+	require.Len(t, resp.Version.Documents, 1, "preferred_language set must yield one document per version")
 }
 
 func TestQueryListGovernanceFrameworkVersions_NilRequest(t *testing.T) {

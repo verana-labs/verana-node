@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"sort"
+	"strings"
 
 	"cosmossdk.io/collections"
 	"google.golang.org/grpc/codes"
@@ -100,7 +101,7 @@ func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *typ
 		}
 	}
 
-	versions := make([]types.GovernanceFrameworkVersionWithDocs, 0, len(gfvIDs))
+	gfvs := make([]types.GovernanceFrameworkVersion, 0, len(gfvIDs))
 	for _, id := range gfvIDs {
 		gfv, err := q.GFVersion.Get(goCtx, id)
 		if err != nil {
@@ -109,6 +110,16 @@ func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *typ
 		if req.ActiveOnly && gfv.Version != subjectActiveVersion {
 			continue
 		}
+		gfvs = append(gfvs, gfv)
+	}
+	// Spec MOD-GF-QRY-2-3: order by ascending version, then page.
+	sort.Slice(gfvs, func(i, j int) bool { return gfvs[i].Version < gfvs[j].Version })
+	if uint32(len(gfvs)) > req.ResponseMaxSize {
+		gfvs = gfvs[:req.ResponseMaxSize]
+	}
+	// Collect documents only for the page we return.
+	versions := make([]types.GovernanceFrameworkVersionWithDocs, 0, len(gfvs))
+	for _, gfv := range gfvs {
 		docs, err := q.collectDocs(goCtx, gfv.Id, req.PreferredLanguage)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "collect docs: %v", err)
@@ -123,25 +134,27 @@ func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *typ
 			Documents:     docs,
 		})
 	}
-	// Spec MOD-GF-QRY-2-3: order by ascending version.
-	sort.Slice(versions, func(i, j int) bool { return versions[i].Version < versions[j].Version })
-	if uint32(len(versions)) > req.ResponseMaxSize {
-		versions = versions[:req.ResponseMaxSize]
-	}
 	return &types.QueryListGovernanceFrameworkVersionsResponse{Versions: versions}, nil
 }
 
 func (q querier) collectDocs(ctx context.Context, gfvID uint64, preferredLang string) ([]types.GovernanceFrameworkDocument, error) {
 	var out []types.GovernanceFrameworkDocument
-	var preferred *types.GovernanceFrameworkDocument
-	if err := q.GFDocument.Walk(ctx, nil, func(_ uint64, d types.GovernanceFrameworkDocument) (bool, error) {
-		if d.GfvId != gfvID {
-			return false, nil
+	var preferred, lowest *types.GovernanceFrameworkDocument
+	// Iterate only this version's documents via the (gfv_id, *) index.
+	rng := collections.NewPrefixedPairRange[uint64, string](gfvID)
+	if err := q.GFDocumentByGFVLang.Walk(ctx, rng, func(_ collections.Pair[uint64, string], id uint64) (bool, error) {
+		d, err := q.GFDocument.Get(ctx, id)
+		if err != nil {
+			return true, err
 		}
 		if preferredLang != "" {
-			if d.Language == preferredLang && preferred == nil {
+			if preferred == nil && strings.EqualFold(d.Language, preferredLang) {
 				cp := d
 				preferred = &cp
+			}
+			if lowest == nil || d.Id < lowest.Id {
+				cp := d
+				lowest = &cp
 			}
 			return false, nil
 		}
@@ -150,18 +163,17 @@ func (q querier) collectDocs(ctx context.Context, gfvID uint64, preferredLang st
 	}); err != nil {
 		return nil, err
 	}
+	// Spec MOD-GF-QRY: exactly one document per version when a preferred language
+	// is set — the match if present, else the lowest-id document.
 	if preferredLang != "" {
-		if preferred != nil {
+		switch {
+		case preferred != nil:
 			return []types.GovernanceFrameworkDocument{*preferred}, nil
+		case lowest != nil:
+			return []types.GovernanceFrameworkDocument{*lowest}, nil
+		default:
+			return nil, nil
 		}
-		// Fall back to all docs if preferred language not present (spec QRY-1-3 says "preferring").
-		_ = q.GFDocument.Walk(ctx, nil, func(_ uint64, d types.GovernanceFrameworkDocument) (bool, error) {
-			if d.GfvId == gfvID {
-				out = append(out, d)
-			}
-			return false, nil
-		})
-		return out, nil
 	}
 	return out, nil
 }

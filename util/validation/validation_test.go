@@ -35,6 +35,50 @@ func TestIsValidDID(t *testing.T) {
 	}
 }
 
+func TestIsValidBCP47(t *testing.T) {
+	cases := []struct {
+		in   string
+		want bool
+	}{
+		{"en", true},
+		{"en-US", true},
+		{"zh-Hant", true},
+		{"hy-Latn-IT-arevela", true}, // 18 chars: old 17-cap regexes wrongly rejected this
+		{"en-x-foo", true},   // private-use subtag
+		{"zz-1234", true},    // well-formed: "1234" is a valid variant subtag
+		{"", false},
+		{"e", false},         // primary subtag too short
+		{"abcdefghi", false}, // primary subtag too long (>8)
+		{"123", false},       // primary subtag must start with a letter
+		{"en-", false},       // trailing separator
+	}
+	for _, c := range cases {
+		t.Run(c.in, func(t *testing.T) {
+			require.Equal(t, c.want, validation.IsValidBCP47(c.in), "input: %q", c.in)
+		})
+	}
+}
+
+func TestIsValidURL(t *testing.T) {
+	cases := []struct {
+		in   string
+		want bool
+	}{
+		{"http://example.com", true},
+		{"https://example.com/path?q=1", true},
+		{"", false},
+		{"http://", false},  // host-less: the old scheme-only check passed this
+		{"https://", false}, // host-less
+		{"ftp://example.com", false},
+		{"example.com", false},
+	}
+	for _, c := range cases {
+		t.Run(c.in, func(t *testing.T) {
+			require.Equal(t, c.want, validation.IsValidURL(c.in), "input: %q", c.in)
+		})
+	}
+}
+
 func TestIsValidDigestSRI(t *testing.T) {
 	cases := []struct {
 		name string

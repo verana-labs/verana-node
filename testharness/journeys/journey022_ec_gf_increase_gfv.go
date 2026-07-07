@@ -140,7 +140,7 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 	if err != nil {
 		return fmt.Errorf("step 5 GetGFV failed: %w", err)
 	}
-	isActive := !gfvResp.Version.ActiveSince.IsZero()
+	isActive := gfvResp.Version.ActiveSince != nil
 	fmt.Printf("✅ Step 5: Active GFV ID=%d version=%d active=%v\n",
 		gfvResp.Version.Id,
 		gfvResp.Version.Version,

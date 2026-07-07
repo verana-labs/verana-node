@@ -10,9 +10,11 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		Params:            DefaultParams(),
-		CredentialSchemas: []CredentialSchema{},
-		SchemaCounter:     0, // Start counter at 0
+		Params:                           DefaultParams(),
+		CredentialSchemas:                []CredentialSchema{},
+		SchemaCounter:                    0, // Start counter at 0
+		SchemaAuthorizationPolicies:      []SchemaAuthorizationPolicy{},
+		SchemaAuthorizationPolicyCounter: 0,
 	}
 }
 
@@ -63,6 +65,12 @@ func (gs GenesisState) Validate() error {
 				i, cs.VerifierOnboardingMode)
 		}
 
+		// holder_onboarding_mode may be UNSPECIFIED (holders need not onboard) but not out of range.
+		if cs.HolderOnboardingMode > HolderOnboardingMode_HOLDER_ONBOARDING_MODE_PERMISSIONLESS {
+			return fmt.Errorf("credential schema at index %d has invalid holder onboarding mode: %d",
+				i, cs.HolderOnboardingMode)
+		}
+
 		// Validate pricing_asset_type
 		if cs.PricingAssetType <= PricingAssetType_PRICING_ASSET_TYPE_UNSPECIFIED ||
 			cs.PricingAssetType > PricingAssetType_FIAT {
@@ -92,23 +100,23 @@ func (gs GenesisState) Validate() error {
 		seenCredentialSchemaIDs[cs.Id] = true
 
 		// Additional validations for validity periods
-		if cs.IssuerGrantorValidationValidityPeriod > DefaultCredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays {
+		if cs.IssuerGrantorValidationValidityPeriod > gs.Params.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has issuer grantor validation validity period exceeding maximum", i)
 		}
 
-		if cs.VerifierGrantorValidationValidityPeriod > DefaultCredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays {
+		if cs.VerifierGrantorValidationValidityPeriod > gs.Params.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has verifier grantor validation validity period exceeding maximum", i)
 		}
 
-		if cs.IssuerValidationValidityPeriod > DefaultCredentialSchemaIssuerValidationValidityPeriodMaxDays {
+		if cs.IssuerValidationValidityPeriod > gs.Params.CredentialSchemaIssuerValidationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has issuer validation validity period exceeding maximum", i)
 		}
 
-		if cs.VerifierValidationValidityPeriod > DefaultCredentialSchemaVerifierValidationValidityPeriodMaxDays {
+		if cs.VerifierValidationValidityPeriod > gs.Params.CredentialSchemaVerifierValidationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has verifier validation validity period exceeding maximum", i)
 		}
 
-		if cs.HolderValidationValidityPeriod > DefaultCredentialSchemaHolderValidationValidityPeriodMaxDays {
+		if cs.HolderValidationValidityPeriod > gs.Params.CredentialSchemaHolderValidationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has holder validation validity period exceeding maximum", i)
 		}
 
@@ -123,6 +131,38 @@ func (gs GenesisState) Validate() error {
 				return fmt.Errorf("credential schema at index %d has archive time before creation time", i)
 			}
 		}
+	}
+
+	var maxSchemaID uint64
+	for _, cs := range gs.CredentialSchemas {
+		if cs.Id > maxSchemaID {
+			maxSchemaID = cs.Id
+		}
+	}
+	if gs.SchemaCounter < maxSchemaID {
+		return fmt.Errorf("schema_counter %d is less than the highest schema id %d", gs.SchemaCounter, maxSchemaID)
+	}
+
+	seenPolicyIDs := make(map[uint64]bool)
+	var maxPolicyID uint64
+	for i, p := range gs.SchemaAuthorizationPolicies {
+		if p.Id == 0 {
+			return fmt.Errorf("schema authorization policy at index %d has invalid ID 0", i)
+		}
+		if p.SchemaId == 0 {
+			return fmt.Errorf("schema authorization policy at index %d has invalid schema_id 0", i)
+		}
+		if seenPolicyIDs[p.Id] {
+			return fmt.Errorf("duplicate schema authorization policy ID found in genesis state: %d", p.Id)
+		}
+		seenPolicyIDs[p.Id] = true
+		if p.Id > maxPolicyID {
+			maxPolicyID = p.Id
+		}
+	}
+	if gs.SchemaAuthorizationPolicyCounter < maxPolicyID {
+		return fmt.Errorf("schema_authorization_policy_counter %d is less than the highest policy id %d",
+			gs.SchemaAuthorizationPolicyCounter, maxPolicyID)
 	}
 
 	return nil

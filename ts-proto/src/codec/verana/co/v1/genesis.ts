@@ -8,6 +8,7 @@
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
 import { Corporation } from "./types";
+import Long = require("long");
 
 export const protobufPackage = "verana.co.v1";
 
@@ -15,10 +16,11 @@ export const protobufPackage = "verana.co.v1";
 export interface GenesisState {
   params: Params | undefined;
   corporations: Corporation[];
+  corporationCounter: number;
 }
 
 function createBaseGenesisState(): GenesisState {
-  return { params: undefined, corporations: [] };
+  return { params: undefined, corporations: [], corporationCounter: 0 };
 }
 
 export const GenesisState = {
@@ -28,6 +30,9 @@ export const GenesisState = {
     }
     for (const v of message.corporations) {
       Corporation.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.corporationCounter !== 0) {
+      writer.uint32(24).uint64(message.corporationCounter);
     }
     return writer;
   },
@@ -53,6 +58,13 @@ export const GenesisState = {
 
           message.corporations.push(Corporation.decode(reader, reader.uint32()));
           continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.corporationCounter = longToNumber(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -68,6 +80,7 @@ export const GenesisState = {
       corporations: globalThis.Array.isArray(object?.corporations)
         ? object.corporations.map((e: any) => Corporation.fromJSON(e))
         : [],
+      corporationCounter: isSet(object.corporationCounter) ? globalThis.Number(object.corporationCounter) : 0,
     };
   },
 
@@ -78,6 +91,9 @@ export const GenesisState = {
     }
     if (message.corporations?.length) {
       obj.corporations = message.corporations.map((e) => Corporation.toJSON(e));
+    }
+    if (message.corporationCounter !== 0) {
+      obj.corporationCounter = Math.round(message.corporationCounter);
     }
     return obj;
   },
@@ -91,6 +107,7 @@ export const GenesisState = {
       ? Params.fromPartial(object.params)
       : undefined;
     message.corporations = object.corporations?.map((e) => Corporation.fromPartial(e)) || [];
+    message.corporationCounter = object.corporationCounter ?? 0;
     return message;
   },
 };
@@ -106,6 +123,21 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (long.lt(globalThis.Number.MIN_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -10,10 +10,9 @@ import (
 	"github.com/verana-labs/verana-node/x/cs/keeper"
 )
 
-// [MOD-CS-MSG-1] json_schema is stored preserving the submitter's property
-// order (the spec defines NO JCS / alphabetical canonicalization). The off-chain
-// indexer relies on the documented field order, so storage MUST NOT sort keys.
-func TestCreateCredentialSchema_PreservesPropertyOrder(t *testing.T) {
+// [MOD-CS-MSG-1-3] json_schema MUST be saved canonized (JCS, RFC 8785), so
+// object keys are sorted on storage.
+func TestCreateCredentialSchema_CanonicalizesJSON(t *testing.T) {
 	k, ms, mockTrk, ctx := setupMsgServer(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -42,14 +41,13 @@ func TestCreateCredentialSchema_PreservesPropertyOrder(t *testing.T) {
 	stored, err := k.CredentialSchema.Get(sdkCtx, resp.Id)
 	require.NoError(t, err)
 
-	// Submitted order zebra < apple < mango MUST be preserved; alphabetical
-	// canonicalization would reorder to apple < mango < zebra.
-	zi := strings.Index(stored.JsonSchema, `"zebra"`)
+	// JCS sorts object keys: apple < mango < zebra regardless of submit order.
 	ai := strings.Index(stored.JsonSchema, `"apple"`)
 	mi := strings.Index(stored.JsonSchema, `"mango"`)
-	require.True(t, zi >= 0 && ai >= 0 && mi >= 0, "all properties present")
-	require.Less(t, zi, ai, "zebra must precede apple (order preserved, not alphabetized)")
-	require.Less(t, ai, mi, "apple must precede mango")
+	zi := strings.Index(stored.JsonSchema, `"zebra"`)
+	require.True(t, ai >= 0 && mi >= 0 && zi >= 0, "all properties present")
+	require.Less(t, ai, mi, "apple must precede mango (JCS-sorted)")
+	require.Less(t, mi, zi, "mango must precede zebra (JCS-sorted)")
 
 	// Canonical $id is colon-form and injected first.
 	require.Contains(t, stored.JsonSchema, ":cs:")

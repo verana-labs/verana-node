@@ -43,6 +43,7 @@ ts-proto/cmd
 
 # Agent / planning scratch (never commit)
 docs/superpowers/
+docs/audit/
 .worktrees/
 .claude-agents/audit/
 .claude

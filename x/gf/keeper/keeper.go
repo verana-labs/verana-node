@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/collections"
@@ -43,6 +44,7 @@ type Keeper struct {
 	GFDocument             collections.Map[uint64, types.GovernanceFrameworkDocument]
 	GFVersionByEcosystem   collections.Map[collections.Pair[uint64, uint32], uint64]
 	GFVersionByCorporation collections.Map[collections.Pair[uint64, uint32], uint64]
+	GFDocumentByGFVLang    collections.Map[collections.Pair[uint64, string], uint64]
 	Counter                collections.Map[string, uint64]
 
 	delegationKeeper types.DelegationKeeper
@@ -72,6 +74,7 @@ func NewKeeper(
 		GFDocument:   collections.NewMap(sb, types.GovernanceFrameworkDocumentKey, "gf_document", collections.Uint64Key, codec.CollValue[types.GovernanceFrameworkDocument](cdc)),
 		GFVersionByEcosystem:   collections.NewMap(sb, types.GFVersionByEcosystemKey, "gf_version_by_ecosystem", collections.PairKeyCodec(collections.Uint64Key, collections.Uint32Key), collections.Uint64Value),
 		GFVersionByCorporation: collections.NewMap(sb, types.GFVersionByCorporationKey, "gf_version_by_corporation", collections.PairKeyCodec(collections.Uint64Key, collections.Uint32Key), collections.Uint64Value),
+		GFDocumentByGFVLang:    collections.NewMap(sb, types.GFDocumentByGFVLangKey, "gf_document_by_gfv_lang", collections.PairKeyCodec(collections.Uint64Key, collections.StringKey), collections.Uint64Value),
 		Counter:                collections.NewMap(sb, types.CounterKey, "counter", collections.StringKey, collections.Uint64Value),
 
 		delegationKeeper: delegationKeeper,
@@ -120,6 +123,9 @@ func (k Keeper) Logger() log.Logger {
 func (k Keeper) GetNextID(ctx sdk.Context, entityType string) (uint64, error) {
 	current, err := k.Counter.Get(ctx, entityType)
 	if err != nil {
+		if !errors.Is(err, collections.ErrNotFound) {
+			return 0, fmt.Errorf("failed to read counter: %w", err)
+		}
 		current = 0
 	}
 	next := current + 1

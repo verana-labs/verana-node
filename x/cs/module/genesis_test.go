@@ -62,7 +62,7 @@ func TestGenesisImportExport(t *testing.T) {
 	now := time.Now().UTC()
 	schemaA := types.CredentialSchema{
 		Id:                                      1,
-		EcosystemId:                                    100,
+		EcosystemId:                             100,
 		Created:                                 now.Add(-24 * time.Hour),
 		Modified:                                now.Add(-12 * time.Hour),
 		JsonSchema:                              validJsonSchema,
@@ -71,9 +71,9 @@ func TestGenesisImportExport(t *testing.T) {
 		IssuerValidationValidityPeriod:          180,
 		VerifierValidationValidityPeriod:        180,
 		HolderValidationValidityPeriod:          180,
-		IssuerOnboardingMode:                types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		VerifierOnboardingMode:              types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		HolderOnboardingMode:                types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
+		IssuerOnboardingMode:                    types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
+		VerifierOnboardingMode:                  types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
+		HolderOnboardingMode:                    types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
 		PricingAssetType:                        types.PricingAssetType_TU,
 		PricingAsset:                            "tu",
 		DigestAlgorithm:                         "sha256",
@@ -81,7 +81,7 @@ func TestGenesisImportExport(t *testing.T) {
 
 	schemaB := types.CredentialSchema{
 		Id:                                      2,
-		EcosystemId:                                    101,
+		EcosystemId:                             101,
 		Created:                                 now.Add(-10 * time.Hour),
 		Modified:                                now.Add(-5 * time.Hour),
 		JsonSchema:                              validJsonSchema,
@@ -90,18 +90,22 @@ func TestGenesisImportExport(t *testing.T) {
 		IssuerValidationValidityPeriod:          90,
 		VerifierValidationValidityPeriod:        90,
 		HolderValidationValidityPeriod:          90,
-		IssuerOnboardingMode:                types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
-		VerifierOnboardingMode:              types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-		HolderOnboardingMode:                types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
+		IssuerOnboardingMode:                    types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		VerifierOnboardingMode:                  types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
+		HolderOnboardingMode:                    types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
 		PricingAssetType:                        types.PricingAssetType_COIN,
 		PricingAsset:                            "uvna",
 		DigestAlgorithm:                         "sha384",
 	}
 
+	policyA := types.SchemaAuthorizationPolicy{Id: 1, SchemaId: 1, Created: now.Add(-8 * time.Hour), Version: 1}
+	policyB := types.SchemaAuthorizationPolicy{Id: 2, SchemaId: 2, Created: now.Add(-6 * time.Hour), Version: 1}
+
 	// Create a test genesis state with multiple schemas
 	genesisState := types.GenesisState{
-		Params:            types.DefaultParams(),
-		CredentialSchemas: []types.CredentialSchema{schemaB, schemaA}, // Deliberately out of order
+		Params:                      types.DefaultParams(),
+		CredentialSchemas:           []types.CredentialSchema{schemaB, schemaA},          // Deliberately out of order
+		SchemaAuthorizationPolicies: []types.SchemaAuthorizationPolicy{policyB, policyA}, // Deliberately out of order
 	}
 
 	// Setup the module
@@ -137,6 +141,14 @@ func TestGenesisImportExport(t *testing.T) {
 	require.Equal(t, uint64(1), exportedGenesis.CredentialSchemas[0].Id)
 	require.Equal(t, uint64(2), exportedGenesis.CredentialSchemas[1].Id)
 
+	// Schema authorization policies and their counter round-trip (regression: were dropped).
+	require.Len(t, exportedGenesis.SchemaAuthorizationPolicies, 2)
+	require.Equal(t, uint64(1), exportedGenesis.SchemaAuthorizationPolicies[0].Id)
+	require.Equal(t, uint64(2), exportedGenesis.SchemaAuthorizationPolicies[1].Id)
+	policyCounter, err := k.Counter.Get(ctx, types.CounterKeySchemaAuthorizationPolicy)
+	require.NoError(t, err)
+	require.Equal(t, uint64(2), policyCounter)
+
 	// Verify all parameters match
 	require.Equal(t, genesisState.Params, exportedGenesis.Params)
 
@@ -146,6 +158,7 @@ func TestGenesisImportExport(t *testing.T) {
 
 	require.Equal(t, genesisState.Params, exportedGenesis.Params)
 	require.ElementsMatch(t, genesisState.CredentialSchemas, exportedGenesis.CredentialSchemas)
+	require.ElementsMatch(t, genesisState.SchemaAuthorizationPolicies, exportedGenesis.SchemaAuthorizationPolicies)
 }
 
 func TestGenesisValidation(t *testing.T) {
@@ -198,7 +211,7 @@ func TestGenesisValidation(t *testing.T) {
 	now := time.Now().UTC()
 	validSchema := types.CredentialSchema{
 		Id:                                      1,
-		EcosystemId:                                    100,
+		EcosystemId:                             100,
 		Created:                                 now.Add(-24 * time.Hour),
 		Modified:                                now.Add(-12 * time.Hour),
 		JsonSchema:                              validJsonSchema,
@@ -207,9 +220,9 @@ func TestGenesisValidation(t *testing.T) {
 		IssuerValidationValidityPeriod:          180,
 		VerifierValidationValidityPeriod:        180,
 		HolderValidationValidityPeriod:          180,
-		IssuerOnboardingMode:                types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		VerifierOnboardingMode:              types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		HolderOnboardingMode:                types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
+		IssuerOnboardingMode:                    types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
+		VerifierOnboardingMode:                  types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
+		HolderOnboardingMode:                    types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
 		PricingAssetType:                        types.PricingAssetType_TU,
 		PricingAsset:                            "tu",
 		DigestAlgorithm:                         "sha256",
@@ -231,8 +244,43 @@ func TestGenesisValidation(t *testing.T) {
 			genesisState: types.GenesisState{
 				Params:            types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{validSchema},
+				SchemaCounter:     1,
 			},
 			valid: true,
+		},
+		{
+			name: "schema_counter behind highest schema id",
+			genesisState: types.GenesisState{
+				Params:            types.DefaultParams(),
+				CredentialSchemas: []types.CredentialSchema{validSchema},
+				SchemaCounter:     0,
+			},
+			valid:    false,
+			errorMsg: "schema_counter",
+		},
+		{
+			name: "duplicate schema authorization policy ID",
+			genesisState: types.GenesisState{
+				Params:        types.DefaultParams(),
+				SchemaCounter: 0,
+				SchemaAuthorizationPolicies: []types.SchemaAuthorizationPolicy{
+					{Id: 1, SchemaId: 1},
+					{Id: 1, SchemaId: 2},
+				},
+				SchemaAuthorizationPolicyCounter: 1,
+			},
+			valid:    false,
+			errorMsg: "duplicate schema authorization policy ID",
+		},
+		{
+			name: "policy counter behind highest policy id",
+			genesisState: types.GenesisState{
+				Params:                           types.DefaultParams(),
+				SchemaAuthorizationPolicies:      []types.SchemaAuthorizationPolicy{{Id: 5, SchemaId: 1}},
+				SchemaAuthorizationPolicyCounter: 1,
+			},
+			valid:    false,
+			errorMsg: "schema_authorization_policy_counter",
 		},
 		{
 			name: "duplicate schema ID",
@@ -241,16 +289,16 @@ func TestGenesisValidation(t *testing.T) {
 				CredentialSchemas: []types.CredentialSchema{
 					validSchema,
 					{
-						Id:                         1, // Same ID
-						EcosystemId:                       101,
-						Created:                    now.Add(-10 * time.Hour),
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 validJsonSchema,
+						Id:                     1, // Same ID
+						EcosystemId:            101,
+						Created:                now.Add(-10 * time.Hour),
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             validJsonSchema,
 						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
 						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha256",
 					},
 				},
 			},
@@ -263,16 +311,16 @@ func TestGenesisValidation(t *testing.T) {
 				Params: types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{
 					{
-						Id:                         0, // Invalid ID
-						EcosystemId:                       101,
-						Created:                    now.Add(-10 * time.Hour),
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 validJsonSchema,
+						Id:                     0, // Invalid ID
+						EcosystemId:            101,
+						Created:                now.Add(-10 * time.Hour),
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             validJsonSchema,
 						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
 						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha256",
 					},
 				},
 			},
@@ -285,16 +333,16 @@ func TestGenesisValidation(t *testing.T) {
 				Params: types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{
 					{
-						Id:                         3,
-						EcosystemId:                       0, // Invalid TR ID
-						Created:                    now.Add(-10 * time.Hour),
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 validJsonSchema,
+						Id:                     3,
+						EcosystemId:            0, // Invalid TR ID
+						Created:                now.Add(-10 * time.Hour),
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             validJsonSchema,
 						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
 						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha256",
 					},
 				},
 			},
@@ -307,16 +355,16 @@ func TestGenesisValidation(t *testing.T) {
 				Params: types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{
 					{
-						Id:                         3,
-						EcosystemId:                       101,
-						Created:                    now.Add(-10 * time.Hour),
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 "", // Empty schema
+						Id:                     3,
+						EcosystemId:            101,
+						Created:                now.Add(-10 * time.Hour),
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             "", // Empty schema
 						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
 						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha256",
 					},
 				},
 			},
@@ -329,16 +377,16 @@ func TestGenesisValidation(t *testing.T) {
 				Params: types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{
 					{
-						Id:                         3,
-						EcosystemId:                       101,
-						Created:                    now.Add(-10 * time.Hour),
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 validJsonSchema,
+						Id:                     3,
+						EcosystemId:            101,
+						Created:                now.Add(-10 * time.Hour),
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             validJsonSchema,
 						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_UNSPECIFIED, // Invalid mode
 						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha256",
 					},
 				},
 			},
@@ -351,16 +399,16 @@ func TestGenesisValidation(t *testing.T) {
 				Params: types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{
 					{
-						Id:                         3,
-						EcosystemId:                       101,
-						Created:                    time.Time{}, // Zero time
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 validJsonSchema,
+						Id:                     3,
+						EcosystemId:            101,
+						Created:                time.Time{}, // Zero time
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             validJsonSchema,
 						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
 						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha256",
 					},
 				},
 			},
@@ -373,16 +421,16 @@ func TestGenesisValidation(t *testing.T) {
 				Params: types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{
 					{
-						Id:                         3,
-						EcosystemId:                       101,
-						Created:                    now, // More recent than modified
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 validJsonSchema,
+						Id:                     3,
+						EcosystemId:            101,
+						Created:                now, // More recent than modified
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             validJsonSchema,
 						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
 						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha256",
 					},
 				},
 			},
@@ -396,7 +444,7 @@ func TestGenesisValidation(t *testing.T) {
 				CredentialSchemas: []types.CredentialSchema{
 					{
 						Id:                                      3,
-						EcosystemId:                                    101,
+						EcosystemId:                             101,
 						Created:                                 now.Add(-10 * time.Hour),
 						Modified:                                now.Add(-5 * time.Hour),
 						JsonSchema:                              validJsonSchema,
@@ -405,8 +453,8 @@ func TestGenesisValidation(t *testing.T) {
 						IssuerValidationValidityPeriod:          180,
 						VerifierValidationValidityPeriod:        180,
 						HolderValidationValidityPeriod:          180,
-						IssuerOnboardingMode:                types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
-						VerifierOnboardingMode:              types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
+						IssuerOnboardingMode:                    types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+						VerifierOnboardingMode:                  types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
 						PricingAssetType:                        types.PricingAssetType_TU,
 						PricingAsset:                            "tu",
 						DigestAlgorithm:                         "sha256",

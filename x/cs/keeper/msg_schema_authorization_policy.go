@@ -78,11 +78,13 @@ func (ms msgServer) CreateSchemaAuthorizationPolicy(goCtx context.Context, msg *
 			return nil, fmt.Errorf("failed to store policy: %w", err)
 		}
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			"create_schema_authorization_policy",
+			types.EventTypeCreateSchemaAuthzPolicy,
 			sdk.NewAttribute("id", strconv.FormatUint(draft.Id, 10)),
 			sdk.NewAttribute("schema_id", strconv.FormatUint(msg.SchemaId, 10)),
 			sdk.NewAttribute("role", msg.Role.String()),
 			sdk.NewAttribute("version", strconv.FormatUint(uint64(draft.Version), 10)),
+			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
+			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 		))
 		return &types.MsgCreateSchemaAuthorizationPolicyResponse{Id: draft.Id}, nil
 	}
@@ -107,11 +109,13 @@ func (ms msgServer) CreateSchemaAuthorizationPolicy(goCtx context.Context, msg *
 	}
 
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		"create_schema_authorization_policy",
+		types.EventTypeCreateSchemaAuthzPolicy,
 		sdk.NewAttribute("id", strconv.FormatUint(id, 10)),
 		sdk.NewAttribute("schema_id", strconv.FormatUint(msg.SchemaId, 10)),
 		sdk.NewAttribute("role", msg.Role.String()),
 		sdk.NewAttribute("version", strconv.FormatUint(uint64(policy.Version), 10)),
+		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 	))
 
 	return &types.MsgCreateSchemaAuthorizationPolicyResponse{Id: id}, nil
@@ -167,6 +171,9 @@ func (ms msgServer) IncreaseActiveSchemaAuthorizationPolicyVersion(goCtx context
 	if draft == nil {
 		return nil, fmt.Errorf("no draft policy exists for schema_id %d and role %s", msg.SchemaId, msg.Role)
 	}
+	if draft.Url == "" || draft.DigestSri == "" {
+		return nil, fmt.Errorf("draft policy for schema_id %d role %s is missing url or digest_sri", msg.SchemaId, msg.Role)
+	}
 
 	// [MOD-CS-MSG-6-3] activate the draft and deactivate the previously active version.
 	draft.EffectiveFrom = &now
@@ -181,10 +188,13 @@ func (ms msgServer) IncreaseActiveSchemaAuthorizationPolicyVersion(goCtx context
 	}
 
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		"increase_active_schema_authorization_policy_version",
+		types.EventTypeIncreaseActiveSchemaAuthzPolicy,
+		sdk.NewAttribute("id", strconv.FormatUint(draft.Id, 10)),
 		sdk.NewAttribute("schema_id", strconv.FormatUint(msg.SchemaId, 10)),
 		sdk.NewAttribute("role", msg.Role.String()),
 		sdk.NewAttribute("new_active_version", strconv.FormatUint(uint64(draft.Version), 10)),
+		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 	))
 
 	return &types.MsgIncreaseActiveSchemaAuthorizationPolicyVersionResponse{}, nil
@@ -247,10 +257,13 @@ func (ms msgServer) RevokeSchemaAuthorizationPolicy(goCtx context.Context, msg *
 	}
 
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		"revoke_schema_authorization_policy",
+		types.EventTypeRevokeSchemaAuthzPolicy,
+		sdk.NewAttribute("id", strconv.FormatUint(target.Id, 10)),
 		sdk.NewAttribute("schema_id", strconv.FormatUint(msg.SchemaId, 10)),
 		sdk.NewAttribute("role", msg.Role.String()),
 		sdk.NewAttribute("version", strconv.FormatUint(uint64(msg.Version), 10)),
+		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 	))
 
 	return &types.MsgRevokeSchemaAuthorizationPolicyResponse{}, nil
