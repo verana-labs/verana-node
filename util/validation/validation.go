@@ -82,3 +82,13 @@ func IsValidURL(s string) bool {
 	}
 	return u.Host != ""
 }
+
+// IsValidURI reports whether s is a non-empty absolute URI (any scheme), broader
+// than IsValidURL. Used where the spec asks for a "valid URI" (MOD-CS-MSG-5).
+func IsValidURI(s string) bool {
+	if s == "" {
+		return false
+	}
+	u, err := url.ParseRequestURI(s)
+	return err == nil && u.Scheme != ""
+}

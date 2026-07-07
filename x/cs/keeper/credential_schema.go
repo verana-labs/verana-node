@@ -85,13 +85,9 @@ func validateValidityPeriodsWithParams(msg *types.MsgCreateCredentialSchema, par
 }
 
 func (ms msgServer) executeCreateCredentialSchema(ctx sdk.Context, schemaID uint64, msg *types.MsgCreateCredentialSchema) error {
-	// [MOD-CS-MSG-1-3] Inject the canonical $id, then JCS-canonicalize before
+	// [MOD-CS-MSG-1-3] Inject the canonical $id and JCS-canonicalize before
 	// storing: the spec requires the schema be saved canonized.
-	processedJsonSchema, err := types.InjectCanonicalID(msg.JsonSchema, ctx.ChainID(), schemaID)
-	if err != nil {
-		return fmt.Errorf("failed to process JSON schema: %w", err)
-	}
-	processedJsonSchema, err = types.CanonicalizeJCS(processedJsonSchema)
+	processedJsonSchema, err := types.CanonicalizeWithID(msg.JsonSchema, ctx.ChainID(), schemaID)
 	if err != nil {
 		return fmt.Errorf("failed to canonicalize JSON schema: %w", err)
 	}

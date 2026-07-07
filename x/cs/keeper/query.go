@@ -63,13 +63,6 @@ func (k Keeper) ListCredentialSchemas(goCtx context.Context, req *types.QueryLis
 			return false, nil
 		}
 
-		// Ensure canonical $id is present in the JSON schema
-		schemaWithCanonicalID, err := types.EnsureCanonicalID(schema.JsonSchema, ctx.ChainID(), schema.Id)
-		if err != nil {
-			return true, status.Error(codes.Internal, fmt.Sprintf("failed to ensure canonical ID: %v", err))
-		}
-		schema.JsonSchema = schemaWithCanonicalID
-
 		schemas = append(schemas, schema)
 		return false, nil
 	})
@@ -89,6 +82,15 @@ func (k Keeper) ListCredentialSchemas(goCtx context.Context, req *types.QueryLis
 	// Apply response_max_size limit after sorting
 	if len(schemas) > int(req.ResponseMaxSize) {
 		schemas = schemas[:req.ResponseMaxSize]
+	}
+
+	// Ensure canonical $id only on the returned page, not every matched schema.
+	for i := range schemas {
+		schemaWithCanonicalID, err := types.EnsureCanonicalID(schemas[i].JsonSchema, ctx.ChainID(), schemas[i].Id)
+		if err != nil {
+			return nil, status.Error(codes.Internal, fmt.Sprintf("failed to ensure canonical ID: %v", err))
+		}
+		schemas[i].JsonSchema = schemaWithCanonicalID
 	}
 
 	return &types.QueryListCredentialSchemasResponse{

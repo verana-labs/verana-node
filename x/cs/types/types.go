@@ -3,12 +3,13 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gowebpki/jcs"
+
+	"github.com/verana-labs/verana-node/util/validation"
 )
 
 // JsonSchemaMetaSchema Official meta-schema for Draft 2020-12
@@ -571,6 +572,22 @@ func CanonicalizeJCS(schemaJSON string) (string, error) {
 	return string(canonical), nil
 }
 
+// CanonicalizeWithID injects the canonical $id and JCS-canonicalizes in a single
+// parse, equivalent to InjectCanonicalID followed by CanonicalizeJCS (JCS re-sorts
+// keys anyway, so the order-preserving string surgery of the former is redundant).
+func CanonicalizeWithID(schemaJSON string, chainID string, schemaID uint64) (string, error) {
+	var doc map[string]interface{}
+	if err := json.Unmarshal([]byte(schemaJSON), &doc); err != nil {
+		return "", fmt.Errorf("invalid JSON schema: %w", err)
+	}
+	doc["$id"] = fmt.Sprintf("vpr:verana:%s:cs:%d", chainID, schemaID)
+	b, err := json.Marshal(doc)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal JSON schema: %w", err)
+	}
+	return CanonicalizeJCS(string(b))
+}
+
 func validateValidityPeriods(msg *MsgCreateCredentialSchema) error {
 	// [MOD-CS-MSG-1-2-1] All validity period fields are mandatory
 	if msg.GetIssuerGrantorValidationValidityPeriod() == nil {
@@ -724,28 +741,13 @@ func (m *MsgCreateSchemaAuthorizationPolicy) ValidateBasic() error {
 	if m.Url == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url is required")
 	}
-	if !isValidURI(m.Url) {
+	if !validation.IsValidURI(m.Url) {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url must be a valid URI")
 	}
 	if m.DigestSri == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "digest_sri is required")
 	}
 	return nil
-}
-
-// isValidURI accepts any absolute URI (MOD-CS-MSG-5: "non-empty valid URI"),
-// not only http(s).
-func isValidURI(s string) bool {
-	u, err := url.ParseRequestURI(s)
-	return err == nil && u.Scheme != ""
-}
-
-func isValidHTTPURL(s string) bool {
-	u, err := url.ParseRequestURI(s)
-	if err != nil {
-		return false
-	}
-	return u.Scheme == "http" || u.Scheme == "https"
 }
 
 func (m *MsgIncreaseActiveSchemaAuthorizationPolicyVersion) ValidateBasic() error {

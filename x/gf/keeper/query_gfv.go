@@ -101,7 +101,7 @@ func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *typ
 		}
 	}
 
-	versions := make([]types.GovernanceFrameworkVersionWithDocs, 0, len(gfvIDs))
+	gfvs := make([]types.GovernanceFrameworkVersion, 0, len(gfvIDs))
 	for _, id := range gfvIDs {
 		gfv, err := q.GFVersion.Get(goCtx, id)
 		if err != nil {
@@ -110,6 +110,16 @@ func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *typ
 		if req.ActiveOnly && gfv.Version != subjectActiveVersion {
 			continue
 		}
+		gfvs = append(gfvs, gfv)
+	}
+	// Spec MOD-GF-QRY-2-3: order by ascending version, then page.
+	sort.Slice(gfvs, func(i, j int) bool { return gfvs[i].Version < gfvs[j].Version })
+	if uint32(len(gfvs)) > req.ResponseMaxSize {
+		gfvs = gfvs[:req.ResponseMaxSize]
+	}
+	// Collect documents only for the page we return.
+	versions := make([]types.GovernanceFrameworkVersionWithDocs, 0, len(gfvs))
+	for _, gfv := range gfvs {
 		docs, err := q.collectDocs(goCtx, gfv.Id, req.PreferredLanguage)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "collect docs: %v", err)
@@ -123,11 +133,6 @@ func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *typ
 			ActiveSince:   gfv.ActiveSince,
 			Documents:     docs,
 		})
-	}
-	// Spec MOD-GF-QRY-2-3: order by ascending version.
-	sort.Slice(versions, func(i, j int) bool { return versions[i].Version < versions[j].Version })
-	if uint32(len(versions)) > req.ResponseMaxSize {
-		versions = versions[:req.ResponseMaxSize]
 	}
 	return &types.QueryListGovernanceFrameworkVersionsResponse{Versions: versions}, nil
 }

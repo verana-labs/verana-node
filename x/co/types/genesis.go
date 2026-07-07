@@ -70,7 +70,7 @@ func (gs GenesisState) Validate() error {
 		}
 	}
 	if gs.CorporationCounter < maxID {
-		return ErrInvalidTimestamp.Wrapf("corporation_counter %d is less than the highest corporation id %d", gs.CorporationCounter, maxID)
+		return ErrInvalidCounter.Wrapf("corporation_counter %d is less than the highest corporation id %d", gs.CorporationCounter, maxID)
 	}
 	return nil
 }
