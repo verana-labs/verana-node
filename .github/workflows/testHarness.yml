@@ -1,0 +1,57 @@
+name: 2.Test Harness Execution
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - '*' # Trigger on pull requests to any branch
+  push:
+    branches:
+      - '*' # Trigger on every commit to any branch
+
+jobs:
+  test-harness:
+    runs-on: ubuntu-latest
+    env:
+      TEST_HARNESS_PATH: ./testharness
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Install dependencies and run setup script asynchronously
+        run: |
+          env
+          export PATH=$PATH:$HOME/go/bin
+          export BINARYPATH=$HOME/go/bin
+          make install
+          echo "BINARYPATH=$BINARYPATH" >> $GITHUB_ENV
+          type veranad
+          echo ./scripts/setup_primary_validator.sh....
+          ./scripts/setup_primary_validator.sh &
+          echo $! > /tmp/setup_primary_validator_pid
+          echo "Asynchronous setup process started with PID: $(cat /tmp/setup_primary_validator_pid)"
+          echo "Waiting for setup process to complete..."
+
+      - name: Run test harness
+        run: |
+          cd ${{ env.TEST_HARNESS_PATH }}
+          pwd
+          find .
+          export PATH=$PATH:$BINARYPATH
+          type veranad
+          ./scripts/setup_accounts.sh
+          ./scripts/run_all.sh
+
+      - name: Kill asynchronous setup process
+        run: |
+          if [ -f /tmp/setup_primary_validator_pid ]; then
+            kill -9 $(cat /tmp/setup_primary_validator_pid) || true
+            rm /tmp/setup_primary_validator_pid
+          fi
+
+      - name: Finalize without error
+        run: echo "Test harness execution completed successfully."
