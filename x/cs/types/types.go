@@ -625,7 +625,7 @@ func validatePermManagementModes(msg *MsgCreateCredentialSchema) error {
 	}
 
 	// [MOD-CS-MSG-1-2-1] holder_onboarding_mode MUST be a valid HolderOnboardingMode.
-	// Enum values: ISSUER_VALIDATION_PROCESS=1, PERMISSIONLESS=2. UNSPECIFIED=0 is invalid.
+	// Enum values: ISSUER_ONBOARDING_PROCESS=1, PERMISSIONLESS=2. UNSPECIFIED=0 is invalid.
 	if msg.HolderOnboardingMode == 0 {
 		return fmt.Errorf("holder onboarding mode must be specified")
 	}

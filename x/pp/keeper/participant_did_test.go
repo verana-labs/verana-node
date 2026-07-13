@@ -25,8 +25,8 @@ func TestStartParticipantOP_DIDCorporationConsistency(t *testing.T) {
 	corpA := sdk.AccAddress([]byte("did_start_corp_a____")).String()
 	corpB := sdk.AccAddress([]byte("did_start_corp_b____")).String()
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	validatorID := vsoaValidator(t, k, sdkCtx, trkKeeper, corpA, now, past)
 
 	// corpB already controls sharedDID.
@@ -70,8 +70,8 @@ func TestCreateRootParticipant_DIDCorporationConsistency(t *testing.T) {
 	ecoDID := "did:example:root-ecosystem"
 	trID := trkKeeper.CreateMockEcosystem(corpA, ecoDID)
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	// corpB already controls sharedDID.
 	sharedDID := "did:example:root-shared"

@@ -204,11 +204,11 @@ func validateParticipantRoleCombination(requestedType, validatorType types.Parti
 	switch requestedType {
 	case types.ParticipantRole_ISSUER:
 		// if cs.issuer_participant_management_mode == GRANTOR: validator_participant.type MUST be ISSUER_GRANTOR
-		if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS {
+		if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS {
 			if validatorType != types.ParticipantRole_ISSUER_GRANTOR {
 				return fmt.Errorf("issuer participant requires ISSUER_GRANTOR validator when mode is GRANTOR_VALIDATION")
 			}
-		} else if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS {
+		} else if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS {
 			// if cs.issuer_participant_management_mode == ECOSYSTEM: validator_participant.type MUST be ECOSYSTEM
 			if validatorType != types.ParticipantRole_ECOSYSTEM {
 				return fmt.Errorf("issuer participant requires ECOSYSTEM validator when mode is ECOSYSTEM")
@@ -220,7 +220,7 @@ func validateParticipantRoleCombination(requestedType, validatorType types.Parti
 
 	case types.ParticipantRole_ISSUER_GRANTOR:
 		// if cs.issuer_participant_management_mode == GRANTOR: validator_participant.type MUST be ECOSYSTEM
-		if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS {
+		if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS {
 			if validatorType != types.ParticipantRole_ECOSYSTEM {
 				return fmt.Errorf("issuer grantor participant requires ECOSYSTEM validator")
 			}
@@ -231,11 +231,11 @@ func validateParticipantRoleCombination(requestedType, validatorType types.Parti
 
 	case types.ParticipantRole_VERIFIER:
 		// if cs.verifier_participant_management_mode == GRANTOR: validator_participant.type MUST be VERIFIER_GRANTOR
-		if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS {
+		if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS {
 			if validatorType != types.ParticipantRole_VERIFIER_GRANTOR {
 				return fmt.Errorf("verifier participant requires VERIFIER_GRANTOR validator when mode is GRANTOR_VALIDATION")
 			}
-		} else if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS {
+		} else if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS {
 			// if cs.verifier_participant_management_mode == ECOSYSTEM: validator_participant.type MUST be ECOSYSTEM
 			if validatorType != types.ParticipantRole_ECOSYSTEM {
 				return fmt.Errorf("verifier participant requires ECOSYSTEM validator when mode is ECOSYSTEM")
@@ -247,7 +247,7 @@ func validateParticipantRoleCombination(requestedType, validatorType types.Parti
 
 	case types.ParticipantRole_VERIFIER_GRANTOR:
 		// if cs.verifier_participant_management_mode == GRANTOR: validator_participant.type MUST be ECOSYSTEM
-		if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS {
+		if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS {
 			if validatorType != types.ParticipantRole_ECOSYSTEM {
 				return fmt.Errorf("verifier grantor participant requires ECOSYSTEM validator")
 			}
@@ -257,9 +257,9 @@ func validateParticipantRoleCombination(requestedType, validatorType types.Parti
 		}
 
 	case types.ParticipantRole_HOLDER:
-		// [MOD-PP-MSG-1-2-2] HOLDER requires holder_onboarding_mode == ISSUER_VALIDATION_PROCESS
+		// [MOD-PP-MSG-1-2-2] HOLDER requires holder_onboarding_mode == ISSUER_ONBOARDING_PROCESS
 		// and the validator to be an ISSUER.
-		if cs.HolderOnboardingMode == credentialschematypes.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_ISSUER_VALIDATION_PROCESS {
+		if cs.HolderOnboardingMode == credentialschematypes.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_ISSUER_ONBOARDING_PROCESS {
 			if validatorType != types.ParticipantRole_ISSUER {
 				return fmt.Errorf("holder participant requires ISSUER validator")
 			}

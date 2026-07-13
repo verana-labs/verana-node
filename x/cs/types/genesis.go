@@ -54,13 +54,13 @@ func (gs GenesisState) Validate() error {
 
 		// Check onboarding modes are valid
 		if cs.IssuerOnboardingMode <= IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_UNSPECIFIED ||
-			cs.IssuerOnboardingMode > IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS {
+			cs.IssuerOnboardingMode > IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS {
 			return fmt.Errorf("credential schema at index %d has invalid issuer onboarding mode: %d",
 				i, cs.IssuerOnboardingMode)
 		}
 
 		if cs.VerifierOnboardingMode <= VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_UNSPECIFIED ||
-			cs.VerifierOnboardingMode > VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS {
+			cs.VerifierOnboardingMode > VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS {
 			return fmt.Errorf("credential schema at index %d has invalid verifier onboarding mode: %d",
 				i, cs.VerifierOnboardingMode)
 		}

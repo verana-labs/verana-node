@@ -360,7 +360,7 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 
 		// Only validate applicability if discount > 0 (0 is always allowed as default)
 		if msg.IssuanceFeeDiscount > 0 {
-			if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS {
+			if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS {
 				if applicantParticipant.Role == types.ParticipantRole_ISSUER_GRANTOR {
 					// ISSUER_GRANTOR: can set 0-1 (100% discount)
 					// Already validated range above
@@ -375,7 +375,7 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 				} else {
 					return nil, fmt.Errorf("issuance_fee_discount can only be set on ISSUER_GRANTOR or ISSUER participants in GRANTOR mode")
 				}
-			} else if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS {
+			} else if cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS {
 				if applicantParticipant.Role == types.ParticipantRole_ISSUER {
 					// ISSUER in ECOSYSTEM mode: can set 0-1 (100% discount)
 					// Already validated range above
@@ -395,7 +395,7 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 
 		// Only validate applicability if discount > 0 (0 is always allowed as default)
 		if msg.VerificationFeeDiscount > 0 {
-			if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS {
+			if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS {
 				if applicantParticipant.Role == types.ParticipantRole_VERIFIER_GRANTOR {
 					// VERIFIER_GRANTOR: can set 0-1 (100% discount)
 					// Already validated range above
@@ -410,7 +410,7 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 				} else {
 					return nil, fmt.Errorf("verification_fee_discount can only be set on VERIFIER_GRANTOR or VERIFIER participants in GRANTOR mode")
 				}
-			} else if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS {
+			} else if cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS {
 				if applicantParticipant.Role == types.ParticipantRole_VERIFIER {
 					// VERIFIER in ECOSYSTEM mode: can set 0-1 (100% discount)
 					// Already validated range above

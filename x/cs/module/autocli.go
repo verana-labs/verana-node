@@ -104,8 +104,9 @@ $ veranad query cs schema 1`,
 Required Parameters:
 - ecosystem-id: Ecosystem ID (must be controlled by authority)
 - json-schema: Path to JSON schema file or inline JSON string
-- issuer-mode: Permission management mode (1=OPEN, 2=GRANTOR_VALIDATION, 3=ECOSYSTEM)
-- verifier-mode: Permission management mode (same options as issuer-mode)
+- issuer-mode: Issuer onboarding mode (1=OPEN, 2=ECOSYSTEM_ONBOARDING_PROCESS, 3=GRANTOR_ONBOARDING_PROCESS)
+- verifier-mode: Verifier onboarding mode (same options as issuer-mode)
+- holder-onboarding-mode: Holder onboarding mode (1=ISSUER_ONBOARDING_PROCESS, 2=PERMISSIONLESS)
 - pricing-asset-type: Asset type for business fees (1=TU, 2=COIN, 3=FIAT)
 - pricing-asset: Asset identifier ("tu" for TU, denom for COIN, ISO-4217 code for FIAT)
 - digest-algorithm: Algorithm for credential digest (sha256, sha384, sha512)
@@ -118,8 +119,8 @@ Required Flags (default to 0 days, 0 means never expires):
 - --holder-validation-validity-period: Validation period for holders (days, default: 0)
 
 Example:
-$ veranad tx cs create-credential-schema 1 schema.json 2 2 1 tu sha256 --issuer-grantor-validation-validity-period 365 --verifier-grantor-validation-validity-period 365
-$ veranad tx cs create-credential-schema 1 schema.json 2 2 2 uvna sha256`,
+$ veranad tx cs create-credential-schema 1 schema.json 2 2 1 1 tu sha256 --issuer-grantor-validation-validity-period 365 --verifier-grantor-validation-validity-period 365
+$ veranad tx cs create-credential-schema 1 schema.json 2 2 2 2 uvna sha256`,
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{
 							ProtoField: "ecosystem_id",

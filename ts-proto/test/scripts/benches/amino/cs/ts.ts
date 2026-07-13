@@ -44,7 +44,7 @@ function buildCreateCredentialSchemaMsg(): AminoMsg {
     issuerValidationValidityPeriod: { value: 0 } as OptionalUInt32,
     verifierValidationValidityPeriod: { value: 180 } as OptionalUInt32,
     holderValidationValidityPeriod: { value: 0 } as OptionalUInt32,
-    issuerOnboardingMode: IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
+    issuerOnboardingMode: IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
     verifierOnboardingMode: VerifierOnboardingMode.VERIFIER_ONBOARDING_MODE_OPEN,
     holderOnboardingMode: 0,
     pricingAssetType: 1,

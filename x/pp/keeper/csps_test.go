@@ -505,8 +505,8 @@ func TestAgentRewardsDistribution(t *testing.T) {
 
 	// Create credential schema with GRANTOR mode
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour) // Set effective_from to past to make it ACTIVE
@@ -777,8 +777,8 @@ func TestAgentRewardsWithZeroFees(t *testing.T) {
 
 	// Create credential schema
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour) // Set effective_from to past to make it ACTIVE
@@ -894,8 +894,8 @@ func TestAgentRewardsWithDiscount(t *testing.T) {
 
 	// Create credential schema
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour) // Set effective_from to past to make it ACTIVE
@@ -1038,8 +1038,8 @@ func TestParticipantSession_VSToVS_NoAgents(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(ecosystem, validDid)
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -1140,8 +1140,8 @@ func TestParticipantSession_NonNativeCoinPricing(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(ecosystem, "did:example:nnc")
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	csKeeper.SetPricing(1, cstypes.PricingAssetType_COIN, pricingCoin)
 
 	now := sdkCtx.BlockTime()
@@ -1204,8 +1204,8 @@ func TestParticipantSession_FiatPricing(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(ecosystem, "did:example:fiat")
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	csKeeper.SetPricing(1, cstypes.PricingAssetType_FIAT, "usd")
 
 	now := sdkCtx.BlockTime()

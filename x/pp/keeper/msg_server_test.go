@@ -56,8 +56,8 @@ func TestStartParticipantVP(t *testing.T) {
 
 	// Create mock credential schema with specific participant management modes
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	// Create validator participant (ISSUER_GRANTOR)
 	now := sdkCtx.BlockTime()
@@ -270,8 +270,8 @@ func TestRenewParticipantVP(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	// Create validator participant
 	now := sdkCtx.BlockTime()
@@ -374,8 +374,8 @@ func TestRenewParticipantVP_AuthzCheck(t *testing.T) {
 	creator := sdk.AccAddress([]byte("test_creator")).String()
 
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -446,8 +446,8 @@ func TestRenewParticipantVP_VpStatePrecondition(t *testing.T) {
 	creator := sdk.AccAddress([]byte("test_creator")).String()
 
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -563,8 +563,8 @@ func TestRenewParticipantVP_ValidatorParticipantChecks(t *testing.T) {
 	creator := sdk.AccAddress([]byte("test_creator")).String()
 
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -718,8 +718,8 @@ func TestRenewParticipantVP_FeeAndDepositAccumulation(t *testing.T) {
 	creator := sdk.AccAddress([]byte("test_creator")).String()
 
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	// MockTrustRegistryKeeper returns trust_unit_price=1 by default
 	now := sdkCtx.BlockTime()
@@ -892,8 +892,8 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 
@@ -1363,8 +1363,8 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 	t.Run("ISSUER in ECOSYSTEM mode with discount", func(t *testing.T) {
 		// Create schema with ECOSYSTEM mode
 		csKeeper.CreateMockCredentialSchema(2,
-			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS)
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS)
 
 		// Create ECOSYSTEM validator
 		ecosystemValidator := types.Participant{
@@ -1455,8 +1455,8 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		// Create schema with validity period so vpExp is calculated
 		csKeeper.CreateMockCredentialSchemaFull(cstypes.CredentialSchema{
 			Id:                             3,
-			IssuerOnboardingMode:           cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			VerifierOnboardingMode:         cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
+			IssuerOnboardingMode:           cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			VerifierOnboardingMode:         cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 			IssuerValidationValidityPeriod: 30, // 30 days
 		})
 
@@ -1924,8 +1924,8 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		// Create schema with GRANTOR_VALIDATION for verifier mode
 		csKeeper.CreateMockCredentialSchemaFull(cstypes.CredentialSchema{
 			Id:                     4,
-			IssuerOnboardingMode:   cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			VerifierOnboardingMode: cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
+			IssuerOnboardingMode:   cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			VerifierOnboardingMode: cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 		})
 
 		vgAddr := sdk.AccAddress([]byte("ver_grantor_vali")).String()
@@ -2206,8 +2206,8 @@ func TestSetParticipantVPToValidated_AuthzCheckFailure(t *testing.T) {
 	futureTime := now.Add(365 * 24 * time.Hour)
 
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	// Create validator participant
 	validatorParticipant := types.Participant{
@@ -2279,8 +2279,8 @@ func TestMsgServerCreateRootParticipant(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(authority, validDid)
 	mockCsKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	blockTime := time.Date(2023, 6, 1, 0, 0, 0, 0, time.UTC)
 	sdkCtx = sdkCtx.WithBlockTime(blockTime)
@@ -2332,8 +2332,8 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 
@@ -2607,8 +2607,8 @@ func TestCancelParticipantVPLastRequest_AuthzCheckFailure(t *testing.T) {
 	now := sdkCtx.BlockTime()
 
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	validatorParticipant := types.Participant{
 		SchemaId:      1,
@@ -2678,8 +2678,8 @@ func TestAdjustParticipant(t *testing.T) {
 	// Each participant uses a unique schema_id so the overlap check doesn't fire across test cases.
 	for i := uint64(1); i <= 10; i++ {
 		csKeeper.CreateMockCredentialSchema(i,
-			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	}
 
 	now := sdkCtx.BlockTime()
@@ -2986,11 +2986,11 @@ func TestRevokeParticipant(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	csKeeper.CreateMockCredentialSchema(2,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour) // Set effective_from to past relative to block time to make it ACTIVE
@@ -3115,8 +3115,8 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour) // Set effective_from to past to make it ACTIVE
@@ -3493,8 +3493,8 @@ func TestDiscountApplicationInFeeCalculation(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 
@@ -3755,8 +3755,8 @@ func TestQueryParticipants(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 
@@ -3924,8 +3924,8 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 
 	// Create mock credential schema linked to the TR
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -4190,8 +4190,8 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -4625,8 +4625,8 @@ func TestCreateParticipant(t *testing.T) {
 
 	t.Run("Invalid - non-OPEN management mode", func(t *testing.T) {
 		mockCsKeeper.UpdateMockCredentialSchema(2, trID,
-			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 		// Create ecosystem participant for schema 2
 		ecoParticipantS2 := types.Participant{
@@ -4683,8 +4683,8 @@ func TestCreateRootParticipant(t *testing.T) {
 
 	// Create credential schema linked to the trust registry
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	futureTime := now.Add(1 * time.Hour)
@@ -4847,8 +4847,8 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(authority, validDid)
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 
@@ -4900,8 +4900,8 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 	t.Run("3. Overlap: existing participant with nil effective_until (never expires)", func(t *testing.T) {
 		// Create a new schema to test with nil effective_until
 		csKeeper.UpdateMockCredentialSchema(2, trID,
-			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 		neverExpiresFrom := now.Add(1 * time.Hour)
 		resp2, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
@@ -4931,8 +4931,8 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 	t.Run("4. Revoked/slashed/repaid participants excluded from overlap", func(t *testing.T) {
 		// Create a new schema to test with
 		csKeeper.UpdateMockCredentialSchema(3, trID,
-			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 		revokedFrom := now.Add(1 * time.Hour)
 		revokedUntil := now.Add(100 * time.Hour)
@@ -4971,8 +4971,8 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		// But existing.effective_from < new.effective_until still causes overlap
 		// To truly avoid overlap, need participant on a different schema OR existing must be expired/revoked
 		csKeeper.UpdateMockCredentialSchema(4, trID,
-			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 		firstFrom := now.Add(1 * time.Hour)
 		firstUntil := now.Add(5 * time.Hour)
@@ -5017,8 +5017,8 @@ func TestCreateRootParticipant_AuthzCheck(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(authority, validDid)
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	futureTime := sdkCtx.BlockTime().Add(1 * time.Hour)
 	farFuture := sdkCtx.BlockTime().Add(24 * time.Hour)
@@ -5077,8 +5077,8 @@ func TestStartParticipantVP_ValidatorMustBeActive(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)     // In the past - for ACTIVE participants
@@ -5242,8 +5242,8 @@ func TestRevokeParticipant_RequiresActiveParticipant(t *testing.T) {
 
 	// Create mock credential schema
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -5368,8 +5368,8 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(creator, validDid)
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -5432,8 +5432,8 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 	t.Run("Different type no overlap", func(t *testing.T) {
 		// Need a VERIFIER_GRANTOR validator for VERIFIER type
 		csKeeper.UpdateMockCredentialSchema(1, trID,
-			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 		verifierGrantorParticipant := types.Participant{
 			SchemaId:      1,
@@ -5475,8 +5475,8 @@ func TestStartParticipantVP_AuthzCheck(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(creator, validDid)
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -5542,8 +5542,8 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 
 	trID := trkKeeper.CreateMockEcosystem(creator, validDid)
 	csKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	now := sdkCtx.BlockTime()
 	pastTime := now.Add(-1 * time.Hour)
@@ -5614,7 +5614,7 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 	})
 
 	t.Run("HOLDER with ISSUER validator", func(t *testing.T) {
-		csKeeper.SetHolderOnboardingMode(1, cstypes.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_ISSUER_VALIDATION_PROCESS)
+		csKeeper.SetHolderOnboardingMode(1, cstypes.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_ISSUER_ONBOARDING_PROCESS)
 		// Create ISSUER participant to serve as validator for HOLDER
 		issuerParticipant := types.Participant{
 			SchemaId:      1,
@@ -5647,7 +5647,7 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 	})
 
 	t.Run("HOLDER with wrong validator type rejects", func(t *testing.T) {
-		csKeeper.SetHolderOnboardingMode(1, cstypes.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_ISSUER_VALIDATION_PROCESS)
+		csKeeper.SetHolderOnboardingMode(1, cstypes.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_ISSUER_ONBOARDING_PROCESS)
 		holderCreator := sdk.AccAddress([]byte("holder_bad_val_a")).String()
 		msg := &types.MsgStartParticipantOP{
 			Corporation:            holderCreator,
@@ -5665,8 +5665,8 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 	t.Run("ECOSYSTEM type combination - ISSUER_GRANTOR with ECOSYSTEM validator", func(t *testing.T) {
 		// Create schema with ECOSYSTEM mode for issuer
 		csKeeper.UpdateMockCredentialSchema(2, trID,
-			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 		ecosystemParticipant := types.Participant{
 			SchemaId:      2,
@@ -5728,8 +5728,8 @@ func TestVSOA_StartParticipantOPGrantsDisabledRecord(t *testing.T) {
 	creator := sdk.AccAddress([]byte("vsoa_creator________")).String()
 	vsOperator := sdk.AccAddress([]byte("vsoa_vs_operator____")).String()
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	validatorPermID := vsoaValidator(t, k, sdkCtx, trkKeeper, creator, now, past)
 	delKeeper.Reset()
 
@@ -5760,8 +5760,8 @@ func TestVSOA_StartParticipantOPSkipsWithoutMsgTypes(t *testing.T) {
 
 	creator := sdk.AccAddress([]byte("vsoa_creator2_______")).String()
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	validatorPermID := vsoaValidator(t, k, sdkCtx, trkKeeper, creator, now, past)
 	delKeeper.Reset()
 
@@ -5788,8 +5788,8 @@ func TestVSOA_ValidatedUpdatesExpiration(t *testing.T) {
 	applicantAddr := sdk.AccAddress([]byte("vsoa_applicant______")).String()
 	vsOperator := sdk.AccAddress([]byte("vsoa_vsop___________")).String()
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	validatorPermID := vsoaValidator(t, k, sdkCtx, trkKeeper, validatorAddr, now, past)
 	applicantPermID, err := k.CreateParticipant(sdkCtx, types.Participant{
 		SchemaId:               1,
@@ -5836,8 +5836,8 @@ func TestVSOA_SetEffectiveUntilSyncsNewExpiration(t *testing.T) {
 	applicantAddr := sdk.AccAddress([]byte("vsoa_applicant__se__")).String()
 	vsOperator := sdk.AccAddress([]byte("vsoa_vsop_______se__")).String()
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	validatorPermID := vsoaValidator(t, k, sdkCtx, trkKeeper, validatorAddr, now, past)
 	applicantPermID, err := k.CreateParticipant(sdkCtx, types.Participant{
 		SchemaId:               1,
@@ -5939,8 +5939,8 @@ func TestVSOA_CreateRootActiveRecord(t *testing.T) {
 	did := "did:example:vsoa-root-a"
 	trID := trkKeeper.CreateMockEcosystem(authority, did)
 	mockCsKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	trkKeeper.RegisterCorp(authority)
 	delKeeper.Reset()
 
@@ -5972,8 +5972,8 @@ func TestVSOA_CreateRootSkipsWithoutMsgTypes(t *testing.T) {
 	did := "did:example:vsoa-root-b"
 	trID := trkKeeper.CreateMockEcosystem(authority, did)
 	mockCsKeeper.UpdateMockCredentialSchema(1, trID,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 	trkKeeper.RegisterCorp(authority)
 	delKeeper.Reset()
 
@@ -6004,8 +6004,8 @@ func TestSetParticipantVPToValidated_ViaVSOperatorDelegation(t *testing.T) {
 	vsOperator := sdk.AccAddress([]byte("vso_operator________")).String()
 
 	csKeeper.CreateMockCredentialSchema(1,
-		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
-		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS)
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
 
 	pastTime := now.Add(-1 * time.Hour)
 	futureTime := now.Add(365 * 24 * time.Hour)
