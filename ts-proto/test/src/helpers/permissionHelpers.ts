@@ -686,7 +686,7 @@ export async function createPermPrerequisites(
   client: SigningStargateClient,
   corporation: string,
   operator: string,
-  mode: IssuerOnboardingMode = IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
+  mode: IssuerOnboardingMode = IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 ): Promise<{ ecId: number; schemaId: number; rootPermId: number; did: string; effectiveFrom: Date }> {
   console.log("  Creating EC...");
   const { ecId, did } = await createECWithOperator(client, corporation, operator);
@@ -694,7 +694,7 @@ export async function createPermPrerequisites(
 
   console.log("  Creating CS...");
   const schemaId = await createCSWithOperator(client, corporation, operator, ecId, mode);
-  console.log(`  ✓ CS created (ID: ${schemaId}, mode: ${mode === IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_OPEN ? "OPEN" : mode === IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS ? "ECOSYSTEM" : "GRANTOR_VALIDATION"})`);
+  console.log(`  ✓ CS created (ID: ${schemaId}, mode: ${mode === IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_OPEN ? "OPEN" : mode === IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS ? "ECOSYSTEM" : "GRANTOR_VALIDATION"})`);
 
   console.log("  Creating root permission...");
   const { rootPermId, effectiveFrom } = await createRootPermWithOperator(client, corporation, operator, schemaId, did);

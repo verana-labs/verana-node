@@ -13,10 +13,10 @@ enum IssuerOnboardingMode {
   ISSUER_ONBOARDING_MODE_UNSPECIFIED = 0;
   // Anyone can self-create an issuer permission
   ISSUER_ONBOARDING_MODE_OPEN = 1;
-  // Requires validation from ecosystem
-  ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS = 2;
-  // Requires validation from a grantor
-  ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS = 3;
+  // Requires an onboarding process with the ecosystem
+  ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS = 2;
+  // Requires an onboarding process with a grantor
+  ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS = 3;
 }
 
 // VerifierOnboardingMode defines how verifiers are onboarded for a credential schema.
@@ -24,18 +24,18 @@ enum VerifierOnboardingMode {
   VERIFIER_ONBOARDING_MODE_UNSPECIFIED = 0;
   // Anyone can self-create a verifier permission
   VERIFIER_ONBOARDING_MODE_OPEN = 1;
-  // Requires validation from ecosystem
-  VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS = 2;
-  // Requires validation from a grantor
-  VERIFIER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS = 3;
+  // Requires an onboarding process with the ecosystem
+  VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS = 2;
+  // Requires an onboarding process with a grantor
+  VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS = 3;
 }
 
 // HolderOnboardingMode defines how holders are onboarded for a credential schema.
 enum HolderOnboardingMode {
   HOLDER_ONBOARDING_MODE_UNSPECIFIED = 0;
-  // Holders go through the issuer validation process
-  HOLDER_ONBOARDING_MODE_ISSUER_VALIDATION_PROCESS = 1;
-  // Anyone can self-create a holder permission without validation
+  // Holders go through an onboarding process with the issuer
+  HOLDER_ONBOARDING_MODE_ISSUER_ONBOARDING_PROCESS = 1;
+  // Anyone can self-create a holder permission without an onboarding process
   HOLDER_ONBOARDING_MODE_PERMISSIONLESS = 2;
 }
 

@@ -240,7 +240,7 @@ async function main() {
     // and two ECOSYSTEM roots on one schema overlap, we build a SECOND schema with
     // its own root and start each ISSUER under its own (schema, root).
     console.log("Step 3: Creating fresh prerequisites (EC + 2x CS + 2x fee-bearing Root)...");
-    const ECOSYSTEM_MODE = IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS;
+    const ECOSYSTEM_MODE = IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS;
     const { ecId, schemaId: schema1Id, rootPermId: root1Id } = await createPermPrerequisites(
       operatorClient,
       setup.authorityAddress,

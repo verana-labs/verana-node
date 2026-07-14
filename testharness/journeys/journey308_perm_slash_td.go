@@ -66,8 +66,8 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
 		client, ctx, operatorAccount, policyAddr,
 		trID, schemaData,
-		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
+		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 2 failed: could not create CS: %w", err)
