@@ -197,7 +197,10 @@ export interface MsgSlashParticipantTrustDeposit {
   operator: string;
   id: number;
   amount: number;
-  /** [MOD-PP-MSG-12-1] reason for the slash (mandatory per spec) */
+  /**
+   * reason for the slash. Implementation-defined: MOD-PP-MSG-12-1 defines no
+   * such parameter; it is recorded on the slash event only.
+   */
   reason: string;
 }
 

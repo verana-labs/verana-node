@@ -1256,7 +1256,8 @@ type MsgSlashParticipantTrustDeposit struct {
 	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
 	Id       uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
 	Amount   uint64 `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
-	// [MOD-PP-MSG-12-1] reason for the slash (mandatory per spec)
+	// reason for the slash. Implementation-defined: MOD-PP-MSG-12-1 defines no
+	// such parameter; it is recorded on the slash event only.
 	Reason string `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 

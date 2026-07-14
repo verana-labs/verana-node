@@ -78,7 +78,8 @@ message MsgSlashTrustDeposit {
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
-  // [MOD-TD-MSG-5-1] reason for the slash (mandatory per spec)
+  // reason for the slash. Implementation-defined: MOD-TD-MSG-5-1 defines no
+  // such parameter; it is recorded on the slash event only.
   string reason = 4;
 }
 

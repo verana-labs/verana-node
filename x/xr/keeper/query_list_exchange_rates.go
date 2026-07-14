@@ -15,6 +15,14 @@ func (q queryServer) ListExchangeRates(ctx context.Context, req *types.QueryList
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
+	// [MOD-XR-QRY-2-2] query checks: a TU asset type MUST NOT carry an identifier.
+	if req.BaseAssetType == cstypes.PricingAssetType_TU && req.BaseAsset != "" {
+		return nil, status.Error(codes.InvalidArgument, "base_asset must be empty when base_asset_type is TU")
+	}
+	if req.QuoteAssetType == cstypes.PricingAssetType_TU && req.QuoteAsset != "" {
+		return nil, status.Error(codes.InvalidArgument, "quote_asset must be empty when quote_asset_type is TU")
+	}
+
 	// [MOD-XR-QRY-2] response_max_size: default 64, max 1024.
 	if req.ResponseMaxSize > 1024 {
 		return nil, status.Error(codes.InvalidArgument, "response_max_size must not exceed 1024")

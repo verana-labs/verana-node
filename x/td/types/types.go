@@ -34,7 +34,8 @@ func (msg *MsgSlashTrustDeposit) ValidateBasic() error {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "deposit must be greater than 0")
 	}
 
-	// [MOD-TD-MSG-5-1] reason is mandatory per spec
+	// reason is an implementation-defined field (not in MOD-TD-MSG-5-1); it is
+	// recorded on the slash event only.
 	if msg.Reason == "" {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "reason is required")
 	}

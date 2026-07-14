@@ -249,7 +249,8 @@ message MsgSlashParticipantTrustDeposit {
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
   uint64 amount = 4;
-  // [MOD-PP-MSG-12-1] reason for the slash (mandatory per spec)
+  // reason for the slash. Implementation-defined: MOD-PP-MSG-12-1 defines no
+  // such parameter; it is recorded on the slash event only.
   string reason = 5;
 }
 

@@ -370,7 +370,8 @@ func (msg *MsgSlashParticipantTrustDeposit) ValidateBasic() error {
 	if msg.Amount == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("amount must be greater than 0")
 	}
-	// [MOD-PP-MSG-12-1] reason is mandatory per spec
+	// reason is an implementation-defined field (not in MOD-PP-MSG-12-1); it is
+	// recorded on the slash event only.
 	if msg.Reason == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("reason is required")
 	}

@@ -237,7 +237,8 @@ type MsgSlashTrustDeposit struct {
 	CorporationId uint64 `protobuf:"varint,5,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
 	// deposit is the deposit amount to slash (in base denom)
 	Deposit cosmossdk_io_math.Int `protobuf:"bytes,3,opt,name=deposit,proto3,customtype=cosmossdk.io/math.Int" json:"deposit"`
-	// [MOD-TD-MSG-5-1] reason for the slash (mandatory per spec)
+	// reason for the slash. Implementation-defined: MOD-TD-MSG-5-1 defines no
+	// such parameter; it is recorded on the slash event only.
 	Reason string `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 

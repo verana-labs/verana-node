@@ -50,8 +50,9 @@ var VPRDelegableMsgTypes = map[string]bool{
 	// Delegation (DE)
 	"/verana.de.v1.MsgGrantOperatorAuthorization":  true,
 	"/verana.de.v1.MsgRevokeOperatorAuthorization": true,
-	// Exchange Rate (XR)
-	"/verana.xr.v1.MsgUpdateExchangeRate": true,
+	// Exchange Rate (XR) messages are not delegable: MsgUpdateExchangeRate is
+	// signed by the operator alone and authorized by a governance-granted
+	// ExchangeRateAuthorization, so it has no (corporation, operator) pair.
 }
 
 // MsgCreateOrUpdateParticipantSessionTypeURL is the type URL for
