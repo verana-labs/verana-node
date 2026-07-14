@@ -20,7 +20,13 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, err
 	}
 
-	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [AUTHZ-CHECK-5] Resolve the corporation first: AUTHZ-CHECK-1 consumes the
+	// co it resolves, and an unregistered corporation must surface as such.
+	if _, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority); err != nil {
+		return nil, err
+	}
+
+	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK-1] Verify operator authorization.
 	if err := ms.delegationKeeper.CheckOperatorAuthorization(
 		ctx,
 		msg.Authority,
@@ -29,11 +35,6 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
-	// [AUTHZ-CHECK-5] Signing authority account MUST be a registered Corporation.
-	if _, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority); err != nil {
-		return nil, err
 	}
 
 	// [MOD-DI-MSG-1-3] A duplicate digest is an idempotent no-op (returns success).

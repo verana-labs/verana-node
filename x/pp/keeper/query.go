@@ -9,8 +9,6 @@ import (
 
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/verana-labs/verana-node/util/validation"
-	credentialschematypes "github.com/verana-labs/verana-node/x/cs/types"
 	"github.com/verana-labs/verana-node/x/pp/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -179,179 +177,25 @@ func (k Keeper) ListParticipantSessions(ctx context.Context, req *types.QueryLis
 		}
 
 		sessions = append(sessions, session)
-		return len(sessions) >= int(req.ResponseMaxSize), nil
+		return false, nil
 	})
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to list sessions")
 	}
 
-	// Sort by modified time ascending (nil sorts first)
+	// Sort by modified time ascending (nil sorts first), then page. Truncating
+	// inside the walk would page in store-key order, not by modified.
 	sort.Slice(sessions, func(i, j int) bool {
 		return lessModified(sessions[i].Modified, sessions[j].Modified)
 	})
+	if len(sessions) > int(req.ResponseMaxSize) {
+		sessions = sessions[:req.ResponseMaxSize]
+	}
 
 	return &types.QueryListParticipantSessionsResponse{
 		Sessions: sessions,
 	}, nil
-}
-
-func (k Keeper) FindParticipantsWithDID(goCtx context.Context, req *types.QueryFindParticipantsWithDIDRequest) (*types.QueryFindParticipantsWithDIDResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// [MOD-PP-QRY-3-2] Checks
-	if req.Did == "" {
-		return nil, status.Error(codes.InvalidArgument, "DID is required")
-	}
-	if !validation.IsValidDID(req.Did) {
-		return nil, status.Error(codes.InvalidArgument, "invalid DID format")
-	}
-
-	// Check type - convert uint32 to ParticipantRole
-	if req.Role == 0 {
-		return nil, status.Error(codes.InvalidArgument, "participant type is required")
-	}
-
-	// Validate participant type value is in range
-	participantType := types.ParticipantRole(req.Role)
-	if participantType < types.ParticipantRole_ISSUER ||
-		participantType > types.ParticipantRole_HOLDER {
-		return nil, status.Error(codes.InvalidArgument,
-			fmt.Sprintf("invalid participant type value: %d, must be between 1 and 6", req.Role))
-	}
-
-	// Check schema ID
-	if req.SchemaId == 0 {
-		return nil, status.Error(codes.InvalidArgument, "schema ID is required")
-	}
-
-	// Check schema exists and get schema details
-	cs, err := k.credentialSchemaKeeper.GetCredentialSchemaById(ctx, req.SchemaId)
-	if err != nil {
-		return nil, status.Error(codes.NotFound, fmt.Sprintf("credential schema not found: %v", err))
-	}
-
-	// [MOD-PP-QRY-3-3] Execution
-	var foundParticipants []types.Participant
-
-	// Check if we need to handle the special OPEN mode case
-	isOpenMode := false
-	if (participantType == types.ParticipantRole_ISSUER &&
-		cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN) ||
-		(participantType == types.ParticipantRole_VERIFIER &&
-			cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN) {
-		isOpenMode = true
-	}
-
-	// For now, we'll scan all participants
-	err = k.Participant.Walk(ctx, nil, func(id uint64, participant types.Participant) (bool, error) {
-		// Filter by schema ID
-		if participant.SchemaId != req.SchemaId {
-			return false, nil
-		}
-
-		// Filter by DID and type
-		if participant.Did != req.Did || participant.Role != participantType {
-			return false, nil
-		}
-
-		// If "when" is not specified, add all matching participants
-		if req.When == nil {
-			foundParticipants = append(foundParticipants, participant)
-			return false, nil
-		}
-
-		// Filter by time validity
-		if isParticipantValidAtTime(participant, *req.When) {
-			foundParticipants = append(foundParticipants, participant)
-		}
-
-		return false, nil
-	})
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprintf("failed to query participants: %v", err))
-	}
-
-	// If we're in OPEN mode and didn't find any explicit participants,
-	// check if there's an ECOSYSTEM participant that handles fees
-	if isOpenMode && len(foundParticipants) == 0 {
-		// Find ECOSYSTEM participant for this schema
-		var ecosystemParticipant types.Participant
-		ecosystemParticipantFound := false
-
-		err = k.Participant.Walk(ctx, nil, func(id uint64, participant types.Participant) (bool, error) {
-			if participant.SchemaId == req.SchemaId &&
-				participant.Role == types.ParticipantRole_ECOSYSTEM {
-				// Check time validity if "when" is specified
-				if req.When == nil || isParticipantValidAtTime(participant, *req.When) {
-					ecosystemParticipant = participant
-					ecosystemParticipantFound = true
-					return true, nil // Stop iteration once found
-				}
-			}
-			return false, nil
-		})
-
-		if err != nil {
-			return nil, status.Error(codes.Internal, fmt.Sprintf("failed to query ECOSYSTEM participant: %v", err))
-		}
-
-		// In OPEN mode, if we found an ECOSYSTEM participant, we can consider the DID
-		// authorized even without an explicit participant record
-		if ecosystemParticipantFound {
-			// Include a note in the response that this is an implicit participant in OPEN mode
-			ecosystemParticipant.OpSummaryDigest = "OPEN_MODE_IMPLICIT_PERMISSION"
-			foundParticipants = append(foundParticipants, ecosystemParticipant)
-		}
-	}
-
-	return &types.QueryFindParticipantsWithDIDResponse{
-		Participants: foundParticipants,
-	}, nil
-}
-
-// Helper function to check if a participant is valid at a specific time
-// This should align with IsValidParticipant logic for consistency
-func isParticipantValidAtTime(participant types.Participant, when time.Time) bool {
-	// Check repaid (REPAID state)
-	if participant.Repaid != nil {
-		return false
-	}
-
-	// Check slashed (SLASHED state) - use timestamp as per spec
-	if participant.Slashed != nil {
-		return false
-	}
-
-	// Check revoked (REVOKED state)
-	// Spec: "else if `revoked` is lower than now(), => `participant_state` is `REVOKED`"
-	// This means revoked < now(), so we check when.After(*participant.Revoked)
-	if participant.Revoked != nil && when.After(*participant.Revoked) {
-		return false
-	}
-
-	// Check expired (EXPIRED state)
-	if participant.EffectiveUntil != nil && !when.Before(*participant.EffectiveUntil) {
-		return false
-	}
-
-	// Check FUTURE state
-	if participant.EffectiveFrom != nil && when.Before(*participant.EffectiveFrom) {
-		return false
-	}
-
-	// Check INACTIVE state (effective_from is null)
-	if participant.EffectiveFrom == nil {
-		return false
-	}
-
-	// At this point, participant is ACTIVE
-	return true
 }
 
 func (k Keeper) FindBeneficiaries(goCtx context.Context, req *types.QueryFindBeneficiariesRequest) (*types.QueryFindBeneficiariesResponse, error) {

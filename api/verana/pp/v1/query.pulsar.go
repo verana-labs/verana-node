@@ -5018,1095 +5018,6 @@ func (x *fastReflection_QueryListParticipantSessionsResponse) ProtoMethods() *pr
 }
 
 var (
-	md_QueryFindParticipantsWithDIDRequest           protoreflect.MessageDescriptor
-	fd_QueryFindParticipantsWithDIDRequest_did       protoreflect.FieldDescriptor
-	fd_QueryFindParticipantsWithDIDRequest_role      protoreflect.FieldDescriptor
-	fd_QueryFindParticipantsWithDIDRequest_schema_id protoreflect.FieldDescriptor
-	fd_QueryFindParticipantsWithDIDRequest_when      protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_verana_pp_v1_query_proto_init()
-	md_QueryFindParticipantsWithDIDRequest = File_verana_pp_v1_query_proto.Messages().ByName("QueryFindParticipantsWithDIDRequest")
-	fd_QueryFindParticipantsWithDIDRequest_did = md_QueryFindParticipantsWithDIDRequest.Fields().ByName("did")
-	fd_QueryFindParticipantsWithDIDRequest_role = md_QueryFindParticipantsWithDIDRequest.Fields().ByName("role")
-	fd_QueryFindParticipantsWithDIDRequest_schema_id = md_QueryFindParticipantsWithDIDRequest.Fields().ByName("schema_id")
-	fd_QueryFindParticipantsWithDIDRequest_when = md_QueryFindParticipantsWithDIDRequest.Fields().ByName("when")
-}
-
-var _ protoreflect.Message = (*fastReflection_QueryFindParticipantsWithDIDRequest)(nil)
-
-type fastReflection_QueryFindParticipantsWithDIDRequest QueryFindParticipantsWithDIDRequest
-
-func (x *QueryFindParticipantsWithDIDRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryFindParticipantsWithDIDRequest)(x)
-}
-
-func (x *QueryFindParticipantsWithDIDRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_pp_v1_query_proto_msgTypes[10]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_QueryFindParticipantsWithDIDRequest_messageType fastReflection_QueryFindParticipantsWithDIDRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QueryFindParticipantsWithDIDRequest_messageType{}
-
-type fastReflection_QueryFindParticipantsWithDIDRequest_messageType struct{}
-
-func (x fastReflection_QueryFindParticipantsWithDIDRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryFindParticipantsWithDIDRequest)(nil)
-}
-func (x fastReflection_QueryFindParticipantsWithDIDRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryFindParticipantsWithDIDRequest)
-}
-func (x fastReflection_QueryFindParticipantsWithDIDRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryFindParticipantsWithDIDRequest
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryFindParticipantsWithDIDRequest
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QueryFindParticipantsWithDIDRequest_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) New() protoreflect.Message {
-	return new(fastReflection_QueryFindParticipantsWithDIDRequest)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Interface() protoreflect.ProtoMessage {
-	return (*QueryFindParticipantsWithDIDRequest)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Did != "" {
-		value := protoreflect.ValueOfString(x.Did)
-		if !f(fd_QueryFindParticipantsWithDIDRequest_did, value) {
-			return
-		}
-	}
-	if x.Role != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.Role)
-		if !f(fd_QueryFindParticipantsWithDIDRequest_role, value) {
-			return
-		}
-	}
-	if x.SchemaId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.SchemaId)
-		if !f(fd_QueryFindParticipantsWithDIDRequest_schema_id, value) {
-			return
-		}
-	}
-	if x.When != nil {
-		value := protoreflect.ValueOfMessage(x.When.ProtoReflect())
-		if !f(fd_QueryFindParticipantsWithDIDRequest_when, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.did":
-		return x.Did != ""
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.role":
-		return x.Role != uint32(0)
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.schema_id":
-		return x.SchemaId != uint64(0)
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.when":
-		return x.When != nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDRequest"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.did":
-		x.Did = ""
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.role":
-		x.Role = uint32(0)
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.schema_id":
-		x.SchemaId = uint64(0)
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.when":
-		x.When = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDRequest"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.did":
-		value := x.Did
-		return protoreflect.ValueOfString(value)
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.role":
-		value := x.Role
-		return protoreflect.ValueOfUint32(value)
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.schema_id":
-		value := x.SchemaId
-		return protoreflect.ValueOfUint64(value)
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.when":
-		value := x.When
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDRequest"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDRequest does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.did":
-		x.Did = value.Interface().(string)
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.role":
-		x.Role = uint32(value.Uint())
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.schema_id":
-		x.SchemaId = value.Uint()
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.when":
-		x.When = value.Message().Interface().(*timestamppb.Timestamp)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDRequest"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.when":
-		if x.When == nil {
-			x.When = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.When.ProtoReflect())
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.did":
-		panic(fmt.Errorf("field did of message verana.pp.v1.QueryFindParticipantsWithDIDRequest is not mutable"))
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.role":
-		panic(fmt.Errorf("field role of message verana.pp.v1.QueryFindParticipantsWithDIDRequest is not mutable"))
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.schema_id":
-		panic(fmt.Errorf("field schema_id of message verana.pp.v1.QueryFindParticipantsWithDIDRequest is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDRequest"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.did":
-		return protoreflect.ValueOfString("")
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.role":
-		return protoreflect.ValueOfUint32(uint32(0))
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.schema_id":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "verana.pp.v1.QueryFindParticipantsWithDIDRequest.when":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDRequest"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.pp.v1.QueryFindParticipantsWithDIDRequest", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryFindParticipantsWithDIDRequest) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryFindParticipantsWithDIDRequest)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Did)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.Role != 0 {
-			n += 1 + runtime.Sov(uint64(x.Role))
-		}
-		if x.SchemaId != 0 {
-			n += 1 + runtime.Sov(uint64(x.SchemaId))
-		}
-		if x.When != nil {
-			l = options.Size(x.When)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryFindParticipantsWithDIDRequest)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.When != nil {
-			encoded, err := options.Marshal(x.When)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x2a
-		}
-		if x.SchemaId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.SchemaId))
-			i--
-			dAtA[i] = 0x18
-		}
-		if x.Role != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Role))
-			i--
-			dAtA[i] = 0x10
-		}
-		if len(x.Did) > 0 {
-			i -= len(x.Did)
-			copy(dAtA[i:], x.Did)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Did)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryFindParticipantsWithDIDRequest)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryFindParticipantsWithDIDRequest: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryFindParticipantsWithDIDRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Did", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Did = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Role", wireType)
-				}
-				x.Role = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Role |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SchemaId", wireType)
-				}
-				x.SchemaId = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.SchemaId |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 5:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field When", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.When == nil {
-					x.When = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.When); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var _ protoreflect.List = (*_QueryFindParticipantsWithDIDResponse_1_list)(nil)
-
-type _QueryFindParticipantsWithDIDResponse_1_list struct {
-	list *[]*Participant
-}
-
-func (x *_QueryFindParticipantsWithDIDResponse_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_QueryFindParticipantsWithDIDResponse_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_QueryFindParticipantsWithDIDResponse_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Participant)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_QueryFindParticipantsWithDIDResponse_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*Participant)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_QueryFindParticipantsWithDIDResponse_1_list) AppendMutable() protoreflect.Value {
-	v := new(Participant)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_QueryFindParticipantsWithDIDResponse_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_QueryFindParticipantsWithDIDResponse_1_list) NewElement() protoreflect.Value {
-	v := new(Participant)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_QueryFindParticipantsWithDIDResponse_1_list) IsValid() bool {
-	return x.list != nil
-}
-
-var (
-	md_QueryFindParticipantsWithDIDResponse              protoreflect.MessageDescriptor
-	fd_QueryFindParticipantsWithDIDResponse_participants protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_verana_pp_v1_query_proto_init()
-	md_QueryFindParticipantsWithDIDResponse = File_verana_pp_v1_query_proto.Messages().ByName("QueryFindParticipantsWithDIDResponse")
-	fd_QueryFindParticipantsWithDIDResponse_participants = md_QueryFindParticipantsWithDIDResponse.Fields().ByName("participants")
-}
-
-var _ protoreflect.Message = (*fastReflection_QueryFindParticipantsWithDIDResponse)(nil)
-
-type fastReflection_QueryFindParticipantsWithDIDResponse QueryFindParticipantsWithDIDResponse
-
-func (x *QueryFindParticipantsWithDIDResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryFindParticipantsWithDIDResponse)(x)
-}
-
-func (x *QueryFindParticipantsWithDIDResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_pp_v1_query_proto_msgTypes[11]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_QueryFindParticipantsWithDIDResponse_messageType fastReflection_QueryFindParticipantsWithDIDResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QueryFindParticipantsWithDIDResponse_messageType{}
-
-type fastReflection_QueryFindParticipantsWithDIDResponse_messageType struct{}
-
-func (x fastReflection_QueryFindParticipantsWithDIDResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryFindParticipantsWithDIDResponse)(nil)
-}
-func (x fastReflection_QueryFindParticipantsWithDIDResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryFindParticipantsWithDIDResponse)
-}
-func (x fastReflection_QueryFindParticipantsWithDIDResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryFindParticipantsWithDIDResponse
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryFindParticipantsWithDIDResponse
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QueryFindParticipantsWithDIDResponse_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) New() protoreflect.Message {
-	return new(fastReflection_QueryFindParticipantsWithDIDResponse)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Interface() protoreflect.ProtoMessage {
-	return (*QueryFindParticipantsWithDIDResponse)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Participants) != 0 {
-		value := protoreflect.ValueOfList(&_QueryFindParticipantsWithDIDResponse_1_list{list: &x.Participants})
-		if !f(fd_QueryFindParticipantsWithDIDResponse_participants, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDResponse.participants":
-		return len(x.Participants) != 0
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDResponse"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDResponse.participants":
-		x.Participants = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDResponse"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDResponse.participants":
-		if len(x.Participants) == 0 {
-			return protoreflect.ValueOfList(&_QueryFindParticipantsWithDIDResponse_1_list{})
-		}
-		listValue := &_QueryFindParticipantsWithDIDResponse_1_list{list: &x.Participants}
-		return protoreflect.ValueOfList(listValue)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDResponse"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDResponse does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDResponse.participants":
-		lv := value.List()
-		clv := lv.(*_QueryFindParticipantsWithDIDResponse_1_list)
-		x.Participants = *clv.list
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDResponse"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDResponse.participants":
-		if x.Participants == nil {
-			x.Participants = []*Participant{}
-		}
-		value := &_QueryFindParticipantsWithDIDResponse_1_list{list: &x.Participants}
-		return protoreflect.ValueOfList(value)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDResponse"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.pp.v1.QueryFindParticipantsWithDIDResponse.participants":
-		list := []*Participant{}
-		return protoreflect.ValueOfList(&_QueryFindParticipantsWithDIDResponse_1_list{list: &list})
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.pp.v1.QueryFindParticipantsWithDIDResponse"))
-		}
-		panic(fmt.Errorf("message verana.pp.v1.QueryFindParticipantsWithDIDResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.pp.v1.QueryFindParticipantsWithDIDResponse", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryFindParticipantsWithDIDResponse) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryFindParticipantsWithDIDResponse)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if len(x.Participants) > 0 {
-			for _, e := range x.Participants {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryFindParticipantsWithDIDResponse)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Participants) > 0 {
-			for iNdEx := len(x.Participants) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Participants[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
-			}
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryFindParticipantsWithDIDResponse)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryFindParticipantsWithDIDResponse: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryFindParticipantsWithDIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Participants", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Participants = append(x.Participants, &Participant{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Participants[len(x.Participants)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
 	md_QueryFindBeneficiariesRequest                         protoreflect.MessageDescriptor
 	fd_QueryFindBeneficiariesRequest_issuer_participant_id   protoreflect.FieldDescriptor
 	fd_QueryFindBeneficiariesRequest_verifier_participant_id protoreflect.FieldDescriptor
@@ -6128,7 +5039,7 @@ func (x *QueryFindBeneficiariesRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryFindBeneficiariesRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_pp_v1_query_proto_msgTypes[12]
+	mi := &file_verana_pp_v1_query_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6629,7 +5540,7 @@ func (x *QueryFindBeneficiariesResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryFindBeneficiariesResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_pp_v1_query_proto_msgTypes[13]
+	mi := &file_verana_pp_v1_query_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7505,100 +6416,6 @@ func (x *QueryListParticipantSessionsResponse) GetSessions() []*ParticipantSessi
 	return nil
 }
 
-type QueryFindParticipantsWithDIDRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Did      string                 `protobuf:"bytes,1,opt,name=did,proto3" json:"did,omitempty"`
-	Role     uint32                 `protobuf:"varint,2,opt,name=role,proto3" json:"role,omitempty"`
-	SchemaId uint64                 `protobuf:"varint,3,opt,name=schema_id,json=schemaId,proto3" json:"schema_id,omitempty"`
-	When     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=when,proto3" json:"when,omitempty"`
-}
-
-func (x *QueryFindParticipantsWithDIDRequest) Reset() {
-	*x = QueryFindParticipantsWithDIDRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_pp_v1_query_proto_msgTypes[10]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *QueryFindParticipantsWithDIDRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QueryFindParticipantsWithDIDRequest) ProtoMessage() {}
-
-// Deprecated: Use QueryFindParticipantsWithDIDRequest.ProtoReflect.Descriptor instead.
-func (*QueryFindParticipantsWithDIDRequest) Descriptor() ([]byte, []int) {
-	return file_verana_pp_v1_query_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *QueryFindParticipantsWithDIDRequest) GetDid() string {
-	if x != nil {
-		return x.Did
-	}
-	return ""
-}
-
-func (x *QueryFindParticipantsWithDIDRequest) GetRole() uint32 {
-	if x != nil {
-		return x.Role
-	}
-	return 0
-}
-
-func (x *QueryFindParticipantsWithDIDRequest) GetSchemaId() uint64 {
-	if x != nil {
-		return x.SchemaId
-	}
-	return 0
-}
-
-func (x *QueryFindParticipantsWithDIDRequest) GetWhen() *timestamppb.Timestamp {
-	if x != nil {
-		return x.When
-	}
-	return nil
-}
-
-type QueryFindParticipantsWithDIDResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Participants []*Participant `protobuf:"bytes,1,rep,name=participants,proto3" json:"participants,omitempty"`
-}
-
-func (x *QueryFindParticipantsWithDIDResponse) Reset() {
-	*x = QueryFindParticipantsWithDIDResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_pp_v1_query_proto_msgTypes[11]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *QueryFindParticipantsWithDIDResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QueryFindParticipantsWithDIDResponse) ProtoMessage() {}
-
-// Deprecated: Use QueryFindParticipantsWithDIDResponse.ProtoReflect.Descriptor instead.
-func (*QueryFindParticipantsWithDIDResponse) Descriptor() ([]byte, []int) {
-	return file_verana_pp_v1_query_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *QueryFindParticipantsWithDIDResponse) GetParticipants() []*Participant {
-	if x != nil {
-		return x.Participants
-	}
-	return nil
-}
-
 type QueryFindBeneficiariesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -7611,7 +6428,7 @@ type QueryFindBeneficiariesRequest struct {
 func (x *QueryFindBeneficiariesRequest) Reset() {
 	*x = QueryFindBeneficiariesRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_pp_v1_query_proto_msgTypes[12]
+		mi := &file_verana_pp_v1_query_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7625,7 +6442,7 @@ func (*QueryFindBeneficiariesRequest) ProtoMessage() {}
 
 // Deprecated: Use QueryFindBeneficiariesRequest.ProtoReflect.Descriptor instead.
 func (*QueryFindBeneficiariesRequest) Descriptor() ([]byte, []int) {
-	return file_verana_pp_v1_query_proto_rawDescGZIP(), []int{12}
+	return file_verana_pp_v1_query_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *QueryFindBeneficiariesRequest) GetIssuerParticipantId() uint64 {
@@ -7653,7 +6470,7 @@ type QueryFindBeneficiariesResponse struct {
 func (x *QueryFindBeneficiariesResponse) Reset() {
 	*x = QueryFindBeneficiariesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_pp_v1_query_proto_msgTypes[13]
+		mi := &file_verana_pp_v1_query_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7667,7 +6484,7 @@ func (*QueryFindBeneficiariesResponse) ProtoMessage() {}
 
 // Deprecated: Use QueryFindBeneficiariesResponse.ProtoReflect.Descriptor instead.
 func (*QueryFindBeneficiariesResponse) Descriptor() ([]byte, []int) {
-	return file_verana_pp_v1_query_proto_rawDescGZIP(), []int{13}
+	return file_verana_pp_v1_query_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *QueryFindBeneficiariesResponse) GetParticipants() []*Participant {
@@ -7776,116 +6593,88 @@ var file_verana_pp_v1_query_proto_rawDesc = []byte{
 	0x03, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e,
 	0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65,
 	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x08, 0x73, 0x65, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0xa2, 0x01, 0x0a, 0x23, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46,
-	0x69, 0x6e, 0x64, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x57,
-	0x69, 0x74, 0x68, 0x44, 0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a,
-	0x03, 0x64, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x64, 0x69, 0x64, 0x12,
-	0x12, 0x0a, 0x04, 0x72, 0x6f, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x72,
-	0x6f, 0x6c, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x69, 0x64,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x49, 0x64,
-	0x12, 0x38, 0x0a, 0x04, 0x77, 0x68, 0x65, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
-	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01,
-	0x90, 0xdf, 0x1f, 0x01, 0x52, 0x04, 0x77, 0x68, 0x65, 0x6e, 0x22, 0x6b, 0x0a, 0x24, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x46, 0x69, 0x6e, 0x64, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61,
-	0x6e, 0x74, 0x73, 0x57, 0x69, 0x74, 0x68, 0x44, 0x49, 0x44, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x43, 0x0a, 0x0c, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e,
-	0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70,
-	0x61, 0x6e, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c, 0x70, 0x61, 0x72, 0x74, 0x69,
-	0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x22, 0x8b, 0x01, 0x0a, 0x1d, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x46, 0x69, 0x6e, 0x64, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x69,
-	0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x32, 0x0a, 0x15, 0x69, 0x73, 0x73,
-	0x75, 0x65, 0x72, 0x5f, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x5f,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72,
-	0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x36, 0x0a,
-	0x17, 0x76, 0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x72, 0x5f, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63,
-	0x69, 0x70, 0x61, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15,
-	0x76, 0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x72, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70,
-	0x61, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x65, 0x0a, 0x1e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69,
-	0x6e, 0x64, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x0c, 0x70, 0x61, 0x72, 0x74, 0x69,
-	0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72,
-	0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c,
-	0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x32, 0x90, 0x08, 0x0a,
-	0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x6b, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x12, 0x20, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x21, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76,
-	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x61, 0x72,
-	0x61, 0x6d, 0x73, 0x12, 0x87, 0x01, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x61, 0x72, 0x74,
-	0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x2a, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73,
-	0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x61, 0x72,
-	0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x1a, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x14, 0x12, 0x12, 0x2f, 0x76, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x6c, 0x69, 0x73, 0x74, 0x12, 0x85, 0x01,
-	0x0a, 0x0e, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74,
-	0x12, 0x28, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70,
-	0x61, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x76, 0x65, 0x72,
-	0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47,
-	0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x18, 0x12, 0x16, 0x2f,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x74,
-	0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0xa2, 0x01, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72,
-	0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12,
-	0x2f, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61,
-	0x6e, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70,
-	0x61, 0x6e, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x26, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x12, 0x1e, 0x2f, 0x76, 0x65, 0x72,
-	0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x74, 0x5f, 0x73, 0x65,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0xa4, 0x01, 0x0a, 0x17, 0x4c,
-	0x69, 0x73, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x31, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
+	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x8b, 0x01, 0x0a, 0x1d, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46,
+	0x69, 0x6e, 0x64, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x69, 0x65, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x32, 0x0a, 0x15, 0x69, 0x73, 0x73, 0x75, 0x65,
+	0x72, 0x5f, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x50, 0x61,
+	0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x36, 0x0a, 0x17, 0x76,
+	0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x72, 0x5f, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70,
+	0x61, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x76, 0x65,
+	0x72, 0x69, 0x66, 0x69, 0x65, 0x72, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e,
+	0x74, 0x49, 0x64, 0x22, 0x65, 0x0a, 0x1e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6e, 0x64,
+	0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x0c, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69,
+	0x70, 0x61, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x74, 0x69,
+	0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c, 0x70, 0x61,
+	0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x32, 0xe8, 0x06, 0x0a, 0x05, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x12, 0x6b, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x20,
+	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x21, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x1c, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x12, 0x87, 0x01, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63,
+	0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x2a, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
 	0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x50,
-	0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x32, 0x2e, 0x76, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69,
-	0x73, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x22, 0x82,
-	0xd3, 0xe4, 0x93, 0x02, 0x1c, 0x12, 0x1a, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70,
-	0x70, 0x2f, 0x76, 0x31, 0x2f, 0x6c, 0x69, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x12, 0xa5, 0x01, 0x0a, 0x17, 0x46, 0x69, 0x6e, 0x64, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63,
-	0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x57, 0x69, 0x74, 0x68, 0x44, 0x49, 0x44, 0x12, 0x31, 0x2e,
+	0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76,
+	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69,
+	0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x1a, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x14, 0x12, 0x12, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x6c, 0x69, 0x73, 0x74, 0x12, 0x85, 0x01, 0x0a, 0x0e,
+	0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x12, 0x28,
+	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e,
+	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74,
+	0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x1e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x18, 0x12, 0x16, 0x2f, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x74, 0x2f, 0x7b,
+	0x69, 0x64, 0x7d, 0x12, 0xa2, 0x01, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69,
+	0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x2f, 0x2e,
 	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x46, 0x69, 0x6e, 0x64, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e,
-	0x74, 0x73, 0x57, 0x69, 0x74, 0x68, 0x44, 0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x32, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6e, 0x64, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69,
-	0x70, 0x61, 0x6e, 0x74, 0x73, 0x57, 0x69, 0x74, 0x68, 0x44, 0x49, 0x44, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x23, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1d, 0x12, 0x1b, 0x2f, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x66, 0x69, 0x6e, 0x64,
-	0x5f, 0x77, 0x69, 0x74, 0x68, 0x5f, 0x64, 0x69, 0x64, 0x12, 0x93, 0x01, 0x0a, 0x11, 0x46, 0x69,
-	0x6e, 0x64, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x69, 0x65, 0x73, 0x12,
-	0x2b, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6e, 0x64, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69,
-	0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x46, 0x69, 0x6e, 0x64, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x69,
-	0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x23, 0x82, 0xd3, 0xe4, 0x93,
-	0x02, 0x1d, 0x12, 0x1b, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76,
-	0x31, 0x2f, 0x62, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x69, 0x65, 0x73, 0x42,
-	0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70,
-	0x70, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x3b, 0x70, 0x70, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56,
-	0x50, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x50, 0x70, 0x2e, 0x56,
-	0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x50, 0x70, 0x5c, 0x56, 0x31,
-	0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x50, 0x70, 0x5c, 0x56, 0x31, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x50, 0x70, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x30,
+	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e,
+	0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x26, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x12, 0x1e, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x74, 0x5f, 0x73, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0xa4, 0x01, 0x0a, 0x17, 0x4c, 0x69, 0x73,
+	0x74, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x73, 0x12, 0x31, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70,
+	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x61, 0x72,
+	0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x32, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74,
+	0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x22, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x1c, 0x12, 0x1a, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f,
+	0x76, 0x31, 0x2f, 0x6c, 0x69, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12,
+	0x93, 0x01, 0x0a, 0x11, 0x46, 0x69, 0x6e, 0x64, 0x42, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69,
+	0x61, 0x72, 0x69, 0x65, 0x73, 0x12, 0x2b, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70,
+	0x70, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6e, 0x64, 0x42, 0x65,
+	0x6e, 0x65, 0x66, 0x69, 0x63, 0x69, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76,
+	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x46, 0x69, 0x6e, 0x64, 0x42, 0x65, 0x6e, 0x65, 0x66,
+	0x69, 0x63, 0x69, 0x61, 0x72, 0x69, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x23, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1d, 0x12, 0x1b, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x65, 0x6e, 0x65, 0x66, 0x69, 0x63, 0x69,
+	0x61, 0x72, 0x69, 0x65, 0x73, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x70, 0x70, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73,
+	0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69,
+	0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x70, 0x70, 0x2f, 0x76, 0x31, 0x3b, 0x70, 0x70,
+	0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x50, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2e, 0x50, 0x70, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x5c, 0x50, 0x70, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c,
+	0x50, 0x70, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x50, 0x70, 0x3a, 0x3a,
+	0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -7900,7 +6689,7 @@ func file_verana_pp_v1_query_proto_rawDescGZIP() []byte {
 	return file_verana_pp_v1_query_proto_rawDescData
 }
 
-var file_verana_pp_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_verana_pp_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_verana_pp_v1_query_proto_goTypes = []interface{}{
 	(*QueryParamsRequest)(nil),                   // 0: verana.pp.v1.QueryParamsRequest
 	(*QueryParamsResponse)(nil),                  // 1: verana.pp.v1.QueryParamsResponse
@@ -7912,50 +6701,44 @@ var file_verana_pp_v1_query_proto_goTypes = []interface{}{
 	(*QueryGetParticipantSessionResponse)(nil),   // 7: verana.pp.v1.QueryGetParticipantSessionResponse
 	(*QueryListParticipantSessionsRequest)(nil),  // 8: verana.pp.v1.QueryListParticipantSessionsRequest
 	(*QueryListParticipantSessionsResponse)(nil), // 9: verana.pp.v1.QueryListParticipantSessionsResponse
-	(*QueryFindParticipantsWithDIDRequest)(nil),  // 10: verana.pp.v1.QueryFindParticipantsWithDIDRequest
-	(*QueryFindParticipantsWithDIDResponse)(nil), // 11: verana.pp.v1.QueryFindParticipantsWithDIDResponse
-	(*QueryFindBeneficiariesRequest)(nil),        // 12: verana.pp.v1.QueryFindBeneficiariesRequest
-	(*QueryFindBeneficiariesResponse)(nil),       // 13: verana.pp.v1.QueryFindBeneficiariesResponse
-	(*Params)(nil),                               // 14: verana.pp.v1.Params
-	(*timestamppb.Timestamp)(nil),                // 15: google.protobuf.Timestamp
-	(ParticipantRole)(0),                         // 16: verana.pp.v1.ParticipantRole
-	(OnboardingState)(0),                         // 17: verana.pp.v1.OnboardingState
-	(*Participant)(nil),                          // 18: verana.pp.v1.Participant
-	(*ParticipantSession)(nil),                   // 19: verana.pp.v1.ParticipantSession
+	(*QueryFindBeneficiariesRequest)(nil),        // 10: verana.pp.v1.QueryFindBeneficiariesRequest
+	(*QueryFindBeneficiariesResponse)(nil),       // 11: verana.pp.v1.QueryFindBeneficiariesResponse
+	(*Params)(nil),                               // 12: verana.pp.v1.Params
+	(*timestamppb.Timestamp)(nil),                // 13: google.protobuf.Timestamp
+	(ParticipantRole)(0),                         // 14: verana.pp.v1.ParticipantRole
+	(OnboardingState)(0),                         // 15: verana.pp.v1.OnboardingState
+	(*Participant)(nil),                          // 16: verana.pp.v1.Participant
+	(*ParticipantSession)(nil),                   // 17: verana.pp.v1.ParticipantSession
 }
 var file_verana_pp_v1_query_proto_depIdxs = []int32{
-	14, // 0: verana.pp.v1.QueryParamsResponse.params:type_name -> verana.pp.v1.Params
-	15, // 1: verana.pp.v1.QueryListParticipantsRequest.modified_after:type_name -> google.protobuf.Timestamp
-	16, // 2: verana.pp.v1.QueryListParticipantsRequest.role:type_name -> verana.pp.v1.ParticipantRole
-	17, // 3: verana.pp.v1.QueryListParticipantsRequest.op_state:type_name -> verana.pp.v1.OnboardingState
-	15, // 4: verana.pp.v1.QueryListParticipantsRequest.when:type_name -> google.protobuf.Timestamp
-	18, // 5: verana.pp.v1.QueryListParticipantsResponse.participants:type_name -> verana.pp.v1.Participant
-	18, // 6: verana.pp.v1.QueryGetParticipantResponse.participant:type_name -> verana.pp.v1.Participant
-	19, // 7: verana.pp.v1.QueryGetParticipantSessionResponse.session:type_name -> verana.pp.v1.ParticipantSession
-	15, // 8: verana.pp.v1.QueryListParticipantSessionsRequest.modified_after:type_name -> google.protobuf.Timestamp
-	19, // 9: verana.pp.v1.QueryListParticipantSessionsResponse.sessions:type_name -> verana.pp.v1.ParticipantSession
-	15, // 10: verana.pp.v1.QueryFindParticipantsWithDIDRequest.when:type_name -> google.protobuf.Timestamp
-	18, // 11: verana.pp.v1.QueryFindParticipantsWithDIDResponse.participants:type_name -> verana.pp.v1.Participant
-	18, // 12: verana.pp.v1.QueryFindBeneficiariesResponse.participants:type_name -> verana.pp.v1.Participant
-	0,  // 13: verana.pp.v1.Query.Params:input_type -> verana.pp.v1.QueryParamsRequest
-	2,  // 14: verana.pp.v1.Query.ListParticipants:input_type -> verana.pp.v1.QueryListParticipantsRequest
-	4,  // 15: verana.pp.v1.Query.GetParticipant:input_type -> verana.pp.v1.QueryGetParticipantRequest
-	6,  // 16: verana.pp.v1.Query.GetParticipantSession:input_type -> verana.pp.v1.QueryGetParticipantSessionRequest
-	8,  // 17: verana.pp.v1.Query.ListParticipantSessions:input_type -> verana.pp.v1.QueryListParticipantSessionsRequest
-	10, // 18: verana.pp.v1.Query.FindParticipantsWithDID:input_type -> verana.pp.v1.QueryFindParticipantsWithDIDRequest
-	12, // 19: verana.pp.v1.Query.FindBeneficiaries:input_type -> verana.pp.v1.QueryFindBeneficiariesRequest
-	1,  // 20: verana.pp.v1.Query.Params:output_type -> verana.pp.v1.QueryParamsResponse
-	3,  // 21: verana.pp.v1.Query.ListParticipants:output_type -> verana.pp.v1.QueryListParticipantsResponse
-	5,  // 22: verana.pp.v1.Query.GetParticipant:output_type -> verana.pp.v1.QueryGetParticipantResponse
-	7,  // 23: verana.pp.v1.Query.GetParticipantSession:output_type -> verana.pp.v1.QueryGetParticipantSessionResponse
-	9,  // 24: verana.pp.v1.Query.ListParticipantSessions:output_type -> verana.pp.v1.QueryListParticipantSessionsResponse
-	11, // 25: verana.pp.v1.Query.FindParticipantsWithDID:output_type -> verana.pp.v1.QueryFindParticipantsWithDIDResponse
-	13, // 26: verana.pp.v1.Query.FindBeneficiaries:output_type -> verana.pp.v1.QueryFindBeneficiariesResponse
-	20, // [20:27] is the sub-list for method output_type
-	13, // [13:20] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	12, // 0: verana.pp.v1.QueryParamsResponse.params:type_name -> verana.pp.v1.Params
+	13, // 1: verana.pp.v1.QueryListParticipantsRequest.modified_after:type_name -> google.protobuf.Timestamp
+	14, // 2: verana.pp.v1.QueryListParticipantsRequest.role:type_name -> verana.pp.v1.ParticipantRole
+	15, // 3: verana.pp.v1.QueryListParticipantsRequest.op_state:type_name -> verana.pp.v1.OnboardingState
+	13, // 4: verana.pp.v1.QueryListParticipantsRequest.when:type_name -> google.protobuf.Timestamp
+	16, // 5: verana.pp.v1.QueryListParticipantsResponse.participants:type_name -> verana.pp.v1.Participant
+	16, // 6: verana.pp.v1.QueryGetParticipantResponse.participant:type_name -> verana.pp.v1.Participant
+	17, // 7: verana.pp.v1.QueryGetParticipantSessionResponse.session:type_name -> verana.pp.v1.ParticipantSession
+	13, // 8: verana.pp.v1.QueryListParticipantSessionsRequest.modified_after:type_name -> google.protobuf.Timestamp
+	17, // 9: verana.pp.v1.QueryListParticipantSessionsResponse.sessions:type_name -> verana.pp.v1.ParticipantSession
+	16, // 10: verana.pp.v1.QueryFindBeneficiariesResponse.participants:type_name -> verana.pp.v1.Participant
+	0,  // 11: verana.pp.v1.Query.Params:input_type -> verana.pp.v1.QueryParamsRequest
+	2,  // 12: verana.pp.v1.Query.ListParticipants:input_type -> verana.pp.v1.QueryListParticipantsRequest
+	4,  // 13: verana.pp.v1.Query.GetParticipant:input_type -> verana.pp.v1.QueryGetParticipantRequest
+	6,  // 14: verana.pp.v1.Query.GetParticipantSession:input_type -> verana.pp.v1.QueryGetParticipantSessionRequest
+	8,  // 15: verana.pp.v1.Query.ListParticipantSessions:input_type -> verana.pp.v1.QueryListParticipantSessionsRequest
+	10, // 16: verana.pp.v1.Query.FindBeneficiaries:input_type -> verana.pp.v1.QueryFindBeneficiariesRequest
+	1,  // 17: verana.pp.v1.Query.Params:output_type -> verana.pp.v1.QueryParamsResponse
+	3,  // 18: verana.pp.v1.Query.ListParticipants:output_type -> verana.pp.v1.QueryListParticipantsResponse
+	5,  // 19: verana.pp.v1.Query.GetParticipant:output_type -> verana.pp.v1.QueryGetParticipantResponse
+	7,  // 20: verana.pp.v1.Query.GetParticipantSession:output_type -> verana.pp.v1.QueryGetParticipantSessionResponse
+	9,  // 21: verana.pp.v1.Query.ListParticipantSessions:output_type -> verana.pp.v1.QueryListParticipantSessionsResponse
+	11, // 22: verana.pp.v1.Query.FindBeneficiaries:output_type -> verana.pp.v1.QueryFindBeneficiariesResponse
+	17, // [17:23] is the sub-list for method output_type
+	11, // [11:17] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_verana_pp_v1_query_proto_init() }
@@ -8087,30 +6870,6 @@ func file_verana_pp_v1_query_proto_init() {
 			}
 		}
 		file_verana_pp_v1_query_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryFindParticipantsWithDIDRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_verana_pp_v1_query_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryFindParticipantsWithDIDResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_verana_pp_v1_query_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QueryFindBeneficiariesRequest); i {
 			case 0:
 				return &v.state
@@ -8122,7 +6881,7 @@ func file_verana_pp_v1_query_proto_init() {
 				return nil
 			}
 		}
-		file_verana_pp_v1_query_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_pp_v1_query_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QueryFindBeneficiariesResponse); i {
 			case 0:
 				return &v.state
@@ -8141,7 +6900,7 @@ func file_verana_pp_v1_query_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_verana_pp_v1_query_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

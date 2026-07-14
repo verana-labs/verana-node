@@ -54,57 +54,6 @@
         ]
       }
     },
-    "/verana/pp/v1/find_with_did": {
-      "get": {
-        "operationId": "Query_FindParticipantsWithDID",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.pp.v1.QueryFindParticipantsWithDIDResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "did",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "role",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "schema_id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "when",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "date-time"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
-    },
     "/verana/pp/v1/get/{id}": {
       "get": {
         "operationId": "Query_GetParticipant",
@@ -601,18 +550,6 @@
       }
     },
     "verana.pp.v1.QueryFindBeneficiariesResponse": {
-      "type": "object",
-      "properties": {
-        "participants": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/verana.pp.v1.Participant"
-          }
-        }
-      }
-    },
-    "verana.pp.v1.QueryFindParticipantsWithDIDResponse": {
       "type": "object",
       "properties": {
         "participants": {

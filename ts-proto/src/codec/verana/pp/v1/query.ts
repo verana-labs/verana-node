@@ -82,17 +82,6 @@ export interface QueryListParticipantSessionsResponse {
   sessions: ParticipantSession[];
 }
 
-export interface QueryFindParticipantsWithDIDRequest {
-  did: string;
-  role: number;
-  schemaId: number;
-  when: Date | undefined;
-}
-
-export interface QueryFindParticipantsWithDIDResponse {
-  participants: Participant[];
-}
-
 export interface QueryFindBeneficiariesRequest {
   issuerParticipantId: number;
   verifierParticipantId: number;
@@ -887,179 +876,6 @@ export const QueryListParticipantSessionsResponse = {
   },
 };
 
-function createBaseQueryFindParticipantsWithDIDRequest(): QueryFindParticipantsWithDIDRequest {
-  return { did: "", role: 0, schemaId: 0, when: undefined };
-}
-
-export const QueryFindParticipantsWithDIDRequest = {
-  encode(message: QueryFindParticipantsWithDIDRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.did !== "") {
-      writer.uint32(10).string(message.did);
-    }
-    if (message.role !== 0) {
-      writer.uint32(16).uint32(message.role);
-    }
-    if (message.schemaId !== 0) {
-      writer.uint32(24).uint64(message.schemaId);
-    }
-    if (message.when !== undefined) {
-      Timestamp.encode(toTimestamp(message.when), writer.uint32(42).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryFindParticipantsWithDIDRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryFindParticipantsWithDIDRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.did = reader.string();
-          continue;
-        case 2:
-          if (tag !== 16) {
-            break;
-          }
-
-          message.role = reader.uint32();
-          continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.schemaId = longToNumber(reader.uint64() as Long);
-          continue;
-        case 5:
-          if (tag !== 42) {
-            break;
-          }
-
-          message.when = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryFindParticipantsWithDIDRequest {
-    return {
-      did: isSet(object.did) ? globalThis.String(object.did) : "",
-      role: isSet(object.role) ? globalThis.Number(object.role) : 0,
-      schemaId: isSet(object.schemaId) ? globalThis.Number(object.schemaId) : 0,
-      when: isSet(object.when) ? fromJsonTimestamp(object.when) : undefined,
-    };
-  },
-
-  toJSON(message: QueryFindParticipantsWithDIDRequest): unknown {
-    const obj: any = {};
-    if (message.did !== "") {
-      obj.did = message.did;
-    }
-    if (message.role !== 0) {
-      obj.role = Math.round(message.role);
-    }
-    if (message.schemaId !== 0) {
-      obj.schemaId = Math.round(message.schemaId);
-    }
-    if (message.when !== undefined) {
-      obj.when = message.when.toISOString();
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryFindParticipantsWithDIDRequest>, I>>(
-    base?: I,
-  ): QueryFindParticipantsWithDIDRequest {
-    return QueryFindParticipantsWithDIDRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryFindParticipantsWithDIDRequest>, I>>(
-    object: I,
-  ): QueryFindParticipantsWithDIDRequest {
-    const message = createBaseQueryFindParticipantsWithDIDRequest();
-    message.did = object.did ?? "";
-    message.role = object.role ?? 0;
-    message.schemaId = object.schemaId ?? 0;
-    message.when = object.when ?? undefined;
-    return message;
-  },
-};
-
-function createBaseQueryFindParticipantsWithDIDResponse(): QueryFindParticipantsWithDIDResponse {
-  return { participants: [] };
-}
-
-export const QueryFindParticipantsWithDIDResponse = {
-  encode(message: QueryFindParticipantsWithDIDResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.participants) {
-      Participant.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryFindParticipantsWithDIDResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryFindParticipantsWithDIDResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.participants.push(Participant.decode(reader, reader.uint32()));
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryFindParticipantsWithDIDResponse {
-    return {
-      participants: globalThis.Array.isArray(object?.participants)
-        ? object.participants.map((e: any) => Participant.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: QueryFindParticipantsWithDIDResponse): unknown {
-    const obj: any = {};
-    if (message.participants?.length) {
-      obj.participants = message.participants.map((e) => Participant.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryFindParticipantsWithDIDResponse>, I>>(
-    base?: I,
-  ): QueryFindParticipantsWithDIDResponse {
-    return QueryFindParticipantsWithDIDResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryFindParticipantsWithDIDResponse>, I>>(
-    object: I,
-  ): QueryFindParticipantsWithDIDResponse {
-    const message = createBaseQueryFindParticipantsWithDIDResponse();
-    message.participants = object.participants?.map((e) => Participant.fromPartial(e)) || [];
-    return message;
-  },
-};
-
 function createBaseQueryFindBeneficiariesRequest(): QueryFindBeneficiariesRequest {
   return { issuerParticipantId: 0, verifierParticipantId: 0 };
 }
@@ -1207,7 +1023,6 @@ export interface Query {
   GetParticipant(request: QueryGetParticipantRequest): Promise<QueryGetParticipantResponse>;
   GetParticipantSession(request: QueryGetParticipantSessionRequest): Promise<QueryGetParticipantSessionResponse>;
   ListParticipantSessions(request: QueryListParticipantSessionsRequest): Promise<QueryListParticipantSessionsResponse>;
-  FindParticipantsWithDID(request: QueryFindParticipantsWithDIDRequest): Promise<QueryFindParticipantsWithDIDResponse>;
   FindBeneficiaries(request: QueryFindBeneficiariesRequest): Promise<QueryFindBeneficiariesResponse>;
 }
 
@@ -1223,7 +1038,6 @@ export class QueryClientImpl implements Query {
     this.GetParticipant = this.GetParticipant.bind(this);
     this.GetParticipantSession = this.GetParticipantSession.bind(this);
     this.ListParticipantSessions = this.ListParticipantSessions.bind(this);
-    this.FindParticipantsWithDID = this.FindParticipantsWithDID.bind(this);
     this.FindBeneficiaries = this.FindBeneficiaries.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
@@ -1254,12 +1068,6 @@ export class QueryClientImpl implements Query {
     const data = QueryListParticipantSessionsRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "ListParticipantSessions", data);
     return promise.then((data) => QueryListParticipantSessionsResponse.decode(_m0.Reader.create(data)));
-  }
-
-  FindParticipantsWithDID(request: QueryFindParticipantsWithDIDRequest): Promise<QueryFindParticipantsWithDIDResponse> {
-    const data = QueryFindParticipantsWithDIDRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "FindParticipantsWithDID", data);
-    return promise.then((data) => QueryFindParticipantsWithDIDResponse.decode(_m0.Reader.create(data)));
   }
 
   FindBeneficiaries(request: QueryFindBeneficiariesRequest): Promise<QueryFindBeneficiariesResponse> {

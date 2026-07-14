@@ -29,9 +29,6 @@ service Query {
   rpc ListParticipantSessions(QueryListParticipantSessionsRequest) returns (QueryListParticipantSessionsResponse) {
     option (google.api.http).get = "/verana/pp/v1/list_session";
   }
-  rpc FindParticipantsWithDID(QueryFindParticipantsWithDIDRequest) returns (QueryFindParticipantsWithDIDResponse) {
-    option (google.api.http).get = "/verana/pp/v1/find_with_did";
-  }
   rpc FindBeneficiaries(QueryFindBeneficiariesRequest) returns (QueryFindBeneficiariesResponse) {
     option (google.api.http).get = "/verana/pp/v1/beneficiaries";
   }
@@ -100,20 +97,6 @@ message QueryListParticipantSessionsRequest {
 
 message QueryListParticipantSessionsResponse {
   repeated ParticipantSession sessions = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryFindParticipantsWithDIDRequest {
-  string did = 1;
-  uint32 role = 2;
-  uint64 schema_id = 3;
-  google.protobuf.Timestamp when = 5 [
-    (gogoproto.stdtime) = true,
-    (gogoproto.nullable) = true
-  ];
-}
-
-message QueryFindParticipantsWithDIDResponse {
-  repeated Participant participants = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryFindBeneficiariesRequest {

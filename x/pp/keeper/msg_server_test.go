@@ -3869,18 +3869,6 @@ func TestQueryParticipants(t *testing.T) {
 	require.NotNil(t, listSessionsResp)
 	require.GreaterOrEqual(t, len(listSessionsResp.Sessions), 1) // At least the one we created
 
-	// Test FindParticipantsWithDID query
-	findParticipantDIDReq := &types.QueryFindParticipantsWithDIDRequest{
-		Did:      validDid,
-		Role:     uint32(types.ParticipantRole_ISSUER),
-		SchemaId: 1,
-	}
-	findParticipantDIDResp, err := k.FindParticipantsWithDID(ctx, findParticipantDIDReq)
-	require.NoError(t, err)
-	require.NotNil(t, findParticipantDIDResp)
-	require.Equal(t, 1, len(findParticipantDIDResp.Participants)) // Should find only the issuer participant
-	require.Equal(t, issuerParticipantID, findParticipantDIDResp.Participants[0].Id)
-
 	// Test FindBeneficiaries query
 	findBenefReq := &types.QueryFindBeneficiariesRequest{
 		IssuerParticipantId:   issuerParticipantID,

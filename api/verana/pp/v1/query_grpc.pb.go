@@ -24,7 +24,6 @@ const (
 	Query_GetParticipant_FullMethodName          = "/verana.pp.v1.Query/GetParticipant"
 	Query_GetParticipantSession_FullMethodName   = "/verana.pp.v1.Query/GetParticipantSession"
 	Query_ListParticipantSessions_FullMethodName = "/verana.pp.v1.Query/ListParticipantSessions"
-	Query_FindParticipantsWithDID_FullMethodName = "/verana.pp.v1.Query/FindParticipantsWithDID"
 	Query_FindBeneficiaries_FullMethodName       = "/verana.pp.v1.Query/FindBeneficiaries"
 )
 
@@ -40,7 +39,6 @@ type QueryClient interface {
 	GetParticipant(ctx context.Context, in *QueryGetParticipantRequest, opts ...grpc.CallOption) (*QueryGetParticipantResponse, error)
 	GetParticipantSession(ctx context.Context, in *QueryGetParticipantSessionRequest, opts ...grpc.CallOption) (*QueryGetParticipantSessionResponse, error)
 	ListParticipantSessions(ctx context.Context, in *QueryListParticipantSessionsRequest, opts ...grpc.CallOption) (*QueryListParticipantSessionsResponse, error)
-	FindParticipantsWithDID(ctx context.Context, in *QueryFindParticipantsWithDIDRequest, opts ...grpc.CallOption) (*QueryFindParticipantsWithDIDResponse, error)
 	FindBeneficiaries(ctx context.Context, in *QueryFindBeneficiariesRequest, opts ...grpc.CallOption) (*QueryFindBeneficiariesResponse, error)
 }
 
@@ -102,16 +100,6 @@ func (c *queryClient) ListParticipantSessions(ctx context.Context, in *QueryList
 	return out, nil
 }
 
-func (c *queryClient) FindParticipantsWithDID(ctx context.Context, in *QueryFindParticipantsWithDIDRequest, opts ...grpc.CallOption) (*QueryFindParticipantsWithDIDResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryFindParticipantsWithDIDResponse)
-	err := c.cc.Invoke(ctx, Query_FindParticipantsWithDID_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *queryClient) FindBeneficiaries(ctx context.Context, in *QueryFindBeneficiariesRequest, opts ...grpc.CallOption) (*QueryFindBeneficiariesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryFindBeneficiariesResponse)
@@ -134,7 +122,6 @@ type QueryServer interface {
 	GetParticipant(context.Context, *QueryGetParticipantRequest) (*QueryGetParticipantResponse, error)
 	GetParticipantSession(context.Context, *QueryGetParticipantSessionRequest) (*QueryGetParticipantSessionResponse, error)
 	ListParticipantSessions(context.Context, *QueryListParticipantSessionsRequest) (*QueryListParticipantSessionsResponse, error)
-	FindParticipantsWithDID(context.Context, *QueryFindParticipantsWithDIDRequest) (*QueryFindParticipantsWithDIDResponse, error)
 	FindBeneficiaries(context.Context, *QueryFindBeneficiariesRequest) (*QueryFindBeneficiariesResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
@@ -160,9 +147,6 @@ func (UnimplementedQueryServer) GetParticipantSession(context.Context, *QueryGet
 }
 func (UnimplementedQueryServer) ListParticipantSessions(context.Context, *QueryListParticipantSessionsRequest) (*QueryListParticipantSessionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListParticipantSessions not implemented")
-}
-func (UnimplementedQueryServer) FindParticipantsWithDID(context.Context, *QueryFindParticipantsWithDIDRequest) (*QueryFindParticipantsWithDIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindParticipantsWithDID not implemented")
 }
 func (UnimplementedQueryServer) FindBeneficiaries(context.Context, *QueryFindBeneficiariesRequest) (*QueryFindBeneficiariesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindBeneficiaries not implemented")
@@ -278,24 +262,6 @@ func _Query_ListParticipantSessions_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_FindParticipantsWithDID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryFindParticipantsWithDIDRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).FindParticipantsWithDID(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_FindParticipantsWithDID_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).FindParticipantsWithDID(ctx, req.(*QueryFindParticipantsWithDIDRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_FindBeneficiaries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryFindBeneficiariesRequest)
 	if err := dec(in); err != nil {
@@ -340,10 +306,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListParticipantSessions",
 			Handler:    _Query_ListParticipantSessions_Handler,
-		},
-		{
-			MethodName: "FindParticipantsWithDID",
-			Handler:    _Query_FindParticipantsWithDID_Handler,
 		},
 		{
 			MethodName: "FindBeneficiaries",

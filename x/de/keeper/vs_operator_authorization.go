@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -156,8 +157,11 @@ func (k Keeper) RevokeVSOperatorAuthorization(ctx context.Context, participantID
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, participantID)
 	if err != nil {
-		// No record for this participant — no-op.
-		return nil
+		if errors.Is(err, collections.ErrNotFound) {
+			// No record for this participant — no-op.
+			return nil
+		}
+		return fmt.Errorf("failed to read participant index %d: %w", participantID, err)
 	}
 	vsoa, err := k.VSOperatorAuthorizations.Get(ctx, vsoaID)
 	if err != nil {
@@ -216,8 +220,11 @@ func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, par
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, participantID)
 	if err != nil {
-		// No record for this participant — no-op.
-		return nil
+		if errors.Is(err, collections.ErrNotFound) {
+			// No record for this participant — no-op.
+			return nil
+		}
+		return fmt.Errorf("failed to read participant index %d: %w", participantID, err)
 	}
 	vsoa, err := k.VSOperatorAuthorizations.Get(ctx, vsoaID)
 	if err != nil {
