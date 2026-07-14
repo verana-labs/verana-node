@@ -210,9 +210,7 @@ func (k Keeper) RevokeVSOperatorAuthorization(ctx context.Context, participantID
 
 // UpdateVSOperatorAuthorizationExpiration implements [MOD-DE-MSG-9]. Locates the
 // record by participant_id and updates its expiration; a no-op when no record
-// exists. A nil newExpiration means the record never expires (AUTHZ-CHECK-3
-// treats nil as never-expired), which activates a never-expiring participant's
-// record disabled at MOD-PP-MSG-1.
+// exists.
 func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration *time.Time) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -267,23 +265,16 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 	now := sdk.UnwrapSDKContext(ctx).BlockTime()
 
 	var maxExpire *time.Time
-	perpetual := false // a live record with no expiration
 	seen := make(map[string]bool)
 	feegrantMsgTypes := make([]string, 0)
 	for _, r := range vsoa.Records {
-		if !r.WithFeegrant {
+		// [MOD-DE-MSG-5-5] contributes only if with_feegrant and expiration > now().
+		if !r.WithFeegrant || r.Expiration == nil || !r.Expiration.After(now) {
 			continue
 		}
-		switch {
-		case r.Expiration == nil:
-			perpetual = true
-		case r.Expiration.After(now):
-			if maxExpire == nil || r.Expiration.After(*maxExpire) {
-				e := *r.Expiration
-				maxExpire = &e
-			}
-		default:
-			continue // expired
+		if maxExpire == nil || r.Expiration.After(*maxExpire) {
+			e := *r.Expiration
+			maxExpire = &e
 		}
 		for _, mt := range r.MsgTypes {
 			if !seen[mt] {
@@ -293,14 +284,9 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 		}
 	}
 
-	if !perpetual && maxExpire == nil {
+	// No active feegrant-enabled record remains.
+	if maxExpire == nil {
 		return k.RevokeFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator)
 	}
-	// A perpetual record grants an allowance with no expiration; otherwise it
-	// expires at the latest record expiration.
-	expiration := maxExpire
-	if perpetual {
-		expiration = nil
-	}
-	return k.GrantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, expiration, nil, nil)
+	return k.GrantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, maxExpire, nil, nil)
 }

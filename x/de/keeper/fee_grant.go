@@ -84,14 +84,12 @@ func (k Keeper) GrantFeeAllowance(
 		}
 		var inner feegrant.FeeAllowanceI
 		if len(spendLimit) > 0 && period != nil {
+			// [MOD-DE-MSG-1-4] No absolute expiration: auto-renews until revoked.
 			inner = &feegrant.PeriodicAllowance{
-				// Basic bounds the whole grant so it actually expires; without it
-				// the allowance keeps resetting each period forever.
-				Basic:            feegrant.BasicAllowance{SpendLimit: spendLimit, Expiration: expiration},
 				Period:           *period,
 				PeriodSpendLimit: spendLimit,
 				PeriodCanSpend:   spendLimit,
-				PeriodReset:      now.Add(*period),
+				PeriodReset:      *expiration,
 			}
 		} else {
 			inner = &feegrant.BasicAllowance{SpendLimit: spendLimit, Expiration: expiration}

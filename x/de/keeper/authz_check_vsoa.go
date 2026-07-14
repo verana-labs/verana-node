@@ -62,9 +62,8 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		return fmt.Errorf("%w: %s", types.ErrAuthzMsgTypeNotFound, msgType)
 	}
 
-	// 4. Cycle / expiration. A nil expiration means the record never expires;
-	// a concrete expiration <= now is dead (the disabled state set at MOD-PP-MSG-1
-	// uses a concrete now, so it stays dead here).
+	// 4. Cycle / expiration. [AUTHZ-CHECK-3] step 4 requires expiration > now(),
+	// so a nil expiration fails closed.
 	if rec.Period != nil && *rec.Period > 0 && rec.Expiration != nil && !rec.Expiration.After(now) {
 		if len(rec.SpendLimit) > 0 {
 			rec.RemainingSpend = rec.SpendLimit
@@ -77,7 +76,7 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
 			return fmt.Errorf("failed to persist cycle reset: %w", err)
 		}
-	} else if rec.Expiration != nil && !rec.Expiration.After(now) {
+	} else if rec.Expiration == nil || !rec.Expiration.After(now) {
 		return types.ErrAuthzExpired
 	}
 
@@ -180,15 +179,9 @@ func (k Keeper) ConsumeRecordFeeSpend(
 	return nil
 }
 
-// CheckVSOperatorFeeGrant implements [AUTHZ-CHECK-4]. It uses the same record
-// lookup as AUTHZ-CHECK-3.
-//
-//  1. record.with_feegrant MUST be true.
-//  2. The cycle / expiration reset is handled by AUTHZ-CHECK-3 (run first).
-//  3. If fee_spend_limit is set, remaining_fee_spend MUST cover the estimated tx
-//     fees and is deducted after success. The keeper has no visibility into the
-//     fee-payment mode or amount (ante context), so the amount-based check is
-//     deferred to the ante handler (matches existing csps / trigger_resolver).
+// CheckVSOperatorFeeGrant implements [AUTHZ-CHECK-4] against the same record as
+// AUTHZ-CHECK-3, which must run first. The fee debit is applied by
+// ConsumeRecordFeeSpend once the amount is known.
 func (k Keeper) CheckVSOperatorFeeGrant(ctx context.Context, participantID uint64) error {
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, participantID)
 	if err != nil {

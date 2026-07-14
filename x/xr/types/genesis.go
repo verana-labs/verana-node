@@ -35,8 +35,9 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicate exchange rate id %d", xr.Id)
 		}
 		rateIDs[xr.Id] = struct{}{}
-		if rate, err := math.LegacyNewDecFromStr(xr.Rate); err != nil || !rate.IsPositive() {
-			return fmt.Errorf("exchange rate %d has invalid rate %q", xr.Id, xr.Rate)
+		// [MOD-XR-MSG-1-2-1] rate is a base-10 unsigned integer string, not a decimal.
+		if rate, ok := math.NewIntFromString(xr.Rate); !ok || !rate.IsPositive() {
+			return fmt.Errorf("exchange rate %d has invalid rate %q (must be a positive integer)", xr.Id, xr.Rate)
 		}
 		if xr.RateScale > 18 {
 			return fmt.Errorf("exchange rate %d has rate_scale %d > 18", xr.Id, xr.RateScale)
