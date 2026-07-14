@@ -582,7 +582,7 @@ var (
 
 	pattern_Query_GetParticipant_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"verana", "pp", "v1", "get", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetParticipantSession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"verana", "pp", "v1", "get_session", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetParticipantSession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"verana", "pp", "v1", "session", "get", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_ListParticipantSessions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"verana", "pp", "v1", "list_session"}, "", runtime.AssumeColonVerbOpt(true)))
 

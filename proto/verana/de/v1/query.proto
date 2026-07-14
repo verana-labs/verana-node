@@ -15,27 +15,27 @@ option go_package = "github.com/verana-labs/verana-node/x/de/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/verana-labs/verana/de/v1/params";
+    option (google.api.http).get = "/verana/de/v1/params";
   }
 
   // ListOperatorAuthorizations returns operator authorizations matching optional filters.
   rpc ListOperatorAuthorizations(QueryListOperatorAuthorizationsRequest) returns (QueryListOperatorAuthorizationsResponse) {
-    option (google.api.http).get = "/verana/de/v1/operator-authorizations";
+    option (google.api.http).get = "/verana/de/v1/authz/list";
   }
 
   // ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.
   rpc ListVSOperatorAuthorizations(QueryListVSOperatorAuthorizationsRequest) returns (QueryListVSOperatorAuthorizationsResponse) {
-    option (google.api.http).get = "/verana/de/v1/vs-operator-authorizations";
+    option (google.api.http).get = "/verana/de/v1/vs-authz/list";
   }
 
   // [MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.
   rpc GetOperatorAuthorization(QueryGetOperatorAuthorizationRequest) returns (QueryGetOperatorAuthorizationResponse) {
-    option (google.api.http).get = "/verana/de/v1/operator-authorizations/{id}";
+    option (google.api.http).get = "/verana/de/v1/authz/get/{id}";
   }
 
   // [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
   rpc GetVSOperatorAuthorization(QueryGetVSOperatorAuthorizationRequest) returns (QueryGetVSOperatorAuthorizationResponse) {
-    option (google.api.http).get = "/verana/de/v1/vs-operator-authorizations/{id}";
+    option (google.api.http).get = "/verana/de/v1/vs-authz/get/{id}";
   }
 }
 

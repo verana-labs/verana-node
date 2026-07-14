@@ -85,37 +85,6 @@
         ]
       }
     },
-    "/verana/pp/v1/get_session/{id}": {
-      "get": {
-        "operationId": "Query_GetParticipantSession",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.pp.v1.QueryGetParticipantSessionResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "UUID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
-    },
     "/verana/pp/v1/list": {
       "get": {
         "operationId": "Query_ListParticipants",
@@ -293,6 +262,37 @@
             }
           }
         },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/verana/pp/v1/session/get/{id}": {
+      "get": {
+        "operationId": "Query_GetParticipantSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.pp.v1.QueryGetParticipantSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "UUID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "tags": [
           "Query"
         ]
@@ -572,7 +572,7 @@
     "verana.pp.v1.QueryGetParticipantSessionResponse": {
       "type": "object",
       "properties": {
-        "session": {
+        "participant_session": {
           "$ref": "#/definitions/verana.pp.v1.ParticipantSession"
         }
       }
@@ -580,7 +580,7 @@
     "verana.pp.v1.QueryListParticipantSessionsResponse": {
       "type": "object",
       "properties": {
-        "sessions": {
+        "participant_sessions": {
           "type": "array",
           "items": {
             "type": "object",

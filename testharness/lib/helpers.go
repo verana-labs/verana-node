@@ -1178,7 +1178,7 @@ func VerifyPermissionSession(client cosmosclient.Client, ctx context.Context, se
 	}
 
 	// Check if session exists
-	if resp.GetSession() == nil {
+	if resp.GetParticipantSession() == nil {
 		fmt.Printf("❌ Permission session verification failed: Session not found\n")
 		return false
 	}
@@ -1192,7 +1192,7 @@ func VerifyPermissionSession(client cosmosclient.Client, ctx context.Context, se
 	// agent_participant_id lives on the session records, not the session.
 	if expectedAgentPermID != 0 {
 		agentFound := false
-		for _, record := range resp.GetSession().SessionRecords {
+		for _, record := range resp.GetParticipantSession().SessionRecords {
 			if record.GetAgentParticipantId() == expectedAgentPermID {
 				agentFound = true
 				break
@@ -1208,7 +1208,7 @@ func VerifyPermissionSession(client cosmosclient.Client, ctx context.Context, se
 	// Check session records for expected permissions
 	issuerFound := false
 	verifierFound := false
-	for _, record := range resp.GetSession().SessionRecords {
+	for _, record := range resp.GetParticipantSession().SessionRecords {
 		// Check for issuer permission ID if expected
 		if expectedIssuerPermID > 0 && record.GetIssuerParticipantId() == expectedIssuerPermID {
 			issuerFound = true

@@ -70,7 +70,7 @@ export interface QueryGetParticipantSessionRequest {
 }
 
 export interface QueryGetParticipantSessionResponse {
-  session: ParticipantSession | undefined;
+  participantSession: ParticipantSession | undefined;
 }
 
 export interface QueryListParticipantSessionsRequest {
@@ -79,7 +79,7 @@ export interface QueryListParticipantSessionsRequest {
 }
 
 export interface QueryListParticipantSessionsResponse {
-  sessions: ParticipantSession[];
+  participantSessions: ParticipantSession[];
 }
 
 export interface QueryFindBeneficiariesRequest {
@@ -671,13 +671,13 @@ export const QueryGetParticipantSessionRequest = {
 };
 
 function createBaseQueryGetParticipantSessionResponse(): QueryGetParticipantSessionResponse {
-  return { session: undefined };
+  return { participantSession: undefined };
 }
 
 export const QueryGetParticipantSessionResponse = {
   encode(message: QueryGetParticipantSessionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.session !== undefined) {
-      ParticipantSession.encode(message.session, writer.uint32(10).fork()).ldelim();
+    if (message.participantSession !== undefined) {
+      ParticipantSession.encode(message.participantSession, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -694,7 +694,7 @@ export const QueryGetParticipantSessionResponse = {
             break;
           }
 
-          message.session = ParticipantSession.decode(reader, reader.uint32());
+          message.participantSession = ParticipantSession.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -706,13 +706,17 @@ export const QueryGetParticipantSessionResponse = {
   },
 
   fromJSON(object: any): QueryGetParticipantSessionResponse {
-    return { session: isSet(object.session) ? ParticipantSession.fromJSON(object.session) : undefined };
+    return {
+      participantSession: isSet(object.participantSession)
+        ? ParticipantSession.fromJSON(object.participantSession)
+        : undefined,
+    };
   },
 
   toJSON(message: QueryGetParticipantSessionResponse): unknown {
     const obj: any = {};
-    if (message.session !== undefined) {
-      obj.session = ParticipantSession.toJSON(message.session);
+    if (message.participantSession !== undefined) {
+      obj.participantSession = ParticipantSession.toJSON(message.participantSession);
     }
     return obj;
   },
@@ -726,8 +730,8 @@ export const QueryGetParticipantSessionResponse = {
     object: I,
   ): QueryGetParticipantSessionResponse {
     const message = createBaseQueryGetParticipantSessionResponse();
-    message.session = (object.session !== undefined && object.session !== null)
-      ? ParticipantSession.fromPartial(object.session)
+    message.participantSession = (object.participantSession !== undefined && object.participantSession !== null)
+      ? ParticipantSession.fromPartial(object.participantSession)
       : undefined;
     return message;
   },
@@ -812,12 +816,12 @@ export const QueryListParticipantSessionsRequest = {
 };
 
 function createBaseQueryListParticipantSessionsResponse(): QueryListParticipantSessionsResponse {
-  return { sessions: [] };
+  return { participantSessions: [] };
 }
 
 export const QueryListParticipantSessionsResponse = {
   encode(message: QueryListParticipantSessionsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.sessions) {
+    for (const v of message.participantSessions) {
       ParticipantSession.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
@@ -835,7 +839,7 @@ export const QueryListParticipantSessionsResponse = {
             break;
           }
 
-          message.sessions.push(ParticipantSession.decode(reader, reader.uint32()));
+          message.participantSessions.push(ParticipantSession.decode(reader, reader.uint32()));
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -848,16 +852,16 @@ export const QueryListParticipantSessionsResponse = {
 
   fromJSON(object: any): QueryListParticipantSessionsResponse {
     return {
-      sessions: globalThis.Array.isArray(object?.sessions)
-        ? object.sessions.map((e: any) => ParticipantSession.fromJSON(e))
+      participantSessions: globalThis.Array.isArray(object?.participantSessions)
+        ? object.participantSessions.map((e: any) => ParticipantSession.fromJSON(e))
         : [],
     };
   },
 
   toJSON(message: QueryListParticipantSessionsResponse): unknown {
     const obj: any = {};
-    if (message.sessions?.length) {
-      obj.sessions = message.sessions.map((e) => ParticipantSession.toJSON(e));
+    if (message.participantSessions?.length) {
+      obj.participantSessions = message.participantSessions.map((e) => ParticipantSession.toJSON(e));
     }
     return obj;
   },
@@ -871,7 +875,7 @@ export const QueryListParticipantSessionsResponse = {
     object: I,
   ): QueryListParticipantSessionsResponse {
     const message = createBaseQueryListParticipantSessionsResponse();
-    message.sessions = object.sessions?.map((e) => ParticipantSession.fromPartial(e)) || [];
+    message.participantSessions = object.participantSessions?.map((e) => ParticipantSession.fromPartial(e)) || [];
     return message;
   },
 };

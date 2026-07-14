@@ -3857,8 +3857,8 @@ func TestQueryParticipants(t *testing.T) {
 	getSessionResp, err := k.GetParticipantSession(ctx, getSessionReq)
 	require.NoError(t, err)
 	require.NotNil(t, getSessionResp)
-	require.Equal(t, sessionID, getSessionResp.Session.Id)
-	require.NotZero(t, getSessionResp.Session.CorporationId)
+	require.Equal(t, sessionID, getSessionResp.ParticipantSession.Id)
+	require.NotZero(t, getSessionResp.ParticipantSession.CorporationId)
 
 	// Test ListParticipantSessions query
 	listSessionsReq := &types.QueryListParticipantSessionsRequest{
@@ -3867,7 +3867,7 @@ func TestQueryParticipants(t *testing.T) {
 	listSessionsResp, err := k.ListParticipantSessions(ctx, listSessionsReq)
 	require.NoError(t, err)
 	require.NotNil(t, listSessionsResp)
-	require.GreaterOrEqual(t, len(listSessionsResp.Sessions), 1) // At least the one we created
+	require.GreaterOrEqual(t, len(listSessionsResp.ParticipantSessions), 1) // At least the one we created
 
 	// Test FindBeneficiaries query
 	findBenefReq := &types.QueryFindBeneficiariesRequest{

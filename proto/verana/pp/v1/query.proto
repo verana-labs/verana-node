@@ -24,7 +24,7 @@ service Query {
     option (google.api.http).get = "/verana/pp/v1/get/{id}";
   }
   rpc GetParticipantSession(QueryGetParticipantSessionRequest) returns (QueryGetParticipantSessionResponse) {
-    option (google.api.http).get = "/verana/pp/v1/get_session/{id}";
+    option (google.api.http).get = "/verana/pp/v1/session/get/{id}";
   }
   rpc ListParticipantSessions(QueryListParticipantSessionsRequest) returns (QueryListParticipantSessionsResponse) {
     option (google.api.http).get = "/verana/pp/v1/list_session";
@@ -84,7 +84,7 @@ message QueryGetParticipantSessionRequest {
 }
 
 message QueryGetParticipantSessionResponse {
-  ParticipantSession session = 1;
+  ParticipantSession participant_session = 1;
 }
 
 message QueryListParticipantSessionsRequest {
@@ -96,7 +96,7 @@ message QueryListParticipantSessionsRequest {
 }
 
 message QueryListParticipantSessionsResponse {
-  repeated ParticipantSession sessions = 1 [(gogoproto.nullable) = false];
+  repeated ParticipantSession participant_sessions = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryFindBeneficiariesRequest {

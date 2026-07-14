@@ -150,7 +150,7 @@ func (k Keeper) GetParticipantSession(ctx context.Context, req *types.QueryGetPa
 	}
 
 	return &types.QueryGetParticipantSessionResponse{
-		Session: &session,
+		ParticipantSession: &session,
 	}, nil
 }
 
@@ -194,7 +194,7 @@ func (k Keeper) ListParticipantSessions(ctx context.Context, req *types.QueryLis
 	}
 
 	return &types.QueryListParticipantSessionsResponse{
-		Sessions: sessions,
+		ParticipantSessions: sessions,
 	}, nil
 }
 
