@@ -136,7 +136,7 @@ var xxx_messageInfo_MsgUpdateParamsResponse proto.InternalMessageInfo
 // [MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization
 // to a grantee on behalf of a corporation.
 //
-// Signer semantics (spec draft 13 "corporation + operator OR group proposal"):
+// Signer semantics (spec "corporation + operator OR group proposal"):
 // The signer is `operator` (consistent with the other delegable modules).
 //   - Group-proposal path: the corporation's group policy account executes the
 //     message, so `operator` equals `corporation` (the policy_address) and the

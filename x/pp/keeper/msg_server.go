@@ -588,7 +588,7 @@ func (ms msgServer) executeCancelParticipantVPLastRequest(ctx sdk.Context, parti
 	participant.Modified = &now
 	participant.OpLastStateChange = &now
 
-	// [MOD-PP-MSG-6-3] spec v4 draft 13:
+	// [MOD-PP-MSG-6-3] spec:
 	//   if op_exp is null (validation never completed), set op_state to TERMINATED
 	//   else set op_state to VALIDATED.
 	terminated := participant.OpExp == nil
@@ -773,7 +773,7 @@ func (ms msgServer) validateCreateRootParticipantAuthority(ctx sdk.Context, msg 
 }
 
 // [MOD-PP-MSG-7-2-4] Create Root Participant overlap checks.
-// Spec v4 draft 13: find all active participants (not revoked, not slashed,
+// spec: find all active participants (not revoked, not slashed,
 // not repaid) for (schema_id, ECOSYSTEM, corporation). Unlike other overlap
 // checks, validator_participant_id is not checked because ECOSYSTEM participants
 // always have validator_participant_id = NULL.
@@ -816,7 +816,7 @@ func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *type
 }
 
 // [MOD-PP-MSG-7-3] Create Root Participant execution
-// Spec v4 draft 13: participant.type is hardcoded to ECOSYSTEM.
+// spec: participant.type is hardcoded to ECOSYSTEM.
 func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.MsgCreateRootParticipant, now time.Time) (uint64, error) {
 	corporationId, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
@@ -1473,7 +1473,7 @@ func (ms msgServer) validateSlashParticipantBasicChecks(ctx sdk.Context, msg *ty
 }
 
 // [MOD-PP-MSG-12-2-2] Slash Participant Trust Deposit validator participants.
-// NOTE: Spec v4 draft 13 calls for governance-only slashing. Migrating the test
+// NOTE: spec calls for governance-only slashing. Migrating the test
 // surface to the governance-mediated flow is tracked as a follow-up; for now
 // we retain the validator-ancestor / TR-controller check established by prior
 // implementations so operator-signed slashing remains testable.
@@ -1553,7 +1553,7 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 		return nil, fmt.Errorf("authority is not the owner of this participant")
 	}
 
-	// [MOD-PP-MSG-13-2] spec v4 draft 13: "MUST abort if participant not exist with slashed not null".
+	// [MOD-PP-MSG-13-2] spec: "MUST abort if participant not exist with slashed not null".
 	// Guard on the slashed timestamp (entity-level marker), not on the deposit amount.
 	if applicantParticipant.Slashed == nil {
 		return nil, fmt.Errorf("participant has no slashed timestamp; nothing to repay")

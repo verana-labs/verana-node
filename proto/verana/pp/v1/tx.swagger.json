@@ -554,7 +554,7 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "[MOD-PP-MSG-7-1] Spec v4-rc2 parameters.\nparticipant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3]."
+          "description": "[MOD-PP-MSG-7-1] spec parameters.\nparticipant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3]."
         },
         "operator": {
           "type": "string"
@@ -588,7 +588,7 @@
         },
         "vs_operator": {
           "type": "string",
-          "description": "vs_operator: the account of the Verifiable Service (optional, spec v4-rc2)."
+          "description": "vs_operator: the account of the Verifiable Service (optional, spec)."
         },
         "vs_operator_authz_msg_types": {
           "type": "array",
@@ -634,7 +634,7 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "[MOD-PP-MSG-2-1] Spec v4 parameters: corporation, operator, id."
+          "description": "[MOD-PP-MSG-2-1] spec parameters: corporation, operator, id."
         },
         "operator": {
           "type": "string"
@@ -731,7 +731,8 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "vs_operator_authz_msg_types: presence triggers VSOA record creation."
         },
         "vs_operator_authz_spend_limit": {
           "type": "array",
@@ -860,7 +861,7 @@
         },
         "reason": {
           "type": "string",
-          "title": "[MOD-PP-MSG-12-1] reason for the slash (mandatory per spec v4)"
+          "title": "[MOD-PP-MSG-12-1] reason for the slash (mandatory per spec)"
         }
       }
     },
@@ -906,7 +907,8 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "vs_operator_authz_msg_types: presence triggers VSOA record creation."
         },
         "vs_operator_authz_spend_limit": {
           "type": "array",

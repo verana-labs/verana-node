@@ -15,7 +15,7 @@ import (
 var VPRDelegableMsgTypes = map[string]bool{
 	// Corporation (CO) — MsgCreateCorporation is non-delegable (any account signs).
 	"/verana.co.v1.MsgUpdateCorporation": true,
-	// Ecosystem (EC) — renamed from Trust Registry (TR) in v4-rc2 (#305)
+	// Ecosystem (EC)
 	"/verana.ec.v1.MsgCreateEcosystem":  true,
 	"/verana.ec.v1.MsgUpdateEcosystem":  true,
 	"/verana.ec.v1.MsgArchiveEcosystem": true,

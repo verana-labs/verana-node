@@ -242,7 +242,7 @@
         },
         "reason": {
           "type": "string",
-          "title": "[MOD-TD-MSG-5-1] reason for the slash (mandatory per spec v4 draft 13)"
+          "title": "[MOD-TD-MSG-5-1] reason for the slash (mandatory per spec)"
         }
       },
       "title": "MsgSlashTrustDeposit defines the message for slashing a corporation's trust deposit\nThis can only be executed by the governance module"

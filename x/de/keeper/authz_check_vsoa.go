@@ -9,22 +9,10 @@ import (
 	"github.com/verana-labs/verana-node/x/de/types"
 )
 
-// CheckVSOperatorAuthorizationOnParticipant implements [AUTHZ-CHECK-3]. The
-// caller (a PP Msg handler) MUST resolve the signing corporation account to its
-// co.id via AUTHZ-CHECK-5 first and pass corporationID (uint64), not the signing
-// account.
-//
-// Steps:
-//  1. A ParticipantAuthorizationRecord MUST exist for participantID.
-//  2. The record MUST belong to VSOperatorAuthorization[corporationID, operator].
-//  3. msgType MUST be in record.msg_types.
-//  4. Cycle/expiration: if period is set and now >= expiration, reset the
-//     remaining balances and roll expiration forward by period; else expiration
-//     MUST be strictly in the future.
-//  5. If spend_limit is set, remaining_spend MUST cover the operation and is
-//     deducted after success. The keeper has no per-operation spend amount in
-//     this context, so the amount-based deduction is deferred to the ante /
-//     caller (matches the AUTHZ-CHECK-1 Check vs CheckWithSpend split).
+// CheckVSOperatorAuthorizationOnParticipant implements [AUTHZ-CHECK-3]. Callers
+// MUST resolve the signing corporation account to its co.id via AUTHZ-CHECK-5
+// and pass corporationID, not the signing account. The spend debit (step 5) is
+// applied separately by ConsumeRecordSpend, once the caller knows the amount.
 func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 	ctx context.Context,
 	corporationID uint64,

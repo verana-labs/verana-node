@@ -56,7 +56,6 @@ message MsgStoreDigest {
   // digest is the digest string to store (SRI format; the algorithm is encoded
   // in the prefix, e.g. sha256-/sha384-/sha512-).
   string digest = 3;
-  reserved 4, 5; // removed digest_algorithm
 }
 
 // MsgStoreDigestResponse defines the response for MsgStoreDigest.
@@ -71,5 +70,4 @@ message Digest {
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false
   ];
-  reserved 3; // removed digest_algorithm
 }

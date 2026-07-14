@@ -74,9 +74,7 @@ message MsgStartParticipantOP {
   OptionalUInt64 verification_fees = 8 [(gogoproto.nullable) = true];
   // vs_operator: the account of the Verifiable Service (optional)
   string vs_operator = 9 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // vs_operator_authz_msg_types: presence triggers VSOA record creation (spec v4-rc2).
-  reserved 10;
-  reserved "vs_operator_authz_enabled";
+  // vs_operator_authz_msg_types: presence triggers VSOA record creation.
   repeated string vs_operator_authz_msg_types = 15;
   repeated cosmos.base.v1beta1.Coin vs_operator_authz_spend_limit = 11 [
     (gogoproto.nullable) = false,
@@ -102,7 +100,7 @@ message MsgRenewParticipantOP {
   option (cosmos.msg.v1.signer) = "operator";
   option (amino.name) = "verana/x/pp/MsgRenewParticipantOP";
 
-  // [MOD-PP-MSG-2-1] Spec v4 parameters: corporation, operator, id.
+  // [MOD-PP-MSG-2-1] spec parameters: corporation, operator, id.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3; // ID of the participant to renew
@@ -155,7 +153,7 @@ message MsgCreateRootParticipant {
   option (cosmos.msg.v1.signer) = "operator";
   option (amino.name) = "verana/x/pp/MsgCreateRootParticipant";
 
-  // [MOD-PP-MSG-7-1] Spec v4-rc2 parameters.
+  // [MOD-PP-MSG-7-1] spec parameters.
   // participant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3].
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -172,7 +170,7 @@ message MsgCreateRootParticipant {
   uint64 validation_fees = 7;
   uint64 issuance_fees = 8;
   uint64 verification_fees = 9;
-  // vs_operator: the account of the Verifiable Service (optional, spec v4-rc2).
+  // vs_operator: the account of the Verifiable Service (optional, spec).
   string vs_operator = 10 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // vs_operator_authz_msg_types: presence triggers VSOA record creation; MUST be a
   // subset of [SetParticipantOPToValidated] for root participants.
@@ -251,7 +249,7 @@ message MsgSlashParticipantTrustDeposit {
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
   uint64 amount = 4;
-  // [MOD-PP-MSG-12-1] reason for the slash (mandatory per spec v4)
+  // [MOD-PP-MSG-12-1] reason for the slash (mandatory per spec)
   string reason = 5;
 }
 
@@ -289,9 +287,7 @@ message MsgSelfCreateParticipant {
   uint64 validation_fees = 9;
   // vs_operator: the account of the Verifiable Service (optional)
   string vs_operator = 10 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // vs_operator_authz_msg_types: presence triggers VSOA record creation (spec v4-rc2).
-  reserved 11;
-  reserved "vs_operator_authz_enabled";
+  // vs_operator_authz_msg_types: presence triggers VSOA record creation.
   repeated string vs_operator_authz_msg_types = 16;
   repeated cosmos.base.v1beta1.Coin vs_operator_authz_spend_limit = 12 [
     (gogoproto.nullable) = false,

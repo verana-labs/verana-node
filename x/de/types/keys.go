@@ -20,7 +20,7 @@ var (
 	ParamsKey = collections.NewPrefix("p_de")
 
 	// OperatorAuthorizationKey is the prefix for OperatorAuthorization storage,
-	// keyed by its own uint64 id (spec v4-rc2).
+	// keyed by its own uint64 id.
 	OperatorAuthorizationKey = collections.NewPrefix("oa_de")
 	// OperatorAuthorizationByCorpOpKey is the secondary index
 	// (corporation_id, operator) -> OperatorAuthorization.id.
@@ -33,7 +33,7 @@ var (
 	FeeGrantKey = collections.NewPrefix("fg_de")
 
 	// VSOperatorAuthorizationKey is the prefix for VSOperatorAuthorization
-	// storage, keyed by its own uint64 id (spec v4-rc2).
+	// storage, keyed by its own uint64 id.
 	VSOperatorAuthorizationKey = collections.NewPrefix("vsoa_de")
 	// VSOAByCorpOpKey is the secondary index
 	// (corporation_id, vs_operator) -> VSOperatorAuthorization.id.

@@ -149,16 +149,12 @@ export interface Participant {
   opCurrentDeposit: number;
   opSummaryDigest: string;
   /**
-   * TODO(spec v4): Fee discount should be LegacyDec in [0, 1] per spec.
+   * TODO: Fee discount should be LegacyDec in [0, 1] per spec.
    * Currently scaled 0..10000 for compatibility; full migration deferred.
    */
   issuanceFeeDiscount: number;
   verificationFeeDiscount: number;
-  /**
-   * vs_operator is the VS operator account (spec v4-rc2, still used). The former
-   * per-permission VS-operator-authz config (fields 38-42) moved into the DE
-   * module's VSOperatorAuthorization.records[] per spec v4-rc2.
-   */
+  /** vs_operator is the VS operator account. */
   vsOperator: string;
   /**
    * corporation_id is the uint64 FK to Corporation.id (resolved from the

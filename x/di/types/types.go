@@ -18,7 +18,7 @@ func ValidateDigestString(digest string) error {
 	if len(digest) > 256 {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "digest exceeds maximum length of 256 bytes")
 	}
-	// [MOD-DI-MSG-1-1] digest must be a valid SRI string per spec v4 draft 13.
+	// [MOD-DI-MSG-1-1] digest must be a valid SRI string per spec.
 	if !validation.IsValidDigestSRI(digest) {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "digest must be a valid SRI string (e.g. sha256-<base64>)")
 	}

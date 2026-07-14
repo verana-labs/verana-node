@@ -10,7 +10,7 @@ import (
 	"github.com/verana-labs/verana-node/util/validation"
 )
 
-// VSOA per-role permitted msg_types (spec v4-rc2 MOD-PP-MSG-1/7/14).
+// VSOA per-role permitted msg_types (spec MOD-PP-MSG-1/7/14).
 const (
 	MsgSetParticipantOPToValidatedTypeURL      = "/verana.pp.v1.MsgSetParticipantOPToValidated"
 	MsgCreateOrUpdateParticipantSessionTypeURL = "/verana.pp.v1.MsgCreateOrUpdateParticipantSession"
@@ -370,7 +370,7 @@ func (msg *MsgSlashParticipantTrustDeposit) ValidateBasic() error {
 	if msg.Amount == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("amount must be greater than 0")
 	}
-	// [MOD-PP-MSG-12-1] reason is mandatory per spec v4 draft 13
+	// [MOD-PP-MSG-12-1] reason is mandatory per spec
 	if msg.Reason == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("reason is required")
 	}

@@ -8,20 +8,9 @@ import (
 	participant "github.com/verana-labs/verana-node/x/pp/module"
 )
 
-// TestAutocli_CreateRootParticipant_HasNoNonSpecFlags locks in the spec shape
-// of the `create-root-participant` command. Before this PR, PR #280 added a proto
-// field `participant_type` (and `vs_operator`) to MsgCreateRootParticipant and
-// `participant_type` to MsgRenewParticipantOP based on a misread of VPR spec v4
-// draft 13. The autocli declaration never exposed them as explicit flags, so
-// the `veranad` CLI silently sent the proto3 zero value and devnet stored
-// root participants with `type: UNSPECIFIED`.
-//
-// This test fails if either proto field is reintroduced or surfaces as a
-// named flag.
-//
-// Spec anchors:
-//   - [MOD-PP-MSG-7-1] parameters of CreateRootParticipant
-//   - [MOD-PP-MSG-2-1] parameters of RenewParticipantOP
+// TestAutocli_CreateRootParticipant_HasNoNonSpecFlags locks the command to the
+// parameters in [MOD-PP-MSG-7-1] and [MOD-PP-MSG-2-1]. It fails if a non-spec
+// proto field (e.g. participant_type) is reintroduced or surfaces as a flag.
 func TestAutocli_CreateRootParticipant_HasNoNonSpecFlags(t *testing.T) {
 	opts := participant.AppModule{}.AutoCLIOptions()
 	require.NotNil(t, opts)

@@ -236,7 +236,6 @@ func (k Keeper) FindParticipantsWithDID(goCtx context.Context, req *types.QueryF
 	}
 
 	// [MOD-PP-QRY-3-3] Execution
-	// country was removed from the Participant entity and from this query per spec v4 draft 13.
 	var foundParticipants []types.Participant
 
 	// Check if we need to handle the special OPEN mode case

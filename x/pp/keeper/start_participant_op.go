@@ -29,7 +29,7 @@ func (ms msgServer) validateParticipantChecks(ctx sdk.Context, msg *types.MsgSta
 		return types.Participant{}, fmt.Errorf("credential schema not found: %w", err)
 	}
 
-	// Validate participant type combinations per spec v4
+	// Validate participant type combinations
 	if err := validateParticipantRoleCombination(types.ParticipantRole(msg.Role), validatorParticipant.Role, cs); err != nil {
 		return types.Participant{}, err
 	}
@@ -199,7 +199,7 @@ func (ms msgServer) executeStartParticipantVP(ctx sdk.Context, msg *types.MsgSta
 	return id, nil
 }
 
-// validateParticipantRoleCombination validates participant type combinations per spec v4 [MOD-PP-MSG-1-2-2]
+// validateParticipantRoleCombination validates participant type combinations [MOD-PP-MSG-1-2-2]
 func validateParticipantRoleCombination(requestedType, validatorType types.ParticipantRole, cs credentialschematypes.CredentialSchema) error {
 	switch requestedType {
 	case types.ParticipantRole_ISSUER:

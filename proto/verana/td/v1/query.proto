@@ -35,8 +35,6 @@ message QueryParamsResponse {
 
 // QueryGetTrustDepositRequest is request type for the GetTrustDeposit RPC method
 message QueryGetTrustDepositRequest {
-  reserved 1;
-  reserved "corporation";
   uint64 corporation_id = 2;
 }
 

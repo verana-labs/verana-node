@@ -106,8 +106,6 @@ message QueryFindParticipantsWithDIDRequest {
   string did = 1;
   uint32 role = 2;
   uint64 schema_id = 3;
-  reserved 4;
-  reserved "country";
   google.protobuf.Timestamp when = 5 [
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = true

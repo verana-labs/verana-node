@@ -9,13 +9,10 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/de/types";
 
-// OperatorAuthorization is the operator-delegation record. Per spec v4-rc2 it is
+// OperatorAuthorization is the operator-delegation record. Per spec it is
 // keyed by its own uint64 id; (corporation_id, operator) is a unique secondary
 // index.
 message OperatorAuthorization {
-  // Field 1 was `string corporation` (account). Replaced by `corporation_id`
-  // (uint64 FK to Corporation.id) per spec v4-rc2.
-  reserved "corporation";
 
   // id is the own uint64 key of this OperatorAuthorization.
   uint64 id = 1;
@@ -44,16 +41,9 @@ message OperatorAuthorization {
   google.protobuf.Duration period = 10 [(gogoproto.stdduration) = true];
 }
 
-// The OperatorAuthorizationUsage side-ledger was removed: runtime balances now
-// live on-object as OperatorAuthorization.remaining_spend / remaining_fee_spend
-// per spec [AUTHZ-CHECK-1] (issue #324 Phase 1).
-
 // FeeGrant is the chain-level fee allowance, keyed by the composite
 // (grantor_corporation_id, grantee).
 message FeeGrant {
-  // Field 1 was `string grantor` (account). Replaced by
-  // `grantor_corporation_id` (uint64) per spec v4-rc2.
-  reserved "grantor";
 
   // grantor_corporation_id is the id of the corporation granting the fee
   // allowance. Together with grantee it forms the composite key.
@@ -129,8 +119,6 @@ message ParticipantAuthorizationRecord {
 // exists iff it has at least one record.
 message VSOperatorAuthorization {
   // Field 1 (`string corporation`) and field 3 (`repeated uint64 permissions`)
-  // were replaced by corporation_id and records per spec v4-rc2.
-  reserved "corporation", "permissions";
 
   // id is the own uint64 key of this VSOperatorAuthorization.
   uint64 id = 1;

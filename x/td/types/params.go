@@ -13,7 +13,7 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
 	// DefaultTrustDepositReclaimBurnRate is retained for proto back-compat only.
-	// Spec v4 draft 13 [MOD-TD-MSG-2-3] specifies that the full claimable_yield
+	// spec [MOD-TD-MSG-2-3] specifies that the full claimable_yield
 	// is transferred to the corporation on reclaim — there is no burn step.
 	// This field is therefore unused by the handler; remove the proto field
 	// (and this constant) on the next proto regeneration.

@@ -24,7 +24,7 @@ func (gs GenesisState) Validate() error {
 	}
 
 	// OperatorAuthorization: id (key) non-zero + unique; (corporation_id,
-	// operator) secondary index unique per spec v4-rc2.
+	// operator) secondary index unique.
 	oaIDs := make(map[uint64]bool)
 	oaCorpOp := make(map[string]bool)
 	for i, oa := range gs.OperatorAuthorizations {

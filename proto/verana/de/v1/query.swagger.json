@@ -293,7 +293,7 @@
           "description": "period is the reset period for spend_limit. If set, expiration MUST also be set."
         }
       },
-      "description": "OperatorAuthorization is the operator-delegation record. Per spec v4-rc2 it is\nkeyed by its own uint64 id; (corporation_id, operator) is a unique secondary\nindex."
+      "description": "OperatorAuthorization is the operator-delegation record. Per spec it is\nkeyed by its own uint64 id; (corporation_id, operator) is a unique secondary\nindex."
     },
     "verana.de.v1.Params": {
       "type": "object",
@@ -442,7 +442,7 @@
           "description": "records is the list of per-participant authorization records granted to\nvs_operator by corporation_id."
         }
       },
-      "description": "VSOperatorAuthorization is the VS-operator delegation, keyed by its own uint64\nid; (corporation_id, vs_operator) is a unique secondary index. The entry\nexists iff it has at least one record."
+      "description": "VSOperatorAuthorization is the VS-operator delegation, keyed by its own uint64\nid; (corporation_id, vs_operator) is a unique secondary index. The entry\nexists iff it has at least one record.\n\nField 1 (`string corporation`) and field 3 (`repeated uint64 permissions`)"
     }
   }
 }

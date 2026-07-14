@@ -13,6 +13,7 @@ export const protobufPackage = "verana.td.v1";
 
 /** TrustDeposit represents a corporation's trust deposit */
 export interface TrustDeposit {
+  /** Field 1 ("corporation", account string) and field 4 ("claimable") are */
   share: string;
   deposit: number;
   slashedDeposit: number;

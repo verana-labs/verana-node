@@ -588,7 +588,7 @@ func (ms msgServer) createOrUpdateSession(ctx sdk.Context, msg *types.MsgCreateO
 	}
 
 	// Create ParticipantSessionRecord with its own uint64 id (sequential within
-	// the session). agent_participant_id now lives on the record per spec v4-rc2.
+	// the session). agent_participant_id now lives on the record.
 	record := &types.ParticipantSessionRecord{
 		Id:                       uint64(len(session.SessionRecords) + 1),
 		Created:                  &now,

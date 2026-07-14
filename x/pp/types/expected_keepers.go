@@ -38,10 +38,9 @@ type CredentialSchemaKeeper interface {
 	GetCredentialSchemaById(ctx sdk.Context, id uint64) (credentialschematypes.CredentialSchema, error)
 }
 
-// EcosystemKeeper defines the expected ecosystem keeper.
-// Replaces the legacy TrustRegistryKeeper post-MOD-EC rename: x/pp needs to
-// read the Ecosystem row (ec.CorporationId) to authorize CredentialSchema
-// owners, and still needs trust-unit pricing for fee math.
+// EcosystemKeeper defines the expected ecosystem keeper: x/pp reads the
+// Ecosystem row (ec.CorporationId) to authorize CredentialSchema owners, and
+// uses trust-unit pricing for fee math.
 type EcosystemKeeper interface {
 	GetEcosystem(ctx context.Context, id uint64) (ectypes.Ecosystem, error)
 	GetTrustUnitPrice(ctx sdk.Context) uint64
@@ -90,7 +89,7 @@ type DigestKeeper interface {
 }
 
 // DelegationKeeper defines the expected interface for the Delegation Engine (DE)
-// module per spec v4-rc2. The caller resolves the signing corporation account to
+// module. The caller resolves the signing corporation account to
 // its co.id (via AUTHZ-CHECK-5) before invoking the VSOA lifecycle / check
 // methods, which take corporation_id (uint64).
 type DelegationKeeper interface {
