@@ -52,7 +52,9 @@ func (qs queryServer) ListEcosystems(ctx context.Context, req *types.QueryListEc
 		return nil, status.Error(codes.InvalidArgument, "response_max_size must be between 1 and 1024")
 	}
 
-	var out []types.EcosystemWithVersions
+	// Filter cheaply first, then sort and truncate, so the expensive nested
+	// GFV/GFD hydration runs only for the page actually returned.
+	var ecs []types.Ecosystem
 	err := qs.k.Ecosystem.Walk(ctx, nil, func(_ uint64, ec types.Ecosystem) (bool, error) {
 		if req.CorporationId != 0 && ec.CorporationId != req.CorporationId {
 			return false, nil
@@ -60,11 +62,7 @@ func (qs queryServer) ListEcosystems(ctx context.Context, req *types.QueryListEc
 		if req.ModifiedAfter != nil && !ec.Modified.After(*req.ModifiedAfter) {
 			return false, nil
 		}
-		ew, err := qs.buildWithVersions(ctx, ec, req.ActiveGfOnly, req.PreferredLanguage)
-		if err != nil {
-			return true, err
-		}
-		out = append(out, *ew)
+		ecs = append(ecs, ec)
 		return false, nil
 	})
 	if err != nil {
@@ -72,12 +70,21 @@ func (qs queryServer) ListEcosystems(ctx context.Context, req *types.QueryListEc
 	}
 
 	if req.ModifiedAfter != nil {
-		sort.Slice(out, func(i, j int) bool { return out[i].Modified.After(out[j].Modified) })
+		sort.Slice(ecs, func(i, j int) bool { return ecs[i].Modified.After(ecs[j].Modified) })
 	} else {
-		sort.Slice(out, func(i, j int) bool { return out[i].Id < out[j].Id })
+		sort.Slice(ecs, func(i, j int) bool { return ecs[i].Id < ecs[j].Id })
 	}
-	if len(out) > int(req.ResponseMaxSize) {
-		out = out[:int(req.ResponseMaxSize)]
+	if len(ecs) > int(req.ResponseMaxSize) {
+		ecs = ecs[:int(req.ResponseMaxSize)]
+	}
+
+	out := make([]types.EcosystemWithVersions, 0, len(ecs))
+	for _, ec := range ecs {
+		ew, err := qs.buildWithVersions(ctx, ec, req.ActiveGfOnly, req.PreferredLanguage)
+		if err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+		out = append(out, *ew)
 	}
 
 	return &types.QueryListEcosystemsResponse{Ecosystems: out}, nil

@@ -64,7 +64,7 @@ async function main() {
       client,
       setup.authorityAddress,
       setup.operatorAddress,
-      IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
+      IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
     );
     console.log(`  Root Permission ID: ${rootPermId}`);
     console.log();

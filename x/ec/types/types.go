@@ -1,8 +1,6 @@
 package types
 
 import (
-	"net/url"
-
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -87,10 +85,4 @@ func (m *MsgArchiveEcosystem) ValidateBasic() error {
 
 // --- shared validators -----------------------------------------------------
 
-func isValidHTTPURL(s string) bool {
-	u, err := url.ParseRequestURI(s)
-	if err != nil {
-		return false
-	}
-	return u.Scheme == "http" || u.Scheme == "https"
-}
+func isValidHTTPURL(s string) bool { return validation.IsValidURL(s) }

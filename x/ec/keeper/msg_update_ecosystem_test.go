@@ -10,6 +10,39 @@ import (
 	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
+// TestUpdateEcosystem_DIDRotationKeepsSiblingProtection pins EC-CRIT-1: when a
+// corporation has two ecosystems sharing a did and rotates one away, the sibling
+// still holding that did must keep the did reserved against other corporations.
+func TestUpdateEcosystem_DIDRotationKeepsSiblingProtection(t *testing.T) {
+	co := newMockCorporation()
+	co.register(tkCorp, 1)  // corp A
+	co.register(tkCorpB, 2) // corp B
+	k, ctx := ecKeeper(t, &mockDelegation{}, co, &mockGF{})
+	ms := keeper.NewMsgServerImpl(k)
+	ctx = ctx.WithBlockTime(time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC))
+
+	// Corp A creates EC1 and EC2, both on did X.
+	_, err := ms.CreateEcosystem(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+	_, err = ms.CreateEcosystem(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+
+	// Corp A rotates EC1 (id 1) from X to Y.
+	_, err = ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
+		Corporation: tkCorp,
+		Operator:    tkOp,
+		Id:          1,
+		Did:         "did:example:rotated",
+	})
+	require.NoError(t, err)
+
+	// EC2 still holds X, so corp B must not be able to claim X.
+	msgB := validCreateMsg(t)
+	msgB.Corporation = tkCorpB
+	_, err = ms.CreateEcosystem(ctx, msgB)
+	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)
+}
+
 func TestUpdateEcosystem_Happy(t *testing.T) {
 	co := newMockCorporation()
 	co.register(tkCorp, 1)

@@ -8,6 +8,7 @@
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
 import { GovernanceFrameworkDocument, GovernanceFrameworkVersion } from "./types";
+import Long = require("long");
 
 export const protobufPackage = "verana.gf.v1";
 
@@ -16,10 +17,12 @@ export interface GenesisState {
   params: Params | undefined;
   versions: GovernanceFrameworkVersion[];
   documents: GovernanceFrameworkDocument[];
+  gfvCounter: number;
+  gfdCounter: number;
 }
 
 function createBaseGenesisState(): GenesisState {
-  return { params: undefined, versions: [], documents: [] };
+  return { params: undefined, versions: [], documents: [], gfvCounter: 0, gfdCounter: 0 };
 }
 
 export const GenesisState = {
@@ -32,6 +35,12 @@ export const GenesisState = {
     }
     for (const v of message.documents) {
       GovernanceFrameworkDocument.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.gfvCounter !== 0) {
+      writer.uint32(32).uint64(message.gfvCounter);
+    }
+    if (message.gfdCounter !== 0) {
+      writer.uint32(40).uint64(message.gfdCounter);
     }
     return writer;
   },
@@ -64,6 +73,20 @@ export const GenesisState = {
 
           message.documents.push(GovernanceFrameworkDocument.decode(reader, reader.uint32()));
           continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.gfvCounter = longToNumber(reader.uint64() as Long);
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.gfdCounter = longToNumber(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -82,6 +105,8 @@ export const GenesisState = {
       documents: globalThis.Array.isArray(object?.documents)
         ? object.documents.map((e: any) => GovernanceFrameworkDocument.fromJSON(e))
         : [],
+      gfvCounter: isSet(object.gfvCounter) ? globalThis.Number(object.gfvCounter) : 0,
+      gfdCounter: isSet(object.gfdCounter) ? globalThis.Number(object.gfdCounter) : 0,
     };
   },
 
@@ -96,6 +121,12 @@ export const GenesisState = {
     if (message.documents?.length) {
       obj.documents = message.documents.map((e) => GovernanceFrameworkDocument.toJSON(e));
     }
+    if (message.gfvCounter !== 0) {
+      obj.gfvCounter = Math.round(message.gfvCounter);
+    }
+    if (message.gfdCounter !== 0) {
+      obj.gfdCounter = Math.round(message.gfdCounter);
+    }
     return obj;
   },
 
@@ -109,6 +140,8 @@ export const GenesisState = {
       : undefined;
     message.versions = object.versions?.map((e) => GovernanceFrameworkVersion.fromPartial(e)) || [];
     message.documents = object.documents?.map((e) => GovernanceFrameworkDocument.fromPartial(e)) || [];
+    message.gfvCounter = object.gfvCounter ?? 0;
+    message.gfdCounter = object.gfdCounter ?? 0;
     return message;
   },
 };
@@ -124,6 +157,21 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (long.lt(globalThis.Number.MIN_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

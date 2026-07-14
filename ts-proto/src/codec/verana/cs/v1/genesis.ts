@@ -7,7 +7,7 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
-import { CredentialSchema } from "./types";
+import { CredentialSchema, SchemaAuthorizationPolicy } from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.cs.v1";
@@ -18,10 +18,18 @@ export interface GenesisState {
   params: Params | undefined;
   credentialSchemas: CredentialSchema[];
   schemaCounter: number;
+  schemaAuthorizationPolicies: SchemaAuthorizationPolicy[];
+  schemaAuthorizationPolicyCounter: number;
 }
 
 function createBaseGenesisState(): GenesisState {
-  return { params: undefined, credentialSchemas: [], schemaCounter: 0 };
+  return {
+    params: undefined,
+    credentialSchemas: [],
+    schemaCounter: 0,
+    schemaAuthorizationPolicies: [],
+    schemaAuthorizationPolicyCounter: 0,
+  };
 }
 
 export const GenesisState = {
@@ -34,6 +42,12 @@ export const GenesisState = {
     }
     if (message.schemaCounter !== 0) {
       writer.uint32(24).uint64(message.schemaCounter);
+    }
+    for (const v of message.schemaAuthorizationPolicies) {
+      SchemaAuthorizationPolicy.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.schemaAuthorizationPolicyCounter !== 0) {
+      writer.uint32(40).uint64(message.schemaAuthorizationPolicyCounter);
     }
     return writer;
   },
@@ -66,6 +80,20 @@ export const GenesisState = {
 
           message.schemaCounter = longToNumber(reader.uint64() as Long);
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.schemaAuthorizationPolicies.push(SchemaAuthorizationPolicy.decode(reader, reader.uint32()));
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.schemaAuthorizationPolicyCounter = longToNumber(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -82,6 +110,12 @@ export const GenesisState = {
         ? object.credentialSchemas.map((e: any) => CredentialSchema.fromJSON(e))
         : [],
       schemaCounter: isSet(object.schemaCounter) ? globalThis.Number(object.schemaCounter) : 0,
+      schemaAuthorizationPolicies: globalThis.Array.isArray(object?.schemaAuthorizationPolicies)
+        ? object.schemaAuthorizationPolicies.map((e: any) => SchemaAuthorizationPolicy.fromJSON(e))
+        : [],
+      schemaAuthorizationPolicyCounter: isSet(object.schemaAuthorizationPolicyCounter)
+        ? globalThis.Number(object.schemaAuthorizationPolicyCounter)
+        : 0,
     };
   },
 
@@ -96,6 +130,14 @@ export const GenesisState = {
     if (message.schemaCounter !== 0) {
       obj.schemaCounter = Math.round(message.schemaCounter);
     }
+    if (message.schemaAuthorizationPolicies?.length) {
+      obj.schemaAuthorizationPolicies = message.schemaAuthorizationPolicies.map((e) =>
+        SchemaAuthorizationPolicy.toJSON(e)
+      );
+    }
+    if (message.schemaAuthorizationPolicyCounter !== 0) {
+      obj.schemaAuthorizationPolicyCounter = Math.round(message.schemaAuthorizationPolicyCounter);
+    }
     return obj;
   },
 
@@ -109,6 +151,9 @@ export const GenesisState = {
       : undefined;
     message.credentialSchemas = object.credentialSchemas?.map((e) => CredentialSchema.fromPartial(e)) || [];
     message.schemaCounter = object.schemaCounter ?? 0;
+    message.schemaAuthorizationPolicies =
+      object.schemaAuthorizationPolicies?.map((e) => SchemaAuthorizationPolicy.fromPartial(e)) || [];
+    message.schemaAuthorizationPolicyCounter = object.schemaAuthorizationPolicyCounter ?? 0;
     return message;
   },
 };

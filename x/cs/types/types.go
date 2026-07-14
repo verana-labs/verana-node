@@ -3,11 +3,13 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/gowebpki/jcs"
+
+	"github.com/verana-labs/verana-node/util/validation"
 )
 
 // JsonSchemaMetaSchema Official meta-schema for Draft 2020-12
@@ -563,15 +565,27 @@ func trimLeadingWhitespace(s string) string {
 // as defined in RFC 8785: keys sorted alphabetically, no insignificant whitespace.
 // json.Marshal on interface{} sorts map keys in Unicode code point order, satisfying JCS.
 func CanonicalizeJCS(schemaJSON string) (string, error) {
-	var doc interface{}
-	if err := json.Unmarshal([]byte(schemaJSON), &doc); err != nil {
-		return "", fmt.Errorf("failed to parse JSON for JCS canonicalization: %w", err)
-	}
-	canonical, err := json.Marshal(doc)
+	canonical, err := jcs.Transform([]byte(schemaJSON))
 	if err != nil {
 		return "", fmt.Errorf("failed to JCS-canonicalize JSON: %w", err)
 	}
 	return string(canonical), nil
+}
+
+// CanonicalizeWithID injects the canonical $id and JCS-canonicalizes in a single
+// parse, equivalent to InjectCanonicalID followed by CanonicalizeJCS (JCS re-sorts
+// keys anyway, so the order-preserving string surgery of the former is redundant).
+func CanonicalizeWithID(schemaJSON string, chainID string, schemaID uint64) (string, error) {
+	var doc map[string]interface{}
+	if err := json.Unmarshal([]byte(schemaJSON), &doc); err != nil {
+		return "", fmt.Errorf("invalid JSON schema: %w", err)
+	}
+	doc["$id"] = fmt.Sprintf("vpr:verana:%s:cs:%d", chainID, schemaID)
+	b, err := json.Marshal(doc)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal JSON schema: %w", err)
+	}
+	return CanonicalizeJCS(string(b))
 }
 
 func validateValidityPeriods(msg *MsgCreateCredentialSchema) error {
@@ -611,7 +625,7 @@ func validatePermManagementModes(msg *MsgCreateCredentialSchema) error {
 	}
 
 	// [MOD-CS-MSG-1-2-1] holder_onboarding_mode MUST be a valid HolderOnboardingMode.
-	// Enum values: ISSUER_VALIDATION_PROCESS=1, PERMISSIONLESS=2. UNSPECIFIED=0 is invalid.
+	// Enum values: ISSUER_ONBOARDING_PROCESS=1, PERMISSIONLESS=2. UNSPECIFIED=0 is invalid.
 	if msg.HolderOnboardingMode == 0 {
 		return fmt.Errorf("holder onboarding mode must be specified")
 	}
@@ -727,21 +741,13 @@ func (m *MsgCreateSchemaAuthorizationPolicy) ValidateBasic() error {
 	if m.Url == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url is required")
 	}
-	if !isValidHTTPURL(m.Url) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url must be a valid http(s) URI")
+	if !validation.IsValidURI(m.Url) {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url must be a valid URI")
 	}
 	if m.DigestSri == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "digest_sri is required")
 	}
 	return nil
-}
-
-func isValidHTTPURL(s string) bool {
-	u, err := url.ParseRequestURI(s)
-	if err != nil {
-		return false
-	}
-	return u.Scheme == "http" || u.Scheme == "https"
 }
 
 func (m *MsgIncreaseActiveSchemaAuthorizationPolicyVersion) ValidateBasic() error {

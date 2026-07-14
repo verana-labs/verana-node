@@ -17,7 +17,7 @@ func TestIsValidBCP47(t *testing.T) {
 	}{
 		{"empty", "", false},
 		{"too long", strings.Repeat("a", 18), false},
-		{"single-letter primary", "x", true},
+		{"single-letter primary invalid", "x", false},
 		{"two-letter primary lowercase", "en", true},
 		{"two-letter primary uppercase", "EN", true},
 		{"primary + region", "en-US", true},
@@ -27,7 +27,7 @@ func TestIsValidBCP47(t *testing.T) {
 		{"empty subtag", "en--US", false},
 		{"subtag with symbol", "en-US!", false},
 		{"subtag too long", "en-USAAAAAAA", false}, // second subtag is 9 chars (> 8 limit)
-		{"alphanum subtag ok", "en-US-001", true},
+		{"trailing numeric non-subtag invalid", "en-US-001", false},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

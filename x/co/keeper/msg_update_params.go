@@ -18,8 +18,13 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner,
 			"invalid authority; expected %s, got %s", ms.GetAuthority(), msg.Authority)
 	}
-	if err := ms.SetParams(sdk.UnwrapSDKContext(goCtx), msg.Params); err != nil {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := ms.SetParams(ctx, msg.Params); err != nil {
 		return nil, err
 	}
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeUpdateParams,
+		sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority),
+	))
 	return &types.MsgUpdateParamsResponse{}, nil
 }

@@ -195,7 +195,7 @@ async function main() {
       issuerValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 0 }),
       verifierValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 0 }),
       holderValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 0 }),
-      issuerOnboardingMode: IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_GRANTOR_VALIDATION_PROCESS,
+      issuerOnboardingMode: IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
       verifierOnboardingMode: VerifierOnboardingMode.VERIFIER_ONBOARDING_MODE_OPEN,
       holderOnboardingMode: HolderOnboardingMode.HOLDER_ONBOARDING_MODE_PERMISSIONLESS,
       pricingAssetType: PricingAssetType.TU,

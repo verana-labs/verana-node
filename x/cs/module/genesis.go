@@ -37,17 +37,38 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		}
 	}
 
-	// Set counter to the highest existing ID
-	// This is the fix: Always set the counter, even if maxID is 0
-	// This ensures the collections key exists for later retrieval
-	err := k.Counter.Set(ctx, "cs", maxID)
-	if err != nil {
+	// Restore the exported counter, never below the highest imported id.
+	schemaCounter := genState.SchemaCounter
+	if maxID > schemaCounter {
+		schemaCounter = maxID
+	}
+	if err := k.Counter.Set(ctx, "cs", schemaCounter); err != nil {
 		panic(fmt.Sprintf("failed to set counter: %s", err))
+	}
+
+	policies := genState.SchemaAuthorizationPolicies
+	sort.Slice(policies, func(i, j int) bool { return policies[i].Id < policies[j].Id })
+	var maxPolicyID uint64
+	for _, p := range policies {
+		if err := k.SchemaAuthorizationPolicies.Set(ctx, p.Id, p); err != nil {
+			panic(fmt.Sprintf("failed to set schema authorization policy: %s", err))
+		}
+		if p.Id > maxPolicyID {
+			maxPolicyID = p.Id
+		}
+	}
+	policyCounter := genState.SchemaAuthorizationPolicyCounter
+	if maxPolicyID > policyCounter {
+		policyCounter = maxPolicyID
+	}
+	if err := k.Counter.Set(ctx, types.CounterKeySchemaAuthorizationPolicy, policyCounter); err != nil {
+		panic(fmt.Sprintf("failed to set schema authorization policy counter: %s", err))
 	}
 
 	k.Logger().Info("Initialized Credential Schema module",
 		"schemas_count", len(schemas),
-		"highest_id", maxID)
+		"highest_id", maxID,
+		"policies_count", len(policies))
 }
 
 // ExportGenesis returns the module's exported genesis.
@@ -87,6 +108,28 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		}
 	}
 	genesis.SchemaCounter = counter
+
+	// Export schema authorization policies and their counter.
+	var policies []types.SchemaAuthorizationPolicy
+	if err := k.SchemaAuthorizationPolicies.Walk(ctx, nil, func(_ uint64, p types.SchemaAuthorizationPolicy) (bool, error) {
+		policies = append(policies, p)
+		return false, nil
+	}); err != nil {
+		panic(fmt.Sprintf("failed to export schema authorization policies: %s", err))
+	}
+	sort.Slice(policies, func(i, j int) bool { return policies[i].Id < policies[j].Id })
+	genesis.SchemaAuthorizationPolicies = policies
+
+	policyCounter, err := k.Counter.Get(ctx, types.CounterKeySchemaAuthorizationPolicy)
+	if err != nil {
+		policyCounter = 0
+		for _, p := range policies {
+			if p.Id > policyCounter {
+				policyCounter = p.Id
+			}
+		}
+	}
+	genesis.SchemaAuthorizationPolicyCounter = policyCounter
 
 	return genesis
 }

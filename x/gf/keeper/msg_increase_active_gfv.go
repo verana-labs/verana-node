@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"cosmossdk.io/collections"
 	cerrors "cosmossdk.io/errors"
@@ -46,15 +47,9 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	}
 
 	// Spec MOD-GF-MSG-2-2-1: a document for subject.language MUST exist on this version.
-	hasDefaultLang := false
-	if err := ms.GFDocument.Walk(ctx, nil, func(_ uint64, doc types.GovernanceFrameworkDocument) (bool, error) {
-		if doc.GfvId == gfv.Id && doc.Language == sub.language {
-			hasDefaultLang = true
-			return true, nil
-		}
-		return false, nil
-	}); err != nil {
-		return nil, fmt.Errorf("walk gfd: %w", err)
+	hasDefaultLang, err := ms.GFDocumentByGFVLang.Has(ctx, collections.Join(gfv.Id, sub.language))
+	if err != nil {
+		return nil, fmt.Errorf("lookup gfd: %w", err)
 	}
 	if !hasDefaultLang {
 		return nil, types.ErrMissingDefaultLang
@@ -62,7 +57,7 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 
 	// Execute MOD-GF-MSG-2-3.
 	now := ctx.BlockTime()
-	gfv.ActiveSince = now
+	gfv.ActiveSince = &now
 	if err := ms.GFVersion.Set(ctx, gfv.Id, gfv); err != nil {
 		return nil, fmt.Errorf("persist gfv: %w", err)
 	}
@@ -81,9 +76,11 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeIncreaseGFActive,
 		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", msg.EcosystemId)),
 		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
 		sdk.NewAttribute(types.AttributeKeyVersion, fmt.Sprintf("%d", nextVersion)),
+		sdk.NewAttribute(types.AttributeKeyActiveSince, now.Format(time.RFC3339)),
 	))
 
 	return &types.MsgIncreaseActiveGovernanceFrameworkVersionResponse{}, nil

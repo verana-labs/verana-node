@@ -63,7 +63,7 @@ async function main() {
       client,
       setup.authorityAddress,
       setup.operatorAddress,
-      IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
+      IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
     );
     console.log(`  Root Permission ID: ${rootPermId}`);
 

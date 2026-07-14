@@ -42,8 +42,8 @@ func TestQueries(t *testing.T) {
 		IssuerValidationValidityPeriod:          180,
 		VerifierValidationValidityPeriod:        180,
 		HolderValidationValidityPeriod:          180,
-		IssuerOnboardingMode:                    types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-		VerifierOnboardingMode:                  types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
+		IssuerOnboardingMode:                    types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+		VerifierOnboardingMode:                  types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 		HolderOnboardingMode:                    types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
 	}
 
@@ -58,8 +58,8 @@ func TestQueries(t *testing.T) {
 		IssuerValidationValidityPeriod:          180,
 		VerifierValidationValidityPeriod:        180,
 		HolderValidationValidityPeriod:          180,
-		IssuerOnboardingMode:                    types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
-		VerifierOnboardingMode:                  types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_VALIDATION_PROCESS,
+		IssuerOnboardingMode:                    types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+		VerifierOnboardingMode:                  types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 		HolderOnboardingMode:                    types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
 	}
 	modifiedAfterTime := schema1.Created.Add(time.Hour)

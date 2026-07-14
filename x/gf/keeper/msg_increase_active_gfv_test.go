@@ -45,8 +45,8 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 
 		// GFV active_since should now be set.
 		_ = k.GFVersion.Walk(ctx, nil, func(_ uint64, gfv types.GovernanceFrameworkVersion) (bool, error) {
-			require.False(t, gfv.ActiveSince.IsZero())
-			require.Equal(t, now, gfv.ActiveSince)
+			require.NotNil(t, gfv.ActiveSince)
+			require.Equal(t, now, *gfv.ActiveSince)
 			return false, nil
 		})
 	})

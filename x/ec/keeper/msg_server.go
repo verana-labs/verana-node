@@ -39,13 +39,15 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
+	// AUTHZ-CHECK-5 before AUTHZ-CHECK-1 so an unregistered corporation yields
+	// the specific ErrCorporationNotRegistered, not a masked authz error.
 	co, ok := ms.coKeeper.ResolveByPolicyAddress(ctx, msg.Corporation)
 	if !ok {
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
+	}
+
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
 	if err := ms.assertDIDConsistent(ctx, msg.Did, co.Id, 0); err != nil {
@@ -66,11 +68,16 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 		Language:      msg.Language,
 		ActiveVersion: 1,
 	}
+	if has, err := ms.Ecosystem.Has(ctx, ec.Id); err != nil {
+		return nil, fmt.Errorf("check ecosystem id %d: %w", ec.Id, err)
+	} else if has {
+		return nil, fmt.Errorf("ecosystem id %d already exists (counter desync)", ec.Id)
+	}
 	if err := ms.Ecosystem.Set(ctx, ec.Id, ec); err != nil {
 		return nil, fmt.Errorf("persist ecosystem: %w", err)
 	}
-	if err := ms.EcosystemByDIDCorp.Set(ctx, collections.Join(msg.Did, co.Id), ec.Id); err != nil {
-		return nil, fmt.Errorf("persist (did,corp) index: %w", err)
+	if err := ms.EcosystemByDIDCorp.Set(ctx, collections.Join(msg.Did, ec.Id), co.Id); err != nil {
+		return nil, fmt.Errorf("persist (did,id) index: %w", err)
 	}
 
 	if err := ms.gfKeeper.CreateInitialGFVersionForEcosystem(ctx, ec.Id, msg.Language, msg.DocUrl, msg.DocDigestSri); err != nil {
@@ -81,6 +88,7 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 		types.EventTypeCreateEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 		sdk.NewAttribute(types.AttributeKeyDID, msg.Did),
 		sdk.NewAttribute(types.AttributeKeyLanguage, msg.Language),
 	))
@@ -103,13 +111,15 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
+	// AUTHZ-CHECK-5 before AUTHZ-CHECK-1 so an unregistered corporation yields
+	// the specific ErrCorporationNotRegistered, not a masked authz error.
 	co, ok := ms.coKeeper.ResolveByPolicyAddress(ctx, msg.Corporation)
 	if !ok {
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
+	}
+
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
 	ec, err := ms.Ecosystem.Get(ctx, msg.Id)
@@ -131,11 +141,12 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		return nil, err
 	}
 
-	if err := ms.EcosystemByDIDCorp.Remove(ctx, collections.Join(ec.Did, co.Id)); err != nil {
-		return nil, fmt.Errorf("remove old (did,corp) index: %w", err)
+	// Keyed by ec.Id so a sibling still holding ec.Did keeps its own row.
+	if err := ms.EcosystemByDIDCorp.Remove(ctx, collections.Join(ec.Did, ec.Id)); err != nil {
+		return nil, fmt.Errorf("remove old (did,id) index: %w", err)
 	}
-	if err := ms.EcosystemByDIDCorp.Set(ctx, collections.Join(msg.Did, co.Id), ec.Id); err != nil {
-		return nil, fmt.Errorf("set new (did,corp) index: %w", err)
+	if err := ms.EcosystemByDIDCorp.Set(ctx, collections.Join(msg.Did, ec.Id), co.Id); err != nil {
+		return nil, fmt.Errorf("set new (did,id) index: %w", err)
 	}
 
 	ec.Did = msg.Did
@@ -148,6 +159,7 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		types.EventTypeUpdateEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 		sdk.NewAttribute(types.AttributeKeyDID, ec.Did),
 	))
 
@@ -162,13 +174,15 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
+	// AUTHZ-CHECK-5 before AUTHZ-CHECK-1 so an unregistered corporation yields
+	// the specific ErrCorporationNotRegistered, not a masked authz error.
 	co, ok := ms.coKeeper.ResolveByPolicyAddress(ctx, msg.Corporation)
 	if !ok {
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
+	}
+
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
 	ec, err := ms.Ecosystem.Get(ctx, msg.Id)
@@ -200,23 +214,21 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 		types.EventTypeArchiveEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
+		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+		sdk.NewAttribute(types.AttributeKeyDID, ec.Did),
 		sdk.NewAttribute(types.AttributeKeyArchiveStatus, status),
 	))
 
 	return &types.MsgArchiveEcosystemResponse{}, nil
 }
 
-// assertDIDConsistent enforces the per-Ecosystem (did, corporation_id)
-// consistency invariant by iterating the (did, *) prefix in
-// EcosystemByDIDCorp. selfID, if non-zero, is the id of the row being
-// updated and is excluded from the check (so a no-op rotation to a did the
-// caller already owns does not trip the invariant). On any conflicting
-// owner found, returns ErrDIDOwnershipConflict.
+// assertDIDConsistent rejects a did already controlled by a different
+// corporation. selfID, if non-zero, excludes the ecosystem being updated.
 func (k Keeper) assertDIDConsistent(ctx context.Context, did string, ownerCorpID uint64, selfID uint64) error {
 	rng := collections.NewPrefixedPairRange[string, uint64](did)
 	iter, err := k.EcosystemByDIDCorp.Iterate(ctx, rng)
 	if err != nil {
-		return fmt.Errorf("iterate (did,corp) index: %w", err)
+		return fmt.Errorf("iterate (did,id) index: %w", err)
 	}
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
@@ -224,15 +236,15 @@ func (k Keeper) assertDIDConsistent(ctx context.Context, did string, ownerCorpID
 		if err != nil {
 			return fmt.Errorf("iter key: %w", err)
 		}
-		ecID, err := iter.Value()
+		corpID, err := iter.Value()
 		if err != nil {
 			return fmt.Errorf("iter value: %w", err)
 		}
-		if selfID != 0 && ecID == selfID {
+		if selfID != 0 && key.K2() == selfID {
 			continue
 		}
-		if key.K2() != ownerCorpID {
-			return errors.Wrapf(types.ErrDIDOwnershipConflict, "did %q controlled by corporation %d", did, key.K2())
+		if corpID != ownerCorpID {
+			return errors.Wrapf(types.ErrDIDOwnershipConflict, "did %q controlled by corporation %d", did, corpID)
 		}
 	}
 	return nil

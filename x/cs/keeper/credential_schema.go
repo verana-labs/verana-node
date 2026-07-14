@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/verana-labs/verana-node/x/cs/types"
@@ -84,13 +85,11 @@ func validateValidityPeriodsWithParams(msg *types.MsgCreateCredentialSchema, par
 }
 
 func (ms msgServer) executeCreateCredentialSchema(ctx sdk.Context, schemaID uint64, msg *types.MsgCreateCredentialSchema) error {
-	// Inject canonical $id into the JSON schema, preserving the submitter's
-	// property order. The spec defines NO sorted/JCS canonicalization for
-	// json_schema; alphabetizing keys (json.Unmarshal->map->json.Marshal) breaks
-	// the indexer, which relies on the documented field order.
-	processedJsonSchema, err := types.InjectCanonicalID(msg.JsonSchema, ctx.ChainID(), schemaID)
+	// [MOD-CS-MSG-1-3] Inject the canonical $id and JCS-canonicalize before
+	// storing: the spec requires the schema be saved canonized.
+	processedJsonSchema, err := types.CanonicalizeWithID(msg.JsonSchema, ctx.ChainID(), schemaID)
 	if err != nil {
-		return fmt.Errorf("failed to process JSON schema: %w", err)
+		return fmt.Errorf("failed to canonicalize JSON schema: %w", err)
 	}
 
 	// [MOD-CS-MSG-1-3] Create the credential schema
@@ -126,6 +125,15 @@ func (ms msgServer) executeCreateCredentialSchema(ctx sdk.Context, schemaID uint
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, fmt.Sprintf("%d", msg.EcosystemId)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyIssuerGrantorValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.IssuerGrantorValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyVerifierGrantorValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.VerifierGrantorValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyIssuerValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.IssuerValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyVerifierValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.VerifierValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyHolderValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.HolderValidationValidityPeriod)),
+			sdk.NewAttribute(types.AttributeKeyPricingAssetType, fmt.Sprintf("%d", msg.PricingAssetType)),
+			sdk.NewAttribute(types.AttributeKeyPricingAsset, msg.PricingAsset),
+			sdk.NewAttribute(types.AttributeKeyDigestAlgorithm, msg.DigestAlgorithm),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().Format(time.RFC3339)),
 		),
 	)
 

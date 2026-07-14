@@ -3,6 +3,12 @@ package app
 import (
 	"fmt"
 	"io"
+	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
+
+	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 
 	_ "github.com/verana-labs/verana-node/x/co/module" // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/cs/module" // import for side-effects
@@ -506,6 +512,24 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	if err := server.RegisterSwaggerAPI(apiSvr.ClientCtx, apiSvr.Router, apiConfig.Swagger); err != nil {
 		panic(err)
 	}
+
+	// [MOD-CS-QRY-3] Render Json Schema over REST at /cs/v1/js/{id}, returning
+	// the raw canonical schema with content type application/schema+json (the
+	// grpc-gateway route wraps it in JSON as application/json instead).
+	apiSvr.Router.HandleFunc("/cs/v1/js/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.ParseUint(mux.Vars(r)["id"], 10, 64)
+		if err != nil {
+			http.Error(w, "invalid credential schema id", http.StatusBadRequest)
+			return
+		}
+		resp, err := cstypes.NewQueryClient(apiSvr.ClientCtx).RenderJsonSchema(r.Context(), &cstypes.QueryRenderJsonSchemaRequest{Id: id})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/schema+json")
+		_, _ = w.Write([]byte(resp.Schema))
+	}).Methods(http.MethodGet)
 
 	// register app's OpenAPI routes.
 	docs.RegisterOpenAPIService(Name, apiSvr.Router)
