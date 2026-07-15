@@ -3,12 +3,25 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/de/types"
 )
+
+// emitOperatorAuthzUpdated signals that an AUTHZ-CHECK-1 path mutated the
+// operator authorization (spend debit or cycle renewal). It carries only the id;
+// the indexer re-reads authoritative state via ABCI at this height.
+func (k Keeper) emitOperatorAuthzUpdated(ctx context.Context, authzID uint64) {
+	sdk.UnwrapSDKContext(ctx).EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeOperatorAuthorizationUpdated,
+			sdk.NewAttribute(types.AttributeKeyAuthzID, strconv.FormatUint(authzID, 10)),
+		),
+	)
+}
 
 // CheckOperatorAuthorization implements [AUTHZ-CHECK-1] at the membership level:
 // it verifies existence, period auto-renewal / expiration, and msg_type
@@ -67,6 +80,7 @@ func (k Keeper) ConsumeOperatorSpend(
 	if err := k.OperatorAuthorizations.Set(ctx, oa.Id, oa); err != nil {
 		return fmt.Errorf("failed to debit operator spend: %w", err)
 	}
+	k.emitOperatorAuthzUpdated(ctx, oa.Id)
 	return nil
 }
 
@@ -112,6 +126,7 @@ func (k Keeper) checkOperatorAuthorizationCore(
 			if err := k.OperatorAuthorizations.Set(ctx, oa.Id, oa); err != nil {
 				return types.OperatorAuthorization{}, fmt.Errorf("failed to persist authz renewal: %w", err)
 			}
+			k.emitOperatorAuthzUpdated(ctx, oa.Id)
 		} else if !oa.Expiration.After(now) {
 			return types.OperatorAuthorization{}, types.ErrAuthzExpired
 		}
