@@ -3,11 +3,26 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/de/types"
 )
+
+// emitVSOperatorAuthzUpdated signals that an AUTHZ-CHECK-3/4 path mutated the
+// participant's authorization record (spend/fee debit or cycle reset). It
+// carries the vsoa id and participant id so the indexer can identify the record
+// and re-read authoritative state via ABCI at this height.
+func (k Keeper) emitVSOperatorAuthzUpdated(ctx context.Context, vsoaID, participantID uint64) {
+	sdk.UnwrapSDKContext(ctx).EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeVSOperatorAuthorizationUpdated,
+			sdk.NewAttribute(types.AttributeKeyVsoaID, strconv.FormatUint(vsoaID, 10)),
+			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(participantID, 10)),
+		),
+	)
+}
 
 // CheckVSOperatorAuthorizationOnParticipant implements [AUTHZ-CHECK-3]. Callers
 // MUST resolve the signing corporation account to its co.id via AUTHZ-CHECK-5
@@ -76,6 +91,7 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
 			return fmt.Errorf("failed to persist cycle reset: %w", err)
 		}
+		k.emitVSOperatorAuthzUpdated(ctx, vsoaID, participantID)
 	} else if rec.Expiration == nil || !rec.Expiration.After(now) {
 		return types.ErrAuthzExpired
 	}
@@ -129,6 +145,7 @@ func (k Keeper) ConsumeRecordSpend(
 	if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
 		return fmt.Errorf("failed to debit record spend: %w", err)
 	}
+	k.emitVSOperatorAuthzUpdated(ctx, vsoaID, participantID)
 	return nil
 }
 
@@ -176,6 +193,7 @@ func (k Keeper) ConsumeRecordFeeSpend(
 	if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
 		return fmt.Errorf("failed to debit record fee spend: %w", err)
 	}
+	k.emitVSOperatorAuthzUpdated(ctx, vsoaID, participantID)
 	return nil
 }
 
