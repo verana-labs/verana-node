@@ -9,6 +9,12 @@ const (
 	EventTypeRevokeVSOperatorAuthorization = "revoke_vs_operator_authorization"
 	EventTypeUpdateVSOperatorAuthorization = "update_vs_operator_authorization"
 
+	// Emitted whenever an AUTHZ-CHECK path mutates an authorization between grant
+	// and revoke (spend debit or cycle renewal). Carries only ids: the indexer
+	// re-reads authoritative state via ABCI at that height.
+	EventTypeOperatorAuthorizationUpdated   = "operator_authorization_updated"
+	EventTypeVSOperatorAuthorizationUpdated = "vs_operator_authorization_updated"
+
 	AttributeKeyCorporation   = "corporation"
 	AttributeKeyCorporationID = "corporation_id"
 	AttributeKeyOperator      = "operator"
