@@ -55,7 +55,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	// Use a callback to gather all trust deposits in deterministic order
 	// The Walk function should iterate over keys in lexicographical order
-	_ = k.TrustDeposit.Walk(ctx, nil, func(key uint64, value types.TrustDeposit) (bool, error) {
+	if err := k.TrustDeposit.Walk(ctx, nil, func(key uint64, value types.TrustDeposit) (bool, error) {
 		trustDeposits = append(trustDeposits, types.TrustDepositRecord{
 			CorporationId:  value.CorporationId,
 			Share:          value.Share,
@@ -68,7 +68,9 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 			SlashCount:     value.SlashCount,
 		})
 		return false, nil // Continue iteration
-	})
+	}); err != nil {
+		panic(fmt.Errorf("failed to export trust deposits: %w", err))
+	}
 
 	genesis.TrustDeposits = trustDeposits
 

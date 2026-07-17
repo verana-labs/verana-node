@@ -60,11 +60,8 @@ func (ms msgServer) TriggerResolver(goCtx context.Context, msg *types.MsgTrigger
 // corpAccount is the signing corporation account, corpID its resolved co.id, perm
 // the target Participant.
 //
-// The handler enforces the unconditional authorization: AUTHZ-CHECK-3 (Path 1)
-// and AUTHZ-CHECK-1 (Path 2). The fee-grant checks (AUTHZ-CHECK-4 on Path 1,
-// AUTHZ-CHECK-2 on Path 2) are conditional on the transaction fees being paid by
-// the corporation account, which only the ante can determine; they are enforced
-// there (issue #324 Phase 2).
+// Path 1 enforces AUTHZ-CHECK-3 plus the per-record fee cap (AUTHZ-CHECK-4);
+// Path 2 enforces AUTHZ-CHECK-1.
 func (ms msgServer) authorizeTriggerResolver(
 	ctx sdk.Context, corpAccount string, corpID uint64, operator string, perm types.Participant, now time.Time,
 ) error {
@@ -74,6 +71,10 @@ func (ms msgServer) authorizeTriggerResolver(
 	if corpID == perm.CorporationId && operator == perm.VsOperator {
 		if err := ms.delegationKeeper.CheckVSOperatorAuthorizationOnParticipant(
 			ctx, corpID, operator, perm.Id, msgType); err == nil {
+			// [AUTHZ-CHECK-4] per-record fee cap when the corporation pays the tx fee.
+			if err := ms.consumeVSOperatorFeeSpend(ctx, corpID, operator, perm.Id, corpAccount); err != nil {
+				return err
+			}
 			return nil
 		}
 	}

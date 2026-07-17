@@ -287,9 +287,10 @@ func (ms msgServer) buildSessionFeePlan(ctx sdk.Context, msg *types.MsgCreateOrU
 		} else {
 			fee = participant.IssuanceFees
 		}
-		// beneficiary_fee_in_pricing_asset = participant.fee × (1 - discount)
+		// beneficiary_fee_in_pricing_asset = participant.fee × (1 - discount).
+		// Computed via math.Int to avoid uint64 overflow on large fees.
 		if executorDiscount > 0 {
-			fee = (fee * (discountScale - executorDiscount)) / discountScale
+			fee = math.NewIntFromUint64(fee).MulRaw(int64(discountScale - executorDiscount)).QuoRaw(discountScale).Uint64()
 		}
 		if fee == 0 {
 			continue
@@ -473,7 +474,7 @@ func (ms msgServer) executeCreateOrUpdateParticipantSession(ctx sdk.Context, msg
 		if ms.digestKeeper == nil {
 			return fmt.Errorf("digest keeper is required but not set")
 		}
-		if err := ms.digestKeeper.StoreDigestModuleCall(ctx, msg.Corporation, msg.Digest, "sha2-256"); err != nil {
+		if err := ms.digestKeeper.StoreDigestModuleCall(ctx, msg.Corporation, msg.Digest); err != nil {
 			return fmt.Errorf("failed to persist credential digest: %w", err)
 		}
 	}
@@ -587,7 +588,7 @@ func (ms msgServer) createOrUpdateSession(ctx sdk.Context, msg *types.MsgCreateO
 	}
 
 	// Create ParticipantSessionRecord with its own uint64 id (sequential within
-	// the session). agent_participant_id now lives on the record per spec v4-rc2.
+	// the session). agent_participant_id now lives on the record.
 	record := &types.ParticipantSessionRecord{
 		Id:                       uint64(len(session.SessionRecords) + 1),
 		Created:                  &now,
@@ -606,7 +607,6 @@ func (ms msgServer) createOrUpdateSession(ctx sdk.Context, msg *types.MsgCreateO
 // findBeneficiaries gets the set of participants that should receive fees
 func (ms msgServer) findBeneficiaries(ctx sdk.Context, issuerParticipantId, verifierParticipantId uint64) ([]types.Participant, error) {
 	var foundParticipants []types.Participant
-	var schemaID uint64
 
 	// Helper function to check if a participant is already in the slice
 	containsParticipant := func(id uint64) bool {
@@ -618,57 +618,14 @@ func (ms msgServer) findBeneficiaries(ctx sdk.Context, issuerParticipantId, veri
 		return false
 	}
 
-	// Get schema ID from either issuer or verifier participant
-	if issuerParticipantId != 0 {
-		issuerParticipant, err := ms.Participant.Get(ctx, issuerParticipantId)
-		if err != nil {
-			return nil, fmt.Errorf("issuer participant not found: %w", err)
-		}
-		schemaID = issuerParticipant.SchemaId
-	} else if verifierParticipantId != 0 {
-		verifierParticipant, err := ms.Participant.Get(ctx, verifierParticipantId)
-		if err != nil {
-			return nil, fmt.Errorf("verifier participant not found: %w", err)
-		}
-		schemaID = verifierParticipant.SchemaId
-	} else {
+	if issuerParticipantId == 0 && verifierParticipantId == 0 {
 		return nil, fmt.Errorf("at least one of issuer_participant_id or verifier_participant_id must be provided")
 	}
 
-	// Get schema to check participant management mode
-	cs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, schemaID)
-	if err != nil {
-		return nil, fmt.Errorf("credential schema not found: %w", err)
-	}
+	// MOD-PP-QRY-4-3 has no OPEN-mode special case: self-created OPEN participants
+	// carry validator_participant_id = ECOSYSTEM, so the walks below include it.
 
-	// Check if schema is configured with OPEN participant management mode
-	isOpenMode := false
-	if (issuerParticipantId != 0 && cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN) ||
-		(verifierParticipantId != 0 && cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN) {
-		isOpenMode = true
-	}
-
-	// For OPEN mode, find the ECOSYSTEM participant
-	if isOpenMode {
-		// Find ECOSYSTEM participant for this schema
-		err = ms.Participant.Walk(ctx, nil, func(id uint64, participant types.Participant) (bool, error) {
-			if participant.SchemaId == schemaID &&
-				participant.Role == types.ParticipantRole_ECOSYSTEM &&
-				participant.Revoked == nil && participant.Slashed == nil {
-				foundParticipants = append(foundParticipants, participant)
-				return true, nil // Stop iteration once found
-			}
-			return false, nil
-		})
-
-		if err != nil {
-			return nil, fmt.Errorf("failed to query ECOSYSTEM participant: %w", err)
-		}
-
-		return foundParticipants, nil
-	}
-
-	// Process issuer participant hierarchy if provided (non-OPEN mode)
+	// Process issuer participant hierarchy if provided.
 	if issuerParticipantId != 0 {
 		issuerParticipant, err := ms.Participant.Get(ctx, issuerParticipantId)
 		if err != nil {
@@ -678,7 +635,9 @@ func (ms msgServer) findBeneficiaries(ctx sdk.Context, issuerParticipantId, veri
 		// Follow the validator chain up
 		if issuerParticipant.ValidatorParticipantId != 0 {
 			currentParticipantID := issuerParticipant.ValidatorParticipantId
-			for currentParticipantID != 0 {
+			visited := map[uint64]bool{}
+			for currentParticipantID != 0 && !visited[currentParticipantID] {
+				visited[currentParticipantID] = true
 				currentParticipant, err := ms.Participant.Get(ctx, currentParticipantID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to get participant: %w", err)
@@ -713,7 +672,9 @@ func (ms msgServer) findBeneficiaries(ctx sdk.Context, issuerParticipantId, veri
 
 		if verifierParticipant.ValidatorParticipantId != 0 {
 			currentParticipantID := verifierParticipant.ValidatorParticipantId
-			for currentParticipantID != 0 {
+			visited := map[uint64]bool{}
+			for currentParticipantID != 0 && !visited[currentParticipantID] {
+				visited[currentParticipantID] = true
 				currentParticipant, err := ms.Participant.Get(ctx, currentParticipantID)
 				if err != nil {
 					return nil, fmt.Errorf("failed to get participant: %w", err)

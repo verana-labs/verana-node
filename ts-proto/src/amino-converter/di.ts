@@ -8,13 +8,11 @@ export const MsgStoreDigestAminoConverter: AminoConverter = {
     authority: m.authority || undefined,
     operator: m.operator || undefined,
     digest: m.digest || undefined,
-    digest_algorithm: m.digestAlgorithm || undefined,
   }),
   fromAmino: (a: any): MsgStoreDigest =>
     MsgStoreDigest.fromPartial({
       authority: a.authority ?? "",
       operator: a.operator ?? "",
       digest: a.digest ?? "",
-      digestAlgorithm: a.digest_algorithm ?? "",
     }),
 };

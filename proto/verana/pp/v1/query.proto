@@ -24,13 +24,10 @@ service Query {
     option (google.api.http).get = "/verana/pp/v1/get/{id}";
   }
   rpc GetParticipantSession(QueryGetParticipantSessionRequest) returns (QueryGetParticipantSessionResponse) {
-    option (google.api.http).get = "/verana/pp/v1/get_session/{id}";
+    option (google.api.http).get = "/verana/pp/v1/session/get/{id}";
   }
   rpc ListParticipantSessions(QueryListParticipantSessionsRequest) returns (QueryListParticipantSessionsResponse) {
     option (google.api.http).get = "/verana/pp/v1/list_session";
-  }
-  rpc FindParticipantsWithDID(QueryFindParticipantsWithDIDRequest) returns (QueryFindParticipantsWithDIDResponse) {
-    option (google.api.http).get = "/verana/pp/v1/find_with_did";
   }
   rpc FindBeneficiaries(QueryFindBeneficiariesRequest) returns (QueryFindBeneficiariesResponse) {
     option (google.api.http).get = "/verana/pp/v1/beneficiaries";
@@ -87,7 +84,7 @@ message QueryGetParticipantSessionRequest {
 }
 
 message QueryGetParticipantSessionResponse {
-  ParticipantSession session = 1;
+  ParticipantSession participant_session = 1;
 }
 
 message QueryListParticipantSessionsRequest {
@@ -99,23 +96,7 @@ message QueryListParticipantSessionsRequest {
 }
 
 message QueryListParticipantSessionsResponse {
-  repeated ParticipantSession sessions = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryFindParticipantsWithDIDRequest {
-  string did = 1;
-  uint32 role = 2;
-  uint64 schema_id = 3;
-  reserved 4;
-  reserved "country";
-  google.protobuf.Timestamp when = 5 [
-    (gogoproto.stdtime) = true,
-    (gogoproto.nullable) = true
-  ];
-}
-
-message QueryFindParticipantsWithDIDResponse {
-  repeated Participant participants = 1 [(gogoproto.nullable) = false];
+  repeated ParticipantSession participant_sessions = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryFindBeneficiariesRequest {

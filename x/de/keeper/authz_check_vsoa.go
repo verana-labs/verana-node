@@ -24,22 +24,10 @@ func (k Keeper) emitVSOperatorAuthzUpdated(ctx context.Context, vsoaID, particip
 	)
 }
 
-// CheckVSOperatorAuthorizationOnParticipant implements [AUTHZ-CHECK-3]. The
-// caller (a PP Msg handler) MUST resolve the signing corporation account to its
-// co.id via AUTHZ-CHECK-5 first and pass corporationID (uint64), not the signing
-// account.
-//
-// Steps:
-//  1. A ParticipantAuthorizationRecord MUST exist for participantID.
-//  2. The record MUST belong to VSOperatorAuthorization[corporationID, operator].
-//  3. msgType MUST be in record.msg_types.
-//  4. Cycle/expiration: if period is set and now >= expiration, reset the
-//     remaining balances and roll expiration forward by period; else expiration
-//     MUST be strictly in the future.
-//  5. If spend_limit is set, remaining_spend MUST cover the operation and is
-//     deducted after success. The keeper has no per-operation spend amount in
-//     this context, so the amount-based deduction is deferred to the ante /
-//     caller (matches the AUTHZ-CHECK-1 Check vs CheckWithSpend split).
+// CheckVSOperatorAuthorizationOnParticipant implements [AUTHZ-CHECK-3]. Callers
+// MUST resolve the signing corporation account to its co.id via AUTHZ-CHECK-5
+// and pass corporationID, not the signing account. The spend debit (step 5) is
+// applied separately by ConsumeRecordSpend, once the caller knows the amount.
 func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 	ctx context.Context,
 	corporationID uint64,
@@ -89,7 +77,8 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		return fmt.Errorf("%w: %s", types.ErrAuthzMsgTypeNotFound, msgType)
 	}
 
-	// 4. Cycle / expiration.
+	// 4. Cycle / expiration. [AUTHZ-CHECK-3] step 4 requires expiration > now(),
+	// so a nil expiration fails closed.
 	if rec.Period != nil && *rec.Period > 0 && rec.Expiration != nil && !rec.Expiration.After(now) {
 		if len(rec.SpendLimit) > 0 {
 			rec.RemainingSpend = rec.SpendLimit
@@ -208,15 +197,9 @@ func (k Keeper) ConsumeRecordFeeSpend(
 	return nil
 }
 
-// CheckVSOperatorFeeGrant implements [AUTHZ-CHECK-4]. It uses the same record
-// lookup as AUTHZ-CHECK-3.
-//
-//  1. record.with_feegrant MUST be true.
-//  2. The cycle / expiration reset is handled by AUTHZ-CHECK-3 (run first).
-//  3. If fee_spend_limit is set, remaining_fee_spend MUST cover the estimated tx
-//     fees and is deducted after success. The keeper has no visibility into the
-//     fee-payment mode or amount (ante context), so the amount-based check is
-//     deferred to the ante handler (matches existing csps / trigger_resolver).
+// CheckVSOperatorFeeGrant implements [AUTHZ-CHECK-4] against the same record as
+// AUTHZ-CHECK-3, which must run first. The fee debit is applied by
+// ConsumeRecordFeeSpend once the amount is known.
 func (k Keeper) CheckVSOperatorFeeGrant(ctx context.Context, participantID uint64) error {
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, participantID)
 	if err != nil {

@@ -200,11 +200,10 @@ func (ms msgServer) executeSetParticipantVPToValidated(
 	}
 
 	// [MOD-PP-MSG-3-3] Activate any disabled VSOA record by syncing its expiration
-	// to the participant's effective_until via [MOD-DE-MSG-9]. No-op if no record.
-	if applicantParticipant.EffectiveUntil != nil {
-		if err := ms.delegationKeeper.UpdateVSOperatorAuthorizationExpiration(ctx, applicantParticipant.Id, *applicantParticipant.EffectiveUntil); err != nil {
-			return nil, fmt.Errorf("failed to update VS operator authorization expiration: %w", err)
-		}
+	// to the participant's effective_until via [MOD-DE-MSG-9], unconditionally: a
+	// nil effective_until means the record never expires. No-op if no record.
+	if err := ms.delegationKeeper.UpdateVSOperatorAuthorizationExpiration(ctx, applicantParticipant.Id, applicantParticipant.EffectiveUntil); err != nil {
+		return nil, fmt.Errorf("failed to update VS operator authorization expiration: %w", err)
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -216,10 +215,12 @@ func (ms msgServer) executeSetParticipantVPToValidated(
 			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 			sdk.NewAttribute(types.AttributeKeyValidatorParticipantID, strconv.FormatUint(applicantParticipant.ValidatorParticipantId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOpSummaryDigest, msg.OpSummaryDigest),
-			sdk.NewAttribute(types.AttributeKeyEffectiveUntil, formatTimePtr(msg.EffectiveUntil)),
+			sdk.NewAttribute(types.AttributeKeyEffectiveUntil, formatTimePtr(applicantParticipant.EffectiveUntil)),
 			sdk.NewAttribute(types.AttributeKeyValidationFees, strconv.FormatUint(msg.ValidationFees, 10)),
 			sdk.NewAttribute(types.AttributeKeyIssuanceFees, strconv.FormatUint(msg.IssuanceFees, 10)),
 			sdk.NewAttribute(types.AttributeKeyVerificationFees, strconv.FormatUint(msg.VerificationFees, 10)),
+			sdk.NewAttribute(types.AttributeKeyIssuanceFeeDiscount, strconv.FormatUint(applicantParticipant.IssuanceFeeDiscount, 10)),
+			sdk.NewAttribute(types.AttributeKeyVerificationFeeDiscount, strconv.FormatUint(applicantParticipant.VerificationFeeDiscount, 10)),
 			sdk.NewAttribute(types.AttributeKeyOpExp, formatTimePtr(vpExp)),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
 		),

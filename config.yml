@@ -5,6 +5,21 @@ genesis:
     staking:
       params:
         bond_denom: "uvna"
+    mint:
+      params:
+        mint_denom: "uvna"
+    crisis:
+      constant_fee:
+        denom: "uvna"
+        amount: "1000"
+    gov:
+      params:
+        min_deposit:
+          - denom: "uvna"
+            amount: "10000000"
+        expedited_min_deposit:
+          - denom: "uvna"
+            amount: "50000000"
 accounts:
   - name: alice
     coins:

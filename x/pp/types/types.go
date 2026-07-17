@@ -10,7 +10,7 @@ import (
 	"github.com/verana-labs/verana-node/util/validation"
 )
 
-// VSOA per-role permitted msg_types (spec v4-rc2 MOD-PP-MSG-1/7/14).
+// VSOA per-role permitted msg_types (spec MOD-PP-MSG-1/7/14).
 const (
 	MsgSetParticipantOPToValidatedTypeURL      = "/verana.pp.v1.MsgSetParticipantOPToValidated"
 	MsgCreateOrUpdateParticipantSessionTypeURL = "/verana.pp.v1.MsgCreateOrUpdateParticipantSession"
@@ -247,11 +247,8 @@ func (msg *MsgCreateRootParticipant) ValidateBasic() error {
 				return fmt.Errorf("msg_type %s is not permitted for root participant (only SetParticipantOPToValidated)", mt)
 			}
 		}
-		// The record is active immediately with expiration = effective_until; the
-		// spec requires record.expiration, so effective_until MUST be set.
-		if msg.EffectiveUntil == nil {
-			return fmt.Errorf("effective_until is required when vs_operator_authz params are set")
-		}
+		// effective_until may be nil: the record is then active with no expiration
+		// (AUTHZ-CHECK-3 treats nil as never-expired).
 	}
 	if msg.VsOperator != "" {
 		if _, err := sdk.AccAddressFromBech32(msg.VsOperator); err != nil {
@@ -309,6 +306,19 @@ func (msg *MsgRevokeParticipant) ValidateBasic() error {
 	return nil
 }
 
+func (msg *MsgTriggerResolver) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
+		return fmt.Errorf("invalid corporation address: %w", err)
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
+		return fmt.Errorf("invalid operator address: %w", err)
+	}
+	if msg.Id == 0 {
+		return fmt.Errorf("participant ID cannot be 0")
+	}
+	return nil
+}
+
 func (msg *MsgCreateOrUpdateParticipantSession) ValidateBasic() error {
 	// [MOD-PP-MSG-10-2] authority (group): signature must be verified
 	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
@@ -360,7 +370,8 @@ func (msg *MsgSlashParticipantTrustDeposit) ValidateBasic() error {
 	if msg.Amount == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("amount must be greater than 0")
 	}
-	// [MOD-PP-MSG-12-1] reason is mandatory per spec v4 draft 13
+	// reason is an implementation-defined field (not in MOD-PP-MSG-12-1); it is
+	// recorded on the slash event only.
 	if msg.Reason == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("reason is required")
 	}
@@ -431,11 +442,8 @@ func (msg *MsgSelfCreateParticipant) ValidateBasic() error {
 	if err := validateVSOperatorAuthz(msg.Role, msg.VsOperator, msg.VsOperatorAuthzMsgTypes, anyParam); err != nil {
 		return err
 	}
-	// OPEN mode creates the record active immediately with expiration =
-	// effective_until; the spec requires record.expiration, so it MUST be set.
-	if anyParam && msg.EffectiveUntil == nil {
-		return fmt.Errorf("effective_until is required when vs_operator_authz params are set")
-	}
+	// effective_until may be nil: the record is then active with no expiration
+	// (AUTHZ-CHECK-3 treats nil as never-expired).
 
 	return nil
 }

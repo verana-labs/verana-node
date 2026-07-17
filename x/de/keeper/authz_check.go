@@ -23,18 +23,13 @@ func (k Keeper) emitOperatorAuthzUpdated(ctx context.Context, authzID uint64) {
 	)
 }
 
-// CheckOperatorAuthorization implements [AUTHZ-CHECK-1] at the membership level:
-// it verifies existence, period auto-renewal / expiration, and msg_type
-// membership. The per-operation spend debit (AUTHZ-CHECK-1 step 3) is applied by
-// ConsumeOperatorSpend, which the handler calls once it knows the operation's
-// nominal amount, so this entry point does not take a spend amount.
+// CheckOperatorAuthorization implements [AUTHZ-CHECK-1] membership: existence,
+// expiration/period renewal, and msg_type membership. The spend debit (step 3)
+// is applied by ConsumeOperatorSpend once the handler knows the amount.
 //
-// If operator is empty, the corporation is acting alone (e.g. via group
-// proposal) and the check is skipped.
-//
-// The `corporation` argument is the signing corporation account (policy_address)
-// and is resolved to its co.id via AUTHZ-CHECK-5 before the (corporation_id,
-// operator) index lookup.
+// `corporation` is the signing corporation account (policy_address); it is
+// resolved to co.id via AUTHZ-CHECK-5 before the (corporation_id, operator)
+// index lookup.
 func (k Keeper) CheckOperatorAuthorization(
 	ctx context.Context,
 	corporation string,

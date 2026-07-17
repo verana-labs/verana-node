@@ -23,7 +23,7 @@ type (
 		// the address capable of executing a MsgUpdateParams message. Typically, this
 		// should be the x/gov module account.
 		authority string
-		// state — keyed by corporation_id (uint64) per v4-rc3
+		// state — keyed by corporation_id (uint64)
 		TrustDeposit collections.Map[uint64, types.TrustDeposit]
 		Dust         collections.Item[string] // Accumulated fractional yield (stored as string)
 		// external keeper
@@ -73,7 +73,6 @@ func (k Keeper) GetAuthority() string {
 func (k Keeper) Logger() log.Logger {
 	return k.logger.With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
-
 
 // GetTrustDepositMap returns the TrustDeposit collections.Map for migration purposes.
 func (k Keeper) GetTrustDepositMap() collections.Map[uint64, types.TrustDeposit] {

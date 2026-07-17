@@ -13,16 +13,18 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
 	// DefaultTrustDepositReclaimBurnRate is retained for proto back-compat only.
-	// Spec v4 draft 13 [MOD-TD-MSG-2-3] specifies that the full claimable_yield
+	// spec [MOD-TD-MSG-2-3] specifies that the full claimable_yield
 	// is transferred to the corporation on reclaim — there is no burn step.
 	// This field is therefore unused by the handler; remove the proto field
 	// (and this constant) on the next proto regeneration.
 	DefaultTrustDepositReclaimBurnRate = "0" // unused; 0 == no burn
 	DefaultTrustDepositShareValue      = "1.0"
-	DefaultTrustDepositRate            = "0.2"  // 20%
-	DefaultWalletUserAgentRewardRate   = "0.2"  // 20%
-	DefaultUserAgentRewardRate         = "0.2"  // 20%
-	DefaultTrustDepositMaxYieldRate    = "0.15" // 15% annual yield
+	DefaultTrustDepositRate            = "0.2" // 20%
+	DefaultWalletUserAgentRewardRate   = "0.1" // 10% ([GLO])
+	DefaultUserAgentRewardRate         = "0.1" // 10% ([GLO])
+	DefaultTrustDepositMaxYieldRate    = "0.2" // 20% annual yield ([GLO])
+	// [GLO] value; the block-reward share is realized by the protocolpool
+	// continuous fund, not read directly here.
 	DefaultTrustDepositBlockRewardShare = "0.2"
 )
 

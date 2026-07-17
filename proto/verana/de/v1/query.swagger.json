@@ -16,15 +16,15 @@
     "application/json"
   ],
   "paths": {
-    "/verana-labs/verana/de/v1/params": {
+    "/verana/de/v1/authz/get/{id}": {
       "get": {
-        "summary": "Parameters queries the parameters of the module.",
-        "operationId": "Query_Params",
+        "summary": "[MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.",
+        "operationId": "Query_GetOperatorAuthorization",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/verana.de.v1.QueryParamsResponse"
+              "$ref": "#/definitions/verana.de.v1.QueryGetOperatorAuthorizationResponse"
             }
           },
           "default": {
@@ -34,12 +34,22 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "id is the OperatorAuthorization id to fetch.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
         "tags": [
           "Query"
         ]
       }
     },
-    "/verana/de/v1/operator-authorizations": {
+    "/verana/de/v1/authz/list": {
       "get": {
         "summary": "ListOperatorAuthorizations returns operator authorizations matching optional filters.",
         "operationId": "Query_ListOperatorAuthorizations",
@@ -87,15 +97,38 @@
         ]
       }
     },
-    "/verana/de/v1/operator-authorizations/{id}": {
+    "/verana/de/v1/params": {
       "get": {
-        "summary": "[MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.",
-        "operationId": "Query_GetOperatorAuthorization",
+        "summary": "Parameters queries the parameters of the module.",
+        "operationId": "Query_Params",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/verana.de.v1.QueryGetOperatorAuthorizationResponse"
+              "$ref": "#/definitions/verana.de.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/verana/de/v1/vs-authz/get/{id}": {
+      "get": {
+        "summary": "[MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.",
+        "operationId": "Query_GetVSOperatorAuthorization",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.QueryGetVSOperatorAuthorizationResponse"
             }
           },
           "default": {
@@ -108,7 +141,7 @@
         "parameters": [
           {
             "name": "id",
-            "description": "id is the OperatorAuthorization id to fetch.",
+            "description": "id is the VSOperatorAuthorization id to fetch.",
             "in": "path",
             "required": true,
             "type": "string",
@@ -120,7 +153,7 @@
         ]
       }
     },
-    "/verana/de/v1/vs-operator-authorizations": {
+    "/verana/de/v1/vs-authz/list": {
       "get": {
         "summary": "ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.",
         "operationId": "Query_ListVSOperatorAuthorizations",
@@ -161,39 +194,6 @@
             "required": false,
             "type": "integer",
             "format": "int64"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
-    },
-    "/verana/de/v1/vs-operator-authorizations/{id}": {
-      "get": {
-        "summary": "[MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.",
-        "operationId": "Query_GetVSOperatorAuthorization",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.de.v1.QueryGetVSOperatorAuthorizationResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "id is the VSOperatorAuthorization id to fetch.",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
           }
         ],
         "tags": [
@@ -293,7 +293,7 @@
           "description": "period is the reset period for spend_limit. If set, expiration MUST also be set."
         }
       },
-      "description": "OperatorAuthorization is the operator-delegation record. Per spec v4-rc2 it is\nkeyed by its own uint64 id; (corporation_id, operator) is a unique secondary\nindex."
+      "description": "OperatorAuthorization is the operator-delegation record. Per spec it is\nkeyed by its own uint64 id; (corporation_id, operator) is a unique secondary\nindex."
     },
     "verana.de.v1.Params": {
       "type": "object",
@@ -442,7 +442,7 @@
           "description": "records is the list of per-participant authorization records granted to\nvs_operator by corporation_id."
         }
       },
-      "description": "VSOperatorAuthorization is the VS-operator delegation, keyed by its own uint64\nid; (corporation_id, vs_operator) is a unique secondary index. The entry\nexists iff it has at least one record."
+      "description": "VSOperatorAuthorization is the VS-operator delegation, keyed by its own uint64\nid; (corporation_id, vs_operator) is a unique secondary index. The entry\nexists iff it has at least one record.\n\nField 1 (`string corporation`) and field 3 (`repeated uint64 permissions`)"
     }
   }
 }

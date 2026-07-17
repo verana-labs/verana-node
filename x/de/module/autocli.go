@@ -44,14 +44,14 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "GrantOperatorAuthorization",
 					Use:       "grant-operator-authz [grantee]",
 					Short:     "Grant operator authorization to a grantee on behalf of a corporation",
-					Long:      "[MOD-DE-MSG-3] Grant operator authorization. The signing account (--from) must be the corporation (group policy or delegated account). The grantee receives authorization to execute specified message types on behalf of the corporation. Optionally includes a fee grant.",
+					Long:      "[MOD-DE-MSG-3] Grant operator authorization. The signer (--from) is the operator: the corporation's policy_address on the group-proposal path, or an authorized operator. The grantee receives authorization to execute specified message types on behalf of the corporation. Optionally includes a fee grant.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "grantee"},
 					},
 					FlagOptions: map[string]*autocliv1.FlagOptions{
-						"operator": {
-							Name:  "operator",
-							Usage: "optional operator account authorized to run this Msg",
+						"corporation": {
+							Name:  "corporation",
+							Usage: "policy_address of the corporation on whose behalf the grant is made",
 						},
 						"msg_types": {
 							Name:  "msg-types",
@@ -88,14 +88,14 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "RevokeOperatorAuthorization",
 					Use:       "revoke-operator-authz [grantee]",
 					Short:     "Revoke operator authorization for a grantee",
-					Long:      "[MOD-DE-MSG-4] Revoke operator authorization. The signing account (--from) must be the corporation. Removes the authorization entry and any associated fee grant for the given corporation/grantee pair.",
+					Long:      "[MOD-DE-MSG-4] Revoke operator authorization. The signer (--from) is the operator: the corporation's policy_address on the group-proposal path, or an authorized operator. Removes the authorization entry and any associated fee grant for the given corporation/grantee pair.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "grantee"},
 					},
 					FlagOptions: map[string]*autocliv1.FlagOptions{
-						"operator": {
-							Name:  "operator",
-							Usage: "optional operator account authorized to run this Msg",
+						"corporation": {
+							Name:  "corporation",
+							Usage: "policy_address of the corporation on whose behalf the revoke is made",
 						},
 					},
 				},

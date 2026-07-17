@@ -48,7 +48,7 @@ func RunAuthzCheck5UnregisteredJourney(ctx context.Context, client cosmosclient.
 	fmt.Println("\n--- Step 2: Self-grant from unregistered corporation (expect ErrCorporationNotRegistered) ---")
 	msg := &detypes.MsgGrantOperatorAuthorization{
 		Corporation: addr,
-		Operator:    "", // self-grant: AUTHZ-CHECK-1 short-circuits, AUTHZ-CHECK-5 is the gate
+		Operator:    addr, // self-grant (operator == corporation): AUTHZ-CHECK-1 is skipped, AUTHZ-CHECK-5 is the gate
 		Grantee:     addr,
 		MsgTypes:    []string{"/verana.di.v1.MsgStoreDigest"},
 	}

@@ -129,7 +129,9 @@ async function main() {
   const innerMsgValue = MsgGrantOperatorAuthorization.encode(
     MsgGrantOperatorAuthorization.fromPartial({
       corporation: corp.policyAddress,
-      operator: "",
+      // Group-proposal path: operator == corporation policy_address (the group
+      // account is the signer), so AUTHZ-CHECK-1 is skipped.
+      operator: corp.policyAddress,
       grantee: operatorAccount.address,
       msgTypes: allMsgTypes,
       withFeegrant: false,

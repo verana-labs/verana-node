@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -25,6 +26,21 @@ func (k Keeper) GrantVSOperatorAuthorization(
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	// [MOD-DE-MSG-5-2] Basic checks.
+	if corporationID == 0 {
+		return fmt.Errorf("corporation_id cannot be 0")
+	}
+	if vsOperator == "" {
+		return fmt.Errorf("vs_operator cannot be empty")
+	}
+	if len(record.SpendLimit) > 0 && !record.SpendLimit.IsValid() {
+		return fmt.Errorf("invalid spend_limit")
+	}
+	if len(record.FeeSpendLimit) > 0 && !record.FeeSpendLimit.IsValid() {
+		return fmt.Errorf("invalid fee_spend_limit")
+	}
+	if record.Period != nil && *record.Period <= 0 {
+		return fmt.Errorf("period must be a positive duration")
+	}
 
 	// record.participant_id MUST NOT already exist anywhere (global uniqueness).
 	if record.ParticipantId == 0 {
@@ -141,8 +157,11 @@ func (k Keeper) RevokeVSOperatorAuthorization(ctx context.Context, participantID
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, participantID)
 	if err != nil {
-		// No record for this participant — no-op.
-		return nil
+		if errors.Is(err, collections.ErrNotFound) {
+			// No record for this participant — no-op.
+			return nil
+		}
+		return fmt.Errorf("failed to read participant index %d: %w", participantID, err)
 	}
 	vsoa, err := k.VSOperatorAuthorizations.Get(ctx, vsoaID)
 	if err != nil {
@@ -196,23 +215,30 @@ func (k Keeper) RevokeVSOperatorAuthorization(ctx context.Context, participantID
 // UpdateVSOperatorAuthorizationExpiration implements [MOD-DE-MSG-9]. Locates the
 // record by participant_id and updates its expiration; a no-op when no record
 // exists.
-func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration time.Time) error {
+func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration *time.Time) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, participantID)
 	if err != nil {
-		// No record for this participant — no-op.
-		return nil
+		if errors.Is(err, collections.ErrNotFound) {
+			// No record for this participant — no-op.
+			return nil
+		}
+		return fmt.Errorf("failed to read participant index %d: %w", participantID, err)
 	}
 	vsoa, err := k.VSOperatorAuthorizations.Get(ctx, vsoaID)
 	if err != nil {
 		return fmt.Errorf("failed to load VSOperatorAuthorization %d: %w", vsoaID, err)
 	}
 
-	exp := newExpiration
+	var exp *time.Time
+	if newExpiration != nil {
+		e := *newExpiration
+		exp = &e
+	}
 	for i := range vsoa.Records {
 		if vsoa.Records[i].ParticipantId == participantID {
-			vsoa.Records[i].Expiration = &exp
+			vsoa.Records[i].Expiration = exp
 			break
 		}
 	}
@@ -249,6 +275,7 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 	seen := make(map[string]bool)
 	feegrantMsgTypes := make([]string, 0)
 	for _, r := range vsoa.Records {
+		// [MOD-DE-MSG-5-5] contributes only if with_feegrant and expiration > now().
 		if !r.WithFeegrant || r.Expiration == nil || !r.Expiration.After(now) {
 			continue
 		}
@@ -264,6 +291,7 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 		}
 	}
 
+	// No active feegrant-enabled record remains.
 	if maxExpire == nil {
 		return k.RevokeFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator)
 	}

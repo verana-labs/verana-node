@@ -38,10 +38,9 @@ type CredentialSchemaKeeper interface {
 	GetCredentialSchemaById(ctx sdk.Context, id uint64) (credentialschematypes.CredentialSchema, error)
 }
 
-// EcosystemKeeper defines the expected ecosystem keeper.
-// Replaces the legacy TrustRegistryKeeper post-MOD-EC rename: x/pp needs to
-// read the Ecosystem row (ec.CorporationId) to authorize CredentialSchema
-// owners, and still needs trust-unit pricing for fee math.
+// EcosystemKeeper defines the expected ecosystem keeper: x/pp reads the
+// Ecosystem row (ec.CorporationId) to authorize CredentialSchema owners, and
+// uses trust-unit pricing for fee math.
 type EcosystemKeeper interface {
 	GetEcosystem(ctx context.Context, id uint64) (ectypes.Ecosystem, error)
 	GetTrustUnitPrice(ctx sdk.Context) uint64
@@ -86,11 +85,11 @@ type TrustDepositKeeper interface {
 // spec [MOD-DI-MSG-1] header: "This method can be called directly by Create
 // or Update Participant Session module with no checks."
 type DigestKeeper interface {
-	StoreDigestModuleCall(ctx context.Context, authority, digest, digestAlgorithm string) error
+	StoreDigestModuleCall(ctx context.Context, authority, digest string) error
 }
 
 // DelegationKeeper defines the expected interface for the Delegation Engine (DE)
-// module per spec v4-rc2. The caller resolves the signing corporation account to
+// module. The caller resolves the signing corporation account to
 // its co.id (via AUTHZ-CHECK-5) before invoking the VSOA lifecycle / check
 // methods, which take corporation_id (uint64).
 type DelegationKeeper interface {
@@ -110,6 +109,7 @@ type DelegationKeeper interface {
 	GrantVSOperatorAuthorization(ctx context.Context, corporationID uint64, vsOperator string, record detypes.ParticipantAuthorizationRecord) error
 	// [MOD-DE-MSG-6] revoke a VS operator authorization record by participant id.
 	RevokeVSOperatorAuthorization(ctx context.Context, participantID uint64) error
-	// [MOD-DE-MSG-9] update a record's expiration by participant id.
-	UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration time.Time) error
+	// [MOD-DE-MSG-9] update a record's expiration by participant id; nil means
+	// the record never expires.
+	UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration *time.Time) error
 }

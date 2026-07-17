@@ -10,7 +10,7 @@ func DefaultGenesis() *GenesisState {
 		Params:              DefaultParams(),
 		Participants:        []Participant{},
 		ParticipantSessions: []ParticipantSession{},
-		NextParticipantId:   0,
+		NextParticipantId:   1,
 	}
 }
 
@@ -80,6 +80,10 @@ func (gs GenesisState) Validate() error {
 			gs.NextParticipantId, maxParticipantId)
 	}
 
+	if err := validateNoValidatorCycles(gs.Participants); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -94,18 +98,22 @@ func validateParticipant(participant Participant, allParticipants []Participant)
 		return fmt.Errorf("corporation_id cannot be 0 for participant ID %d", participant.Id)
 	}
 
-	// did is mandatory per spec v4-rc2
+	// did is mandatory
 	if participant.Did == "" {
 		return fmt.Errorf("did is mandatory for participant ID %d", participant.Id)
 	}
 
-	// op_state is mandatory per spec v4-rc2 (PENDING/VALIDATED/TERMINATED)
+	// op_state is mandatory (PENDING/VALIDATED/TERMINATED)
 	if participant.OpState == OnboardingState_ONBOARDING_STATE_UNSPECIFIED {
 		return fmt.Errorf("op_state cannot be unspecified for participant ID %d", participant.Id)
 	}
 
 	// Validate validator participant reference
 	if participant.ValidatorParticipantId != 0 {
+		if participant.ValidatorParticipantId == participant.Id {
+			return fmt.Errorf("participant ID %d references itself as validator", participant.Id)
+		}
+
 		validatorFound := false
 
 		// Check if validator participant exists
@@ -125,6 +133,25 @@ func validateParticipant(participant Participant, allParticipants []Participant)
 	return nil
 }
 
+// validateNoValidatorCycles rejects cyclic validator_participant_id chains, which
+// would loop forever during message execution [PPB-MAJ-2].
+func validateNoValidatorCycles(participants []Participant) error {
+	validatorOf := make(map[uint64]uint64, len(participants))
+	for _, p := range participants {
+		validatorOf[p.Id] = p.ValidatorParticipantId
+	}
+	for _, p := range participants {
+		visited := map[uint64]bool{p.Id: true}
+		for cur := p.ValidatorParticipantId; cur != 0; cur = validatorOf[cur] {
+			if visited[cur] {
+				return fmt.Errorf("validator cycle detected involving participant ID %d", p.Id)
+			}
+			visited[cur] = true
+		}
+	}
+	return nil
+}
+
 // validateParticipantTimestamps validates that timestamps are chronologically consistent
 func validateParticipantTimestamps(participant Participant) error {
 	// Check that modified time exists
@@ -137,7 +164,7 @@ func validateParticipantTimestamps(participant Participant) error {
 		return fmt.Errorf("created timestamp is required for participant ID %d", participant.Id)
 	}
 
-	// op_last_state_change is mandatory per spec v4-rc2
+	// op_last_state_change is mandatory
 	if participant.OpLastStateChange == nil {
 		return fmt.Errorf("op_last_state_change is required for participant ID %d", participant.Id)
 	}
@@ -149,10 +176,10 @@ func validateParticipantTimestamps(participant Participant) error {
 		}
 	}
 
-	// If adjusted time exists, it should be after created time
+	// adjusted may equal created (same-block create+adjust); only reject if before.
 	if participant.Adjusted != nil && participant.Created != nil {
-		if !participant.Created.Before(*participant.Adjusted) {
-			return fmt.Errorf("adjusted timestamp must be after created timestamp for participant ID %d", participant.Id)
+		if participant.Adjusted.Before(*participant.Created) {
+			return fmt.Errorf("adjusted timestamp must not be before created timestamp for participant ID %d", participant.Id)
 		}
 	}
 
@@ -172,7 +199,7 @@ func validateParticipantSession(session ParticipantSession, participantIds map[u
 
 	// Validate each session record
 	for i, record := range session.SessionRecords {
-		// record id is the mandatory key per spec v4-rc2
+		// record id is the mandatory key
 		if record.Id == 0 {
 			return fmt.Errorf("session record id cannot be 0 for session ID %s, record index %d", session.Id, i)
 		}

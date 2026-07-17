@@ -13,6 +13,7 @@ import (
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
+	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/di/keeper"
 	module "github.com/verana-labs/verana-node/x/di/module"
@@ -62,7 +63,7 @@ func initFixture(t *testing.T) *fixture {
 		encCfg.Codec,
 		addressCodec,
 		authority,
-		nil, // no delegation keeper in unit tests
+		&keepertest.MockDelegationKeeper{},
 		corpKeeper,
 	)
 

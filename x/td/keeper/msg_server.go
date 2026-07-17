@@ -65,7 +65,15 @@ func (ms msgServer) ReclaimTrustDepositYield(goCtx context.Context, msg *types.M
 	if !claimableYield.IsPositive() {
 		return nil, fmt.Errorf("no claimable yield")
 	}
-	claimed := claimableYield.TruncateInt().Uint64()
+	claimedInt := claimableYield.TruncateInt()
+	if !claimedInt.IsUint64() {
+		return nil, fmt.Errorf("claimable yield exceeds uint64: %s", claimedInt)
+	}
+	claimed := claimedInt.Uint64()
+	// Sub-unit yield truncates to zero: abort rather than emit a 0-coin transfer.
+	if claimed == 0 {
+		return nil, fmt.Errorf("no claimable yield")
+	}
 
 	// [MOD-TD-MSG-2-3] share -= claimable_yield / share_value
 	sharesToReduce := ms.Keeper.AmountToShare(claimed, params.TrustDepositShareValue)
@@ -121,11 +129,10 @@ func (k Keeper) ShareToAmount(share math.LegacyDec, shareValue math.LegacyDec) u
 
 // AmountToShare converts amount to share value using decimal math
 func (k Keeper) AmountToShare(amount uint64, shareValue math.LegacyDec) math.LegacyDec {
-	amountDec := math.LegacyNewDec(int64(amount))
 	if shareValue.IsZero() {
 		return math.LegacyZeroDec() // Prevent division by zero
 	}
-	return amountDec.Quo(shareValue)
+	return math.LegacyNewDecFromInt(math.NewIntFromUint64(amount)).Quo(shareValue)
 }
 
 // SlashTrustDeposit handles governance slashing of trust deposits
@@ -164,6 +171,9 @@ func (ms msgServer) SlashTrustDeposit(goCtx context.Context, msg *types.MsgSlash
 	// Get global variables for share calculation
 	params := ms.Keeper.GetParams(ctx)
 	shareValue := params.TrustDepositShareValue
+	if !shareValue.IsPositive() {
+		return nil, fmt.Errorf("trust_deposit_share_value must be positive")
+	}
 
 	// Calculate share reduction
 	shareReduction := math.LegacyNewDecFromInt(msg.Deposit).Quo(shareValue)
@@ -171,6 +181,9 @@ func (ms msgServer) SlashTrustDeposit(goCtx context.Context, msg *types.MsgSlash
 	// [MOD-TD-MSG-5-3] Update TrustDeposit entry
 	td.Deposit = td.Deposit - msg.Deposit.Uint64()
 	td.Share = td.Share.Sub(shareReduction)
+	if td.Share.IsNegative() {
+		td.Share = math.LegacyZeroDec()
+	}
 	td.SlashedDeposit = td.SlashedDeposit + msg.Deposit.Uint64()
 	td.LastSlashed = &now
 	td.SlashCount++
@@ -242,6 +255,10 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 		return nil, fmt.Errorf("trust deposit entry not found for corporation %s: %w", account, err)
 	}
 
+	// [MOD-TD-MSG-6-2-1] deposit MUST be re-checked > 0 at execution.
+	if msg.Deposit == 0 {
+		return nil, fmt.Errorf("deposit must be greater than zero")
+	}
 	// [MOD-TD-MSG-6-2-1] deposit MUST equal the outstanding slashed amount (slashed - repaid).
 	outstanding := td.SlashedDeposit - td.RepaidDeposit
 	if msg.Deposit != outstanding {
@@ -284,6 +301,13 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	// [MOD-TD-MSG-6-3] add amount to the TrustDeposit account (slashed coins were
 	// already burned at slash time per MOD-TD-MSG-5-3).
 	transferCoins := sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(msg.Deposit)))
+	// AUTHZ-CHECK-1 step 3: debit the operator's spend limit for the committed funds.
+	if err := ms.Keeper.delegationKeeper.ConsumeOperatorSpend(
+		ctx, msg.Corporation, msg.Operator,
+		"/verana.td.v1.MsgRepaySlashedTrustDeposit", now, transferCoins,
+	); err != nil {
+		return nil, fmt.Errorf("failed to consume operator spend: %w", err)
+	}
 	if err := ms.Keeper.bankKeeper.SendCoinsFromAccountToModule(
 		ctx,
 		corporationAddr,

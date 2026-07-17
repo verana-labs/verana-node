@@ -13,6 +13,7 @@ export const protobufPackage = "verana.td.v1";
 
 /** TrustDeposit represents a corporation's trust deposit */
 export interface TrustDeposit {
+  /** Field 1 ("corporation", account string) and field 4 ("claimable") are */
   share: string;
   deposit: number;
   slashedDeposit: number;
@@ -24,13 +25,6 @@ export interface TrustDeposit {
   corporationId: number;
   /** refunded is the amount eligible to be recycled/reclaimed (was "claimable"). */
   refunded: number;
-}
-
-export interface SlashTrustDepositProposal {
-  title: string;
-  description: string;
-  corporation: string;
-  deposit: string;
 }
 
 function createBaseTrustDeposit(): TrustDeposit {
@@ -218,110 +212,6 @@ export const TrustDeposit = {
     message.slashCount = object.slashCount ?? 0;
     message.corporationId = object.corporationId ?? 0;
     message.refunded = object.refunded ?? 0;
-    return message;
-  },
-};
-
-function createBaseSlashTrustDepositProposal(): SlashTrustDepositProposal {
-  return { title: "", description: "", corporation: "", deposit: "" };
-}
-
-export const SlashTrustDepositProposal = {
-  encode(message: SlashTrustDepositProposal, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.title !== "") {
-      writer.uint32(10).string(message.title);
-    }
-    if (message.description !== "") {
-      writer.uint32(18).string(message.description);
-    }
-    if (message.corporation !== "") {
-      writer.uint32(26).string(message.corporation);
-    }
-    if (message.deposit !== "") {
-      writer.uint32(34).string(message.deposit);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): SlashTrustDepositProposal {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSlashTrustDepositProposal();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.title = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.description = reader.string();
-          continue;
-        case 3:
-          if (tag !== 26) {
-            break;
-          }
-
-          message.corporation = reader.string();
-          continue;
-        case 4:
-          if (tag !== 34) {
-            break;
-          }
-
-          message.deposit = reader.string();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): SlashTrustDepositProposal {
-    return {
-      title: isSet(object.title) ? globalThis.String(object.title) : "",
-      description: isSet(object.description) ? globalThis.String(object.description) : "",
-      corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      deposit: isSet(object.deposit) ? globalThis.String(object.deposit) : "",
-    };
-  },
-
-  toJSON(message: SlashTrustDepositProposal): unknown {
-    const obj: any = {};
-    if (message.title !== "") {
-      obj.title = message.title;
-    }
-    if (message.description !== "") {
-      obj.description = message.description;
-    }
-    if (message.corporation !== "") {
-      obj.corporation = message.corporation;
-    }
-    if (message.deposit !== "") {
-      obj.deposit = message.deposit;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<SlashTrustDepositProposal>, I>>(base?: I): SlashTrustDepositProposal {
-    return SlashTrustDepositProposal.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<SlashTrustDepositProposal>, I>>(object: I): SlashTrustDepositProposal {
-    const message = createBaseSlashTrustDepositProposal();
-    message.title = object.title ?? "";
-    message.description = object.description ?? "";
-    message.corporation = object.corporation ?? "";
-    message.deposit = object.deposit ?? "";
     return message;
   },
 };

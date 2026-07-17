@@ -2267,7 +2267,7 @@ func TestSetParticipantVPToValidated_AuthzCheckFailure(t *testing.T) {
 }
 
 // TestMsgServerCreateRootParticipant is superseded by TestCreateRootParticipant which has
-// comprehensive coverage of all spec v4 checks including overlap and AUTHZ.
+// comprehensive coverage of all spec checks including overlap and AUTHZ.
 // Keeping as a simple smoke test with updated field names.
 func TestMsgServerCreateRootParticipant(t *testing.T) {
 	k, ms, mockCsKeeper, trkKeeper, ctx := setupMsgServer(t)
@@ -2306,7 +2306,7 @@ func TestMsgServerCreateRootParticipant(t *testing.T) {
 	require.Equal(t, uint64(1), participant.SchemaId)
 	require.Equal(t, validDid, participant.Did)
 	require.NotZero(t, participant.CorporationId)
-	// [MOD-PP-MSG-7-3] spec v4 draft 13: participant.type is hardcoded to ECOSYSTEM.
+	// [MOD-PP-MSG-7-3] spec: participant.type is hardcoded to ECOSYSTEM.
 	require.Equal(t, types.ParticipantRole_ECOSYSTEM, participant.Role)
 	require.Equal(t, uint64(100), participant.ValidationFees)
 	require.Equal(t, uint64(50), participant.IssuanceFees)
@@ -2350,7 +2350,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 	validatorParticipantID, err := k.CreateParticipant(sdkCtx, validatorParticipant)
 	require.NoError(t, err)
 
-	// [MOD-PP-MSG-6-3] Spec v4 draft 13: when op_exp is null (never validated),
+	// [MOD-PP-MSG-6-3] spec: when op_exp is null (never validated),
 	// set op_state to TERMINATED. The participant row is retained.
 	t.Run("Valid cancellation - never validated before", func(t *testing.T) {
 		neverAddr := sdk.AccAddress([]byte("never_val_cancel")).String()
@@ -3857,8 +3857,8 @@ func TestQueryParticipants(t *testing.T) {
 	getSessionResp, err := k.GetParticipantSession(ctx, getSessionReq)
 	require.NoError(t, err)
 	require.NotNil(t, getSessionResp)
-	require.Equal(t, sessionID, getSessionResp.Session.Id)
-	require.NotZero(t, getSessionResp.Session.CorporationId)
+	require.Equal(t, sessionID, getSessionResp.ParticipantSession.Id)
+	require.NotZero(t, getSessionResp.ParticipantSession.CorporationId)
 
 	// Test ListParticipantSessions query
 	listSessionsReq := &types.QueryListParticipantSessionsRequest{
@@ -3867,19 +3867,7 @@ func TestQueryParticipants(t *testing.T) {
 	listSessionsResp, err := k.ListParticipantSessions(ctx, listSessionsReq)
 	require.NoError(t, err)
 	require.NotNil(t, listSessionsResp)
-	require.GreaterOrEqual(t, len(listSessionsResp.Sessions), 1) // At least the one we created
-
-	// Test FindParticipantsWithDID query
-	findParticipantDIDReq := &types.QueryFindParticipantsWithDIDRequest{
-		Did:      validDid,
-		Role:     uint32(types.ParticipantRole_ISSUER),
-		SchemaId: 1,
-	}
-	findParticipantDIDResp, err := k.FindParticipantsWithDID(ctx, findParticipantDIDReq)
-	require.NoError(t, err)
-	require.NotNil(t, findParticipantDIDResp)
-	require.Equal(t, 1, len(findParticipantDIDResp.Participants)) // Should find only the issuer participant
-	require.Equal(t, issuerParticipantID, findParticipantDIDResp.Participants[0].Id)
+	require.GreaterOrEqual(t, len(listSessionsResp.ParticipantSessions), 1) // At least the one we created
 
 	// Test FindBeneficiaries query
 	findBenefReq := &types.QueryFindBeneficiariesRequest{
@@ -4805,7 +4793,7 @@ func TestCreateRootParticipant(t *testing.T) {
 				require.NoError(t, err)
 				require.NotNil(t, resp)
 
-				// [MOD-PP-MSG-7-3] verify created participant per spec v4 draft 13:
+				// [MOD-PP-MSG-7-3] verify created participant per spec:
 				// participant.type is hardcoded to ECOSYSTEM, and participant.vs_operator is not set by this message.
 				participant, err := k.GetParticipantByID(sdkCtx, resp.Id)
 				require.NoError(t, err)
@@ -5699,7 +5687,7 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 }
 
 // =============================================================================
-// VSOA wiring (spec v4-rc2): MSG-1 creates a disabled record via MOD-DE-MSG-5;
+// VSOA wiring: MSG-1 creates a disabled record via MOD-DE-MSG-5;
 // MSG-3 activates it via MOD-DE-MSG-9. These assert the new DelegationKeeper.
 // =============================================================================
 

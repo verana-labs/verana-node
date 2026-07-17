@@ -48,3 +48,6 @@ docs/audit/
 .claude-agents/audit/
 .claude
 journey_results/
+
+# Agent / planning scratch (never commit)
+docs/audit/

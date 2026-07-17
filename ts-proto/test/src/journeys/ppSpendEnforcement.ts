@@ -78,7 +78,7 @@ async function reGrantWithSpendLimit(
   const innerMsgValue = MsgGrantOperatorAuthorization.encode(
     MsgGrantOperatorAuthorization.fromPartial({
       corporation,
-      operator: "",
+      operator: corporation,
       grantee,
       msgTypes: GRANT_MSG_TYPES,
       withFeegrant: false,

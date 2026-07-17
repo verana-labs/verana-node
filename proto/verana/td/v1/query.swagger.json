@@ -156,7 +156,8 @@
       "type": "object",
       "properties": {
         "share": {
-          "type": "string"
+          "type": "string",
+          "title": "Field 1 (\"corporation\", account string) and field 4 (\"claimable\") are"
         },
         "deposit": {
           "type": "string",

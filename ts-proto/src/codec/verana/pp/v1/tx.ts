@@ -51,6 +51,7 @@ export interface MsgStartParticipantOP {
     | undefined;
   /** vs_operator: the account of the Verifiable Service (optional) */
   vsOperator: string;
+  /** vs_operator_authz_msg_types: presence triggers VSOA record creation. */
   vsOperatorAuthzMsgTypes: string[];
   vsOperatorAuthzSpendLimit: Coin[];
   vsOperatorAuthzWithFeegrant: boolean;
@@ -65,7 +66,7 @@ export interface MsgStartParticipantOPResponse {
 
 /** MsgRenewParticipantOP represents a message to renew a participant onboarding process */
 export interface MsgRenewParticipantOP {
-  /** [MOD-PP-MSG-2-1] Spec v4 parameters: corporation, operator, id. */
+  /** [MOD-PP-MSG-2-1] spec parameters: corporation, operator, id. */
   corporation: string;
   operator: string;
   /** ID of the participant to renew */
@@ -115,7 +116,7 @@ export interface MsgCancelParticipantOPLastRequestResponse {
 
 export interface MsgCreateRootParticipant {
   /**
-   * [MOD-PP-MSG-7-1] Spec v4-rc2 parameters.
+   * [MOD-PP-MSG-7-1] spec parameters.
    * participant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3].
    */
   corporation: string;
@@ -127,7 +128,7 @@ export interface MsgCreateRootParticipant {
   validationFees: number;
   issuanceFees: number;
   verificationFees: number;
-  /** vs_operator: the account of the Verifiable Service (optional, spec v4-rc2). */
+  /** vs_operator: the account of the Verifiable Service (optional, spec). */
   vsOperator: string;
   /**
    * vs_operator_authz_msg_types: presence triggers VSOA record creation; MUST be a
@@ -196,7 +197,10 @@ export interface MsgSlashParticipantTrustDeposit {
   operator: string;
   id: number;
   amount: number;
-  /** [MOD-PP-MSG-12-1] reason for the slash (mandatory per spec v4) */
+  /**
+   * reason for the slash. Implementation-defined: MOD-PP-MSG-12-1 defines no
+   * such parameter; it is recorded on the slash event only.
+   */
   reason: string;
 }
 
@@ -224,6 +228,7 @@ export interface MsgSelfCreateParticipant {
   validationFees: number;
   /** vs_operator: the account of the Verifiable Service (optional) */
   vsOperator: string;
+  /** vs_operator_authz_msg_types: presence triggers VSOA record creation. */
   vsOperatorAuthzMsgTypes: string[];
   vsOperatorAuthzSpendLimit: Coin[];
   vsOperatorAuthzWithFeegrant: boolean;

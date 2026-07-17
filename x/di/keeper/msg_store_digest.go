@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
 
-	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/di/types"
@@ -15,13 +15,18 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-DI-MSG-1-2-1] Basic checks — ValidateBasic already covers address
-	// and digest-not-empty validation.
-
-	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK] Verify operator authorization
-	if ms.delegationKeeper == nil {
-		return nil, types.ErrDelegationKeeperNil
+	// [MOD-DI-MSG-1-2-1] digest validation, matching the module-call path.
+	if err := types.ValidateDigestString(msg.Digest); err != nil {
+		return nil, err
 	}
+
+	// [AUTHZ-CHECK-5] Resolve the corporation first: AUTHZ-CHECK-1 consumes the
+	// co it resolves, and an unregistered corporation must surface as such.
+	if _, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority); err != nil {
+		return nil, err
+	}
+
+	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK-1] Verify operator authorization.
 	if err := ms.delegationKeeper.CheckOperatorAuthorization(
 		ctx,
 		msg.Authority,
@@ -32,80 +37,68 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
-	// [AUTHZ-CHECK-5] Signing authority account MUST be a registered Corporation.
-	if _, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority); err != nil {
+	// [MOD-DI-MSG-1-3] A duplicate digest is an idempotent no-op (returns success).
+	if has, err := ms.Keeper.Digests.Has(ctx, msg.Digest); err != nil {
 		return nil, err
-	}
-
-	// [MOD-DI-MSG-1-3] Execution — prevent duplicate (would overwrite created timestamp)
-	if has, _ := ms.Keeper.Digests.Has(ctx, msg.Digest); has {
-		return nil, errorsmod.Wrap(types.ErrDigestAlreadyExists, msg.Digest)
+	} else if has {
+		return &types.MsgStoreDigestResponse{}, nil
 	}
 
 	// [MOD-DI-MSG-1-3] Execution — Create Digest record
 	digest := types.Digest{
-		Digest:          msg.Digest,
-		Created:         now,
-		DigestAlgorithm: msg.DigestAlgorithm,
+		Digest:  msg.Digest,
+		Created: now,
 	}
 
 	if err := ms.Digests.Set(ctx, msg.Digest, digest); err != nil {
 		return nil, fmt.Errorf("failed to store digest: %w", err)
 	}
 
-	// Emit events
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeStoreDigest,
-			sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
-			sdk.NewAttribute(types.AttributeKeyDigest, msg.Digest),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
-		),
-	)
+	emitStoreDigestEvent(ctx, msg.Authority, msg.Operator, msg.Digest, types.AttributeValueSourceMsg, now)
 
 	return &types.MsgStoreDigestResponse{}, nil
 }
 
 // StoreDigestModuleCall is the module-call entry point for [MOD-DI-MSG-1].
 // It can be called directly by the perm module (CreateOrUpdatePermissionSession)
-// with no signer/AUTHZ checks.
-func (k Keeper) StoreDigestModuleCall(ctx context.Context, authority, digest, digestAlgorithm string) error {
+// with no signer/AUTHZ checks. It applies the same digest validation as the Msg
+// path [DI-MIN-2].
+func (k Keeper) StoreDigestModuleCall(ctx context.Context, authority, digest string) error {
 	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
 		return fmt.Errorf("invalid authority address: %w", err)
+	}
+	if err := types.ValidateDigestString(digest); err != nil {
+		return err
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	now := sdkCtx.BlockTime()
 
-	if digest == "" {
-		return types.ErrDigestEmpty
+	// A duplicate digest is an idempotent no-op.
+	if has, err := k.Digests.Has(ctx, digest); err != nil {
+		return err
+	} else if has {
+		return nil
 	}
 
-	// prevent duplicate (would overwrite created timestamp)
-	if has, _ := k.Digests.Has(ctx, digest); has {
-		return errorsmod.Wrap(types.ErrDigestAlreadyExists, digest)
-	}
-
-	d := types.Digest{
-		Digest:          digest,
-		Created:         now,
-		DigestAlgorithm: digestAlgorithm,
-	}
-
-	if err := k.Digests.Set(ctx, digest, d); err != nil {
+	if err := k.Digests.Set(ctx, digest, types.Digest{Digest: digest, Created: now}); err != nil {
 		return fmt.Errorf("failed to store digest: %w", err)
 	}
 
-	// Emit events
-	sdkCtx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeStoreDigest,
-			sdk.NewAttribute(types.AttributeKeyAuthority, authority),
-			sdk.NewAttribute(types.AttributeKeyDigest, digest),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
-		),
-	)
+	emitStoreDigestEvent(sdkCtx, authority, "", digest, types.AttributeValueSourceModuleCall, now)
 
 	return nil
+}
+
+func emitStoreDigestEvent(ctx sdk.Context, corporation, operator, digest, source string, now time.Time) {
+	attrs := []sdk.Attribute{
+		sdk.NewAttribute(types.AttributeKeyCorporation, corporation),
+		sdk.NewAttribute(types.AttributeKeyDigest, digest),
+		sdk.NewAttribute(types.AttributeKeySource, source),
+		sdk.NewAttribute(types.AttributeKeyTimestamp, now.UTC().Format(time.RFC3339Nano)),
+	}
+	if operator != "" {
+		attrs = append(attrs, sdk.NewAttribute(types.AttributeKeyOperator, operator))
+	}
+	ctx.EventManager().EmitEvent(sdk.NewEvent(types.EventTypeStoreDigest, attrs...))
 }

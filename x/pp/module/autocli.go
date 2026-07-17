@@ -76,24 +76,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
-					RpcMethod: "FindParticipantsWithDID",
-					Use:       "find-participants-with-did [did] [role] [schema-id]",
-					Short:     "Find participants with DID",
-					Long:      "Find participants matching the specified DID, type, and schema ID with optional filtering by timestamp",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "did"},
-						{ProtoField: "role"},
-						{ProtoField: "schema_id"},
-					},
-					FlagOptions: map[string]*autocliv1.FlagOptions{
-						"when": {
-							Name:         "when",
-							DefaultValue: "",
-							Usage:        "Filter by validity at specified timestamp (RFC3339 format)",
-						},
-					},
-				},
-				{
 					RpcMethod: "FindBeneficiaries",
 					Use:       "find-beneficiaries",
 					Short:     "Find beneficiary participants in the participant tree",

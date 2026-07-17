@@ -39,6 +39,12 @@ func NewKeeper(
 	if _, err := addressCodec.BytesToString(authority); err != nil {
 		panic(fmt.Sprintf("invalid authority address %s: %s", authority, err))
 	}
+	if delegationKeeper == nil {
+		panic("di: delegation keeper is required")
+	}
+	if coKeeper == nil {
+		panic("di: corporation keeper is required")
+	}
 
 	sb := collections.NewSchemaBuilder(storeService)
 

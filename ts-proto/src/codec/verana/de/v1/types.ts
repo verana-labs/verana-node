@@ -14,7 +14,7 @@ import Long = require("long");
 export const protobufPackage = "verana.de.v1";
 
 /**
- * OperatorAuthorization is the operator-delegation record. Per spec v4-rc2 it is
+ * OperatorAuthorization is the operator-delegation record. Per spec it is
  * keyed by its own uint64 id; (corporation_id, operator) is a unique secondary
  * index.
  */

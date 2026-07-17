@@ -497,15 +497,15 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"verana-labs", "verana", "de", "v1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"verana", "de", "v1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListOperatorAuthorizations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"verana", "de", "v1", "operator-authorizations"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListOperatorAuthorizations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"verana", "de", "v1", "authz", "list"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListVSOperatorAuthorizations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"verana", "de", "v1", "vs-operator-authorizations"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListVSOperatorAuthorizations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"verana", "de", "v1", "vs-authz", "list"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetOperatorAuthorization_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"verana", "de", "v1", "operator-authorizations", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetOperatorAuthorization_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"verana", "de", "v1", "authz", "get", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetVSOperatorAuthorization_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"verana", "de", "v1", "vs-operator-authorizations", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetVSOperatorAuthorization_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"verana", "de", "v1", "vs-authz", "get", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

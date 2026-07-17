@@ -28,10 +28,12 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 			maxOAID = oa.Id
 		}
 	}
-	if maxOAID > 0 {
-		if err := k.OperatorAuthorizationSeq.Set(ctx, maxOAID); err != nil {
-			return fmt.Errorf("failed to seed operator authorization sequence: %w", err)
-		}
+	oaSeq := genState.OperatorAuthorizationSeq
+	if maxOAID > oaSeq {
+		oaSeq = maxOAID
+	}
+	if err := k.OperatorAuthorizationSeq.Set(ctx, oaSeq); err != nil {
+		return fmt.Errorf("failed to seed operator authorization sequence: %w", err)
 	}
 
 	for _, fg := range genState.FeeGrants {
@@ -58,10 +60,12 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 			maxVSOAID = vsoa.Id
 		}
 	}
-	if maxVSOAID > 0 {
-		if err := k.VSOASeq.Set(ctx, maxVSOAID); err != nil {
-			return fmt.Errorf("failed to seed vs operator authorization sequence: %w", err)
-		}
+	vsoaSeq := genState.VsoaSeq
+	if maxVSOAID > vsoaSeq {
+		vsoaSeq = maxVSOAID
+	}
+	if err := k.VSOASeq.Set(ctx, vsoaSeq); err != nil {
+		return fmt.Errorf("failed to seed vs operator authorization sequence: %w", err)
 	}
 
 	return nil
@@ -114,6 +118,13 @@ func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) 
 	}
 	sort.Slice(vsoaList, func(i, j int) bool { return vsoaList[i].Id < vsoaList[j].Id })
 	genesis.VsOperatorAuthorizations = vsoaList
+
+	if genesis.OperatorAuthorizationSeq, err = k.OperatorAuthorizationSeq.Peek(ctx); err != nil {
+		return nil, err
+	}
+	if genesis.VsoaSeq, err = k.VSOASeq.Peek(ctx); err != nil {
+		return nil, err
+	}
 
 	return genesis, nil
 }

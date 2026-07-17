@@ -92,7 +92,10 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 		return nil, fmt.Errorf("failed to execute participant VP: %w", err)
 	}
 
-	corporationID, _ := ms.corpIDFromAccount(ctx, msg.Corporation)
+	corporationID, err := ms.corpIDFromAccount(ctx, msg.Corporation)
+	if err != nil {
+		return nil, err
+	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeStartParticipantOP,
@@ -365,12 +368,10 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 					// ISSUER_GRANTOR: can set 0-1 (100% discount)
 					// Already validated range above
 				} else if applicantParticipant.Role == types.ParticipantRole_ISSUER {
-					// ISSUER in GRANTOR mode: if validator_participant.issuance_fee_discount is defined,
-					// can only set 0 to validator_participant.issuance_fee_discount inclusive
-					if validatorParticipant.IssuanceFeeDiscount > 0 {
-						if msg.IssuanceFeeDiscount > validatorParticipant.IssuanceFeeDiscount {
-							return nil, fmt.Errorf("issuance_fee_discount cannot exceed validator's discount of %d", validatorParticipant.IssuanceFeeDiscount)
-						}
+					// ISSUER in GRANTOR mode: capped at the validator's discount
+					// (a validator discount of 0 permits only 0).
+					if msg.IssuanceFeeDiscount > validatorParticipant.IssuanceFeeDiscount {
+						return nil, fmt.Errorf("issuance_fee_discount cannot exceed validator's discount of %d", validatorParticipant.IssuanceFeeDiscount)
 					}
 				} else {
 					return nil, fmt.Errorf("issuance_fee_discount can only be set on ISSUER_GRANTOR or ISSUER participants in GRANTOR mode")
@@ -400,12 +401,10 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 					// VERIFIER_GRANTOR: can set 0-1 (100% discount)
 					// Already validated range above
 				} else if applicantParticipant.Role == types.ParticipantRole_VERIFIER {
-					// VERIFIER in GRANTOR mode: if validator_participant.verification_fee_discount is defined,
-					// can only set 0 to validator_participant.verification_fee_discount inclusive
-					if validatorParticipant.VerificationFeeDiscount > 0 {
-						if msg.VerificationFeeDiscount > validatorParticipant.VerificationFeeDiscount {
-							return nil, fmt.Errorf("verification_fee_discount cannot exceed validator's discount of %d", validatorParticipant.VerificationFeeDiscount)
-						}
+					// VERIFIER in GRANTOR mode: capped at the validator's discount
+					// (a validator discount of 0 permits only 0).
+					if msg.VerificationFeeDiscount > validatorParticipant.VerificationFeeDiscount {
+						return nil, fmt.Errorf("verification_fee_discount cannot exceed validator's discount of %d", validatorParticipant.VerificationFeeDiscount)
 					}
 				} else {
 					return nil, fmt.Errorf("verification_fee_discount can only be set on VERIFIER_GRANTOR or VERIFIER participants in GRANTOR mode")
@@ -589,7 +588,7 @@ func (ms msgServer) executeCancelParticipantVPLastRequest(ctx sdk.Context, parti
 	participant.Modified = &now
 	participant.OpLastStateChange = &now
 
-	// [MOD-PP-MSG-6-3] spec v4 draft 13:
+	// [MOD-PP-MSG-6-3] spec:
 	//   if op_exp is null (validation never completed), set op_state to TERMINATED
 	//   else set op_state to VALIDATED.
 	terminated := participant.OpExp == nil
@@ -610,7 +609,11 @@ func (ms msgServer) executeCancelParticipantVPLastRequest(ctx sdk.Context, parti
 
 	// Handle current fees if any
 	if participant.OpCurrentFees > 0 {
-		// Transfer escrowed fees back to the applicant
+		// Fees were escrowed in the schema's fee denom (MSG-1/2), so refund in it.
+		cs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, participant.SchemaId)
+		if err != nil {
+			return fmt.Errorf("failed to load credential schema: %w", err)
+		}
 		granteeAddr, err := sdk.AccAddressFromBech32(corpAcct)
 		if err != nil {
 			return fmt.Errorf("invalid grantee address: %w", err)
@@ -620,12 +623,11 @@ func (ms msgServer) executeCancelParticipantVPLastRequest(ctx sdk.Context, parti
 		if err != nil {
 			return err
 		}
-		// Transfer fees from module escrow account to applicant account
 		err = ms.bankKeeper.SendCoinsFromModuleToAccount(
 			ctx,
-			types.ModuleName, // Module escrow account
-			granteeAddr,      // Applicant account
-			sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, currentFeesI64)),
+			types.ModuleName,
+			granteeAddr,
+			sdk.NewCoins(sdk.NewInt64Coin(feeDenomForSchema(cs), currentFeesI64)),
 		)
 		if err != nil {
 			return fmt.Errorf("failed to refund fees: %w", err)
@@ -771,7 +773,7 @@ func (ms msgServer) validateCreateRootParticipantAuthority(ctx sdk.Context, msg 
 }
 
 // [MOD-PP-MSG-7-2-4] Create Root Participant overlap checks.
-// Spec v4 draft 13: find all active participants (not revoked, not slashed,
+// spec: find all active participants (not revoked, not slashed,
 // not repaid) for (schema_id, ECOSYSTEM, corporation). Unlike other overlap
 // checks, validator_participant_id is not checked because ECOSYSTEM participants
 // always have validator_participant_id = NULL.
@@ -814,9 +816,7 @@ func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *type
 }
 
 // [MOD-PP-MSG-7-3] Create Root Participant execution
-// Spec v4 draft 13: participant.type is hardcoded to ECOSYSTEM. vs_operator is not
-// set on root participants; only on participants created via StartParticipantOP or
-// SelfCreateParticipant.
+// spec: participant.type is hardcoded to ECOSYSTEM.
 func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.MsgCreateRootParticipant, now time.Time) (uint64, error) {
 	corporationId, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
@@ -841,6 +841,9 @@ func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.Msg
 		IssuanceFees:     msg.IssuanceFees,
 		VerificationFees: msg.VerificationFees,
 		Deposit:          0,
+		// No operator onboarding: VALIDATED immediately (op_exp stays nil).
+		OpState:           types.OnboardingState_VALIDATED,
+		OpLastStateChange: &now,
 	}
 
 	id, err := ms.Keeper.CreateParticipant(ctx, participant)
@@ -909,10 +912,8 @@ func (ms msgServer) SetParticipantEffectiveUntil(goCtx context.Context, msg *typ
 
 	// [MOD-PP-MSG-8-3] Sync the VSOA record expiration to the new effective_until
 	// via [MOD-DE-MSG-9]. No-op if no record exists.
-	if msg.EffectiveUntil != nil {
-		if err := ms.delegationKeeper.UpdateVSOperatorAuthorizationExpiration(ctx, applicantParticipant.Id, *msg.EffectiveUntil); err != nil {
-			return nil, fmt.Errorf("failed to update VS operator authorization expiration: %w", err)
-		}
+	if err := ms.delegationKeeper.UpdateVSOperatorAuthorizationExpiration(ctx, applicantParticipant.Id, msg.EffectiveUntil); err != nil {
+		return nil, fmt.Errorf("failed to update VS operator authorization expiration: %w", err)
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -962,51 +963,66 @@ func (ms msgServer) validateAdjustParticipantAdvancedChecks(ctx sdk.Context, msg
 	if err != nil {
 		return err
 	}
-	// 1. ECOSYSTEM participants
-	if applicantParticipant.ValidatorParticipantId == 0 && applicantParticipant.Role == types.ParticipantRole_ECOSYSTEM {
-		// applicant_participant.authority MUST be msg.Corporation else MUST abort
+	// 1. ECOSYSTEM root participants (no validator).
+	if applicantParticipant.ValidatorParticipantId == 0 {
+		if applicantParticipant.Role != types.ParticipantRole_ECOSYSTEM || applicantParticipant.CorporationId != msgCorpId {
+			return fmt.Errorf("authority is not the participant authority")
+		}
+		return nil
+	}
+
+	// Participants with a validator: load and validate it.
+	validatorParticipant, err := ms.Keeper.GetParticipantByID(ctx, applicantParticipant.ValidatorParticipantId)
+	if err != nil {
+		return fmt.Errorf("validator participant not found: %w", err)
+	}
+	if err := IsValidParticipant(validatorParticipant, now); err != nil {
+		return fmt.Errorf("validator participant is not valid: %w", err)
+	}
+
+	// Cases 2 vs 3: discriminate by onboarding mode, not validator role, so an
+	// ecosystem-validated participant isn't misclassified as self-created (which
+	// would let the owner extend effective_until past op_exp).
+	selfCreated, err := ms.isSelfCreatedParticipant(ctx, applicantParticipant)
+	if err != nil {
+		return err
+	}
+
+	// 2. Self-created participants: the owner corporation controls adjustment.
+	if selfCreated {
 		if applicantParticipant.CorporationId != msgCorpId {
 			return fmt.Errorf("authority is not the participant authority")
 		}
 		return nil
 	}
 
-	// For participants with validator_participant_id, we need to distinguish between cases 2 and 3
-	if applicantParticipant.ValidatorParticipantId != 0 {
-		// Load validator_participant from applicant_participant.validator_participant_id
-		validatorParticipant, err := ms.Keeper.GetParticipantByID(ctx, applicantParticipant.ValidatorParticipantId)
-		if err != nil {
-			return fmt.Errorf("validator participant not found: %w", err)
-		}
-
-		// validator_participant MUST be a valid participant
-		if err := IsValidParticipant(validatorParticipant, now); err != nil {
-			return fmt.Errorf("validator participant is not valid: %w", err)
-		}
-
-		// 2. Self-created participants (validator is ECOSYSTEM)
-		if validatorParticipant.Role == types.ParticipantRole_ECOSYSTEM {
-			// applicant_participant.authority MUST be msg.Corporation else MUST abort
-			if applicantParticipant.CorporationId != msgCorpId {
-				return fmt.Errorf("authority is not the participant authority")
-			}
-			return nil
-		}
-
-		// 3. VP managed participants
-		// effective_until MUST be lower or equal to applicant_participant.op_exp else MUST abort
-		if applicantParticipant.OpExp != nil && msg.EffectiveUntil.After(*applicantParticipant.OpExp) {
-			return fmt.Errorf("effective_until cannot be after validation expiration")
-		}
-
-		// validator_participant.authority MUST be msg.Corporation else MUST abort
-		if validatorParticipant.CorporationId != msgCorpId {
-			return fmt.Errorf("authority is not the validator participant authority")
-		}
-		return nil
+	// 3. Operator-managed participants: the validator corporation controls
+	// adjustment, capped by the operator expiration.
+	if applicantParticipant.OpExp != nil && msg.EffectiveUntil.After(*applicantParticipant.OpExp) {
+		return fmt.Errorf("effective_until cannot be after validation expiration")
 	}
+	if validatorParticipant.CorporationId != msgCorpId {
+		return fmt.Errorf("authority is not the validator participant authority")
+	}
+	return nil
+}
 
-	return fmt.Errorf("invalid participant configuration for adjustment")
+// isSelfCreatedParticipant reports whether the participant was self-created
+// (MSG-14), which is only possible when the schema's onboarding mode for its
+// role is OPEN.
+func (ms msgServer) isSelfCreatedParticipant(ctx sdk.Context, p types.Participant) (bool, error) {
+	cs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, p.SchemaId)
+	if err != nil {
+		return false, fmt.Errorf("credential schema not found: %w", err)
+	}
+	switch p.Role {
+	case types.ParticipantRole_ISSUER:
+		return cs.IssuerOnboardingMode == credentialschematypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN, nil
+	case types.ParticipantRole_VERIFIER:
+		return cs.VerifierOnboardingMode == credentialschematypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN, nil
+	default:
+		return false, nil
+	}
 }
 
 // [MOD-PP-MSG-8-2-4] Overlap checks for SetParticipantEffectiveUntil
@@ -1113,12 +1129,10 @@ func (ms msgServer) RevokeParticipant(goCtx context.Context, msg *types.MsgRevok
 		return nil, fmt.Errorf("failed to revoke participant: %w", err)
 	}
 
-	// [MOD-PP-MSG-9-3] If applicant_participant.type is ISSUER or VERIFIER:
-	// Delete authorization for applicant_participant.vs_operator
-	if applicantParticipant.Role == types.ParticipantRole_ISSUER || applicantParticipant.Role == types.ParticipantRole_VERIFIER {
-		if err := ms.revokeVSOperatorAuthorization(ctx, applicantParticipant); err != nil {
-			return nil, fmt.Errorf("failed to revoke VS operator authorization: %w", err)
-		}
+	// [MOD-PP-MSG-9-3] Revoke any VSOA record for this participant (no-op if none);
+	// applies to every role, not just ISSUER/VERIFIER.
+	if err := ms.revokeVSOperatorAuthorization(ctx, applicantParticipant); err != nil {
+		return nil, fmt.Errorf("failed to revoke VS operator authorization: %w", err)
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -1194,7 +1208,9 @@ func (ms msgServer) checkValidatorAncestorOption(ctx sdk.Context, authority stri
 		return false
 	}
 
-	for currentValidatorParticipantId != 0 {
+	visited := map[uint64]bool{}
+	for currentValidatorParticipantId != 0 && !visited[currentValidatorParticipantId] {
+		visited[currentValidatorParticipantId] = true
 		// load validator_participant from validator_participant.validator_participant_id
 		validatorParticipant, err := ms.Keeper.GetParticipantByID(ctx, currentValidatorParticipantId)
 		if err != nil {
@@ -1244,7 +1260,10 @@ func (ms msgServer) executeRevokeParticipant(ctx sdk.Context, participant types.
 		if err != nil {
 			return err
 		}
-		depositI64 := int64(participant.Deposit)
+		depositI64, err := uint64ToInt64(participant.Deposit, "revoke_release_deposit")
+		if err != nil {
+			return err
+		}
 		if err := ms.trustDeposit.AdjustTrustDeposit(ctx, corpAcct, -depositI64, "participant_revoke_release_deposit"); err != nil {
 			return fmt.Errorf("failed to release trust deposit on revocation: %w", err)
 		}
@@ -1322,8 +1341,9 @@ func (ms msgServer) CreateOrUpdateParticipantSession(goCtx context.Context, msg 
 		return nil, err
 	}
 
-	// [AUTHZ-CHECK-3] step 5: debit the record spend_limit by the native-denom
-	// outflow (same record as the check; primary = verifier else issuer).
+	// [AUTHZ-CHECK-3] step 5: debit the record spend_limit per matching denom.
+	// plan.required is the full outflow across every denom, so COIN-priced fees
+	// also count (primary = verifier else issuer).
 	primaryParticipantID := msg.IssuerParticipantId
 	if msg.VerifierParticipantId != 0 {
 		primaryParticipantID = msg.VerifierParticipantId
@@ -1333,8 +1353,7 @@ func (ms msgServer) CreateOrUpdateParticipantSession(goCtx context.Context, msg 
 		return nil, err
 	}
 	if err := ms.delegationKeeper.ConsumeRecordSpend(
-		ctx, primaryCorpID, msg.Operator, primaryParticipantID,
-		sdk.NewCoins(sdk.NewCoin(types.BondDenom, plan.required.AmountOf(types.BondDenom))),
+		ctx, primaryCorpID, msg.Operator, primaryParticipantID, plan.required,
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
@@ -1408,12 +1427,10 @@ func (ms msgServer) SlashParticipantTrustDeposit(goCtx context.Context, msg *typ
 		return nil, fmt.Errorf("failed to slash participant trust deposit: %w", err)
 	}
 
-	// [MOD-PP-MSG-12-3] If applicant_participant.type is ISSUER or VERIFIER:
-	// Delete authorization for applicant_participant.vs_operator
-	if applicantParticipant.Role == types.ParticipantRole_ISSUER || applicantParticipant.Role == types.ParticipantRole_VERIFIER {
-		if err := ms.revokeVSOperatorAuthorization(ctx, applicantParticipant); err != nil {
-			return nil, fmt.Errorf("failed to revoke VS operator authorization: %w", err)
-		}
+	// [MOD-PP-MSG-12-3] Revoke any VSOA record for this participant (no-op if none),
+	// regardless of role.
+	if err := ms.revokeVSOperatorAuthorization(ctx, applicantParticipant); err != nil {
+		return nil, fmt.Errorf("failed to revoke VS operator authorization: %w", err)
 	}
 
 	// Emit event
@@ -1456,7 +1473,7 @@ func (ms msgServer) validateSlashParticipantBasicChecks(ctx sdk.Context, msg *ty
 }
 
 // [MOD-PP-MSG-12-2-2] Slash Participant Trust Deposit validator participants.
-// NOTE: Spec v4 draft 13 calls for governance-only slashing. Migrating the test
+// NOTE: spec calls for governance-only slashing. Migrating the test
 // surface to the governance-mediated flow is tracked as a follow-up; for now
 // we retain the validator-ancestor / TR-controller check established by prior
 // implementations so operator-signed slashing remains testable.
@@ -1536,7 +1553,7 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 		return nil, fmt.Errorf("authority is not the owner of this participant")
 	}
 
-	// [MOD-PP-MSG-13-2] spec v4 draft 13: "MUST abort if participant not exist with slashed not null".
+	// [MOD-PP-MSG-13-2] spec: "MUST abort if participant not exist with slashed not null".
 	// Guard on the slashed timestamp (entity-level marker), not on the deposit amount.
 	if applicantParticipant.Slashed == nil {
 		return nil, fmt.Errorf("participant has no slashed timestamp; nothing to repay")
@@ -1628,6 +1645,10 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	}
 	if validatorParticipant.EffectiveUntil != nil && !now.Before(*validatorParticipant.EffectiveUntil) {
 		return nil, fmt.Errorf("validator participant is expired")
+	}
+	// Must be active or future: effective_from set (an unset effective_from is INACTIVE).
+	if validatorParticipant.EffectiveFrom == nil {
+		return nil, fmt.Errorf("validator participant is not active or future")
 	}
 
 	// [MOD-PP-MSG-14-2-1] effective_from is optional; if provided it MUST be in
@@ -1724,6 +1745,9 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 		IssuanceFees:           0,
 		VerificationFees:       0,
 		Deposit:                0,
+		// OPEN mode: validated immediately, no operator onboarding (op_exp stays nil).
+		OpState:           types.OnboardingState_VALIDATED,
+		OpLastStateChange: &now,
 	}
 
 	// Set fees only for ISSUER participants as per spec

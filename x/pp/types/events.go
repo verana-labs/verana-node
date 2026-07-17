@@ -38,6 +38,8 @@ const (
 	AttributeKeyEffectiveUntil           = "effective_until"
 	AttributeKeyIssuanceFees             = "issuance_fees"
 	AttributeKeyVerificationFees         = "verification_fees"
+	AttributeKeyIssuanceFeeDiscount      = "issuance_fee_discount"
+	AttributeKeyVerificationFeeDiscount  = "verification_fee_discount"
 	AttributeKeyOpExp                    = "op_exp"
 
 	EventTypeCancelParticipantOPLastRequest = "cancel_participant_op_last_request"

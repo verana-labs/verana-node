@@ -37,7 +37,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "[MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization\nto a grantee on behalf of a corporation.\n\nSigner semantics (spec draft 13 \"corporation + operator OR group proposal\"):\n- Primary signer is `corporation` — either a group policy address (group\n  proposal path) or a plain account that delegates to the corporation.\n- When `operator` is non-empty, the AUTHZ-CHECK in the handler verifies\n  the operator's delegation from the corporation covers this message type.\n- When `operator` is empty, the corporation is acting alone (group proposal\n  path) and AUTHZ-CHECK is skipped.\nCosmos SDK requires a single `cosmos.msg.v1.signer` field so the dual-signer\nsemantics from the spec are enforced at the handler level, not at ante.",
+            "description": "[MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization\nto a grantee on behalf of a corporation.\n\nSigner semantics (spec \"corporation + operator OR group proposal\"):\nThe signer is `operator` (consistent with the other delegable modules).\n- Group-proposal path: the corporation's group policy account executes the\n  message, so `operator` equals `corporation` (the policy_address) and the\n  handler skips AUTHZ-CHECK-1 (the corporation is acting alone).\n- Operator path: an individual `operator` signs; the handler resolves the\n  corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to\n  verify the operator's delegation covers this message type.",
             "in": "body",
             "required": true,
             "schema": {
@@ -165,11 +165,11 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "corporation is the group account granting the authorization."
+          "description": "corporation is the policy_address of the corporation granting the authorization."
         },
         "operator": {
           "type": "string",
-          "description": "operator is the optional account authorized by the corporation to run this\nMsg on its behalf. Empty when the message is signed directly by the\ncorporation via a group proposal."
+          "description": "operator is the signer: an authorized operator, or the corporation's\npolicy_address itself on the group-proposal path."
         },
         "grantee": {
           "type": "string",
@@ -216,7 +216,7 @@
           "description": "feegrant_spend_limit_period is the optional reset period for\nfeegrant_spend_limit. Ignored if with_feegrant is false."
         }
       },
-      "description": "[MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization\nto a grantee on behalf of a corporation.\n\nSigner semantics (spec draft 13 \"corporation + operator OR group proposal\"):\n- Primary signer is `corporation` — either a group policy address (group\n  proposal path) or a plain account that delegates to the corporation.\n- When `operator` is non-empty, the AUTHZ-CHECK in the handler verifies\n  the operator's delegation from the corporation covers this message type.\n- When `operator` is empty, the corporation is acting alone (group proposal\n  path) and AUTHZ-CHECK is skipped.\nCosmos SDK requires a single `cosmos.msg.v1.signer` field so the dual-signer\nsemantics from the spec are enforced at the handler level, not at ante."
+      "description": "[MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization\nto a grantee on behalf of a corporation.\n\nSigner semantics (spec \"corporation + operator OR group proposal\"):\nThe signer is `operator` (consistent with the other delegable modules).\n- Group-proposal path: the corporation's group policy account executes the\n  message, so `operator` equals `corporation` (the policy_address) and the\n  handler skips AUTHZ-CHECK-1 (the corporation is acting alone).\n- Operator path: an individual `operator` signs; the handler resolves the\n  corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to\n  verify the operator's delegation covers this message type."
     },
     "verana.de.v1.MsgGrantOperatorAuthorizationResponse": {
       "type": "object",
@@ -227,11 +227,11 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "corporation is the group account revoking the authorization."
+          "description": "corporation is the policy_address of the corporation revoking the authorization."
         },
         "operator": {
           "type": "string",
-          "description": "operator is the optional account authorized by the corporation to run this\nMsg on its behalf."
+          "description": "operator is the signer: an authorized operator, or the corporation's\npolicy_address itself on the group-proposal path."
         },
         "grantee": {
           "type": "string",

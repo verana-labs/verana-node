@@ -57,7 +57,10 @@ export interface MsgSlashTrustDeposit {
   corporationId: number;
   /** deposit is the deposit amount to slash (in base denom) */
   deposit: string;
-  /** [MOD-TD-MSG-5-1] reason for the slash (mandatory per spec v4 draft 13) */
+  /**
+   * reason for the slash. Implementation-defined: MOD-TD-MSG-5-1 defines no
+   * such parameter; it is recorded on the slash event only.
+   */
   reason: string;
 }
 

@@ -84,6 +84,7 @@ func (k Keeper) GrantFeeAllowance(
 		}
 		var inner feegrant.FeeAllowanceI
 		if len(spendLimit) > 0 && period != nil {
+			// [MOD-DE-MSG-1-4] No absolute expiration: auto-renews until revoked.
 			inner = &feegrant.PeriodicAllowance{
 				Period:           *period,
 				PeriodSpendLimit: spendLimit,
@@ -136,11 +137,13 @@ func (k Keeper) RevokeFeeAllowance(goCtx context.Context, grantorCorporationID u
 
 	// Revoke the on-chain x/feegrant allowance if present (MOD-DE-MSG-2-4).
 	if fk := k.feegrantKeeper(); fk != nil {
-		if granter, granteeAddr, err := k.feeGrantAddrs(ctx, grantorCorporationID, grantee); err == nil {
-			if _, gerr := fk.GetAllowance(ctx, granter, granteeAddr); gerr == nil {
-				if err := fk.RevokeAllowance(ctx, granter, granteeAddr); err != nil {
-					return err
-				}
+		granter, granteeAddr, err := k.feeGrantAddrs(ctx, grantorCorporationID, grantee)
+		if err != nil {
+			return err
+		}
+		if _, gerr := fk.GetAllowance(ctx, granter, granteeAddr); gerr == nil {
+			if err := fk.RevokeAllowance(ctx, granter, granteeAddr); err != nil {
+				return err
 			}
 		}
 	}

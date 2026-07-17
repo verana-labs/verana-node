@@ -51,24 +51,22 @@ message MsgUpdateParamsResponse {}
 // [MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization
 // to a grantee on behalf of a corporation.
 //
-// Signer semantics (spec draft 13 "corporation + operator OR group proposal"):
-// - Primary signer is `corporation` — either a group policy address (group
-//   proposal path) or a plain account that delegates to the corporation.
-// - When `operator` is non-empty, the AUTHZ-CHECK in the handler verifies
-//   the operator's delegation from the corporation covers this message type.
-// - When `operator` is empty, the corporation is acting alone (group proposal
-//   path) and AUTHZ-CHECK is skipped.
-// Cosmos SDK requires a single `cosmos.msg.v1.signer` field so the dual-signer
-// semantics from the spec are enforced at the handler level, not at ante.
+// Signer semantics (spec "corporation + operator OR group proposal"):
+// The signer is `operator` (consistent with the other delegable modules).
+// - Group-proposal path: the corporation's group policy account executes the
+//   message, so `operator` equals `corporation` (the policy_address) and the
+//   handler skips AUTHZ-CHECK-1 (the corporation is acting alone).
+// - Operator path: an individual `operator` signs; the handler resolves the
+//   corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to
+//   verify the operator's delegation covers this message type.
 message MsgGrantOperatorAuthorization {
-  option (cosmos.msg.v1.signer) = "corporation";
+  option (cosmos.msg.v1.signer) = "operator";
   option (amino.name) = "verana/x/de/MsgGrantOpAuthorization";
 
-  // corporation is the group account granting the authorization.
+  // corporation is the policy_address of the corporation granting the authorization.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the optional account authorized by the corporation to run this
-  // Msg on its behalf. Empty when the message is signed directly by the
-  // corporation via a group proposal.
+  // operator is the signer: an authorized operator, or the corporation's
+  // policy_address itself on the group-proposal path.
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // grantee is the account that receives the authorization from authority.
   string grantee = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -115,13 +113,13 @@ message MsgGrantOperatorAuthorizationResponse {}
 // authorization for a grantee on behalf of a corporation. Same signer
 // semantics as MsgGrantOperatorAuthorization (see above).
 message MsgRevokeOperatorAuthorization {
-  option (cosmos.msg.v1.signer) = "corporation";
+  option (cosmos.msg.v1.signer) = "operator";
   option (amino.name) = "verana/x/de/MsgRevokeOpAuthorization";
 
-  // corporation is the group account revoking the authorization.
+  // corporation is the policy_address of the corporation revoking the authorization.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the optional account authorized by the corporation to run this
-  // Msg on its behalf.
+  // operator is the signer: an authorized operator, or the corporation's
+  // policy_address itself on the group-proposal path.
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // grantee is the account whose authorization is being revoked.
   string grantee = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];

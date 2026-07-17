@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"time"
 
 	"cosmossdk.io/collections"
 	errorsmod "cosmossdk.io/errors"
@@ -62,6 +63,9 @@ func (ms msgServer) GrantExchangeRateAuthorization(ctx context.Context, msg *typ
 			types.EventTypeGrantExchangeRateAuthz,
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.XrId)),
 			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyExpiration, authz.Expiration.UTC().Format(time.RFC3339Nano)),
+			sdk.NewAttribute(types.AttributeKeyMinInterval, fmt.Sprintf("%d", authz.MinInterval)),
+			sdk.NewAttribute(types.AttributeKeyMaxDeviationBps, fmt.Sprintf("%d", authz.MaxDeviationBps)),
 		),
 	)
 

@@ -122,20 +122,19 @@ func (k Keeper) CreateParticipant(ctx sdk.Context, participant types.Participant
 	return id, nil
 }
 
-// getNextParticipantID gets the next available participant ID
+// getNextParticipantID returns the next id to allocate. The counter stores
+// next-id (not last-id) so it matches the next_participant_id genesis field.
 func (k Keeper) getNextParticipantID(ctx sdk.Context) (uint64, error) {
 	id, err := k.ParticipantCounter.Get(ctx)
-	if err != nil {
-		id = 0
+	if err != nil || id == 0 {
+		id = 1
 	}
 
-	nextID := id + 1
-	err = k.ParticipantCounter.Set(ctx, nextID)
-	if err != nil {
+	if err := k.ParticipantCounter.Set(ctx, id+1); err != nil {
 		return 0, fmt.Errorf("failed to set participant counter: %w", err)
 	}
 
-	return nextID, nil
+	return id, nil
 }
 
 func (k Keeper) UpdateParticipant(ctx sdk.Context, participant types.Participant) error {
@@ -161,10 +160,9 @@ func IsValidParticipant(participant types.Participant, checkTime time.Time) erro
 		return fmt.Errorf("participant is slashed since %v", participant.Slashed)
 	}
 
-	// Check if participant is revoked (REVOKED state)
-	// Spec: "else if `revoked` is lower than now(), => `participant_state` is `REVOKED`"
-	// This means revoked < now(), so we check checkTime.After(*participant.Revoked)
-	if participant.Revoked != nil && checkTime.After(*participant.Revoked) {
+	// Check if participant is revoked (REVOKED state). Glossary: an active
+	// participant has revoked == null, so a revocation set this block also aborts.
+	if participant.Revoked != nil {
 		return fmt.Errorf("participant is revoked since %v", participant.Revoked)
 	}
 

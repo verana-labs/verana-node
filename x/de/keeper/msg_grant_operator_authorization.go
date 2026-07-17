@@ -18,17 +18,6 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 
 	// [MOD-DE-MSG-3-2] Basic checks (stateful).
 
-	// [AUTHZ-CHECK-1] Verify operator authorization for this (corporation, operator) pair.
-	if err := ms.CheckOperatorAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Operator,
-		"/verana.de.v1.MsgGrantOperatorAuthorization",
-		now,
-	); err != nil {
-		return nil, err
-	}
-
 	// [AUTHZ-CHECK-5] Signing corporation account MUST be a registered Corporation;
 	// resolve it to co.id.
 	co, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
@@ -36,11 +25,23 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 		return nil, err
 	}
 
-	// [MOD-DE-MSG-3] Self-grant privilege escalation guard. An operator invoking
-	// this method cannot grant itself new msg_types. Self-grants are only
-	// permitted via a group proposal (operator == "").
-	if msg.Operator != "" && msg.Grantee == msg.Operator {
-		return nil, fmt.Errorf("operator cannot grant authorization to itself; use a group proposal")
+	// [AUTHZ-CHECK-1] The operator is the signer. When it equals the corporation
+	// policy_address the corporation is acting alone (group proposal) and the
+	// check is skipped; otherwise the operator's delegation MUST cover this msg.
+	if msg.Operator != msg.Corporation {
+		if err := ms.CheckOperatorAuthorization(
+			ctx,
+			msg.Corporation,
+			msg.Operator,
+			"/verana.de.v1.MsgGrantOperatorAuthorization",
+			now,
+		); err != nil {
+			return nil, err
+		}
+		// [MOD-DE-MSG-3] An operator cannot grant itself new msg_types (escalation).
+		if msg.Grantee == msg.Operator {
+			return nil, fmt.Errorf("operator cannot grant authorization to itself; use a group proposal")
+		}
 	}
 
 	// Expiration must be in the future if specified.
@@ -90,7 +91,11 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 		SpendLimit:     msg.AuthzSpendLimit,
 		RemainingSpend: msg.AuthzSpendLimit,
 		Expiration:     msg.Expiration,
-		Period:         msg.AuthzSpendLimitPeriod,
+	}
+	// period is ignored without a spend limit; storing it otherwise would make
+	// the authorization auto-renew its expiration forever.
+	if len(msg.AuthzSpendLimit) > 0 {
+		oa.Period = msg.AuthzSpendLimitPeriod
 	}
 	if err := ms.OperatorAuthorizations.Set(ctx, oaID, oa); err != nil {
 		return nil, fmt.Errorf("failed to set OperatorAuthorization: %w", err)
@@ -105,6 +110,11 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 			return nil, fmt.Errorf("failed to revoke fee allowance: %w", err)
 		}
 	} else {
+		// period is ignored when feegrant_spend_limit is not set (MOD-DE-MSG-3-2).
+		feegrantPeriod := msg.FeegrantSpendLimitPeriod
+		if len(msg.FeegrantSpendLimit) == 0 {
+			feegrantPeriod = nil
+		}
 		if err := ms.GrantFeeAllowance(
 			ctx,
 			co.Id,
@@ -112,7 +122,7 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 			msg.MsgTypes,
 			msg.Expiration,
 			msg.FeegrantSpendLimit,
-			msg.FeegrantSpendLimitPeriod,
+			feegrantPeriod,
 		); err != nil {
 			return nil, fmt.Errorf("failed to grant fee allowance: %w", err)
 		}

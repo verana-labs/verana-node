@@ -14,12 +14,13 @@ option go_package = "github.com/verana-labs/verana-node/x/di/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/verana-labs/verana/di/v1/params";
+    option (google.api.http).get = "/verana/di/v1/params";
   }
 
-  // [MOD-DI-QRY-1] GetDigest returns a stored digest by its digest string.
+  // [MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a
+  // query-string parameter (not a path segment) so SRI base64 (/, +, =) is safe.
   rpc GetDigest(QueryGetDigestRequest) returns (QueryGetDigestResponse) {
-    option (google.api.http).get = "/verana/di/v1/get/{digest}";
+    option (google.api.http).get = "/verana/di/v1/get";
   }
 }
 

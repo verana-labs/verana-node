@@ -54,57 +54,6 @@
         ]
       }
     },
-    "/verana/pp/v1/find_with_did": {
-      "get": {
-        "operationId": "Query_FindParticipantsWithDID",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.pp.v1.QueryFindParticipantsWithDIDResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "did",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "role",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "schema_id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "when",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "date-time"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
-    },
     "/verana/pp/v1/get/{id}": {
       "get": {
         "operationId": "Query_GetParticipant",
@@ -129,37 +78,6 @@
             "required": true,
             "type": "string",
             "format": "uint64"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
-    },
-    "/verana/pp/v1/get_session/{id}": {
-      "get": {
-        "operationId": "Query_GetParticipantSession",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.pp.v1.QueryGetParticipantSessionResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "UUID",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "tags": [
@@ -348,6 +266,37 @@
           "Query"
         ]
       }
+    },
+    "/verana/pp/v1/session/get/{id}": {
+      "get": {
+        "operationId": "Query_GetParticipantSession",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.pp.v1.QueryGetParticipantSessionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "UUID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
     }
   },
   "definitions": {
@@ -506,7 +455,7 @@
         "issuance_fee_discount": {
           "type": "string",
           "format": "uint64",
-          "description": "TODO(spec v4): Fee discount should be LegacyDec in [0, 1] per spec.\nCurrently scaled 0..10000 for compatibility; full migration deferred."
+          "description": "TODO: Fee discount should be LegacyDec in [0, 1] per spec.\nCurrently scaled 0..10000 for compatibility; full migration deferred."
         },
         "verification_fee_discount": {
           "type": "string",
@@ -514,7 +463,7 @@
         },
         "vs_operator": {
           "type": "string",
-          "description": "vs_operator is the VS operator account (spec v4-rc2, still used). The former\nper-permission VS-operator-authz config (fields 38-42) moved into the DE\nmodule's VSOperatorAuthorization.records[] per spec v4-rc2."
+          "description": "vs_operator is the VS operator account."
         },
         "corporation_id": {
           "type": "string",
@@ -612,18 +561,6 @@
         }
       }
     },
-    "verana.pp.v1.QueryFindParticipantsWithDIDResponse": {
-      "type": "object",
-      "properties": {
-        "participants": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/verana.pp.v1.Participant"
-          }
-        }
-      }
-    },
     "verana.pp.v1.QueryGetParticipantResponse": {
       "type": "object",
       "properties": {
@@ -635,7 +572,7 @@
     "verana.pp.v1.QueryGetParticipantSessionResponse": {
       "type": "object",
       "properties": {
-        "session": {
+        "participant_session": {
           "$ref": "#/definitions/verana.pp.v1.ParticipantSession"
         }
       }
@@ -643,7 +580,7 @@
     "verana.pp.v1.QueryListParticipantSessionsResponse": {
       "type": "object",
       "properties": {
-        "sessions": {
+        "participant_sessions": {
           "type": "array",
           "items": {
             "type": "object",
