@@ -1,6 +1,7 @@
 syntax = "proto3";
 package verana.pp.v1;
 
+import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
@@ -84,5 +85,5 @@ message ParticipantSessionRecord {
 
 // OptionalUInt64 is a wrapper for optional uint64 values
 message OptionalUInt64 {
-  uint64 value = 1;
+  uint64 value = 1 [(amino.dont_omitempty) = true];
 }
