@@ -1,0 +1,85 @@
+{
+  "verana/x/co/MsgCreateCorporation": {
+    "members": null
+  },
+  "verana/x/co/MsgUpdateCorporation": {},
+  "verana/x/co/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/co/Params": {},
+  "verana/x/cs/MsgArchiveCredentialSchema": {},
+  "verana/x/cs/MsgCreateCredentialSchema": {},
+  "verana/x/cs/MsgCreateSchemaAuthPolicy": {},
+  "verana/x/cs/MsgIncSchemaAuthPolicyVer": {},
+  "verana/x/cs/MsgRevokeSchemaAuthPolicy": {},
+  "verana/x/cs/MsgUpdateCredentialSchema": {},
+  "verana/x/cs/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/cs/Params": {},
+  "verana/x/de/MsgGrantOpAuthorization": {},
+  "verana/x/de/MsgRevokeOpAuthorization": {},
+  "verana/x/de/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/de/Params": {},
+  "verana/x/di/MsgStoreDigest": {},
+  "verana/x/di/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/di/Params": {},
+  "verana/x/ec/MsgArchiveEcosystem": {},
+  "verana/x/ec/MsgCreateEcosystem": {},
+  "verana/x/ec/MsgUpdateEcosystem": {},
+  "verana/x/ec/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/ec/Params": {},
+  "verana/x/gf/MsgAddGovernanceFrameworkDocument": {},
+  "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion": {},
+  "verana/x/gf/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/gf/Params": {},
+  "verana/x/pp/MsgCancelPartOPLastReq": {},
+  "verana/x/pp/MsgCreateOrUpdatePartSess": {},
+  "verana/x/pp/MsgCreateRootParticipant": {
+    "vs_operator_authz_fee_spend_limit": null,
+    "vs_operator_authz_spend_limit": null
+  },
+  "verana/x/pp/MsgRenewParticipantOP": {},
+  "verana/x/pp/MsgRepayPartSlashedTD": {},
+  "verana/x/pp/MsgRevokeParticipant": {},
+  "verana/x/pp/MsgSelfCreateParticipant": {
+    "vs_operator_authz_fee_spend_limit": null,
+    "vs_operator_authz_spend_limit": null
+  },
+  "verana/x/pp/MsgSetPartEffectiveUntil": {},
+  "verana/x/pp/MsgSetPartOPValidated": {},
+  "verana/x/pp/MsgSlashParticipantTD": {},
+  "verana/x/pp/MsgStartParticipantOP": {
+    "vs_operator_authz_fee_spend_limit": null,
+    "vs_operator_authz_spend_limit": null
+  },
+  "verana/x/pp/MsgTriggerResolver": {},
+  "verana/x/pp/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/pp/Params": {},
+  "verana/x/td/MsgReclaimTrustDepositYield": {},
+  "verana/x/td/MsgRepaySlashedTrustDeposit": {},
+  "verana/x/td/MsgSlashTrustDeposit": {},
+  "verana/x/td/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/td/Params": {},
+  "verana/x/xr/MsgCreateExchangeRate": {},
+  "verana/x/xr/MsgGrantXrAuthz": {},
+  "verana/x/xr/MsgRevokeXrAuthz": {},
+  "verana/x/xr/MsgSetExchangeRateState": {},
+  "verana/x/xr/MsgUpdateExchangeRate": {},
+  "verana/x/xr/MsgUpdateParams": {
+    "params": {}
+  },
+  "verana/x/xr/Params": {}
+}

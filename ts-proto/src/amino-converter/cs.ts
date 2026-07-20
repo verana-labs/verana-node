@@ -84,7 +84,7 @@ export const MsgUpdateCredentialSchemaAminoConverter: AminoConverter = {
 
 export const MsgArchiveCredentialSchemaAminoConverter: AminoConverter = {
   aminoType: "verana/x/cs/MsgArchiveCredentialSchema",
-  toAmino: (m: MsgArchiveCredentialSchema) => ({
+  toAmino: (m: MsgArchiveCredentialSchema) => clean({
     corporation: m.corporation ?? "",
     operator: m.operator ?? "",
     id: u64ToStr(m.id),
@@ -124,7 +124,7 @@ export const MsgCreateSchemaAuthorizationPolicyAminoConverter: AminoConverter = 
 
 export const MsgIncreaseActiveSchemaAuthorizationPolicyVersionAminoConverter: AminoConverter = {
   aminoType: "verana/x/cs/MsgIncSchemaAuthPolicyVer",
-  toAmino: (m: MsgIncreaseActiveSchemaAuthorizationPolicyVersion) => ({
+  toAmino: (m: MsgIncreaseActiveSchemaAuthorizationPolicyVersion) => clean({
     corporation: m.corporation ?? "",
     operator: m.operator ?? "",
     schema_id: u64ToStr(m.schemaId),
@@ -141,7 +141,7 @@ export const MsgIncreaseActiveSchemaAuthorizationPolicyVersionAminoConverter: Am
 
 export const MsgRevokeSchemaAuthorizationPolicyAminoConverter: AminoConverter = {
   aminoType: "verana/x/cs/MsgRevokeSchemaAuthPolicy",
-  toAmino: (m: MsgRevokeSchemaAuthorizationPolicy) => ({
+  toAmino: (m: MsgRevokeSchemaAuthorizationPolicy) => clean({
     corporation: m.corporation ?? "",
     operator: m.operator ?? "",
     schema_id: u64ToStr(m.schemaId),

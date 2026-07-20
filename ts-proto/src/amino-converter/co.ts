@@ -134,7 +134,7 @@ export const MsgCreateCorporationAminoConverter: AminoConverter = {
   aminoType: "verana/x/co/MsgCreateCorporation",
   toAmino: (m: MsgCreateCorporation) => clean({
     signer: m.signer || undefined,
-    members: m.members && m.members.length > 0 ? m.members.map(memberToAmino) : undefined,
+    members: m.members && m.members.length > 0 ? m.members.map(memberToAmino) : null,
     group_metadata: m.groupMetadata || undefined,
     group_policy_metadata: m.groupPolicyMetadata || undefined,
     decision_policy: anyToAmino(m.decisionPolicy),

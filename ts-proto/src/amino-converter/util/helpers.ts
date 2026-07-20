@@ -2,13 +2,31 @@ import Long from "long";
 import type { Duration } from "../../codec/google/protobuf/duration";
 import type { OptionalUInt32 } from "../../codec/verana/cs/v1/tx";
 
+// clean drops proto3 default-valued keys so the amino doc matches the chain's
+// aminojson, which omits empty fields lacking amino.dont_omitempty. null is
+// preserved: it is the sentinel for a present-but-empty dont_omitempty field
+// (e.g. an empty Coin array), which the chain encodes as null.
 export const clean = <T extends Record<string, any>>(o: T): T => {
-  Object.keys(o).forEach((k) => o[k] === undefined && delete o[k]);
+  Object.keys(o).forEach((k) => {
+    const v = o[k];
+    if (
+      v === undefined ||
+      v === "" ||
+      v === false ||
+      v === 0 ||
+      (Array.isArray(v) && v.length === 0)
+    ) {
+      delete o[k];
+    }
+  });
   return o;
 };
 
-export const u64ToStr = (v?: Long | string | number | null) =>
-  v != null ? Long.fromValue(v).toString() : undefined;
+export const u64ToStr = (v?: Long | string | number | null) => {
+  if (v == null) return undefined;
+  const value = Long.fromValue(v);
+  return value.isZero() ? undefined : value.toString();
+};
 
 export const u64ToStrIfNonZero = (v?: Long | string | number | null) => {
   if (v == null) return undefined;
@@ -63,18 +81,29 @@ export const isoToDate = (s?: string | null) =>
 export const dateToAmino = dateToIsoAmino;
 export const dateFromAmino = isoToDate;
 
+// The chain (gogoproto.stdduration + aminojson) encodes a Duration as its total
+// nanoseconds in a decimal string, e.g. 3600s -> "3600000000000". BigInt avoids
+// the precision loss plain numbers hit for large durations.
 export const durationToAmino = (d?: Duration | null) => {
   if (!d) return undefined;
-  return clean({
-    seconds: Long.fromValue(d.seconds).toString(),
-    nanos: d.nanos === 0 ? undefined : d.nanos,
-  });
+  const seconds = BigInt(Long.fromValue(d.seconds).toString());
+  const nanos = BigInt(d.nanos ?? 0);
+  return (seconds * 1000000000n + nanos).toString();
 };
 
 export const aminoToDuration = (
-  d?: { seconds?: string | number | null; nanos?: string | number | null } | null,
+  d?: string | number | { seconds?: string | number | null; nanos?: string | number | null } | null,
 ): Duration | undefined => {
-  if (!d) return undefined;
+  if (d == null) return undefined;
+  // Canonical amino form: total-nanoseconds string. Object form kept for tolerance.
+  if (typeof d === "string" || typeof d === "number") {
+    const total = BigInt(d);
+    const neg = total < 0n;
+    const abs = neg ? -total : total;
+    const seconds = abs / 1000000000n;
+    const nanos = abs % 1000000000n;
+    return { seconds: Number(neg ? -seconds : seconds), nanos: Number(neg ? -nanos : nanos) };
+  }
   return {
     seconds: d.seconds == null ? 0 : Number(d.seconds),
     nanos: d.nanos == null ? 0 : Number(d.nanos),
