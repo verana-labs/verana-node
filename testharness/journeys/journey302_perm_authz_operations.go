@@ -100,7 +100,7 @@ func RunPermissionAuthzOperationsJourney(ctx context.Context, client cosmosclien
 	// Operator is the TR controller, so creator=operatorAddr matches.
 	fmt.Println("\n--- Prerequisite 4: Create Root Permission (ECOSYSTEM type) ---")
 	rootPermDID := lib.GenerateUniqueDID(client, ctx)
-	effectiveFrom := time.Now().Add(10 * time.Second)
+	effectiveFrom := time.Now().Add(3 * time.Second)
 	effectiveUntil := effectiveFrom.Add(360 * 24 * time.Hour)
 	rootPermID, err := lib.CreateRootPermissionWithAuthority(
 		client, ctx, operatorAccount, policyAddr,
@@ -111,6 +111,11 @@ func RunPermissionAuthzOperationsJourney(ctx context.Context, client cosmosclien
 	}
 	fmt.Printf("OK Prerequisite 4: Root Permission created with ID: %d\n", rootPermID)
 	waitForTx("Root perm creation")
+
+	// Root must be effective before it's used as a validator below.
+	if err := lib.WaitForPermissionEffective(client, ctx, effectiveFrom, 60); err != nil {
+		return fmt.Errorf("prerequisite 4 wait-for-effective failed: %w", err)
+	}
 
 	// Verify root permission
 	rootPerm, err := lib.GetParticipant(client, ctx, rootPermID)

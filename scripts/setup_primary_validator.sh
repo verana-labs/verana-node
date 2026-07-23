@@ -143,6 +143,8 @@ c = c.replace('cors_allowed_origins = []', 'cors_allowed_origins = ["*"]')
 c = c.replace(':26656', ':${P2P_PORT}')
 c = c.replace(':26657', ':${RPC_PORT}')
 c = c.replace('laddr = "tcp://127.0.0.1:', 'laddr = "tcp://0.0.0.0:')
+# 1s blocks instead of the default 5s (safe for a single-node dev chain).
+c = c.replace('timeout_commit = "5s"', 'timeout_commit = "1s"')
 with open(config_toml, 'w') as f:
     f.write(c)
 PYEOF

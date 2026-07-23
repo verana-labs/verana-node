@@ -2520,17 +2520,17 @@ func submitGrantOpAuthzViaGroup(
 		return fmt.Errorf("failed to submit group proposal: %w", err)
 	}
 	fmt.Println("    - Waiting for proposal to be processed...")
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 	if err = VoteOnGroupProposal(client, ctx, admin, proposalID, false); err != nil {
 		return fmt.Errorf("failed to vote from admin: %w", err)
 	}
 	fmt.Println("    - Waiting for admin vote to be processed...")
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 	if err = VoteOnGroupProposal(client, ctx, voter2, proposalID, true); err != nil {
 		return fmt.Errorf("failed to vote from voter2: %w", err)
 	}
 	fmt.Println("    - Waiting for proposal execution to complete...")
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 	fmt.Printf("✅ Granted operator authorization for %s via group proposal\n", grantMsg.Grantee)
 	return nil
 }

@@ -65,7 +65,8 @@ jobs:
       contents: read
     env:
       TEST_HARNESS_PATH: ./testharness
-      VALIDATOR_COUNT: "2"
+      # One node is enough: the harness tests app logic, not CometBFT consensus.
+      VALIDATOR_COUNT: "1"
 
     steps:
       - name: Checkout this repository
