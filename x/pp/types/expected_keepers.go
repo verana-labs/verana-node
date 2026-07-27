@@ -44,6 +44,7 @@ type CredentialSchemaKeeper interface {
 type EcosystemKeeper interface {
 	GetEcosystem(ctx context.Context, id uint64) (ectypes.Ecosystem, error)
 	GetTrustUnitPrice(ctx sdk.Context) uint64
+	ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error)
 }
 
 // ExchangeRateKeeper exposes x/xr price conversion. [MOD-PP fee model] uses it
@@ -67,6 +68,7 @@ type CorporationView struct {
 type CorporationKeeper interface {
 	ResolveByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, bool)
 	ResolveByID(ctx context.Context, id uint64) (CorporationView, bool)
+	ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error)
 }
 
 // TrustDepositKeeper defines the expected interface for the Trust Deposit module.

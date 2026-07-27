@@ -342,6 +342,15 @@ func (k *TrackingEcosystemKeeper) GetEcosystem(ctx context.Context, id uint64) (
 	return ectypes.Ecosystem{}, ectypes.ErrEcosystemNotFound
 }
 
+func (k *TrackingEcosystemKeeper) ResolveDIDOwner(_ context.Context, did string) (uint64, bool, error) {
+	for _, ec := range k.ecosystems {
+		if ec.Did == did {
+			return ec.CorporationId, true, nil
+		}
+	}
+	return 0, false, nil
+}
+
 // CreateMockEcosystem registers an Ecosystem owned by the given signing
 // `creator` (a bech32 policy_address). Also wires the policy_address →
 // CorporationView mapping so a TrackingCorporationKeeper built from this
@@ -402,6 +411,10 @@ func (k *TrackingCorporationKeeper) ResolveByID(ctx context.Context, id uint64) 
 		}
 	}
 	return types.CorporationView{}, false
+}
+
+func (k *TrackingCorporationKeeper) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
+	return 0, false, nil
 }
 
 // setupTrackingMsgServer creates msg server with tracking mocks

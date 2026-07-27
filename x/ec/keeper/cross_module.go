@@ -97,3 +97,17 @@ func (a CoAsECCorporationKeeper) GetByID(ctx context.Context, corporationID uint
 		ActiveVersion: co.ActiveVersion,
 	}, true
 }
+
+// ResolveDIDOwner forwards to the co keeper for MOD-ES's cross-type DID check.
+func (a CoAsECCorporationKeeper) ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error) {
+	return a.k.ResolveDIDOwner(ctx, did)
+}
+
+// EcAsDIDOwnerResolver adapts the ec keeper for co.SetEcosystemDIDResolver.
+type EcAsDIDOwnerResolver struct{ k Keeper }
+
+func NewEcAsDIDOwnerResolver(k Keeper) EcAsDIDOwnerResolver { return EcAsDIDOwnerResolver{k: k} }
+
+func (a EcAsDIDOwnerResolver) ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error) {
+	return a.k.ResolveDIDOwner(ctx, did)
+}

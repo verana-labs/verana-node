@@ -100,6 +100,15 @@ func (k *MockParticipantEcosystemKeeper) GetEcosystem(ctx context.Context, id ui
 	return ectypes.Ecosystem{}, ectypes.ErrEcosystemNotFound
 }
 
+func (k *MockParticipantEcosystemKeeper) ResolveDIDOwner(_ context.Context, did string) (uint64, bool, error) {
+	for _, ec := range k.ecosystems {
+		if ec.Did == did {
+			return ec.CorporationId, true, nil
+		}
+	}
+	return 0, false, nil
+}
+
 // CreateMockEcosystem registers an Ecosystem owned by the given signing
 // `corporation` (a bech32 policy_address). Also wires the policy_address →
 // CorporationView mapping so the paired MockParticipantCorporationKeeper resolves
@@ -168,6 +177,13 @@ func (k *MockParticipantCorporationKeeper) ResolveByPolicyAddress(ctx context.Co
 	v := types.CorporationView{Id: id, PolicyAddress: policyAddress}
 	k.policyAddrByID[v.Id] = policyAddress
 	return v, true
+}
+
+// ResolveDIDOwner: the mock corp keeper does not track Corporation.did, so no
+// corporation ever claims a did here (0,false). Cross-type conflicts in pp tests
+// are exercised via the ecosystem mock.
+func (k *MockParticipantCorporationKeeper) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
+	return 0, false, nil
 }
 
 // ResolveByID reverses corporation_id → policy_address for fund-flow helpers.

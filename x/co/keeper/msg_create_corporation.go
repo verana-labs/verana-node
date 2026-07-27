@@ -40,6 +40,13 @@ func (ms msgServer) CreateCorporation(goCtx context.Context, msg *types.MsgCreat
 		return nil, errors.Wrap(types.ErrDIDAlreadyExists, msg.Did)
 	}
 
+	// [MOD-CO-MSG-1-2-1] DID ownership invariant: reject if any Ecosystem or
+	// Participant already binds this did (owned by an existing Corporation, which
+	// cannot be the one being created). selfCorpID=0: no self yet, so any hit aborts.
+	if err := ms.assertNoForeignDIDOwner(ctx, msg.Did, 0); err != nil {
+		return nil, err
+	}
+
 	groupMembers := make([]group.MemberRequest, len(msg.Members))
 	for i, m := range msg.Members {
 		groupMembers[i] = group.MemberRequest{

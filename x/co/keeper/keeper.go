@@ -29,6 +29,10 @@ type Keeper struct {
 	delegationKeeper types.DelegationKeeper
 	groupKeeper      types.GroupKeeper
 	gfKeeper         types.GFKeeper
+
+	// ec/pp DID resolvers, wired post-construction (co is a depinject leaf).
+	ecDIDRef *didOwnerRef
+	ppDIDRef *didOwnerRef
 }
 
 func NewKeeper(
@@ -59,6 +63,9 @@ func NewKeeper(
 		delegationKeeper: delegationKeeper,
 		groupKeeper:      groupKeeper,
 		gfKeeper:         gfKeeper,
+
+		ecDIDRef: &didOwnerRef{R: stubDIDOwnerResolver{}},
+		ppDIDRef: &didOwnerRef{R: stubDIDOwnerResolver{}},
 	}
 
 	schema, err := sb.Build()

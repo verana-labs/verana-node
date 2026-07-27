@@ -40,6 +40,10 @@ func (m *mockCorporation) ResolveByPolicyAddress(_ context.Context, addr string)
 	return v, ok
 }
 
+func (m *mockCorporation) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
+	return 0, false, nil
+}
+
 func (m *mockCorporation) GetByID(_ context.Context, id uint64) (types.CorporationView, bool) {
 	for _, v := range m.byAddr {
 		if v.Id == id {

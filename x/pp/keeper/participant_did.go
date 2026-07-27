@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
 
@@ -15,30 +14,18 @@ import (
 // every existing Participant entry that shares the given did MUST belong to
 // corporationID; otherwise the create MUST abort. This is NOT a DID-uniqueness
 // check — the same did may be reused across multiple participants of the same
-// corporation. x/pp has no (did) index, so the check walks the Participant map;
-// creates are infrequent, so the linear scan is acceptable.
+// corporation. Backed by the ParticipantByDIDCorp index (see ResolveDIDOwner).
 func (k Keeper) assertDIDCorporationConsistent(ctx context.Context, did string, corporationID uint64) error {
 	if did == "" {
 		return nil
 	}
-	var (
-		conflict     bool
-		conflictCorp uint64
-	)
-	err := k.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
-		if p.Did == did && p.CorporationId != corporationID {
-			conflict = true
-			conflictCorp = p.CorporationId
-			return true, nil // stop on first conflict
-		}
-		return false, nil
-	})
+	owner, found, err := k.ResolveDIDOwner(ctx, did)
 	if err != nil {
-		return fmt.Errorf("walk participants for did consistency: %w", err)
+		return err
 	}
-	if conflict {
+	if found && owner != corporationID {
 		return errorsmod.Wrapf(types.ErrDIDOwnershipConflict,
-			"did %q is controlled by corporation %d, not %d", did, conflictCorp, corporationID)
+			"did %q is controlled by corporation %d, not %d", did, owner, corporationID)
 	}
 	return nil
 }

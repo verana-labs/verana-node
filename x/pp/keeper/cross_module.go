@@ -30,6 +30,10 @@ func (a EcAsParticipantEcosystemKeeper) GetTrustUnitPrice(ctx sdk.Context) uint6
 	return a.k.GetTrustUnitPrice(ctx)
 }
 
+func (a EcAsParticipantEcosystemKeeper) ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error) {
+	return a.k.ResolveDIDOwner(ctx, did)
+}
+
 // CoAsParticipantCorporationKeeper adapts x/co keeper to participanttypes.CorporationKeeper.
 type CoAsParticipantCorporationKeeper struct {
 	k cokeeper.Keeper
@@ -53,4 +57,17 @@ func (a CoAsParticipantCorporationKeeper) ResolveByID(ctx context.Context, id ui
 		return types.CorporationView{}, false
 	}
 	return types.CorporationView{Id: id, PolicyAddress: co.PolicyAddress}, true
+}
+
+func (a CoAsParticipantCorporationKeeper) ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error) {
+	return a.k.ResolveDIDOwner(ctx, did)
+}
+
+// PpAsDIDOwnerResolver adapts the pp keeper for ec/co SetParticipantDIDResolver.
+type PpAsDIDOwnerResolver struct{ k Keeper }
+
+func NewPpAsDIDOwnerResolver(k Keeper) PpAsDIDOwnerResolver { return PpAsDIDOwnerResolver{k: k} }
+
+func (a PpAsDIDOwnerResolver) ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error) {
+	return a.k.ResolveDIDOwner(ctx, did)
 }

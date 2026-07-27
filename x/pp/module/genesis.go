@@ -34,6 +34,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		if err := k.Participant.Set(ctx, participant.Id, participant); err != nil {
 			panic(fmt.Errorf("failed to set participant: %w", err))
 		}
+		// Build the (did, id) -> corporation_id index for the DID ownership invariant.
+		if err := k.IndexParticipantDID(ctx, participant); err != nil {
+			panic(fmt.Errorf("failed to index participant did: %w", err))
+		}
 	}
 
 	// Import all participant sessions

@@ -22,6 +22,7 @@ import (
 
 	modulev1 "github.com/verana-labs/verana-node/api/verana/pp/module"
 	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
+	eckeeper "github.com/verana-labs/verana-node/x/ec/keeper"
 	"github.com/verana-labs/verana-node/x/pp/keeper"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
@@ -206,6 +207,9 @@ type ModuleInputs struct {
 	TrustDepositKeeper     types.TrustDepositKeeper
 	DelegationKeeper       types.DelegationKeeper
 	DigestKeeper           types.DigestKeeper
+	// Concrete co/ec keepers, for the pp DID-resolver cycle break.
+	CoKeeper cokeeper.Keeper
+	EcKeeper eckeeper.Keeper
 }
 
 type ModuleOutputs struct {
@@ -235,6 +239,10 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.DelegationKeeper,
 		in.DigestKeeper,
 	)
+	// Cycle break: inject pp's DID resolver into co and ec.
+	in.CoKeeper.SetParticipantDIDResolver(keeper.NewPpAsDIDOwnerResolver(k))
+	in.EcKeeper.SetParticipantDIDResolver(keeper.NewPpAsDIDOwnerResolver(k))
+
 	m := NewAppModule(
 		in.Cdc,
 		k,

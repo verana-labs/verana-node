@@ -56,6 +56,34 @@ func TestStartParticipantOP_DIDCorporationConsistency(t *testing.T) {
 	require.NoError(t, err)
 }
 
+// Cross-type: a participant may not claim a did owned by another corporation's
+// ECOSYSTEM (no participant shares it), per the global DID ownership invariant.
+func TestStartParticipantOP_RejectsDIDOwnedByForeignEcosystem(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
+	ctx = sdk.WrapSDKContext(sdkCtx)
+	now := sdkCtx.BlockTime()
+	past := now.Add(-1 * time.Hour)
+
+	corpA := sdk.AccAddress([]byte("did_ppeco_corp_a____")).String()
+	corpB := sdk.AccAddress([]byte("did_ppeco_corp_b____")).String()
+	csKeeper.CreateMockCredentialSchema(1,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+	validatorID := vsoaValidator(t, k, sdkCtx, trkKeeper, corpA, now, past)
+
+	// corpB controls an ecosystem claiming sharedDID (no participant does).
+	sharedDID := "did:example:ppeco-shared"
+	trkKeeper.CreateMockEcosystem(corpB, sharedDID)
+	delKeeper.Reset()
+
+	_, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+		Corporation: corpA, Operator: corpA, Role: types.ParticipantRole_ISSUER,
+		ValidatorParticipantId: validatorID, Did: sharedDID,
+	})
+	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)
+}
+
 func TestCreateRootParticipant_DIDCorporationConsistency(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC))

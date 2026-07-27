@@ -53,6 +53,12 @@ func (ms msgServer) UpdateCorporation(goCtx context.Context, msg *types.MsgUpdat
 		return nil, errors.Wrap(types.ErrDIDAlreadyExists, msg.Did)
 	}
 
+	// [MOD-CO-MSG-2-2-1] DID ownership invariant: the corp's own ec/pp entries
+	// may hold this did; entries of a different corporation must not.
+	if err := ms.assertNoForeignDIDOwner(ctx, msg.Did, co.Id); err != nil {
+		return nil, err
+	}
+
 	// Swap the DID index (remove old, add new) and update the Corporation row.
 	if err := ms.CorporationByDID.Remove(ctx, co.Did); err != nil {
 		return nil, fmt.Errorf("remove old did index: %w", err)
