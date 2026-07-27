@@ -19,10 +19,10 @@ const (
 	// (and this constant) on the next proto regeneration.
 	DefaultTrustDepositReclaimBurnRate = "0" // unused; 0 == no burn
 	DefaultTrustDepositShareValue      = "1.0"
-	DefaultTrustDepositRate            = "0.2" // 20%
-	DefaultWalletUserAgentRewardRate   = "0.1" // 10% ([GLO])
-	DefaultUserAgentRewardRate         = "0.1" // 10% ([GLO])
-	DefaultTrustDepositMaxYieldRate    = "0.2" // 20% annual yield ([GLO])
+	DefaultTrustDepositRate            = "0.05" // 5%
+	DefaultWalletUserAgentRewardRate   = "0.1"  // 10% ([GLO])
+	DefaultUserAgentRewardRate         = "0.1"  // 10% ([GLO])
+	DefaultTrustDepositMaxYieldRate    = "0.2"  // 20% annual yield ([GLO])
 	// [GLO] value; the block-reward share is realized by the protocolpool
 	// continuous fund, not read directly here.
 	DefaultTrustDepositBlockRewardShare = "0.2"
