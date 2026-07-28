@@ -24,15 +24,20 @@ func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _, _ s
 // If addr is not registered, returns (zero, false) — that surfaces as
 // ErrCorporationNotRegistered in the keeper.
 type mockCorporation struct {
-	byAddr map[string]types.CorporationView
+	byAddr    map[string]types.CorporationView
+	didOwners map[string]uint64 // Corporation.did -> corp id
 }
 
 func newMockCorporation() *mockCorporation {
-	return &mockCorporation{byAddr: map[string]types.CorporationView{}}
+	return &mockCorporation{byAddr: map[string]types.CorporationView{}, didOwners: map[string]uint64{}}
 }
 
 func (m *mockCorporation) register(addr string, id uint64) {
 	m.byAddr[addr] = types.CorporationView{Id: id, PolicyAddress: addr, Language: "en", ActiveVersion: 1}
+}
+
+func (m *mockCorporation) registerDID(did string, corpID uint64) {
+	m.didOwners[did] = corpID
 }
 
 func (m *mockCorporation) ResolveByPolicyAddress(_ context.Context, addr string) (types.CorporationView, bool) {
@@ -40,7 +45,10 @@ func (m *mockCorporation) ResolveByPolicyAddress(_ context.Context, addr string)
 	return v, ok
 }
 
-func (m *mockCorporation) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
+func (m *mockCorporation) ResolveDIDOwner(_ context.Context, did string) (uint64, bool, error) {
+	if id, ok := m.didOwners[did]; ok {
+		return id, true, nil
+	}
 	return 0, false, nil
 }
 

@@ -70,3 +70,15 @@ func TestCreateCorporation_RejectsDIDOwnedElsewhere(t *testing.T) {
 	_, err := ms.CreateCorporation(ctx, msg)
 	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)
 }
+
+// The participant leg of the create-time cross-check.
+func TestCreateCorporation_RejectsDIDOwnedByForeignParticipant(t *testing.T) {
+	grp := &mockGroup{policy: tkPolicy}
+	k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, grp, &mockGF{})
+	msg := validCreateMsg(t)
+	k.SetParticipantDIDResolver(fakeDIDOwner{did: msg.Did, owner: 5})
+	ms := keeper.NewMsgServerImpl(k)
+
+	_, err := ms.CreateCorporation(ctx, msg)
+	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)
+}

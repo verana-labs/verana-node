@@ -152,13 +152,20 @@ func (k *MockParticipantEcosystemKeeper) RegisterCorp(addr string) uint64 {
 type MockParticipantCorporationKeeper struct {
 	corporationByPolicyAddr map[string]types.CorporationView
 	policyAddrByID          map[uint64]string
+	corpDIDs                map[string]uint64 // Corporation.did -> corp id
 }
 
 func NewMockParticipantCorporationKeeper(ekKeeper *MockParticipantEcosystemKeeper) *MockParticipantCorporationKeeper {
 	return &MockParticipantCorporationKeeper{
 		corporationByPolicyAddr: ekKeeper.corporationByPolicyAddr,
 		policyAddrByID:          make(map[uint64]string),
+		corpDIDs:                make(map[string]uint64),
 	}
+}
+
+// RegisterCorpDID records that `did` is the own did of corporation `corpID`.
+func (k *MockParticipantCorporationKeeper) RegisterCorpDID(did string, corpID uint64) {
+	k.corpDIDs[did] = corpID
 }
 
 func (k *MockParticipantCorporationKeeper) ResolveByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, bool) {
@@ -179,10 +186,13 @@ func (k *MockParticipantCorporationKeeper) ResolveByPolicyAddress(ctx context.Co
 	return v, true
 }
 
-// ResolveDIDOwner: the mock corp keeper does not track Corporation.did, so no
-// corporation ever claims a did here (0,false). Cross-type conflicts in pp tests
-// are exercised via the ecosystem mock.
-func (k *MockParticipantCorporationKeeper) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
+// ResolveDIDOwner reports the corporation whose own did equals `did`, for the
+// corporation leg of the DID ownership invariant. Empty unless a test registers
+// a corp did via RegisterCorpDID.
+func (k *MockParticipantCorporationKeeper) ResolveDIDOwner(_ context.Context, did string) (uint64, bool, error) {
+	if id, ok := k.corpDIDs[did]; ok {
+		return id, true, nil
+	}
 	return 0, false, nil
 }
 
