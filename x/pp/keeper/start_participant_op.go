@@ -151,6 +151,10 @@ func (ms msgServer) executeStartParticipantVP(ctx sdk.Context, msg *types.MsgSta
 	if err := ms.assertDIDCorporationConsistent(ctx, msg.Did, corporationId); err != nil {
 		return 0, err
 	}
+	// [MOD-PP-MSG-1-2-1] DID ownership invariant: cross-check Ecosystem + Corporation.did.
+	if err := ms.assertNoForeignDIDOwnerPP(ctx, msg.Did, corporationId); err != nil {
+		return 0, err
+	}
 
 	// [MOD-PP-MSG-1-3] Create and persist new participant entry
 	applicantParticipant := types.Participant{

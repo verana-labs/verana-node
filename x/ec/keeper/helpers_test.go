@@ -43,6 +43,10 @@ func (stubCorporationKeeper) GetByID(_ context.Context, _ uint64) (types.Corpora
 	return types.CorporationView{}, false
 }
 
+func (stubCorporationKeeper) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
+	return 0, false, nil
+}
+
 type stubGFKeeper struct{}
 
 func (stubGFKeeper) CreateInitialGFVersionForEcosystem(_ context.Context, _ uint64, _, _, _ string) error {

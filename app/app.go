@@ -369,7 +369,14 @@ func New(
 		if err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap()); err != nil {
 			return nil, err
 		}
-		return app.App.InitChainer(ctx, req)
+		res, err := app.App.InitChainer(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		if err := app.assertGenesisDIDConsistency(ctx); err != nil {
+			return nil, err
+		}
+		return res, nil
 	})
 
 	// NOTE: Legacy governance router removed - trust deposit slashing now uses

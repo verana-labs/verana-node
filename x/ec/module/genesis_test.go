@@ -33,6 +33,10 @@ func (genStub) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ t
 func (genStub) ResolveByPolicyAddress(_ context.Context, _ string) (types.CorporationView, bool) {
 	return types.CorporationView{}, false
 }
+func (genStub) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
+	return 0, false, nil
+}
+
 func (genStub) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool) {
 	return types.CorporationView{}, false
 }

@@ -24,9 +24,10 @@ type (
 		// should be the x/gov module account.
 		authority string
 		// state
-		Participant        collections.Map[uint64, types.Participant]
-		ParticipantCounter collections.Item[uint64]
-		ParticipantSession collections.Map[string, types.ParticipantSession]
+		Participant          collections.Map[uint64, types.Participant]
+		ParticipantByDIDCorp collections.Map[collections.Pair[string, uint64], uint64]
+		ParticipantCounter   collections.Item[uint64]
+		ParticipantSession   collections.Map[string, types.ParticipantSession]
 
 		// external keeper
 		credentialSchemaKeeper types.CredentialSchemaKeeper
@@ -71,6 +72,7 @@ func NewKeeper(
 		authority:              authority,
 		logger:                 logger,
 		Participant:            collections.NewMap(sb, types.ParticipantKey, "participant", collections.Uint64Key, codec.CollValue[types.Participant](cdc)),
+		ParticipantByDIDCorp:   collections.NewMap(sb, types.ParticipantByDIDCorpKey, "participant_by_did_corp", collections.PairKeyCodec(collections.StringKey, collections.Uint64Key), collections.Uint64Value),
 		ParticipantCounter:     collections.NewItem(sb, types.ParticipantCounterKey, "participant_counter", collections.Uint64Value),
 		ParticipantSession:     collections.NewMap(sb, types.ParticipantSessionKey, "participant_session", collections.StringKey, codec.CollValue[types.ParticipantSession](cdc)),
 		credentialSchemaKeeper: credentialSchemaKeeper,
@@ -116,6 +118,10 @@ func (k Keeper) CreateParticipant(ctx sdk.Context, participant types.Participant
 	}
 	participant.Id = id
 	if err := k.Participant.Set(ctx, id, participant); err != nil {
+		return 0, err
+	}
+	// Maintain the (did, id) index (single chokepoint for all create paths).
+	if err := k.IndexParticipantDID(ctx, participant); err != nil {
 		return 0, err
 	}
 

@@ -100,6 +100,15 @@ func (k *MockParticipantEcosystemKeeper) GetEcosystem(ctx context.Context, id ui
 	return ectypes.Ecosystem{}, ectypes.ErrEcosystemNotFound
 }
 
+func (k *MockParticipantEcosystemKeeper) ResolveDIDOwner(_ context.Context, did string) (uint64, bool, error) {
+	for _, ec := range k.ecosystems {
+		if ec.Did == did {
+			return ec.CorporationId, true, nil
+		}
+	}
+	return 0, false, nil
+}
+
 // CreateMockEcosystem registers an Ecosystem owned by the given signing
 // `corporation` (a bech32 policy_address). Also wires the policy_address →
 // CorporationView mapping so the paired MockParticipantCorporationKeeper resolves
@@ -143,13 +152,20 @@ func (k *MockParticipantEcosystemKeeper) RegisterCorp(addr string) uint64 {
 type MockParticipantCorporationKeeper struct {
 	corporationByPolicyAddr map[string]types.CorporationView
 	policyAddrByID          map[uint64]string
+	corpDIDs                map[string]uint64 // Corporation.did -> corp id
 }
 
 func NewMockParticipantCorporationKeeper(ekKeeper *MockParticipantEcosystemKeeper) *MockParticipantCorporationKeeper {
 	return &MockParticipantCorporationKeeper{
 		corporationByPolicyAddr: ekKeeper.corporationByPolicyAddr,
 		policyAddrByID:          make(map[uint64]string),
+		corpDIDs:                make(map[string]uint64),
 	}
+}
+
+// RegisterCorpDID records that `did` is the own did of corporation `corpID`.
+func (k *MockParticipantCorporationKeeper) RegisterCorpDID(did string, corpID uint64) {
+	k.corpDIDs[did] = corpID
 }
 
 func (k *MockParticipantCorporationKeeper) ResolveByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, bool) {
@@ -168,6 +184,16 @@ func (k *MockParticipantCorporationKeeper) ResolveByPolicyAddress(ctx context.Co
 	v := types.CorporationView{Id: id, PolicyAddress: policyAddress}
 	k.policyAddrByID[v.Id] = policyAddress
 	return v, true
+}
+
+// ResolveDIDOwner reports the corporation whose own did equals `did`, for the
+// corporation leg of the DID ownership invariant. Empty unless a test registers
+// a corp did via RegisterCorpDID.
+func (k *MockParticipantCorporationKeeper) ResolveDIDOwner(_ context.Context, did string) (uint64, bool, error) {
+	if id, ok := k.corpDIDs[did]; ok {
+		return id, true, nil
+	}
+	return 0, false, nil
 }
 
 // ResolveByID reverses corporation_id → policy_address for fund-flow helpers.

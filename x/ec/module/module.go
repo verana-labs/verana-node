@@ -163,6 +163,8 @@ type ModuleInputs struct {
 	DelegationKeeper  types.DelegationKeeper
 	CorporationKeeper types.CorporationKeeper
 	GFKeeper          gfkeeper.Keeper
+	// Concrete co keeper, for the co↔ec DID-resolver cycle break.
+	CoKeeper cokeeper.Keeper
 }
 
 type ModuleOutputs struct {
@@ -190,6 +192,9 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 	// MOD-GF. The inner *ecoKeeperRef in gfkeeper.Keeper is shared by all
 	// by-value copies so this propagates to the msg server / query server.
 	in.GFKeeper.SetEcosystemKeeper(keeper.NewEcAsGFEcosystemKeeper(k))
+
+	// Cycle break: inject ec's DID resolver into co.
+	in.CoKeeper.SetEcosystemDIDResolver(keeper.NewEcAsDIDOwnerResolver(k))
 
 	m := NewAppModule(in.Cdc, k, in.AccountKeeper, in.BankKeeper)
 	return ModuleOutputs{EcosystemKeeper: k, Module: m}

@@ -53,6 +53,10 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 	if err := ms.assertDIDConsistent(ctx, msg.Did, co.Id, 0); err != nil {
 		return nil, err
 	}
+	// [MOD-ES-MSG-1-2-1] DID ownership invariant: cross-check Participant + Corporation.did.
+	if err := ms.assertNoForeignDIDOwnerES(ctx, msg.Did, co.Id); err != nil {
+		return nil, err
+	}
 
 	ecID, err := ms.GetNextID(ctx, "ec")
 	if err != nil {
@@ -138,6 +142,10 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 	}
 
 	if err := ms.assertDIDConsistent(ctx, msg.Did, co.Id, ec.Id); err != nil {
+		return nil, err
+	}
+	// [MOD-ES-MSG-2-2-1] DID ownership invariant: cross-check Participant + Corporation.did.
+	if err := ms.assertNoForeignDIDOwnerES(ctx, msg.Did, co.Id); err != nil {
 		return nil, err
 	}
 

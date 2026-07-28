@@ -41,6 +41,9 @@ type CorporationView struct {
 type CorporationKeeper interface {
 	ResolveByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, bool)
 	GetByID(ctx context.Context, corporationID uint64) (CorporationView, bool)
+	// ResolveDIDOwner reports the corporation whose own `did` equals `did`,
+	// for the global DID ownership invariant.
+	ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error)
 }
 
 // GFKeeper is the cross-module surface MOD-ES needs from MOD-GF:
