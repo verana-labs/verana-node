@@ -36,9 +36,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: [resolve-version]
     if: needs.resolve-version.outputs.new-release-published == 'true'
-    outputs:
-      version: ${{ steps.set-outputs.outputs.version }}
-      commit: ${{ steps.set-outputs.outputs.commit }}
+    permissions:
+      contents: read
+    strategy:
+      # Legs are independent: let the others finish (and keep their artifacts
+      # usable for "Re-run failed jobs") when one target fails.
+      fail-fast: false
+      matrix:
+        goos: [linux, darwin]
+        goarch: [amd64, arm64]
     steps:
 
       - name: Checkout gh-repo
@@ -74,32 +80,50 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           echo "COMMIT=${COMMIT}" >> $GITHUB_ENV
 
-      - name: Set build outputs
+      - name: Build binary for ${{ matrix.goos }}/${{ matrix.goarch }}
+        run: |
+          mkdir -p binaries
+          echo "LDFLAGS: $LDFLAGS"
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="$LDFLAGS" -o binaries/${{env.BINARY_NAME}}-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/${{env.BINARY_NAME}}
+
+      - name: Upload ${{ matrix.goos }}-${{ matrix.goarch }} binary artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: binaries/${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}
+          if-no-files-found: error
+          # Artifacts are immutable per run; without this a leg re-run after a
+          # post-upload failure or cancellation 409s on the existing name.
+          overwrite: true
+
+  publish-release:
+    runs-on: ubuntu-latest
+    needs: [resolve-version, build-binaries]
+    if: needs.resolve-version.outputs.new-release-published == 'true'
+    outputs:
+      version: ${{ steps.set-outputs.outputs.version }}
+    steps:
+
+      - name: Resolve effective release context
+        run: |
+          VERSION="${{ needs.resolve-version.outputs.release-version }}"
+          RELEASE_TYPE="${{ needs.resolve-version.outputs.release-type }}"
+          echo "VERSION=${VERSION}"
+          echo "RELEASE_TYPE=${RELEASE_TYPE}"
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "RELEASE_TYPE=${RELEASE_TYPE}" >> $GITHUB_ENV
+
+      - name: Set release outputs
         id: set-outputs
         run: |
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "commit=${COMMIT}" >> $GITHUB_OUTPUT
 
-      - name: Build binary for Linux AMD64
-        run: |
-          mkdir -p binaries/testnet_v1
-          echo "LDFLAGS: $LDFLAGS"
-          GOOS=linux GOARCH=amd64 go build -ldflags="$LDFLAGS" -o binaries/${{env.BINARY_NAME}}-linux-amd64 ./cmd/${{env.BINARY_NAME}}
-
-      - name: Build binary for Linux ARM64
-        run: |
-          mkdir -p binaries/testnet_v1
-          GOOS=linux GOARCH=arm64 go build -ldflags="$LDFLAGS" -o binaries/${{env.BINARY_NAME}}-linux-arm64 ./cmd/${{env.BINARY_NAME}}
-
-      - name: Build binary for Darwin AMD64
-        run: |
-          mkdir -p binaries/testnet_v1
-          GOOS=darwin GOARCH=amd64 go build -ldflags="$LDFLAGS" -o binaries/${{env.BINARY_NAME}}-darwin-amd64 ./cmd/${{env.BINARY_NAME}}
-
-      - name: Build binary for Darwin ARM64
-        run: |
-          mkdir -p binaries/testnet_v1
-          GOOS=darwin GOARCH=arm64 go build -ldflags="$LDFLAGS" -o binaries/${{env.BINARY_NAME}}-darwin-arm64 ./cmd/${{env.BINARY_NAME}}
+      - name: Download binary artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: ${{ env.BINARY_NAME }}-*
+          path: binaries
+          merge-multiple: true
 
       - name: Generate MD5 Checksums
         run: |
@@ -109,13 +133,6 @@ jobs:
           md5sum binaries/${{env.BINARY_NAME}}-darwin-amd64 >> binaries/checksums/md5sums.txt
           md5sum binaries/${{env.BINARY_NAME}}-darwin-arm64 >> binaries/checksums/md5sums.txt
           cat binaries/checksums/md5sums.txt
-
-      - name: Upload linux-amd64 binary artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: veranad-linux-amd64
-          path: binaries/${{env.BINARY_NAME}}-linux-amd64
-          if-no-files-found: error
 
       - name: Verify release assets exist
         run: |
@@ -274,8 +291,8 @@ jobs:
 
   build-canonical-image:
     runs-on: ubuntu-latest
-    needs: build-binaries
-    if: needs.build-binaries.result == 'success'
+    needs: publish-release
+    if: needs.publish-release.result == 'success'
     permissions:
       contents: read
     steps:
@@ -306,13 +323,13 @@ jobs:
           file: docker/veranad.Dockerfile
           push: true
           tags: |
-            ${{ env.CANONICAL_IMAGE_NAME }}:${{ needs.build-binaries.outputs.version }}
+            ${{ env.CANONICAL_IMAGE_NAME }}:${{ needs.publish-release.outputs.version }}
           build-args: |
             USE_PREBUILT=true
             PREBUILT_BINARY=binaries/veranad-linux-amd64
 
   discord-notify:
-    needs: [resolve-version, build-binaries, publish-ts-proto, build-canonical-image]
+    needs: [resolve-version, publish-release, publish-ts-proto, build-canonical-image]
     if: needs.resolve-version.outputs.new-release-published == 'true' && needs.resolve-version.outputs.release-type == 'stable'
     permissions:
       contents: read
