@@ -347,15 +347,13 @@ test-sim-benchmark
 ###                                 Docker                                  ###
 ###############################################################################
 
+# Builds the canonical image for the host platform — native linux/arm64 on
+# Apple Silicon, linux/amd64 on Intel/AMD hosts.
 docker-build:
-	@echo "Building Docker image..."
-	docker build -t verana:local .
+	@echo "Building Docker image (host platform)..."
+	docker build -f docker/veranad.Dockerfile -t verana-node:local .
 
-docker-build-debug:
-	@echo "Building Docker debug image..."
-	docker build -t verana:local-debug -f Dockerfile.debug .
-
-.PHONY: docker-build docker-build-debug
+.PHONY: docker-build
 
 ###############################################################################
 ###                            Local Network                                ###

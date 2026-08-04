@@ -216,6 +216,30 @@ cd local-test
 
 See [local-test/setup-guide.md](local-test/setup-guide.md) for detailed instructions.
 
+### Docker on Apple Silicon (M-series Macs)
+
+The published `veranalabs/verana-node` Docker images are currently built for
+`linux/amd64` only. Running them on Apple Silicon under QEMU emulation
+(`platform: linux/amd64`) is known to crash with Go runtime faults every
+30–60 minutes ([#20](https://github.com/verana-labs/verana-node/issues/20)).
+
+Build a native `linux/arm64` image locally instead:
+
+```bash
+# From the repository root — builds for your host platform
+make docker-build
+
+# Equivalent direct invocation
+docker build -f docker/veranad.Dockerfile -t verana-node:local .
+```
+
+The canonical Dockerfile cross-compiles, so building for another platform
+never emulates the Go toolchain:
+
+```bash
+docker buildx build --platform linux/amd64 -f docker/veranad.Dockerfile -t verana-node:local-amd64 .
+```
+
 ### Option 3: Manual Setup
 
 ```bash
