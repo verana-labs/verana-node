@@ -2,12 +2,16 @@
 ARG GO_VERSION=1.26.4
 ARG BASE_IMAGE=ubuntu:22.04
 
-FROM golang:${GO_VERSION}-bookworm AS builder
+# Pin the builder to the build host's platform and cross-compile via
+# GOOS/GOARCH so `--platform linux/arm64` never emulates the Go toolchain.
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-bookworm AS builder
 
 WORKDIR /app
 
+ARG TARGETOS
+ARG TARGETARCH
 ARG USE_PREBUILT=false
-ARG PREBUILT_BINARY=binaries/veranad-linux-amd64
+ARG PREBUILT_BINARY=binaries/veranad-linux-${TARGETARCH}
 ARG LDFLAGS=""
 
 # Separate layer so source edits don't re-trigger the module download.
@@ -20,7 +24,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     if [ "$USE_PREBUILT" = "true" ] && [ -f "$PREBUILT_BINARY" ]; then \
       cp "$PREBUILT_BINARY" /tmp/veranad; \
     else \
-      CGO_ENABLED=0 go build -ldflags="$LDFLAGS" -o /tmp/veranad ./cmd/veranad; \
+      CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags="$LDFLAGS" -o /tmp/veranad ./cmd/veranad; \
     fi
 
 FROM ${BASE_IMAGE}
