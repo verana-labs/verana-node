@@ -55,9 +55,8 @@ message MsgStoreDigest {
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // digest is the digest string to store. It is opaque to the chain: bounded at
   // 256 bytes, but no format is imposed and it is never recomputed against any
-  // content. Verifiers interpret it using the digest_algorithm of the governing
-  // CredentialSchema. Credential digests anchored per digestJCS are SRI-encoded
-  // (e.g. sha384-<base64>) by convention.
+  // content. For a credential digest this is the digestJCS; the algorithm is
+  // resolved from the digest_algorithm of the governing CredentialSchema.
   string digest = 3;
 }
 
@@ -66,7 +65,7 @@ message MsgStoreDigestResponse {}
 
 // Digest is the stored digest record.
 message Digest {
-  // digest is the digest string (SRI format).
+  // digest is the digest string, opaque to the chain and stored verbatim.
   string digest = 1;
   // created is the timestamp when the digest was stored.
   google.protobuf.Timestamp created = 2 [

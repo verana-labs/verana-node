@@ -2375,8 +2375,10 @@ type MsgStoreDigest struct {
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// operator is the account authorized by the corporation to run this Msg.
 	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
-	// digest is the digest string to store (SRI format; the algorithm is encoded
-	// in the prefix, e.g. sha256-/sha384-/sha512-).
+	// digest is the digest string to store. It is opaque to the chain: bounded at
+	// 256 bytes, but no format is imposed and it is never recomputed against any
+	// content. For a credential digest this is the digestJCS; the algorithm is
+	// resolved from the digest_algorithm of the governing CredentialSchema.
 	Digest string `protobuf:"bytes,3,opt,name=digest,proto3" json:"digest,omitempty"`
 }
 
@@ -2454,7 +2456,7 @@ type Digest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// digest is the digest string (SRI format).
+	// digest is the digest string, opaque to the chain and stored verbatim.
 	Digest string `protobuf:"bytes,1,opt,name=digest,proto3" json:"digest,omitempty"`
 	// created is the timestamp when the digest was stored.
 	Created *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=created,proto3" json:"created,omitempty"`

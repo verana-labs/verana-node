@@ -18,7 +18,7 @@
   "paths": {
     "/verana/di/v1/get": {
       "get": {
-        "summary": "[MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a\nquery-string parameter (not a path segment) so SRI base64 (/, +, =) is safe.",
+        "summary": "[MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a\nquery-string parameter (not a path segment) so base64 (/, +, =) is safe.",
         "operationId": "Query_GetDigest",
         "responses": {
           "200": {

@@ -339,7 +339,7 @@ export interface Query {
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /**
    * [MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a
-   * query-string parameter (not a path segment) so SRI base64 (/, +, =) is safe.
+   * query-string parameter (not a path segment) so base64 (/, +, =) is safe.
    */
   GetDigest(request: QueryGetDigestRequest): Promise<QueryGetDigestResponse>;
 }
