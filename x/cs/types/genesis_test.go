@@ -73,7 +73,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		HolderOnboardingMode:                    types.HolderOnboardingMode_HOLDER_ONBOARDING_MODE_UNSPECIFIED,
 		PricingAssetType:                        types.PricingAssetType_TU,
 		PricingAsset:                            "tu",
-		DigestAlgorithm:                         "sha256",
+		DigestAlgorithm:                         "sha384",
 	}
 
 	tests := []struct {
@@ -111,7 +111,7 @@ func TestGenesisState_Validate(t *testing.T) {
 						VerifierOnboardingMode:     types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 						PricingAssetType:           types.PricingAssetType_TU,
 						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						DigestAlgorithm:            "sha384",
 					},
 				},
 			},
@@ -132,7 +132,7 @@ func TestGenesisState_Validate(t *testing.T) {
 						VerifierOnboardingMode:     types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 						PricingAssetType:           types.PricingAssetType_TU,
 						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha256",
+						DigestAlgorithm:            "sha384",
 					},
 				},
 			},

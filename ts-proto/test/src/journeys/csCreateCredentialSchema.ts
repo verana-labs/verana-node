@@ -200,7 +200,7 @@ async function main() {
       holderOnboardingMode: HolderOnboardingMode.HOLDER_ONBOARDING_MODE_PERMISSIONLESS,
       pricingAssetType: PricingAssetType.TU,
       pricingAsset: "tu",
-      digestAlgorithm: "sha256",
+      digestAlgorithm: "sha384",
     }),
   };
 

@@ -398,7 +398,7 @@ export async function createSchemaForTest(
       holderOnboardingMode: HolderOnboardingMode.HOLDER_ONBOARDING_MODE_PERMISSIONLESS,
       pricingAssetType: PricingAssetType.TU,
       pricingAsset: "tu",
-      digestAlgorithm: "sha256",
+      digestAlgorithm: "sha384",
     }),
   };
 
@@ -612,7 +612,7 @@ export async function createCSWithOperator(
       holderOnboardingMode: HolderOnboardingMode.HOLDER_ONBOARDING_MODE_PERMISSIONLESS,
       pricingAssetType: PricingAssetType.TU,
       pricingAsset: "tu",
-      digestAlgorithm: "sha256",
+      digestAlgorithm: "sha384",
     }),
   };
 

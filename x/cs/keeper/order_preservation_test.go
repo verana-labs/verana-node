@@ -32,7 +32,7 @@ func TestCreateCredentialSchema_CanonicalizesJSON(t *testing.T) {
     "mango": { "type": "string" }
   }
 }`
-	msg := keeper.CreateMsgWithValidityPeriods(authority, operator, trID, schema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	msg := keeper.CreateMsgWithValidityPeriods(authority, operator, trID, schema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	require.NoError(t, msg.ValidateBasic())
 
 	resp, err := ms.CreateCredentialSchema(ctx, msg)
