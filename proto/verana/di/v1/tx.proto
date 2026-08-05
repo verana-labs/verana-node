@@ -53,8 +53,11 @@ message MsgStoreDigest {
   string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // operator is the account authorized by the corporation to run this Msg.
   string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // digest is the digest string to store (SRI format; the algorithm is encoded
-  // in the prefix, e.g. sha256-/sha384-/sha512-).
+  // digest is the digest string to store. It is opaque to the chain: bounded at
+  // 256 bytes, but no format is imposed and it is never recomputed against any
+  // content. Verifiers interpret it using the digest_algorithm of the governing
+  // CredentialSchema. Credential digests anchored per digestJCS are SRI-encoded
+  // (e.g. sha384-<base64>) by convention.
   string digest = 3;
 }
 

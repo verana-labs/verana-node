@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	storetypes "cosmossdk.io/store/types"
@@ -216,11 +217,18 @@ func TestStoreDigestModuleCall(t *testing.T) {
 			errMsg:    "digest must not be empty",
 		},
 		{
-			name:      "non-SRI digest rejected",
+			// digest is opaque per [MOD-DI-MSG-1-1]: no format is imposed.
+			name:      "non-SRI digest accepted",
 			authority: authority,
 			digest:    "not-a-valid-sri",
+			wantErr:   false,
+		},
+		{
+			name:      "over-length digest rejected",
+			authority: authority,
+			digest:    strings.Repeat("a", 257),
 			wantErr:   true,
-			errMsg:    "SRI",
+			errMsg:    "exceeds maximum length",
 		},
 		{
 			name:      "duplicate digest is idempotent no-op",
