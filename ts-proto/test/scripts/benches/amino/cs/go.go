@@ -43,7 +43,7 @@ func main() {
 		HolderOnboardingMode:                    0,
 		PricingAssetType:                        1,
 		PricingAsset:                            "tu",
-		DigestAlgorithm:                         "sha256",
+		DigestAlgorithm:                         "sha384",
 	}
 
 	fee := legacytx.StdFee{

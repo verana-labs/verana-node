@@ -40,8 +40,10 @@ export interface MsgStoreDigest {
   /** operator is the account authorized by the corporation to run this Msg. */
   operator: string;
   /**
-   * digest is the digest string to store (SRI format; the algorithm is encoded
-   * in the prefix, e.g. sha256-/sha384-/sha512-).
+   * digest is the digest string to store. It is opaque to the chain: bounded at
+   * 256 bytes, but no format is imposed and it is never recomputed against any
+   * content. For a credential digest this is the digestJCS; the algorithm is
+   * resolved from the digest_algorithm of the governing CredentialSchema.
    */
   digest: string;
 }
@@ -52,7 +54,7 @@ export interface MsgStoreDigestResponse {
 
 /** Digest is the stored digest record. */
 export interface Digest {
-  /** digest is the digest string (SRI format). */
+  /** digest is the digest string, opaque to the chain and stored verbatim. */
   digest: string;
   /** created is the timestamp when the digest was stored. */
   created: Date | undefined;

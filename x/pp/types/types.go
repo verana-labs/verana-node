@@ -342,9 +342,10 @@ func (msg *MsgCreateOrUpdateParticipantSession) ValidateBasic() error {
 
 	// agent_participant_id and wallet_agent_participant_id are optional (MOD-PP-MSG-10-1).
 
-	// Validate digest SRI format if provided
-	if msg.Digest != "" && !validation.IsValidDigestSRI(msg.Digest) {
-		return sdkerrors.ErrInvalidRequest.Wrap("invalid digest format")
+	// digest is opaque per [MOD-DI-MSG-1-1]: bounded in length, but no format is
+	// imposed. It is forwarded verbatim to DI, which stores it as a key.
+	if len(msg.Digest) > 256 {
+		return sdkerrors.ErrInvalidRequest.Wrap("digest exceeds maximum length of 256 bytes")
 	}
 
 	return nil

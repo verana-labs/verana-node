@@ -49,7 +49,7 @@ function buildCreateCredentialSchemaMsg(): AminoMsg {
     holderOnboardingMode: 0,
     pricingAssetType: 1,
     pricingAsset: "tu",
-    digestAlgorithm: "sha256",
+    digestAlgorithm: "sha384",
   });
 
   return {

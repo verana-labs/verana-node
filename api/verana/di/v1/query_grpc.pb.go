@@ -32,7 +32,7 @@ type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// [MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a
-	// query-string parameter (not a path segment) so SRI base64 (/, +, =) is safe.
+	// query-string parameter (not a path segment) so base64 (/, +, =) is safe.
 	GetDigest(ctx context.Context, in *QueryGetDigestRequest, opts ...grpc.CallOption) (*QueryGetDigestResponse, error)
 }
 
@@ -73,7 +73,7 @@ type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// [MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a
-	// query-string parameter (not a path segment) so SRI base64 (/, +, =) is safe.
+	// query-string parameter (not a path segment) so base64 (/, +, =) is safe.
 	GetDigest(context.Context, *QueryGetDigestRequest) (*QueryGetDigestResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }

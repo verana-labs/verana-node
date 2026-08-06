@@ -6,21 +6,21 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/verana-labs/verana-node/util/validation"
 )
 
-// ValidateDigestString checks a digest is non-empty, within the 256-byte cap,
-// and a valid SRI string. Shared by the Msg and module-call paths.
+// ValidateDigestString checks a digest is non-empty and within the 256-byte
+// cap. Shared by the Msg and module-call paths.
+//
+// [MOD-DI-MSG-1-1] defines digest as an opaque string: the chain stores it as a
+// key and never recomputes it against any content, so it imposes no format. A
+// party interpreting a credential digest resolves the algorithm from the
+// digest_algorithm of the governing CredentialSchema, never from the value.
 func ValidateDigestString(digest string) error {
 	if digest == "" {
 		return ErrDigestEmpty
 	}
 	if len(digest) > 256 {
 		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "digest exceeds maximum length of 256 bytes")
-	}
-	// [MOD-DI-MSG-1-1] digest must be a valid SRI string per spec.
-	if !validation.IsValidDigestSRI(digest) {
-		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "digest must be a valid SRI string (e.g. sha256-<base64>)")
 	}
 	return nil
 }

@@ -38,7 +38,7 @@ func TestCreateSchemaAuthorizationPolicy_HappyPath(t *testing.T) {
 	goCtx := sdk.WrapSDKContext(sdkCtx)
 
 	// Create credential schema
-	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
 	require.NoError(t, err)
 
@@ -84,7 +84,7 @@ func TestCreateSchemaAuthorizationPolicy_OverwriteDraft(t *testing.T) {
 	now := time.Now().UTC()
 	goCtx := sdk.WrapSDKContext(sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now))
 
-	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
 	require.NoError(t, err)
 
@@ -125,7 +125,7 @@ func TestCreateSchemaAuthorizationPolicy_VersionIncrement(t *testing.T) {
 	now := time.Now().UTC()
 	goCtx := sdk.WrapSDKContext(sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now))
 
-	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
 	require.NoError(t, err)
 
@@ -210,7 +210,7 @@ func TestCreateSchemaAuthorizationPolicy_WrongCorporation(t *testing.T) {
 	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
 	goCtx := sdk.WrapSDKContext(sdkCtx)
 
-	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
 	require.NoError(t, err)
 
@@ -243,7 +243,7 @@ func TestRevokeSchemaAuthorizationPolicy_HappyPath(t *testing.T) {
 	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
 	goCtx := sdk.WrapSDKContext(sdkCtx)
 
-	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
 	require.NoError(t, err)
 
@@ -302,7 +302,7 @@ func TestRevokeSchemaAuthorizationPolicy_AlreadyRevoked(t *testing.T) {
 	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
 	goCtx := sdk.WrapSDKContext(sdkCtx)
 
-	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
 	require.NoError(t, err)
 
@@ -358,7 +358,7 @@ func TestRevokeSchemaAuthorizationPolicy_NotFound(t *testing.T) {
 	sdkCtx := sdk.UnwrapSDKContext(rawCtx).WithBlockTime(now)
 	goCtx := sdk.WrapSDKContext(sdkCtx)
 
-	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha256")
+	createSchemaMsg := keeper.CreateMsgWithValidityPeriods(corporation, operator, trID, validJsonSchemaForPolicy, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	schemaResp, err := ms.CreateCredentialSchema(goCtx, createSchemaMsg)
 	require.NoError(t, err)
 

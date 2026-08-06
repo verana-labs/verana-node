@@ -105,9 +105,8 @@ const JsonSchemaMetaSchema = `{
 `
 const TypeMsgCreateCredentialSchema = "create_credential_schema"
 
-// ValidDigestAlgorithms defines the valid digest algorithms per W3C SRI spec
+// ValidDigestAlgorithms defines the valid digest algorithms per [MOD-CS-MSG-1-1]
 var ValidDigestAlgorithms = map[string]bool{
-	"sha256": true,
 	"sha384": true,
 	"sha512": true,
 }
@@ -709,7 +708,7 @@ func validateDigestAlgorithm(algorithm string) error {
 		return fmt.Errorf("digest_algorithm is mandatory")
 	}
 	if !ValidDigestAlgorithms[algorithm] {
-		return fmt.Errorf("invalid digest_algorithm '%s': must be one of sha256, sha384, sha512", algorithm)
+		return fmt.Errorf("invalid digest_algorithm '%s': must be one of sha384, sha512", algorithm)
 	}
 	return nil
 }
