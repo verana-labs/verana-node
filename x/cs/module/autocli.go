@@ -70,18 +70,6 @@ $ veranad query cs schema 1`,
 						},
 					},
 				},
-				{
-					RpcMethod:      "GetSchemaAuthorizationPolicy",
-					Use:            "get-sap [id]",
-					Short:          "Get a schema authorization policy by ID",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
-				},
-				{
-					RpcMethod:      "ListSchemaAuthorizationPolicies",
-					Use:            "list-sap [schema-id] [role]",
-					Short:          "List schema authorization policies for a (schema_id, role) pair (role: 1=ISSUER, 2=VERIFIER)",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "schema_id"}, {ProtoField: "role"}},
-				},
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},

@@ -10,11 +10,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		Params:                           DefaultParams(),
-		CredentialSchemas:                []CredentialSchema{},
-		SchemaCounter:                    0, // Start counter at 0
-		SchemaAuthorizationPolicies:      []SchemaAuthorizationPolicy{},
-		SchemaAuthorizationPolicyCounter: 0,
+		Params:            DefaultParams(),
+		CredentialSchemas: []CredentialSchema{},
+		SchemaCounter:     0, // Start counter at 0
 	}
 }
 
@@ -141,28 +139,6 @@ func (gs GenesisState) Validate() error {
 	}
 	if gs.SchemaCounter < maxSchemaID {
 		return fmt.Errorf("schema_counter %d is less than the highest schema id %d", gs.SchemaCounter, maxSchemaID)
-	}
-
-	seenPolicyIDs := make(map[uint64]bool)
-	var maxPolicyID uint64
-	for i, p := range gs.SchemaAuthorizationPolicies {
-		if p.Id == 0 {
-			return fmt.Errorf("schema authorization policy at index %d has invalid ID 0", i)
-		}
-		if p.SchemaId == 0 {
-			return fmt.Errorf("schema authorization policy at index %d has invalid schema_id 0", i)
-		}
-		if seenPolicyIDs[p.Id] {
-			return fmt.Errorf("duplicate schema authorization policy ID found in genesis state: %d", p.Id)
-		}
-		seenPolicyIDs[p.Id] = true
-		if p.Id > maxPolicyID {
-			maxPolicyID = p.Id
-		}
-	}
-	if gs.SchemaAuthorizationPolicyCounter < maxPolicyID {
-		return fmt.Errorf("schema_authorization_policy_counter %d is less than the highest policy id %d",
-			gs.SchemaAuthorizationPolicyCounter, maxPolicyID)
 	}
 
 	return nil
