@@ -31,9 +31,8 @@ type (
 		// State management
 		Schema collections.Schema
 		//Params           collections.Item[types.Params]
-		CredentialSchema             collections.Map[uint64, types.CredentialSchema]
-		Counter                      collections.Map[string, uint64]
-		SchemaAuthorizationPolicies  collections.Map[uint64, types.SchemaAuthorizationPolicy]
+		CredentialSchema collections.Map[uint64, types.CredentialSchema]
+		Counter          collections.Map[string, uint64]
 	}
 )
 
@@ -77,13 +76,6 @@ func NewKeeper(
 			"counter",
 			collections.StringKey,
 			collections.Uint64Value,
-		),
-		SchemaAuthorizationPolicies: collections.NewMap(
-			sb,
-			types.SchemaAuthorizationPolicyKey,
-			"schema_authorization_policy",
-			collections.Uint64Key,
-			codec.CollValue[types.SchemaAuthorizationPolicy](cdc),
 		),
 	}
 

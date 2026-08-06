@@ -19,12 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Query_Params_FullMethodName                          = "/verana.cs.v1.Query/Params"
-	Query_ListCredentialSchemas_FullMethodName           = "/verana.cs.v1.Query/ListCredentialSchemas"
-	Query_GetCredentialSchema_FullMethodName             = "/verana.cs.v1.Query/GetCredentialSchema"
-	Query_RenderJsonSchema_FullMethodName                = "/verana.cs.v1.Query/RenderJsonSchema"
-	Query_GetSchemaAuthorizationPolicy_FullMethodName    = "/verana.cs.v1.Query/GetSchemaAuthorizationPolicy"
-	Query_ListSchemaAuthorizationPolicies_FullMethodName = "/verana.cs.v1.Query/ListSchemaAuthorizationPolicies"
+	Query_Params_FullMethodName                = "/verana.cs.v1.Query/Params"
+	Query_ListCredentialSchemas_FullMethodName = "/verana.cs.v1.Query/ListCredentialSchemas"
+	Query_GetCredentialSchema_FullMethodName   = "/verana.cs.v1.Query/GetCredentialSchema"
+	Query_RenderJsonSchema_FullMethodName      = "/verana.cs.v1.Query/RenderJsonSchema"
 )
 
 // QueryClient is the client API for Query service.
@@ -41,10 +39,6 @@ type QueryClient interface {
 	GetCredentialSchema(ctx context.Context, in *QueryGetCredentialSchemaRequest, opts ...grpc.CallOption) (*QueryGetCredentialSchemaResponse, error)
 	// RenderJsonSchema returns the JSON schema definition
 	RenderJsonSchema(ctx context.Context, in *QueryRenderJsonSchemaRequest, opts ...grpc.CallOption) (*QueryRenderJsonSchemaResponse, error)
-	// GetSchemaAuthorizationPolicy returns a SchemaAuthorizationPolicy by id.
-	GetSchemaAuthorizationPolicy(ctx context.Context, in *QueryGetSchemaAuthorizationPolicyRequest, opts ...grpc.CallOption) (*QueryGetSchemaAuthorizationPolicyResponse, error)
-	// ListSchemaAuthorizationPolicies lists policies for a (schema_id, role) pair, ordered by ascending version.
-	ListSchemaAuthorizationPolicies(ctx context.Context, in *QueryListSchemaAuthorizationPoliciesRequest, opts ...grpc.CallOption) (*QueryListSchemaAuthorizationPoliciesResponse, error)
 }
 
 type queryClient struct {
@@ -95,26 +89,6 @@ func (c *queryClient) RenderJsonSchema(ctx context.Context, in *QueryRenderJsonS
 	return out, nil
 }
 
-func (c *queryClient) GetSchemaAuthorizationPolicy(ctx context.Context, in *QueryGetSchemaAuthorizationPolicyRequest, opts ...grpc.CallOption) (*QueryGetSchemaAuthorizationPolicyResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryGetSchemaAuthorizationPolicyResponse)
-	err := c.cc.Invoke(ctx, Query_GetSchemaAuthorizationPolicy_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) ListSchemaAuthorizationPolicies(ctx context.Context, in *QueryListSchemaAuthorizationPoliciesRequest, opts ...grpc.CallOption) (*QueryListSchemaAuthorizationPoliciesResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryListSchemaAuthorizationPoliciesResponse)
-	err := c.cc.Invoke(ctx, Query_ListSchemaAuthorizationPolicies_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility.
@@ -129,10 +103,6 @@ type QueryServer interface {
 	GetCredentialSchema(context.Context, *QueryGetCredentialSchemaRequest) (*QueryGetCredentialSchemaResponse, error)
 	// RenderJsonSchema returns the JSON schema definition
 	RenderJsonSchema(context.Context, *QueryRenderJsonSchemaRequest) (*QueryRenderJsonSchemaResponse, error)
-	// GetSchemaAuthorizationPolicy returns a SchemaAuthorizationPolicy by id.
-	GetSchemaAuthorizationPolicy(context.Context, *QueryGetSchemaAuthorizationPolicyRequest) (*QueryGetSchemaAuthorizationPolicyResponse, error)
-	// ListSchemaAuthorizationPolicies lists policies for a (schema_id, role) pair, ordered by ascending version.
-	ListSchemaAuthorizationPolicies(context.Context, *QueryListSchemaAuthorizationPoliciesRequest) (*QueryListSchemaAuthorizationPoliciesResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -154,12 +124,6 @@ func (UnimplementedQueryServer) GetCredentialSchema(context.Context, *QueryGetCr
 }
 func (UnimplementedQueryServer) RenderJsonSchema(context.Context, *QueryRenderJsonSchemaRequest) (*QueryRenderJsonSchemaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RenderJsonSchema not implemented")
-}
-func (UnimplementedQueryServer) GetSchemaAuthorizationPolicy(context.Context, *QueryGetSchemaAuthorizationPolicyRequest) (*QueryGetSchemaAuthorizationPolicyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSchemaAuthorizationPolicy not implemented")
-}
-func (UnimplementedQueryServer) ListSchemaAuthorizationPolicies(context.Context, *QueryListSchemaAuthorizationPoliciesRequest) (*QueryListSchemaAuthorizationPoliciesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListSchemaAuthorizationPolicies not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 func (UnimplementedQueryServer) testEmbeddedByValue()               {}
@@ -254,42 +218,6 @@ func _Query_RenderJsonSchema_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_GetSchemaAuthorizationPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetSchemaAuthorizationPolicyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).GetSchemaAuthorizationPolicy(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_GetSchemaAuthorizationPolicy_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GetSchemaAuthorizationPolicy(ctx, req.(*QueryGetSchemaAuthorizationPolicyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_ListSchemaAuthorizationPolicies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryListSchemaAuthorizationPoliciesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ListSchemaAuthorizationPolicies(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_ListSchemaAuthorizationPolicies_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListSchemaAuthorizationPolicies(ctx, req.(*QueryListSchemaAuthorizationPoliciesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -312,14 +240,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RenderJsonSchema",
 			Handler:    _Query_RenderJsonSchema_Handler,
-		},
-		{
-			MethodName: "GetSchemaAuthorizationPolicy",
-			Handler:    _Query_GetSchemaAuthorizationPolicy_Handler,
-		},
-		{
-			MethodName: "ListSchemaAuthorizationPolicies",
-			Handler:    _Query_ListSchemaAuthorizationPolicies_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

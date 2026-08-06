@@ -98,14 +98,10 @@ func TestGenesisImportExport(t *testing.T) {
 		DigestAlgorithm:                         "sha384",
 	}
 
-	policyA := types.SchemaAuthorizationPolicy{Id: 1, SchemaId: 1, Created: now.Add(-8 * time.Hour), Version: 1}
-	policyB := types.SchemaAuthorizationPolicy{Id: 2, SchemaId: 2, Created: now.Add(-6 * time.Hour), Version: 1}
-
 	// Create a test genesis state with multiple schemas
 	genesisState := types.GenesisState{
-		Params:                      types.DefaultParams(),
-		CredentialSchemas:           []types.CredentialSchema{schemaB, schemaA},          // Deliberately out of order
-		SchemaAuthorizationPolicies: []types.SchemaAuthorizationPolicy{policyB, policyA}, // Deliberately out of order
+		Params:            types.DefaultParams(),
+		CredentialSchemas: []types.CredentialSchema{schemaB, schemaA}, // Deliberately out of order
 	}
 
 	// Setup the module
@@ -141,14 +137,6 @@ func TestGenesisImportExport(t *testing.T) {
 	require.Equal(t, uint64(1), exportedGenesis.CredentialSchemas[0].Id)
 	require.Equal(t, uint64(2), exportedGenesis.CredentialSchemas[1].Id)
 
-	// Schema authorization policies and their counter round-trip (regression: were dropped).
-	require.Len(t, exportedGenesis.SchemaAuthorizationPolicies, 2)
-	require.Equal(t, uint64(1), exportedGenesis.SchemaAuthorizationPolicies[0].Id)
-	require.Equal(t, uint64(2), exportedGenesis.SchemaAuthorizationPolicies[1].Id)
-	policyCounter, err := k.Counter.Get(ctx, types.CounterKeySchemaAuthorizationPolicy)
-	require.NoError(t, err)
-	require.Equal(t, uint64(2), policyCounter)
-
 	// Verify all parameters match
 	require.Equal(t, genesisState.Params, exportedGenesis.Params)
 
@@ -158,7 +146,6 @@ func TestGenesisImportExport(t *testing.T) {
 
 	require.Equal(t, genesisState.Params, exportedGenesis.Params)
 	require.ElementsMatch(t, genesisState.CredentialSchemas, exportedGenesis.CredentialSchemas)
-	require.ElementsMatch(t, genesisState.SchemaAuthorizationPolicies, exportedGenesis.SchemaAuthorizationPolicies)
 }
 
 func TestGenesisValidation(t *testing.T) {
@@ -257,30 +244,6 @@ func TestGenesisValidation(t *testing.T) {
 			},
 			valid:    false,
 			errorMsg: "schema_counter",
-		},
-		{
-			name: "duplicate schema authorization policy ID",
-			genesisState: types.GenesisState{
-				Params:        types.DefaultParams(),
-				SchemaCounter: 0,
-				SchemaAuthorizationPolicies: []types.SchemaAuthorizationPolicy{
-					{Id: 1, SchemaId: 1},
-					{Id: 1, SchemaId: 2},
-				},
-				SchemaAuthorizationPolicyCounter: 1,
-			},
-			valid:    false,
-			errorMsg: "duplicate schema authorization policy ID",
-		},
-		{
-			name: "policy counter behind highest policy id",
-			genesisState: types.GenesisState{
-				Params:                           types.DefaultParams(),
-				SchemaAuthorizationPolicies:      []types.SchemaAuthorizationPolicy{{Id: 5, SchemaId: 1}},
-				SchemaAuthorizationPolicyCounter: 1,
-			},
-			valid:    false,
-			errorMsg: "schema_authorization_policy_counter",
 		},
 		{
 			name: "duplicate schema ID",

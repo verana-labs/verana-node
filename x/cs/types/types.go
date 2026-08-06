@@ -8,8 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gowebpki/jcs"
-
-	"github.com/verana-labs/verana-node/util/validation"
 )
 
 // JsonSchemaMetaSchema Official meta-schema for Draft 2020-12
@@ -709,90 +707,6 @@ func validateDigestAlgorithm(algorithm string) error {
 	}
 	if !ValidDigestAlgorithms[algorithm] {
 		return fmt.Errorf("invalid digest_algorithm '%s': must be one of sha384, sha512", algorithm)
-	}
-	return nil
-}
-
-func (m *MsgCreateSchemaAuthorizationPolicy) Route() string                { return ModuleName }
-func (m *MsgIncreaseActiveSchemaAuthorizationPolicyVersion) Route() string { return ModuleName }
-func (m *MsgRevokeSchemaAuthorizationPolicy) Route() string                { return ModuleName }
-
-func (m *MsgCreateSchemaAuthorizationPolicy) ValidateBasic() error {
-	if m.Corporation == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "corporation is required")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid corporation address")
-	}
-	if m.Operator == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "operator is required")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.Operator); err != nil {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid operator address")
-	}
-	if m.SchemaId == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "schema_id is required")
-	}
-	if m.Role != SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER &&
-		m.Role != SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "role must be ISSUER or VERIFIER")
-	}
-	if m.Url == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url is required")
-	}
-	if !validation.IsValidURI(m.Url) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "url must be a valid URI")
-	}
-	if m.DigestSri == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "digest_sri is required")
-	}
-	return nil
-}
-
-func (m *MsgIncreaseActiveSchemaAuthorizationPolicyVersion) ValidateBasic() error {
-	if m.Corporation == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "corporation is required")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid corporation address")
-	}
-	if m.Operator == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "operator is required")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.Operator); err != nil {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid operator address")
-	}
-	if m.SchemaId == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "schema_id is required")
-	}
-	if m.Role != SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER &&
-		m.Role != SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "role must be ISSUER or VERIFIER")
-	}
-	return nil
-}
-
-func (m *MsgRevokeSchemaAuthorizationPolicy) ValidateBasic() error {
-	if m.Corporation == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "corporation is required")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid corporation address")
-	}
-	if m.Operator == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "operator is required")
-	}
-	if _, err := sdk.AccAddressFromBech32(m.Operator); err != nil {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid operator address")
-	}
-	if m.SchemaId == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "schema_id is required")
-	}
-	if m.Role == SchemaAuthorizationPolicyRole_SCHEMA_AUTHORIZATION_POLICY_ROLE_UNSPECIFIED {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "role is required")
-	}
-	if m.Version == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "version is required")
 	}
 	return nil
 }

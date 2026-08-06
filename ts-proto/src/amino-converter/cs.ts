@@ -2,9 +2,6 @@ import type { AminoConverter } from "@cosmjs/stargate";
 import {
   MsgArchiveCredentialSchema,
   MsgCreateCredentialSchema,
-  MsgCreateSchemaAuthorizationPolicy,
-  MsgIncreaseActiveSchemaAuthorizationPolicyVersion,
-  MsgRevokeSchemaAuthorizationPolicy,
   MsgUpdateCredentialSchema,
 } from "../codec/verana/cs/v1/tx";
 import {
@@ -96,64 +93,5 @@ export const MsgArchiveCredentialSchemaAminoConverter: AminoConverter = {
       operator: a.operator,
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       archive: a.archive ?? false,
-    }),
-};
-
-export const MsgCreateSchemaAuthorizationPolicyAminoConverter: AminoConverter = {
-  aminoType: "verana/x/cs/MsgCreateSchemaAuthPolicy",
-  // [MOD-CS-MSG-5-1] Spec v4 draft 13: parameters are corporation, operator,
-  // schema_id, role, url, digest_sri. effective_from/until are set to null at creation.
-  toAmino: (m: MsgCreateSchemaAuthorizationPolicy) => clean({
-    corporation: m.corporation ?? "",
-    operator: m.operator ?? "",
-    schema_id: u64ToStr(m.schemaId),
-    role: m.role ?? 0,
-    url: m.url ?? "",
-    digest_sri: m.digestSri ?? "",
-  }),
-  fromAmino: (a: any): MsgCreateSchemaAuthorizationPolicy =>
-    MsgCreateSchemaAuthorizationPolicy.fromPartial({
-      corporation: a.corporation ?? "",
-      operator: a.operator ?? "",
-      schemaId: strToU64(a.schema_id) != null ? Number(strToU64(a.schema_id)!.toString()) : 0,
-      role: a.role ?? 0,
-      url: a.url ?? "",
-      digestSri: a.digest_sri ?? "",
-    }),
-};
-
-export const MsgIncreaseActiveSchemaAuthorizationPolicyVersionAminoConverter: AminoConverter = {
-  aminoType: "verana/x/cs/MsgIncSchemaAuthPolicyVer",
-  toAmino: (m: MsgIncreaseActiveSchemaAuthorizationPolicyVersion) => ({
-    corporation: m.corporation ?? "",
-    operator: m.operator ?? "",
-    schema_id: u64ToStr(m.schemaId),
-    role: m.role ?? 0,
-  }),
-  fromAmino: (a: any): MsgIncreaseActiveSchemaAuthorizationPolicyVersion =>
-    MsgIncreaseActiveSchemaAuthorizationPolicyVersion.fromPartial({
-      corporation: a.corporation ?? "",
-      operator: a.operator ?? "",
-      schemaId: strToU64(a.schema_id) != null ? Number(strToU64(a.schema_id)!.toString()) : 0,
-      role: a.role ?? 0,
-    }),
-};
-
-export const MsgRevokeSchemaAuthorizationPolicyAminoConverter: AminoConverter = {
-  aminoType: "verana/x/cs/MsgRevokeSchemaAuthPolicy",
-  toAmino: (m: MsgRevokeSchemaAuthorizationPolicy) => ({
-    corporation: m.corporation ?? "",
-    operator: m.operator ?? "",
-    schema_id: u64ToStr(m.schemaId),
-    role: m.role ?? 0,
-    version: m.version ?? 0,
-  }),
-  fromAmino: (a: any): MsgRevokeSchemaAuthorizationPolicy =>
-    MsgRevokeSchemaAuthorizationPolicy.fromPartial({
-      corporation: a.corporation ?? "",
-      operator: a.operator ?? "",
-      schemaId: strToU64(a.schema_id) != null ? Number(strToU64(a.schema_id)!.toString()) : 0,
-      role: a.role ?? 0,
-      version: a.version ?? 0,
     }),
 };

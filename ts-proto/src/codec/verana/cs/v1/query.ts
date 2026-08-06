@@ -16,10 +16,6 @@ import {
   IssuerOnboardingMode,
   issuerOnboardingModeFromJSON,
   issuerOnboardingModeToJSON,
-  SchemaAuthorizationPolicy,
-  SchemaAuthorizationPolicyRole,
-  schemaAuthorizationPolicyRoleFromJSON,
-  schemaAuthorizationPolicyRoleToJSON,
   VerifierOnboardingMode,
   verifierOnboardingModeFromJSON,
   verifierOnboardingModeToJSON,
@@ -67,23 +63,6 @@ export interface QueryRenderJsonSchemaRequest {
 
 export interface QueryRenderJsonSchemaResponse {
   schema: string;
-}
-
-export interface QueryGetSchemaAuthorizationPolicyRequest {
-  id: number;
-}
-
-export interface QueryGetSchemaAuthorizationPolicyResponse {
-  authorizationPolicy: SchemaAuthorizationPolicy | undefined;
-}
-
-export interface QueryListSchemaAuthorizationPoliciesRequest {
-  schemaId: number;
-  role: SchemaAuthorizationPolicyRole;
-}
-
-export interface QueryListSchemaAuthorizationPoliciesResponse {
-  policies: SchemaAuthorizationPolicy[];
 }
 
 function createBaseQueryParamsRequest(): QueryParamsRequest {
@@ -658,277 +637,6 @@ export const QueryRenderJsonSchemaResponse = {
   },
 };
 
-function createBaseQueryGetSchemaAuthorizationPolicyRequest(): QueryGetSchemaAuthorizationPolicyRequest {
-  return { id: 0 };
-}
-
-export const QueryGetSchemaAuthorizationPolicyRequest = {
-  encode(message: QueryGetSchemaAuthorizationPolicyRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).uint64(message.id);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetSchemaAuthorizationPolicyRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryGetSchemaAuthorizationPolicyRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.id = longToNumber(reader.uint64() as Long);
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryGetSchemaAuthorizationPolicyRequest {
-    return { id: isSet(object.id) ? globalThis.Number(object.id) : 0 };
-  },
-
-  toJSON(message: QueryGetSchemaAuthorizationPolicyRequest): unknown {
-    const obj: any = {};
-    if (message.id !== 0) {
-      obj.id = Math.round(message.id);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryGetSchemaAuthorizationPolicyRequest>, I>>(
-    base?: I,
-  ): QueryGetSchemaAuthorizationPolicyRequest {
-    return QueryGetSchemaAuthorizationPolicyRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryGetSchemaAuthorizationPolicyRequest>, I>>(
-    object: I,
-  ): QueryGetSchemaAuthorizationPolicyRequest {
-    const message = createBaseQueryGetSchemaAuthorizationPolicyRequest();
-    message.id = object.id ?? 0;
-    return message;
-  },
-};
-
-function createBaseQueryGetSchemaAuthorizationPolicyResponse(): QueryGetSchemaAuthorizationPolicyResponse {
-  return { authorizationPolicy: undefined };
-}
-
-export const QueryGetSchemaAuthorizationPolicyResponse = {
-  encode(message: QueryGetSchemaAuthorizationPolicyResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authorizationPolicy !== undefined) {
-      SchemaAuthorizationPolicy.encode(message.authorizationPolicy, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetSchemaAuthorizationPolicyResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryGetSchemaAuthorizationPolicyResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.authorizationPolicy = SchemaAuthorizationPolicy.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryGetSchemaAuthorizationPolicyResponse {
-    return {
-      authorizationPolicy: isSet(object.authorizationPolicy)
-        ? SchemaAuthorizationPolicy.fromJSON(object.authorizationPolicy)
-        : undefined,
-    };
-  },
-
-  toJSON(message: QueryGetSchemaAuthorizationPolicyResponse): unknown {
-    const obj: any = {};
-    if (message.authorizationPolicy !== undefined) {
-      obj.authorizationPolicy = SchemaAuthorizationPolicy.toJSON(message.authorizationPolicy);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryGetSchemaAuthorizationPolicyResponse>, I>>(
-    base?: I,
-  ): QueryGetSchemaAuthorizationPolicyResponse {
-    return QueryGetSchemaAuthorizationPolicyResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryGetSchemaAuthorizationPolicyResponse>, I>>(
-    object: I,
-  ): QueryGetSchemaAuthorizationPolicyResponse {
-    const message = createBaseQueryGetSchemaAuthorizationPolicyResponse();
-    message.authorizationPolicy = (object.authorizationPolicy !== undefined && object.authorizationPolicy !== null)
-      ? SchemaAuthorizationPolicy.fromPartial(object.authorizationPolicy)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseQueryListSchemaAuthorizationPoliciesRequest(): QueryListSchemaAuthorizationPoliciesRequest {
-  return { schemaId: 0, role: 0 };
-}
-
-export const QueryListSchemaAuthorizationPoliciesRequest = {
-  encode(message: QueryListSchemaAuthorizationPoliciesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.schemaId !== 0) {
-      writer.uint32(8).uint64(message.schemaId);
-    }
-    if (message.role !== 0) {
-      writer.uint32(16).int32(message.role);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListSchemaAuthorizationPoliciesRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryListSchemaAuthorizationPoliciesRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.schemaId = longToNumber(reader.uint64() as Long);
-          continue;
-        case 2:
-          if (tag !== 16) {
-            break;
-          }
-
-          message.role = reader.int32() as any;
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryListSchemaAuthorizationPoliciesRequest {
-    return {
-      schemaId: isSet(object.schemaId) ? globalThis.Number(object.schemaId) : 0,
-      role: isSet(object.role) ? schemaAuthorizationPolicyRoleFromJSON(object.role) : 0,
-    };
-  },
-
-  toJSON(message: QueryListSchemaAuthorizationPoliciesRequest): unknown {
-    const obj: any = {};
-    if (message.schemaId !== 0) {
-      obj.schemaId = Math.round(message.schemaId);
-    }
-    if (message.role !== 0) {
-      obj.role = schemaAuthorizationPolicyRoleToJSON(message.role);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryListSchemaAuthorizationPoliciesRequest>, I>>(
-    base?: I,
-  ): QueryListSchemaAuthorizationPoliciesRequest {
-    return QueryListSchemaAuthorizationPoliciesRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryListSchemaAuthorizationPoliciesRequest>, I>>(
-    object: I,
-  ): QueryListSchemaAuthorizationPoliciesRequest {
-    const message = createBaseQueryListSchemaAuthorizationPoliciesRequest();
-    message.schemaId = object.schemaId ?? 0;
-    message.role = object.role ?? 0;
-    return message;
-  },
-};
-
-function createBaseQueryListSchemaAuthorizationPoliciesResponse(): QueryListSchemaAuthorizationPoliciesResponse {
-  return { policies: [] };
-}
-
-export const QueryListSchemaAuthorizationPoliciesResponse = {
-  encode(message: QueryListSchemaAuthorizationPoliciesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.policies) {
-      SchemaAuthorizationPolicy.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListSchemaAuthorizationPoliciesResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryListSchemaAuthorizationPoliciesResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.policies.push(SchemaAuthorizationPolicy.decode(reader, reader.uint32()));
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryListSchemaAuthorizationPoliciesResponse {
-    return {
-      policies: globalThis.Array.isArray(object?.policies)
-        ? object.policies.map((e: any) => SchemaAuthorizationPolicy.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: QueryListSchemaAuthorizationPoliciesResponse): unknown {
-    const obj: any = {};
-    if (message.policies?.length) {
-      obj.policies = message.policies.map((e) => SchemaAuthorizationPolicy.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryListSchemaAuthorizationPoliciesResponse>, I>>(
-    base?: I,
-  ): QueryListSchemaAuthorizationPoliciesResponse {
-    return QueryListSchemaAuthorizationPoliciesResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryListSchemaAuthorizationPoliciesResponse>, I>>(
-    object: I,
-  ): QueryListSchemaAuthorizationPoliciesResponse {
-    const message = createBaseQueryListSchemaAuthorizationPoliciesResponse();
-    message.policies = object.policies?.map((e) => SchemaAuthorizationPolicy.fromPartial(e)) || [];
-    return message;
-  },
-};
-
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -939,14 +647,6 @@ export interface Query {
   GetCredentialSchema(request: QueryGetCredentialSchemaRequest): Promise<QueryGetCredentialSchemaResponse>;
   /** RenderJsonSchema returns the JSON schema definition */
   RenderJsonSchema(request: QueryRenderJsonSchemaRequest): Promise<QueryRenderJsonSchemaResponse>;
-  /** GetSchemaAuthorizationPolicy returns a SchemaAuthorizationPolicy by id. */
-  GetSchemaAuthorizationPolicy(
-    request: QueryGetSchemaAuthorizationPolicyRequest,
-  ): Promise<QueryGetSchemaAuthorizationPolicyResponse>;
-  /** ListSchemaAuthorizationPolicies lists policies for a (schema_id, role) pair, ordered by ascending version. */
-  ListSchemaAuthorizationPolicies(
-    request: QueryListSchemaAuthorizationPoliciesRequest,
-  ): Promise<QueryListSchemaAuthorizationPoliciesResponse>;
 }
 
 export const QueryServiceName = "verana.cs.v1.Query";
@@ -960,8 +660,6 @@ export class QueryClientImpl implements Query {
     this.ListCredentialSchemas = this.ListCredentialSchemas.bind(this);
     this.GetCredentialSchema = this.GetCredentialSchema.bind(this);
     this.RenderJsonSchema = this.RenderJsonSchema.bind(this);
-    this.GetSchemaAuthorizationPolicy = this.GetSchemaAuthorizationPolicy.bind(this);
-    this.ListSchemaAuthorizationPolicies = this.ListSchemaAuthorizationPolicies.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -985,22 +683,6 @@ export class QueryClientImpl implements Query {
     const data = QueryRenderJsonSchemaRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "RenderJsonSchema", data);
     return promise.then((data) => QueryRenderJsonSchemaResponse.decode(_m0.Reader.create(data)));
-  }
-
-  GetSchemaAuthorizationPolicy(
-    request: QueryGetSchemaAuthorizationPolicyRequest,
-  ): Promise<QueryGetSchemaAuthorizationPolicyResponse> {
-    const data = QueryGetSchemaAuthorizationPolicyRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "GetSchemaAuthorizationPolicy", data);
-    return promise.then((data) => QueryGetSchemaAuthorizationPolicyResponse.decode(_m0.Reader.create(data)));
-  }
-
-  ListSchemaAuthorizationPolicies(
-    request: QueryListSchemaAuthorizationPoliciesRequest,
-  ): Promise<QueryListSchemaAuthorizationPoliciesResponse> {
-    const data = QueryListSchemaAuthorizationPoliciesRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListSchemaAuthorizationPolicies", data);
-    return promise.then((data) => QueryListSchemaAuthorizationPoliciesResponse.decode(_m0.Reader.create(data)));
   }
 }
 

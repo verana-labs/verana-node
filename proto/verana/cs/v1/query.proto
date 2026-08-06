@@ -29,14 +29,6 @@ service Query {
   rpc RenderJsonSchema(QueryRenderJsonSchemaRequest) returns (QueryRenderJsonSchemaResponse) {
     option (google.api.http).get = "/verana/cs/v1/js/{id}";
   }
-  // GetSchemaAuthorizationPolicy returns a SchemaAuthorizationPolicy by id.
-  rpc GetSchemaAuthorizationPolicy(QueryGetSchemaAuthorizationPolicyRequest) returns (QueryGetSchemaAuthorizationPolicyResponse) {
-    option (google.api.http).get = "/verana/cs/v1/sap/get/{id}";
-  }
-  // ListSchemaAuthorizationPolicies lists policies for a (schema_id, role) pair, ordered by ascending version.
-  rpc ListSchemaAuthorizationPolicies(QueryListSchemaAuthorizationPoliciesRequest) returns (QueryListSchemaAuthorizationPoliciesResponse) {
-    option (google.api.http).get = "/verana/cs/v1/sap/list";
-  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -83,21 +75,4 @@ message QueryRenderJsonSchemaRequest {
 
 message QueryRenderJsonSchemaResponse {
   string schema = 1;
-}
-
-message QueryGetSchemaAuthorizationPolicyRequest {
-  uint64 id = 1;
-}
-
-message QueryGetSchemaAuthorizationPolicyResponse {
-  SchemaAuthorizationPolicy authorization_policy = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryListSchemaAuthorizationPoliciesRequest {
-  uint64 schema_id = 1;
-  SchemaAuthorizationPolicyRole role = 2;
-}
-
-message QueryListSchemaAuthorizationPoliciesResponse {
-  repeated SchemaAuthorizationPolicy policies = 1 [(gogoproto.nullable) = false];
 }

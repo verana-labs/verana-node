@@ -51,37 +51,6 @@ enum PricingAssetType {
   FIAT = 3;
 }
 
-// SchemaAuthorizationPolicyRole defines the role for a schema authorization policy.
-enum SchemaAuthorizationPolicyRole {
-  SCHEMA_AUTHORIZATION_POLICY_ROLE_UNSPECIFIED = 0;
-  SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER = 1;
-  SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER = 2;
-}
-
-// SchemaAuthorizationPolicy defines a versioned policy document attached to a credential schema role.
-message SchemaAuthorizationPolicy {
-  uint64 id = 1;
-  uint64 schema_id = 2;
-  SchemaAuthorizationPolicyRole role = 3;
-  string url = 4;
-  string digest_sri = 5;
-  // [MOD-CS-MSG-5-3] effective_from is null at creation; set to now at MOD-CS-MSG-6 activation.
-  google.protobuf.Timestamp effective_from = 6 [
-    (gogoproto.nullable) = true,
-    (gogoproto.stdtime) = true
-  ];
-  google.protobuf.Timestamp effective_until = 7 [
-    (gogoproto.nullable) = true,
-    (gogoproto.stdtime) = true
-  ];
-  bool revoked = 8;
-  google.protobuf.Timestamp created = 9 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true
-  ];
-  uint32 version = 10;
-}
-
 // CredentialSchema defines the structure for a credential schema.
 // `ecosystem_id` is the v4-rc2 replacement for the legacy `tr_id` field (issue
 // #305): the owning subject is now an Ecosystem, identified by its uint64 id.

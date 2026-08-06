@@ -3,13 +3,10 @@ package types
 // Event types and attribute keys for credential schema module
 const (
 	// EventTypeCreateCredentialSchema is the event type for creating a credential schema
-	EventTypeCreateCredentialSchema          = "create_credential_schema"
-	EventTypeUpdateCredentialSchema          = "update_credential_schema"
-	EventTypeArchiveCredentialSchema         = "archive_credential_schema"
-	EventTypeUpdateParams                    = "update_params"
-	EventTypeCreateSchemaAuthzPolicy         = "create_schema_authorization_policy"
-	EventTypeIncreaseActiveSchemaAuthzPolicy = "increase_active_schema_authorization_policy_version"
-	EventTypeRevokeSchemaAuthzPolicy         = "revoke_schema_authorization_policy"
+	EventTypeCreateCredentialSchema  = "create_credential_schema"
+	EventTypeUpdateCredentialSchema  = "update_credential_schema"
+	EventTypeArchiveCredentialSchema = "archive_credential_schema"
+	EventTypeUpdateParams            = "update_params"
 
 	// Attribute keys
 	AttributeKeyId                                      = "credential_schema_id"

@@ -14,9 +14,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgCreateCredentialSchema{}, "verana/x/cs/MsgCreateCredentialSchema")
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateCredentialSchema{}, "verana/x/cs/MsgUpdateCredentialSchema")
 	legacy.RegisterAminoMsg(cdc, &MsgArchiveCredentialSchema{}, "verana/x/cs/MsgArchiveCredentialSchema")
-	legacy.RegisterAminoMsg(cdc, &MsgCreateSchemaAuthorizationPolicy{}, "verana/x/cs/MsgCreateSchemaAuthPolicy")
-	legacy.RegisterAminoMsg(cdc, &MsgIncreaseActiveSchemaAuthorizationPolicyVersion{}, "verana/x/cs/MsgIncSchemaAuthPolicyVer")
-	legacy.RegisterAminoMsg(cdc, &MsgRevokeSchemaAuthorizationPolicy{}, "verana/x/cs/MsgRevokeSchemaAuthPolicy")
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -27,9 +24,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgCreateCredentialSchema{},
 		&MsgUpdateCredentialSchema{},
 		&MsgArchiveCredentialSchema{},
-		&MsgCreateSchemaAuthorizationPolicy{},
-		&MsgIncreaseActiveSchemaAuthorizationPolicyVersion{},
-		&MsgRevokeSchemaAuthorizationPolicy{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

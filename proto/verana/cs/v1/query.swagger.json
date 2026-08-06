@@ -196,82 +196,6 @@
           "Query"
         ]
       }
-    },
-    "/verana/cs/v1/sap/get/{id}": {
-      "get": {
-        "summary": "GetSchemaAuthorizationPolicy returns a SchemaAuthorizationPolicy by id.",
-        "operationId": "Query_GetSchemaAuthorizationPolicy",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.cs.v1.QueryGetSchemaAuthorizationPolicyResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
-    },
-    "/verana/cs/v1/sap/list": {
-      "get": {
-        "summary": "ListSchemaAuthorizationPolicies lists policies for a (schema_id, role) pair, ordered by ascending version.",
-        "operationId": "Query_ListSchemaAuthorizationPolicies",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.cs.v1.QueryListSchemaAuthorizationPoliciesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "schema_id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "role",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "SCHEMA_AUTHORIZATION_POLICY_ROLE_UNSPECIFIED",
-              "SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER",
-              "SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER"
-            ],
-            "default": "SCHEMA_AUTHORIZATION_POLICY_ROLE_UNSPECIFIED"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
     }
   },
   "definitions": {
@@ -441,14 +365,6 @@
         }
       }
     },
-    "verana.cs.v1.QueryGetSchemaAuthorizationPolicyResponse": {
-      "type": "object",
-      "properties": {
-        "authorization_policy": {
-          "$ref": "#/definitions/verana.cs.v1.SchemaAuthorizationPolicy"
-        }
-      }
-    },
     "verana.cs.v1.QueryListCredentialSchemasResponse": {
       "type": "object",
       "properties": {
@@ -457,18 +373,6 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/verana.cs.v1.CredentialSchema"
-          }
-        }
-      }
-    },
-    "verana.cs.v1.QueryListSchemaAuthorizationPoliciesResponse": {
-      "type": "object",
-      "properties": {
-        "policies": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/verana.cs.v1.SchemaAuthorizationPolicy"
           }
         }
       }
@@ -490,59 +394,6 @@
           "type": "string"
         }
       }
-    },
-    "verana.cs.v1.SchemaAuthorizationPolicy": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "schema_id": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "role": {
-          "$ref": "#/definitions/verana.cs.v1.SchemaAuthorizationPolicyRole"
-        },
-        "url": {
-          "type": "string"
-        },
-        "digest_sri": {
-          "type": "string"
-        },
-        "effective_from": {
-          "type": "string",
-          "format": "date-time",
-          "description": "[MOD-CS-MSG-5-3] effective_from is null at creation; set to now at MOD-CS-MSG-6 activation."
-        },
-        "effective_until": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "revoked": {
-          "type": "boolean"
-        },
-        "created": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "description": "SchemaAuthorizationPolicy defines a versioned policy document attached to a credential schema role."
-    },
-    "verana.cs.v1.SchemaAuthorizationPolicyRole": {
-      "type": "string",
-      "enum": [
-        "SCHEMA_AUTHORIZATION_POLICY_ROLE_UNSPECIFIED",
-        "SCHEMA_AUTHORIZATION_POLICY_ROLE_ISSUER",
-        "SCHEMA_AUTHORIZATION_POLICY_ROLE_VERIFIER"
-      ],
-      "default": "SCHEMA_AUTHORIZATION_POLICY_ROLE_UNSPECIFIED",
-      "description": "SchemaAuthorizationPolicyRole defines the role for a schema authorization policy."
     },
     "verana.cs.v1.VerifierOnboardingMode": {
       "type": "string",
