@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/verana/pp/v1/beneficiaries": {
+    "/pp/v1/beneficiaries": {
       "get": {
         "operationId": "Query_FindBeneficiaries",
         "responses": {
@@ -54,7 +54,7 @@
         ]
       }
     },
-    "/verana/pp/v1/get/{id}": {
+    "/pp/v1/get/{id}": {
       "get": {
         "operationId": "Query_GetParticipant",
         "responses": {
@@ -85,7 +85,7 @@
         ]
       }
     },
-    "/verana/pp/v1/list": {
+    "/pp/v1/list": {
       "get": {
         "operationId": "Query_ListParticipants",
         "responses": {
@@ -206,7 +206,7 @@
         ]
       }
     },
-    "/verana/pp/v1/list_session": {
+    "/pp/v1/list_session": {
       "get": {
         "operationId": "Query_ListParticipantSessions",
         "responses": {
@@ -244,7 +244,7 @@
         ]
       }
     },
-    "/verana/pp/v1/params": {
+    "/pp/v1/params": {
       "get": {
         "summary": "Parameters queries the parameters of the module.",
         "operationId": "Query_Params",
@@ -267,7 +267,7 @@
         ]
       }
     },
-    "/verana/pp/v1/session/get/{id}": {
+    "/pp/v1/session/get/{id}": {
       "get": {
         "operationId": "Query_GetParticipantSession",
         "responses": {

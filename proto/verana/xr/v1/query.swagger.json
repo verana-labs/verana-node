@@ -16,30 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/verana-labs/verana/xr/v1/params": {
-      "get": {
-        "summary": "Parameters queries the parameters of the module.",
-        "operationId": "Query_Params",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.xr.v1.QueryParamsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "tags": [
-          "Query"
-        ]
-      }
-    },
-    "/verana/xr/v1/get": {
+    "/xr/v1/get": {
       "get": {
         "summary": "GetExchangeRate queries an exchange rate by id or by asset pair.",
         "operationId": "Query_GetExchangeRate",
@@ -130,7 +107,7 @@
         ]
       }
     },
-    "/verana/xr/v1/list": {
+    "/xr/v1/list": {
       "get": {
         "summary": "ListExchangeRates queries exchange rates with optional filters.",
         "operationId": "Query_ListExchangeRates",
@@ -222,7 +199,30 @@
         ]
       }
     },
-    "/verana/xr/v1/price": {
+    "/xr/v1/params": {
+      "get": {
+        "summary": "Parameters queries the parameters of the module.",
+        "operationId": "Query_Params",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.xr.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/xr/v1/price": {
       "get": {
         "summary": "GetPrice computes the price using an exchange rate.",
         "operationId": "Query_GetPrice",

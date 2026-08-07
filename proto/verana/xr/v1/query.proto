@@ -16,22 +16,22 @@ option go_package = "github.com/verana-labs/verana-node/x/xr/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/verana-labs/verana/xr/v1/params";
+    option (google.api.http).get = "/xr/v1/params";
   }
 
   // GetExchangeRate queries an exchange rate by id or by asset pair.
   rpc GetExchangeRate(QueryGetExchangeRateRequest) returns (QueryGetExchangeRateResponse) {
-    option (google.api.http).get = "/verana/xr/v1/get";
+    option (google.api.http).get = "/xr/v1/get";
   }
 
   // ListExchangeRates queries exchange rates with optional filters.
   rpc ListExchangeRates(QueryListExchangeRatesRequest) returns (QueryListExchangeRatesResponse) {
-    option (google.api.http).get = "/verana/xr/v1/list";
+    option (google.api.http).get = "/xr/v1/list";
   }
 
   // GetPrice computes the price using an exchange rate.
   rpc GetPrice(QueryGetPriceRequest) returns (QueryGetPriceResponse) {
-    option (google.api.http).get = "/verana/xr/v1/price";
+    option (google.api.http).get = "/xr/v1/price";
   }
 }
 

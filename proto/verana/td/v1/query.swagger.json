@@ -16,30 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/td/v1/params": {
-      "get": {
-        "summary": "Parameters queries the parameters of the module.",
-        "operationId": "Query_Params",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.td.v1.QueryParamsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "tags": [
-          "Query"
-        ]
-      }
-    },
-    "/verana/td/v1/get/{corporation_id}": {
+    "/td/v1/get/{corporation_id}": {
       "get": {
         "operationId": "Query_GetTrustDeposit",
         "responses": {
@@ -65,6 +42,29 @@
             "format": "uint64"
           }
         ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
+    "/td/v1/params": {
+      "get": {
+        "summary": "Parameters queries the parameters of the module.",
+        "operationId": "Query_Params",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.td.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
         "tags": [
           "Query"
         ]
