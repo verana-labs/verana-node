@@ -14,7 +14,7 @@ option go_package = "github.com/verana-labs/verana-node/x/gf/types";
 service Query {
   // Params returns the total set of module parameters.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/verana/gf/v1/params";
+    option (google.api.http).get = "/gf/v1/params";
   }
 
   // [MOD-GF-QRY-1] Get Governance Framework Version

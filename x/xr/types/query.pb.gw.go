@@ -382,13 +382,13 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"verana-labs", "verana", "xr", "v1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"xr", "v1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetExchangeRate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"verana", "xr", "v1", "get"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetExchangeRate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"xr", "v1", "get"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListExchangeRates_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"verana", "xr", "v1", "list"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListExchangeRates_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"xr", "v1", "list"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetPrice_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"verana", "xr", "v1", "price"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetPrice_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"xr", "v1", "price"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

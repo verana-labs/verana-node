@@ -112,7 +112,7 @@
         ]
       }
     },
-    "/verana/gf/v1/params": {
+    "/gf/v1/params": {
       "get": {
         "summary": "Params returns the total set of module parameters.",
         "operationId": "Query_Params",

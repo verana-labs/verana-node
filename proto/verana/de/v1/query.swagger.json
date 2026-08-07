@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/verana/de/v1/authz/get/{id}": {
+    "/de/v1/authz/get/{id}": {
       "get": {
         "summary": "[MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.",
         "operationId": "Query_GetOperatorAuthorization",
@@ -49,7 +49,7 @@
         ]
       }
     },
-    "/verana/de/v1/authz/list": {
+    "/de/v1/authz/list": {
       "get": {
         "summary": "ListOperatorAuthorizations returns operator authorizations matching optional filters.",
         "operationId": "Query_ListOperatorAuthorizations",
@@ -97,7 +97,7 @@
         ]
       }
     },
-    "/verana/de/v1/params": {
+    "/de/v1/params": {
       "get": {
         "summary": "Parameters queries the parameters of the module.",
         "operationId": "Query_Params",
@@ -120,7 +120,7 @@
         ]
       }
     },
-    "/verana/de/v1/vs-authz/get/{id}": {
+    "/de/v1/vs-authz/get/{id}": {
       "get": {
         "summary": "[MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.",
         "operationId": "Query_GetVSOperatorAuthorization",
@@ -153,7 +153,7 @@
         ]
       }
     },
-    "/verana/de/v1/vs-authz/list": {
+    "/de/v1/vs-authz/list": {
       "get": {
         "summary": "ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.",
         "operationId": "Query_ListVSOperatorAuthorizations",

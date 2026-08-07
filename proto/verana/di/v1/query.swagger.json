@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/verana/di/v1/get": {
+    "/di/v1/get": {
       "get": {
         "summary": "[MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a\nquery-string parameter (not a path segment) so base64 (/, +, =) is safe.",
         "operationId": "Query_GetDigest",
@@ -48,7 +48,7 @@
         ]
       }
     },
-    "/verana/di/v1/params": {
+    "/di/v1/params": {
       "get": {
         "summary": "Parameters queries the parameters of the module.",
         "operationId": "Query_Params",

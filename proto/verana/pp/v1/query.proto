@@ -15,22 +15,22 @@ option go_package = "github.com/verana-labs/verana-node/x/pp/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/verana/pp/v1/params";
+    option (google.api.http).get = "/pp/v1/params";
   }
   rpc ListParticipants(QueryListParticipantsRequest) returns (QueryListParticipantsResponse) {
-    option (google.api.http).get = "/verana/pp/v1/list";
+    option (google.api.http).get = "/pp/v1/list";
   }
   rpc GetParticipant(QueryGetParticipantRequest) returns (QueryGetParticipantResponse) {
-    option (google.api.http).get = "/verana/pp/v1/get/{id}";
+    option (google.api.http).get = "/pp/v1/get/{id}";
   }
   rpc GetParticipantSession(QueryGetParticipantSessionRequest) returns (QueryGetParticipantSessionResponse) {
-    option (google.api.http).get = "/verana/pp/v1/session/get/{id}";
+    option (google.api.http).get = "/pp/v1/session/get/{id}";
   }
   rpc ListParticipantSessions(QueryListParticipantSessionsRequest) returns (QueryListParticipantSessionsResponse) {
-    option (google.api.http).get = "/verana/pp/v1/list_session";
+    option (google.api.http).get = "/pp/v1/list_session";
   }
   rpc FindBeneficiaries(QueryFindBeneficiariesRequest) returns (QueryFindBeneficiariesResponse) {
-    option (google.api.http).get = "/verana/pp/v1/beneficiaries";
+    option (google.api.http).get = "/pp/v1/beneficiaries";
   }
 }
 
