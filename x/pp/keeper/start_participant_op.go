@@ -62,7 +62,8 @@ func (k Keeper) validationTrustDepositInDenomAmount(validationFeesInDenom uint64
 }
 
 // [MOD-PP-MSG-1-2-4] Overlap checks
-// Find all participants for (schema_id, type, validator_participant_id, authority) with op_state = VALIDATED or PENDING.
+// Find all participants (not revoked, not slashed, not repaid) for
+// (schema_id, type, validator_participant_id, authority) with op_state = VALIDATED or PENDING.
 // If any found, abort — cannot have 2 active VPs in the same context.
 func (ms msgServer) checkOverlap(ctx sdk.Context, schemaId uint64, participantType types.ParticipantRole, validatorParticipantId uint64, corporationId uint64) error {
 	var found bool
@@ -71,6 +72,7 @@ func (ms msgServer) checkOverlap(ctx sdk.Context, schemaId uint64, participantTy
 			participant.Role == participantType &&
 			participant.ValidatorParticipantId == validatorParticipantId &&
 			participant.CorporationId == corporationId &&
+			participant.Revoked == nil && participant.Slashed == nil && participant.Repaid == nil &&
 			(participant.OpState == types.OnboardingState_PENDING || participant.OpState == types.OnboardingState_VALIDATED) {
 			found = true
 			return true, nil // stop walking

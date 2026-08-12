@@ -5448,6 +5448,105 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 	})
 }
 
+// TestStartParticipantVP_OverlapCheck_ExcludesInactive tests [MOD-PP-MSG-1-2-4]:
+// revoked, slashed, and repaid participants must not block a new onboarding
+// process in the same (schema_id, role, validator_participant_id, corporation_id)
+// context.
+func TestStartParticipantVP_OverlapCheck_ExcludesInactive(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	blockTime := time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC)
+	sdkCtx = sdkCtx.WithBlockTime(blockTime)
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	creator := sdk.AccAddress([]byte("test_creator")).String()
+	validDid := "did:example:123456789abcdefghi"
+
+	trID := trkKeeper.CreateMockEcosystem(creator, validDid)
+	csKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	validatorParticipant := types.Participant{
+		SchemaId:      1,
+		Role:          types.ParticipantRole_ISSUER_GRANTOR,
+		CorporationId: trkKeeper.RegisterCorp(creator),
+		Created:       &now,
+		Modified:      &now,
+		OpState:       types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime,
+	}
+	validatorParticipantID, err := k.CreateParticipant(sdkCtx, validatorParticipant)
+	require.NoError(t, err)
+
+	testCases := []struct {
+		name     string
+		corp     string
+		did      string
+		inactive func(p *types.Participant)
+	}{
+		{
+			name: "Revoked participant does not block re-onboarding",
+			corp: sdk.AccAddress([]byte("revoked_corp_addr")).String(),
+			did:  "did:example:overlap-revoked",
+			inactive: func(p *types.Participant) {
+				p.Revoked = &pastTime
+			},
+		},
+		{
+			name: "Slashed participant does not block re-onboarding",
+			corp: sdk.AccAddress([]byte("slashed_corp_addr")).String(),
+			did:  "did:example:overlap-slashed",
+			inactive: func(p *types.Participant) {
+				p.Slashed = &pastTime
+			},
+		},
+		{
+			name: "Slashed and repaid participant does not block re-onboarding",
+			corp: sdk.AccAddress([]byte("repaid_corp_addr__")).String(),
+			did:  "did:example:overlap-repaid",
+			inactive: func(p *types.Participant) {
+				p.Slashed = &pastTime
+				p.Repaid = &pastTime
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Existing VALIDATED participant in this context that is no longer active
+			deadParticipant := types.Participant{
+				SchemaId:               1,
+				Role:                   types.ParticipantRole_ISSUER,
+				CorporationId:          trkKeeper.RegisterCorp(tc.corp),
+				Created:                &now,
+				Modified:               &now,
+				ValidatorParticipantId: validatorParticipantID,
+				OpState:                types.OnboardingState_VALIDATED,
+				EffectiveFrom:          &pastTime,
+			}
+			tc.inactive(&deadParticipant)
+			_, err := k.CreateParticipant(sdkCtx, deadParticipant)
+			require.NoError(t, err)
+
+			// A new onboarding process in the same context must succeed
+			msg := &types.MsgStartParticipantOP{
+				Corporation:            tc.corp,
+				Operator:               tc.corp,
+				Role:                   types.ParticipantRole_ISSUER,
+				ValidatorParticipantId: validatorParticipantID,
+				Did:                    tc.did,
+			}
+			resp, err := ms.StartParticipantOP(ctx, msg)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
+		})
+	}
+}
+
 // TestStartParticipantVP_AuthzCheck tests that the AUTHZ-CHECK via DelegationKeeper
 // is properly enforced when the keeper is present.
 func TestStartParticipantVP_AuthzCheck(t *testing.T) {
