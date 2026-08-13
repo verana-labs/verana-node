@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.2](https://github.com/verana-labs/verana-node/compare/v0.10.1...v0.10.2) (2026-08-13)
+
+
+### Bug Fixes
+
+* **cs,de,di,gf,pp,td,xr:** normalize REST routes to spec /&lt;mod&gt;/v1/* and regenerate OpenAPI ([#30](https://github.com/verana-labs/verana-node/issues/30)) ([228e711](https://github.com/verana-labs/verana-node/commit/228e7113a3147223da148aa67530d5169638cea6))
+* **de:** treat unset VSOA expiration as never-expiring ([#37](https://github.com/verana-labs/verana-node/issues/37)) ([dca0d28](https://github.com/verana-labs/verana-node/commit/dca0d2888d160dd362fcb3f4ce0482a82a43c5e5))
+* **pp:** drop signer field from trigger-resolver autocli flags ([#33](https://github.com/verana-labs/verana-node/issues/33)) ([0b52c89](https://github.com/verana-labs/verana-node/commit/0b52c89a3d09cf046c580018496c69c54ac0d9b6))
+* **pp:** exclude revoked, slashed and repaid participants from start-OP overlap check ([#35](https://github.com/verana-labs/verana-node/issues/35)) ([b63e0b0](https://github.com/verana-labs/verana-node/commit/b63e0b0099830a453e69ef5ebbb5a7508153c7b3))
+* **pp:** require effective_from on self-create participant ([#39](https://github.com/verana-labs/verana-node/issues/39)) ([0fd39dd](https://github.com/verana-labs/verana-node/commit/0fd39ddfddeb580242783963476c5cdec0a80943))
+
 ## [0.10.1](https://github.com/verana-labs/verana-node/compare/v0.10.0...v0.10.1) (2026-08-06)
 
 
