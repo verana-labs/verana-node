@@ -266,20 +266,25 @@ func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, par
 
 // recomputeFeeAllowance implements [MOD-DE-MSG-5-5]. It derives the chain-level
 // FeeGrant for (vsoa.corporation_id, vsoa.vs_operator) from the union of all
-// records with with_feegrant=true and a future expiration. Per-record spend
-// limits are enforced at AUTHZ-CHECK-4 time, not on the chain-level allowance.
+// records with with_feegrant=true that are unexpired (unset expiration never
+// expires). Per-record spend limits are enforced at AUTHZ-CHECK-4 time, not on
+// the chain-level allowance.
 func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperatorAuthorization) error {
 	now := sdk.UnwrapSDKContext(ctx).BlockTime()
 
 	var maxExpire *time.Time
+	active := false
+	neverExpires := false
 	seen := make(map[string]bool)
 	feegrantMsgTypes := make([]string, 0)
 	for _, r := range vsoa.Records {
-		// [MOD-DE-MSG-5-5] contributes only if with_feegrant and expiration > now().
-		if !r.WithFeegrant || r.Expiration == nil || !r.Expiration.After(now) {
+		if !r.WithFeegrant || (r.Expiration != nil && !r.Expiration.After(now)) {
 			continue
 		}
-		if maxExpire == nil || r.Expiration.After(*maxExpire) {
+		active = true
+		if r.Expiration == nil {
+			neverExpires = true
+		} else if maxExpire == nil || r.Expiration.After(*maxExpire) {
 			e := *r.Expiration
 			maxExpire = &e
 		}
@@ -292,8 +297,11 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 	}
 
 	// No active feegrant-enabled record remains.
-	if maxExpire == nil {
+	if !active {
 		return k.RevokeFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator)
+	}
+	if neverExpires {
+		maxExpire = nil
 	}
 	return k.GrantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, maxExpire, nil, nil)
 }

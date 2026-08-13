@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
@@ -80,6 +81,64 @@ func TestCheckVSOA_Success(t *testing.T) {
 	}))
 
 	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtCSPS))
+}
+
+// Unset expiration means the record never expires.
+func TestCheckVSOA_NilExpiration(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	k := f.keeper
+	vsOp := acc("vsop________________")
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+	}))
+
+	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtCSPS))
+}
+
+// Period with unset expiration acts as a lifetime cap: no cycle reset.
+func TestCheckVSOA_NilExpirationWithPeriod(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	k := f.keeper
+	corpID := uint64(1)
+	vsOp := acc("vsop________________")
+	period := time.Hour
+	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 200))
+
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		SpendLimit: spend, Period: &period,
+	}))
+
+	require.NoError(t, k.ConsumeRecordSpend(ctx, corpID, vsOp, 10, sdk.NewCoins(sdk.NewInt64Coin("uvna", 50))))
+
+	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, corpID, vsOp, 10, mtCSPS))
+
+	vsoaID, err := k.VSOAByParticipant.Get(ctx, 10)
+	require.NoError(t, err)
+	vsoa, err := k.VSOperatorAuthorizations.Get(ctx, vsoaID)
+	require.NoError(t, err)
+	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uvna", 150)), vsoa.Records[0].RemainingSpend)
+	require.Nil(t, vsoa.Records[0].Expiration)
+}
+
+// A with_feegrant record with unset expiration keeps the fee allowance.
+func TestFeeAllowance_NilExpiration(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	k := f.keeper
+	corpID := uint64(1)
+	vsOp := acc("vsop________________")
+	exp := ctx.BlockTime().Add(time.Hour)
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, Expiration: &exp,
+	}))
+	_, err := k.FeeGrants.Get(ctx, collections.Join(corpID, vsOp))
+	require.NoError(t, err)
+
+	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 10, nil))
+
+	fg, err := k.FeeGrants.Get(ctx, collections.Join(corpID, vsOp))
+	require.NoError(t, err)
+	require.Equal(t, []string{mtCSPS}, fg.MsgTypes)
 }
 
 func TestCheckVSOA_PeriodReset(t *testing.T) {

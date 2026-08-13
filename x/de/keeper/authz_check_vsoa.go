@@ -77,23 +77,25 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		return fmt.Errorf("%w: %s", types.ErrAuthzMsgTypeNotFound, msgType)
 	}
 
-	// 4. Cycle / expiration. [AUTHZ-CHECK-3] step 4 requires expiration > now(),
-	// so a nil expiration fails closed.
-	if rec.Period != nil && *rec.Period > 0 && rec.Expiration != nil && !rec.Expiration.After(now) {
-		if len(rec.SpendLimit) > 0 {
-			rec.RemainingSpend = rec.SpendLimit
+	// 4. Cycle / expiration. [AUTHZ-CHECK-3] step 4 runs only when
+	// record.expiration is set; unset means the record never expires.
+	if rec.Expiration != nil {
+		if rec.Period != nil && *rec.Period > 0 && !rec.Expiration.After(now) {
+			if len(rec.SpendLimit) > 0 {
+				rec.RemainingSpend = rec.SpendLimit
+			}
+			if len(rec.FeeSpendLimit) > 0 {
+				rec.RemainingFeeSpend = rec.FeeSpendLimit
+			}
+			newExp := now.Add(*rec.Period)
+			rec.Expiration = &newExp
+			if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
+				return fmt.Errorf("failed to persist cycle reset: %w", err)
+			}
+			k.emitVSOperatorAuthzUpdated(ctx, vsoaID, participantID)
+		} else if !rec.Expiration.After(now) {
+			return types.ErrAuthzExpired
 		}
-		if len(rec.FeeSpendLimit) > 0 {
-			rec.RemainingFeeSpend = rec.FeeSpendLimit
-		}
-		newExp := now.Add(*rec.Period)
-		rec.Expiration = &newExp
-		if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
-			return fmt.Errorf("failed to persist cycle reset: %w", err)
-		}
-		k.emitVSOperatorAuthzUpdated(ctx, vsoaID, participantID)
-	} else if rec.Expiration == nil || !rec.Expiration.After(now) {
-		return types.ErrAuthzExpired
 	}
 
 	// 5. spend_limit deduction: ConsumeRecordSpend, called by the CSPS handler.
