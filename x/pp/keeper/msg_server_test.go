@@ -4519,6 +4519,20 @@ func TestCreateParticipant(t *testing.T) {
 		require.Nil(t, resp)
 	})
 
+	t.Run("Invalid - effective_from missing", func(t *testing.T) {
+		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
+			Corporation:            authority,
+			Operator:               operator,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: ecosystemParticipantID,
+			Did:                    validDid,
+			EffectiveUntil:         &farFuture,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "effective_from is required")
+		require.Nil(t, resp)
+	})
+
 	t.Run("Invalid - effective_from not in future", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
@@ -5964,6 +5978,7 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 	ctx = sdk.WrapSDKContext(sdkCtx)
 	now := sdkCtx.BlockTime()
 	past := now.Add(-1 * time.Hour)
+	future := now.Add(1 * time.Hour)
 	farFuture := now.Add(360 * 24 * time.Hour)
 
 	ecoDid := "did:example:vsoa-self-eco"
@@ -5987,7 +6002,7 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation: corp, Operator: corp, Role: types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemPermID, Did: "did:example:vsoa-self-a",
-			EffectiveUntil: &farFuture, VerificationFees: 100, ValidationFees: 50,
+			EffectiveFrom: &future, EffectiveUntil: &farFuture, VerificationFees: 100, ValidationFees: 50,
 			VsOperator: vsOp, VsOperatorAuthzMsgTypes: []string{types.MsgCreateOrUpdateParticipantSessionTypeURL},
 		})
 		require.NoError(t, err)
@@ -6005,7 +6020,7 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation: corp, Operator: corp, Role: types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemPermID, Did: "did:example:vsoa-self-b",
-			EffectiveUntil: &farFuture, VerificationFees: 100, ValidationFees: 50,
+			EffectiveFrom: &future, EffectiveUntil: &farFuture, VerificationFees: 100, ValidationFees: 50,
 		})
 		require.NoError(t, err)
 		require.Len(t, delKeeper.GrantVSOACalls, 0)

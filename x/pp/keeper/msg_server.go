@@ -1655,19 +1655,20 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 		return nil, fmt.Errorf("validator participant is not active or future")
 	}
 
-	// [MOD-PP-MSG-14-2-1] effective_from is optional; if provided it MUST be in
-	// the future and within the validator's [effective_from, effective_until) window.
+	// [MOD-PP-MSG-14-2-1] effective_from is mandatory, MUST be in the future and
+	// within the validator's [effective_from, effective_until) window.
 	effectiveFrom := msg.EffectiveFrom
-	if effectiveFrom != nil {
-		if !effectiveFrom.After(now) {
-			return nil, fmt.Errorf("effective_from must be in the future")
-		}
-		if validatorParticipant.EffectiveFrom != nil && effectiveFrom.Before(*validatorParticipant.EffectiveFrom) {
-			return nil, fmt.Errorf("effective_from must be >= validator_participant.effective_from")
-		}
-		if validatorParticipant.EffectiveUntil != nil && !effectiveFrom.Before(*validatorParticipant.EffectiveUntil) {
-			return nil, fmt.Errorf("effective_from must be < validator_participant.effective_until")
-		}
+	if effectiveFrom == nil {
+		return nil, fmt.Errorf("effective_from is required")
+	}
+	if !effectiveFrom.After(now) {
+		return nil, fmt.Errorf("effective_from must be in the future")
+	}
+	if validatorParticipant.EffectiveFrom != nil && effectiveFrom.Before(*validatorParticipant.EffectiveFrom) {
+		return nil, fmt.Errorf("effective_from must be >= validator_participant.effective_from")
+	}
+	if validatorParticipant.EffectiveUntil != nil && !effectiveFrom.Before(*validatorParticipant.EffectiveUntil) {
+		return nil, fmt.Errorf("effective_from must be < validator_participant.effective_until")
 	}
 
 	// [MOD-PP-MSG-14-2-1] effective_until checks
