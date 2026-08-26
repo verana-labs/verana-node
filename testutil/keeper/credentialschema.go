@@ -27,6 +27,10 @@ import (
 // MockBankKeeper is a mock implementation of types.BankKeeper
 type MockBankKeeper struct {
 	bankBalances map[string]sdk.Coins
+
+	// HasBalanceCap, when set, makes HasBalance succeed only for amounts up to
+	// the cap. Nil keeps the default always-true behavior.
+	HasBalanceCap *sdk.Coin
 }
 
 func (k *MockBankKeeper) SendCoins(ctx context.Context, from, to sdk.AccAddress, amt sdk.Coins) error {
@@ -34,6 +38,9 @@ func (k *MockBankKeeper) SendCoins(ctx context.Context, from, to sdk.AccAddress,
 }
 
 func (k *MockBankKeeper) HasBalance(ctx context.Context, addr sdk.AccAddress, amt sdk.Coin) bool {
+	if k.HasBalanceCap != nil && amt.Denom == k.HasBalanceCap.Denom {
+		return amt.Amount.LTE(k.HasBalanceCap.Amount)
+	}
 	return true
 }
 

@@ -26,6 +26,13 @@ import (
 )
 
 func ParticipantKeeper(t testing.TB) (keeper.Keeper, *MockCredentialSchemaKeeper, *MockParticipantEcosystemKeeper, *MockParticipantCorporationKeeper, sdk.Context, *MockDelegationKeeper) {
+	k, csKeeper, ekKeeper, coKeeper, ctx, delKeeper, _, _ := ParticipantKeeperWithTrustDeposit(t)
+	return k, csKeeper, ekKeeper, coKeeper, ctx, delKeeper
+}
+
+// ParticipantKeeperWithTrustDeposit is ParticipantKeeper with the trust deposit
+// and bank mocks exposed for tests that drive slash or amount behavior.
+func ParticipantKeeperWithTrustDeposit(t testing.TB) (keeper.Keeper, *MockCredentialSchemaKeeper, *MockParticipantEcosystemKeeper, *MockParticipantCorporationKeeper, sdk.Context, *MockDelegationKeeper, *MockTrustDepositKeeper, *MockBankKeeper) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
 	db := dbm.NewMemDB()
@@ -67,7 +74,7 @@ func ParticipantKeeper(t testing.TB) (keeper.Keeper, *MockCredentialSchemaKeeper
 		panic(err)
 	}
 
-	return k, csKeeper, ekKeeper, coKeeper, ctx, mockDelegationKeeper
+	return k, csKeeper, ekKeeper, coKeeper, ctx, mockDelegationKeeper, mockTrustDepositKeeper, bankKeeper
 }
 
 // MockParticipantEcosystemKeeper is a mock implementation of x/pp types.EcosystemKeeper.

@@ -28,6 +28,11 @@ func setupMsgServerWithDelegation(t testing.TB) (keeper.Keeper, types.MsgServer,
 	return k, keeper.NewMsgServerImpl(k), csKeeper, trkKeeper, ctx, delKeeper
 }
 
+func setupMsgServerWithTrustDeposit(t testing.TB) (keeper.Keeper, types.MsgServer, *keepertest.MockCredentialSchemaKeeper, *keepertest.MockParticipantEcosystemKeeper, context.Context, *keepertest.MockDelegationKeeper, *keepertest.MockTrustDepositKeeper, *keepertest.MockBankKeeper) {
+	k, csKeeper, trkKeeper, _, ctx, delKeeper, tdKeeper, bankKeeper := keepertest.ParticipantKeeperWithTrustDeposit(t)
+	return k, keeper.NewMsgServerImpl(k), csKeeper, trkKeeper, ctx, delKeeper, tdKeeper, bankKeeper
+}
+
 func TestMsgServer(t *testing.T) {
 	k, ms, _, _, ctx := setupMsgServer(t)
 	require.NotNil(t, ms)
@@ -4162,7 +4167,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 }
 
 func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
-	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
+	k, ms, csKeeper, trkKeeper, ctx, delKeeper, tdKeeper, bankKeeper := setupMsgServerWithTrustDeposit(t)
 	_ = trkKeeper
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -4353,6 +4358,66 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 		require.Nil(t, resp)
 	})
 
+	t.Run("Second slash charges only the outstanding amount", func(t *testing.T) {
+		participant, err := k.GetParticipantByID(sdkCtx, applicantParticipantID)
+		require.NoError(t, err)
+		participant.SlashedDeposit = 700 // second slash of 200 after the full 500 repay
+		require.NoError(t, k.UpdateParticipant(sdkCtx, participant))
+
+		// a balance of exactly the outstanding amount must be enough
+		cap := sdk.NewInt64Coin(types.BondDenom, 200)
+		bankKeeper.HasBalanceCap = &cap
+
+		adjustsBefore := len(tdKeeper.AdjustAmounts)
+		spendsBefore := len(delKeeper.OperatorSpendCalls)
+		resp, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
+			Corporation: authority, Operator: operator, Id: applicantParticipantID,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		bankKeeper.HasBalanceCap = nil
+
+		require.Equal(t, adjustsBefore+1, len(tdKeeper.AdjustAmounts))
+		require.Equal(t, int64(200), tdKeeper.AdjustAmounts[adjustsBefore],
+			"transfer must be the outstanding amount")
+		require.Equal(t, spendsBefore+1, len(delKeeper.OperatorSpendCalls))
+		require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, 200)),
+			delKeeper.OperatorSpendCalls[spendsBefore], "operator spend must be the outstanding amount")
+
+		participant, err = k.GetParticipantByID(sdkCtx, applicantParticipantID)
+		require.NoError(t, err)
+		require.Equal(t, uint64(700), participant.RepaidDeposit)
+
+		var repaidAttr string
+		for _, ev := range sdkCtx.EventManager().Events() {
+			if ev.Type != types.EventTypeRepayParticipantSlashedTrustDeposit {
+				continue
+			}
+			for _, attr := range ev.Attributes {
+				if attr.Key == types.AttributeKeyRepaidAmount {
+					repaidAttr = attr.Value
+				}
+			}
+		}
+		require.Equal(t, "200", repaidAttr, "event must carry the outstanding amount")
+	})
+
+	t.Run("Insufficient balance for the outstanding amount", func(t *testing.T) {
+		participant, err := k.GetParticipantByID(sdkCtx, applicantParticipantID)
+		require.NoError(t, err)
+		participant.SlashedDeposit = 800 // third slash of 100, outstanding 100
+		require.NoError(t, k.UpdateParticipant(sdkCtx, participant))
+
+		cap := sdk.NewInt64Coin(types.BondDenom, 50)
+		bankKeeper.HasBalanceCap = &cap
+		defer func() { bankKeeper.HasBalanceCap = nil }()
+
+		_, err = ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
+			Corporation: authority, Operator: operator, Id: applicantParticipantID,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "required 100")
+	})
 }
 
 func TestCreateParticipant(t *testing.T) {
@@ -6173,5 +6238,312 @@ func TestSetParticipantVPToValidated_ViaVSOperatorDelegation(t *testing.T) {
 		id := newApplicant()
 		_, err := ms.SetParticipantOPToValidated(ctx, msgFor(id))
 		require.Error(t, err)
+	})
+}
+
+func TestStartParticipantOP_UnrepaidSlashGate(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, _, tdKeeper, _ := setupMsgServerWithTrustDeposit(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	blockTime := time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC)
+	sdkCtx = sdkCtx.WithBlockTime(blockTime)
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	authority := sdk.AccAddress([]byte("gate_authority_addr")).String()
+	validatorAddr := sdk.AccAddress([]byte("gate_validator_addr")).String()
+	otherAddr := sdk.AccAddress([]byte("gate_other_eco_addr")).String()
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+
+	eco1 := trkKeeper.CreateMockEcosystem(validatorAddr, "did:example:gate-eco1")
+	csKeeper.UpdateMockCredentialSchema(1, eco1,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+	eco2 := trkKeeper.CreateMockEcosystem(otherAddr, "did:example:gate-eco2")
+	csKeeper.UpdateMockCredentialSchema(2, eco2,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+
+	v1ID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ISSUER_GRANTOR, Did: "did:example:gate-v1",
+		CorporationId: trkKeeper.RegisterCorp(validatorAddr), Created: &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+	v2ID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 2, Role: types.ParticipantRole_ISSUER_GRANTOR, Did: "did:example:gate-v2",
+		CorporationId: trkKeeper.RegisterCorp(otherAddr), Created: &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+
+	authorityCorpID := trkKeeper.RegisterCorp(authority)
+	slashedID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ISSUER, Did: "did:example:gate-slashed",
+		CorporationId: authorityCorpID, Created: &now, Modified: &now,
+		ValidatorParticipantId: v1ID, OpState: types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime, Slashed: &pastTime, SlashedDeposit: 100,
+	})
+	require.NoError(t, err)
+
+	startOP := func(corp string, validatorID uint64, did string) (*types.MsgStartParticipantOPResponse, error) {
+		return ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+			Corporation: corp, Operator: corp,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: validatorID,
+			Did:                    did,
+		})
+	}
+
+	t.Run("unrepaid ecosystem slash blocks new OP", func(t *testing.T) {
+		_, err := startOP(authority, v1ID, "did:example:gate-a")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "unrepaid slash on participant")
+		require.Contains(t, err.Error(), "RepayParticipantSlashedTrustDeposit")
+	})
+
+	t.Run("other corporations are not affected", func(t *testing.T) {
+		cleanAddr := sdk.AccAddress([]byte("gate_clean_corp_add")).String()
+		trkKeeper.RegisterCorp(cleanAddr)
+		resp, err := startOP(cleanAddr, v1ID, "did:example:gate-clean")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("slashed deposit without slashed timestamp does not block", func(t *testing.T) {
+		nilSlashAddr := sdk.AccAddress([]byte("gate_nilslash_corp_")).String()
+		_, err := k.CreateParticipant(sdkCtx, types.Participant{
+			SchemaId: 1, Role: types.ParticipantRole_ISSUER, Did: "did:example:gate-nilslash-old",
+			CorporationId: trkKeeper.RegisterCorp(nilSlashAddr), Created: &now, Modified: &now,
+			ValidatorParticipantId: v1ID, OpState: types.OnboardingState_TERMINATED,
+			SlashedDeposit: 100,
+		})
+		require.NoError(t, err)
+		resp, err := startOP(nilSlashAddr, v1ID, "did:example:gate-nilslash")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("slash in another ecosystem does not block", func(t *testing.T) {
+		resp, err := startOP(authority, v2ID, "did:example:gate-b")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("fully repaid slash does not block", func(t *testing.T) {
+		slashed, err := k.GetParticipantByID(sdkCtx, slashedID)
+		require.NoError(t, err)
+		slashed.RepaidDeposit = 100
+		slashed.Repaid = &pastTime
+		require.NoError(t, k.UpdateParticipant(sdkCtx, slashed))
+
+		resp, err := startOP(authority, v1ID, "did:example:gate-a")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		// terminate the created OP so later subtests reach the gate again
+		created, err := k.GetParticipantByID(sdkCtx, resp.ParticipantId)
+		require.NoError(t, err)
+		created.OpState = types.OnboardingState_TERMINATED
+		require.NoError(t, k.UpdateParticipant(sdkCtx, created))
+	})
+
+	t.Run("second slash after repay blocks again", func(t *testing.T) {
+		slashed, err := k.GetParticipantByID(sdkCtx, slashedID)
+		require.NoError(t, err)
+		slashed.SlashedDeposit = 150
+		require.NoError(t, k.UpdateParticipant(sdkCtx, slashed))
+
+		_, err = startOP(authority, v1ID, "did:example:gate-c")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "unrepaid slash on participant")
+	})
+
+	t.Run("unrepaid network slash blocks new OP", func(t *testing.T) {
+		slashed, err := k.GetParticipantByID(sdkCtx, slashedID)
+		require.NoError(t, err)
+		slashed.RepaidDeposit = 150
+		require.NoError(t, k.UpdateParticipant(sdkCtx, slashed))
+
+		tdKeeper.UnrepaidSlashCorps = map[uint64]bool{authorityCorpID: true}
+		_, err = startOP(authority, v1ID, "did:example:gate-c")
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "trust deposit has an unrepaid slash")
+		require.Contains(t, err.Error(), "RepaySlashedTrustDeposit")
+
+		tdKeeper.UnrepaidSlashCorps[authorityCorpID] = false
+		resp, err := startOP(authority, v1ID, "did:example:gate-c")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+}
+
+func TestRenewParticipantOP_UnrepaidSlashGate(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, _, tdKeeper, _ := setupMsgServerWithTrustDeposit(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	blockTime := time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC)
+	sdkCtx = sdkCtx.WithBlockTime(blockTime)
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	authority := sdk.AccAddress([]byte("gate_authority_addr")).String()
+	validatorAddr := sdk.AccAddress([]byte("gate_validator_addr")).String()
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	future := now.Add(24 * time.Hour)
+
+	eco1 := trkKeeper.CreateMockEcosystem(validatorAddr, "did:example:gate-eco1")
+	csKeeper.UpdateMockCredentialSchema(1, eco1,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+
+	v1ID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ISSUER_GRANTOR, Did: "did:example:gate-v1",
+		CorporationId: trkKeeper.RegisterCorp(validatorAddr), Created: &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+
+	authorityCorpID := trkKeeper.RegisterCorp(authority)
+	applicantID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ISSUER, Did: "did:example:gate-applicant",
+		CorporationId: authorityCorpID, Created: &now, Modified: &now,
+		ValidatorParticipantId: v1ID, OpState: types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime, EffectiveUntil: &future,
+	})
+	require.NoError(t, err)
+
+	slashedID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_VERIFIER, Did: "did:example:gate-slashed",
+		CorporationId: authorityCorpID, Created: &now, Modified: &now,
+		ValidatorParticipantId: v1ID, OpState: types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime, Slashed: &pastTime, SlashedDeposit: 100,
+	})
+	require.NoError(t, err)
+
+	renew := func() error {
+		_, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: authority, Operator: authority, Id: applicantID,
+		})
+		return err
+	}
+	resetApplicant := func() {
+		applicant, err := k.GetParticipantByID(sdkCtx, applicantID)
+		require.NoError(t, err)
+		applicant.OpState = types.OnboardingState_VALIDATED
+		require.NoError(t, k.UpdateParticipant(sdkCtx, applicant))
+	}
+
+	t.Run("unrepaid ecosystem slash blocks renewal", func(t *testing.T) {
+		err := renew()
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "unrepaid slash on participant")
+		require.Contains(t, err.Error(), "RepayParticipantSlashedTrustDeposit")
+	})
+
+	t.Run("fully repaid slash does not block renewal", func(t *testing.T) {
+		slashed, err := k.GetParticipantByID(sdkCtx, slashedID)
+		require.NoError(t, err)
+		slashed.RepaidDeposit = 100
+		slashed.Repaid = &pastTime
+		require.NoError(t, k.UpdateParticipant(sdkCtx, slashed))
+
+		require.NoError(t, renew())
+		resetApplicant()
+	})
+
+	t.Run("unrepaid network slash blocks renewal", func(t *testing.T) {
+		tdKeeper.UnrepaidSlashCorps = map[uint64]bool{authorityCorpID: true}
+		err := renew()
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "trust deposit has an unrepaid slash")
+		require.Contains(t, err.Error(), "RepaySlashedTrustDeposit")
+
+		tdKeeper.UnrepaidSlashCorps[authorityCorpID] = false
+		require.NoError(t, renew())
+	})
+}
+
+func TestSelfCreateParticipant_UnrepaidSlashGate(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, _, tdKeeper, _ := setupMsgServerWithTrustDeposit(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	blockTime := time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC)
+	sdkCtx = sdkCtx.WithBlockTime(blockTime)
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	authority := sdk.AccAddress([]byte("gate_authority_addr")).String()
+	validatorAddr := sdk.AccAddress([]byte("gate_validator_addr")).String()
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	futureTime := now.Add(1 * time.Hour)
+
+	eco1 := trkKeeper.CreateMockEcosystem(validatorAddr, "did:example:gate-eco1")
+	csKeeper.UpdateMockCredentialSchema(1, eco1,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+
+	v1ID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM, Did: "did:example:gate-v1",
+		CorporationId: trkKeeper.RegisterCorp(validatorAddr), Created: &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+
+	authorityCorpID := trkKeeper.RegisterCorp(authority)
+	slashedID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_VERIFIER, Did: "did:example:gate-slashed",
+		CorporationId: authorityCorpID, Created: &now, Modified: &now,
+		ValidatorParticipantId: v1ID, OpState: types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime, Slashed: &pastTime, SlashedDeposit: 100,
+	})
+	require.NoError(t, err)
+
+	selfCreate := func() (*types.MsgSelfCreateParticipantResponse, error) {
+		return ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
+			Corporation: authority, Operator: authority,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: v1ID,
+			Did:                    "did:example:gate-sc",
+			EffectiveFrom:          &futureTime,
+		})
+	}
+
+	t.Run("unrepaid ecosystem slash blocks self-create", func(t *testing.T) {
+		_, err := selfCreate()
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "unrepaid slash on participant")
+		require.Contains(t, err.Error(), "RepayParticipantSlashedTrustDeposit")
+	})
+
+	t.Run("fully repaid slash does not block self-create", func(t *testing.T) {
+		slashed, err := k.GetParticipantByID(sdkCtx, slashedID)
+		require.NoError(t, err)
+		slashed.RepaidDeposit = 100
+		slashed.Repaid = &pastTime
+		require.NoError(t, k.UpdateParticipant(sdkCtx, slashed))
+
+		resp, err := selfCreate()
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		// revoke the created entry so later subtests reach the gate again
+		created, err := k.GetParticipantByID(sdkCtx, resp.Id)
+		require.NoError(t, err)
+		created.Revoked = &pastTime
+		require.NoError(t, k.UpdateParticipant(sdkCtx, created))
+	})
+
+	t.Run("unrepaid network slash blocks self-create", func(t *testing.T) {
+		tdKeeper.UnrepaidSlashCorps = map[uint64]bool{authorityCorpID: true}
+		_, err := selfCreate()
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "trust deposit has an unrepaid slash")
+		require.Contains(t, err.Error(), "RepaySlashedTrustDeposit")
+
+		tdKeeper.UnrepaidSlashCorps[authorityCorpID] = false
+		resp, err := selfCreate()
+		require.NoError(t, err)
+		require.NotNil(t, resp)
 	})
 }

@@ -62,11 +62,17 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 		return nil, fmt.Errorf("overlap check failed: %w", err)
 	}
 
-	// [MOD-PP-MSG-1-2-3] Fee checks
 	cs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, validatorParticipant.SchemaId)
 	if err != nil {
 		return nil, fmt.Errorf("credential schema not found: %w", err)
 	}
+
+	// [MOD-PP-MSG-1-2-5] Unrepaid slash checks
+	if err := ms.checkUnrepaidSlash(ctx, corporationId, cs.EcosystemId); err != nil {
+		return nil, err
+	}
+
+	// [MOD-PP-MSG-1-2-3] Fee checks
 	fees, feeDenom, deposit, err := ms.validateAndCalculateFees(ctx, cs, validatorParticipant)
 	if err != nil {
 		return nil, fmt.Errorf("fee validation failed: %w", err)
@@ -172,6 +178,15 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 
 	if err := IsValidParticipant(validatorParticipant, ctx.BlockTime()); err != nil {
 		return nil, fmt.Errorf("validator participant is not valid: %w", err)
+	}
+
+	// [MOD-PP-MSG-2-2-4] Unrepaid slash checks
+	applicantCs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, applicantParticipant.SchemaId)
+	if err != nil {
+		return nil, fmt.Errorf("credential schema not found: %w", err)
+	}
+	if err := ms.checkUnrepaidSlash(ctx, applicantParticipant.CorporationId, applicantCs.EcosystemId); err != nil {
+		return nil, err
 	}
 
 	// [MOD-PP-MSG-2-2-3] Fee checks
@@ -1567,28 +1582,29 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 		return nil, fmt.Errorf("slashed deposit already fully repaid")
 	}
 
-	// [MOD-PP-MSG-13-2-2] corporation MUST have at least slashed_deposit in its balance.
+	// [MOD-PP-MSG-13-2-2] corporation MUST have at least the outstanding amount in its balance.
 	authorityAddr, err := sdk.AccAddressFromBech32(msg.Corporation)
 	if err != nil {
 		return nil, fmt.Errorf("invalid authority address: %w", err)
 	}
-	slashedI64, err := uint64ToInt64(applicantParticipant.SlashedDeposit, "slashed_deposit")
+	owed := applicantParticipant.SlashedDeposit - applicantParticipant.RepaidDeposit
+	owedI64, err := uint64ToInt64(owed, "owed_slashed_deposit")
 	if err != nil {
 		return nil, err
 	}
-	if !ms.bankKeeper.HasBalance(ctx, authorityAddr, sdk.NewInt64Coin(types.BondDenom, slashedI64)) {
-		return nil, fmt.Errorf("insufficient funds to repay slashed deposit: required %d", applicantParticipant.SlashedDeposit)
+	if !ms.bankKeeper.HasBalance(ctx, authorityAddr, sdk.NewInt64Coin(types.BondDenom, owedI64)) {
+		return nil, fmt.Errorf("insufficient funds to repay slashed deposit: required %d", owed)
 	}
 
 	if err := ms.delegationKeeper.ConsumeOperatorSpend(
 		ctx, msg.Corporation, msg.Operator, "/verana.pp.v1.MsgRepayParticipantSlashedTrustDeposit", now,
-		sdk.NewCoins(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(applicantParticipant.SlashedDeposit))),
+		sdk.NewCoins(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(owed))),
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
 
-	// [MOD-PP-MSG-13-3] transfer slashed_deposit to the corporation's trust deposit.
-	if err := ms.trustDeposit.AdjustTrustDeposit(ctx, applicantCorpAcct, slashedI64, "participant_repay_slashed_deposit"); err != nil {
+	// [MOD-PP-MSG-13-3] transfer the outstanding amount to the corporation's trust deposit.
+	if err := ms.trustDeposit.AdjustTrustDeposit(ctx, applicantCorpAcct, owedI64, "participant_repay_slashed_deposit"); err != nil {
 		return nil, fmt.Errorf("failed to adjust trust deposit: %w", err)
 	}
 
@@ -1604,7 +1620,7 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 		sdk.NewEvent(
 			types.EventTypeRepayParticipantSlashedTrustDeposit,
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
-			sdk.NewAttribute(types.AttributeKeyRepaidAmount, strconv.FormatUint(applicantParticipant.SlashedDeposit, 10)),
+			sdk.NewAttribute(types.AttributeKeyRepaidAmount, strconv.FormatUint(owed, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
@@ -1728,6 +1744,10 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	// [MOD-PP-MSG-14-3] Execution
 	corporationId, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
+		return nil, err
+	}
+	// [MOD-PP-MSG-14-2-5] Unrepaid slash checks
+	if err := ms.checkUnrepaidSlash(ctx, corporationId, cs.EcosystemId); err != nil {
 		return nil, err
 	}
 	// [MOD-PP-MSG-14-2-1] (did, corporation_id) consistency: did MUST NOT already
