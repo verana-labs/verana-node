@@ -61,29 +61,41 @@ func (k Keeper) validationTrustDepositInDenomAmount(validationFeesInDenom uint64
 	return tdInt.Uint64(), nil
 }
 
-// [MOD-PP-MSG-1-2-4] Overlap checks
-// Find all participants (not revoked, not slashed, not repaid) for
-// (schema_id, type, validator_participant_id, authority) with op_state = VALIDATED or PENDING.
-// If any found, abort — cannot have 2 active VPs in the same context.
-func (ms msgServer) checkOverlap(ctx sdk.Context, schemaId uint64, participantType types.ParticipantRole, validatorParticipantId uint64, corporationId uint64) error {
-	var found bool
+// [MOD-PP-MSG-1-2-4] Overlap checks.
+// A context is (validator_participant_id, role, corporation_id, did): abort if
+// an onboarding process is already running (PENDING) in it, or if a VALIDATED
+// entry in it never expires (effective_until must be set first via MSG-8).
+// schema_id is implied by validator_participant_id; repaid implies slashed.
+func (ms msgServer) checkOverlap(ctx sdk.Context, participantType types.ParticipantRole, validatorParticipantId uint64, corporationId uint64, did string) error {
+	var pendingFound bool
+	var neverExpiringID uint64
+	var neverExpiringFound bool
 	err := ms.Participant.Walk(ctx, nil, func(key uint64, participant types.Participant) (bool, error) {
-		if participant.SchemaId == schemaId &&
-			participant.Role == participantType &&
-			participant.ValidatorParticipantId == validatorParticipantId &&
-			participant.CorporationId == corporationId &&
-			participant.Revoked == nil && participant.Slashed == nil && participant.Repaid == nil &&
-			(participant.OpState == types.OnboardingState_PENDING || participant.OpState == types.OnboardingState_VALIDATED) {
-			found = true
+		if participant.ValidatorParticipantId != validatorParticipantId ||
+			participant.Role != participantType ||
+			participant.CorporationId != corporationId ||
+			participant.Did != did ||
+			participant.Revoked != nil || participant.Slashed != nil {
+			return false, nil
+		}
+		if participant.OpState == types.OnboardingState_PENDING {
+			pendingFound = true
 			return true, nil // stop walking
+		}
+		if participant.OpState == types.OnboardingState_VALIDATED && participant.EffectiveUntil == nil {
+			neverExpiringFound = true
+			neverExpiringID = participant.Id
 		}
 		return false, nil
 	})
 	if err != nil {
 		return fmt.Errorf("failed to check overlap: %w", err)
 	}
-	if found {
-		return fmt.Errorf("an active validation process already exists for this (schema_id, type, validator_participant_id, authority) context")
+	if pendingFound {
+		return fmt.Errorf("an onboarding process is already running in this (validator_participant_id, role, corporation_id, did) context")
+	}
+	if neverExpiringFound {
+		return fmt.Errorf("validated participant %d in this context never expires: set effective_until via SetParticipantEffectiveUntil first", neverExpiringID)
 	}
 	return nil
 }
