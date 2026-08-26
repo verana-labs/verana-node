@@ -69,7 +69,7 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 
 	// [MOD-PP-MSG-1-2-5] Unrepaid slash checks
 	if err := ms.checkUnrepaidSlash(ctx, corporationId, cs.EcosystemId); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unrepaid slash check failed: %w", err)
 	}
 
 	// [MOD-PP-MSG-1-2-3] Fee checks
@@ -180,19 +180,17 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 		return nil, fmt.Errorf("validator participant is not valid: %w", err)
 	}
 
-	// [MOD-PP-MSG-2-2-4] Unrepaid slash checks
-	applicantCs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, applicantParticipant.SchemaId)
-	if err != nil {
-		return nil, fmt.Errorf("credential schema not found: %w", err)
-	}
-	if err := ms.checkUnrepaidSlash(ctx, applicantParticipant.CorporationId, applicantCs.EcosystemId); err != nil {
-		return nil, err
-	}
-
 	// [MOD-PP-MSG-2-2-3] Fee checks
 	cs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, validatorParticipant.SchemaId)
 	if err != nil {
 		return nil, fmt.Errorf("credential schema not found: %w", err)
+	}
+
+	// [MOD-PP-MSG-2-2-4] Unrepaid slash checks. The spec resolves the ecosystem
+	// from applicant_participant.schema_id, which equals the validator's schema
+	// by construction (MSG-1 copies it at creation; renewal preserves it).
+	if err := ms.checkUnrepaidSlash(ctx, applicantParticipant.CorporationId, cs.EcosystemId); err != nil {
+		return nil, fmt.Errorf("unrepaid slash check failed: %w", err)
 	}
 	validationFees, feeDenom, validationDeposit, err := ms.validateAndCalculateFees(ctx, cs, validatorParticipant)
 	if err != nil {
@@ -1748,7 +1746,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	}
 	// [MOD-PP-MSG-14-2-5] Unrepaid slash checks
 	if err := ms.checkUnrepaidSlash(ctx, corporationId, cs.EcosystemId); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unrepaid slash check failed: %w", err)
 	}
 	// [MOD-PP-MSG-14-2-1] (did, corporation_id) consistency: did MUST NOT already
 	// be controlled by a different corporation.
