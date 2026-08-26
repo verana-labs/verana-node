@@ -4519,21 +4519,7 @@ func TestCreateParticipant(t *testing.T) {
 		require.Nil(t, resp)
 	})
 
-	t.Run("Invalid - effective_from missing", func(t *testing.T) {
-		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation:            authority,
-			Operator:               operator,
-			Role:                   types.ParticipantRole_ISSUER,
-			ValidatorParticipantId: ecosystemParticipantID,
-			Did:                    validDid,
-			EffectiveUntil:         &farFuture,
-		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "effective_from is required")
-		require.Nil(t, resp)
-	})
-
-	t.Run("Invalid - effective_from not in future", func(t *testing.T) {
+	t.Run("Invalid - effective_from before block time", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
 			Operator:               operator,
@@ -4544,7 +4530,7 @@ func TestCreateParticipant(t *testing.T) {
 			EffectiveUntil:         &farFuture,
 		})
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "effective_from must be in the future")
+		require.Contains(t, err.Error(), "effective_from must not be before the current block time")
 		require.Nil(t, resp)
 	})
 
@@ -4659,13 +4645,160 @@ func TestCreateParticipant(t *testing.T) {
 	})
 }
 
+func TestSelfCreateParticipant_EffectiveFromResolution(t *testing.T) {
+	k, ms, mockCsKeeper, trkKeeper, ctx, _ := setupMsgServerWithDelegation(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	blockTime := time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC)
+	sdkCtx = sdkCtx.WithBlockTime(blockTime)
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	authority := sdk.AccAddress([]byte("test_authority_addr")).String()
+	operator := sdk.AccAddress([]byte("test_operator_addr")).String()
+	validDid := "did:example:123456789abcdefghi"
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	futureTime := now.Add(1 * time.Hour)
+	farFuture := now.Add(24 * time.Hour)
+
+	trID := trkKeeper.CreateMockEcosystem(authority, validDid)
+	mockCsKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+
+	corpID := trkKeeper.RegisterCorp(authority)
+	activeValidator := types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM, Did: validDid,
+		CorporationId: corpID, Created: &now, Modified: &now,
+		OpState:       types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime, EffectiveUntil: &farFuture,
+	}
+	activeValidatorID, err := k.CreateParticipant(sdkCtx, activeValidator)
+	require.NoError(t, err)
+
+	futureValidator := types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM, Did: validDid,
+		CorporationId: corpID, Created: &now, Modified: &now,
+		OpState:       types.OnboardingState_VALIDATED,
+		EffectiveFrom: &futureTime, EffectiveUntil: &farFuture,
+	}
+	futureValidatorID, err := k.CreateParticipant(sdkCtx, futureValidator)
+	require.NoError(t, err)
+
+	t.Run("nil effective_from resolves to block time", func(t *testing.T) {
+		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
+			Corporation: authority, Operator: operator,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: activeValidatorID,
+			Did:                    validDid,
+			EffectiveUntil:         &farFuture,
+		})
+		require.NoError(t, err)
+		participant, err := k.GetParticipantByID(sdkCtx, resp.Id)
+		require.NoError(t, err)
+		require.NotNil(t, participant.EffectiveFrom)
+		require.Equal(t, now.Unix(), participant.EffectiveFrom.Unix())
+		require.NoError(t, keeper.IsValidParticipant(participant, now),
+			"participant must be active in its creation block")
+
+		var found bool
+		for _, ev := range sdkCtx.EventManager().Events() {
+			if ev.Type != types.EventTypeCreateParticipant {
+				continue
+			}
+			for _, attr := range ev.Attributes {
+				if attr.Key == types.AttributeKeyEffectiveFrom {
+					require.Equal(t, now.String(), attr.Value)
+					found = true
+				}
+			}
+		}
+		require.True(t, found, "event must carry the resolved effective_from")
+	})
+
+	t.Run("effective_from equal to block time accepted", func(t *testing.T) {
+		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
+			Corporation: authority, Operator: operator,
+			Role:                   types.ParticipantRole_VERIFIER,
+			ValidatorParticipantId: activeValidatorID,
+			Did:                    validDid,
+			EffectiveFrom:          &now,
+			EffectiveUntil:         &farFuture,
+		})
+		require.NoError(t, err)
+		participant, err := k.GetParticipantByID(sdkCtx, resp.Id)
+		require.NoError(t, err)
+		require.Equal(t, now.Unix(), participant.EffectiveFrom.Unix())
+		require.NoError(t, keeper.IsValidParticipant(participant, now),
+			"participant must be active in its creation block")
+	})
+
+	t.Run("nil effective_from with validator starting at block time accepted", func(t *testing.T) {
+		boundaryValidator := types.Participant{
+			SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM, Did: validDid,
+			CorporationId: corpID, Created: &now, Modified: &now,
+			OpState:       types.OnboardingState_VALIDATED,
+			EffectiveFrom: &now,
+		}
+		boundaryValidatorID, err := k.CreateParticipant(sdkCtx, boundaryValidator)
+		require.NoError(t, err)
+
+		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
+			Corporation: authority, Operator: operator,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: boundaryValidatorID,
+			Did:                    validDid,
+		})
+		require.NoError(t, err)
+		participant, err := k.GetParticipantByID(sdkCtx, resp.Id)
+		require.NoError(t, err)
+		require.Equal(t, now.Unix(), participant.EffectiveFrom.Unix())
+		require.Nil(t, participant.EffectiveUntil)
+	})
+
+	t.Run("effective_from before block time rejected", func(t *testing.T) {
+		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
+			Corporation: authority, Operator: operator,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: activeValidatorID,
+			Did:                    validDid,
+			EffectiveFrom:          &pastTime,
+			EffectiveUntil:         &farFuture,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "effective_from must not be before the current block time")
+	})
+
+	t.Run("nil effective_from with future validator rejected", func(t *testing.T) {
+		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
+			Corporation: authority, Operator: operator,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: futureValidatorID,
+			Did:                    validDid,
+			EffectiveUntil:         &farFuture,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "effective_from must be >= validator_participant.effective_from")
+	})
+
+	t.Run("nil effective_from with effective_until at block time rejected", func(t *testing.T) {
+		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
+			Corporation: authority, Operator: operator,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: activeValidatorID,
+			Did:                    "did:example:untilnow",
+			EffectiveUntil:         &now,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "effective_until must be greater than effective_from")
+	})
+}
+
 // =============================================================================
-// ISSUE #191: CreateRootParticipant - effective_from MUST be set
+// CreateRootParticipant - effective_from resolution [MOD-PP-MSG-7-2-1]
 // =============================================================================
-// This test validates that CreateRootParticipant requires effective_from to be set
-// and it must be in the future. Per spec [MOD-PP-MSG-7-2-1]:
-// - effective_from is mandatory
-// - effective_from must be in the future
+// effective_from is optional; if present it must not be before the block time,
+// if absent it resolves to the block time at execution.
 
 func TestCreateRootParticipant(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
@@ -4702,17 +4835,6 @@ func TestCreateRootParticipant(t *testing.T) {
 	}{
 		// === Basic checks [MOD-PP-MSG-7-2-1] ===
 		{
-			name: "1. Reject nil effective_from",
-			msg: &types.MsgCreateRootParticipant{
-				Corporation: authority, Operator: operator,
-				SchemaId: 1, Did: validDid,
-
-				EffectiveFrom: nil,
-			},
-			expectErr: true,
-			errMsg:    "effective_from is required",
-		},
-		{
 			name: "2. Reject past effective_from",
 			msg: &types.MsgCreateRootParticipant{
 				Corporation: authority, Operator: operator,
@@ -4721,18 +4843,7 @@ func TestCreateRootParticipant(t *testing.T) {
 				EffectiveFrom: &pastTime,
 			},
 			expectErr: true,
-			errMsg:    "effective_from must be in the future",
-		},
-		{
-			name: "3. Reject effective_from equal to now",
-			msg: &types.MsgCreateRootParticipant{
-				Corporation: authority, Operator: operator,
-				SchemaId: 1, Did: validDid,
-
-				EffectiveFrom: &now,
-			},
-			expectErr: true,
-			errMsg:    "effective_from must be in the future",
+			errMsg:    "effective_from must not be before the current block time",
 		},
 		{
 			name: "4. Reject effective_until <= effective_from",
@@ -4820,7 +4931,11 @@ func TestCreateRootParticipant(t *testing.T) {
 				require.NotZero(t, participant.CorporationId)
 				require.Equal(t, now, *participant.Created)
 				require.Equal(t, now, *participant.Modified)
-				require.Equal(t, tc.msg.EffectiveFrom.Unix(), participant.EffectiveFrom.Unix())
+				if tc.msg.EffectiveFrom != nil {
+					require.Equal(t, tc.msg.EffectiveFrom.Unix(), participant.EffectiveFrom.Unix())
+				} else {
+					require.Equal(t, now.Unix(), participant.EffectiveFrom.Unix())
+				}
 				if tc.msg.EffectiveUntil != nil {
 					require.Equal(t, tc.msg.EffectiveUntil.Unix(), participant.EffectiveUntil.Unix())
 				} else {
@@ -4833,6 +4948,118 @@ func TestCreateRootParticipant(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCreateRootParticipant_EffectiveFromResolution(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	blockTime := time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC)
+	sdkCtx = sdkCtx.WithBlockTime(blockTime)
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	validDid := "did:example:123456789abcdefghi"
+	authority := sdk.AccAddress([]byte("test_authority______")).String()
+	trID := trkKeeper.CreateMockEcosystem(authority, validDid)
+
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	farFuture := now.Add(24 * time.Hour)
+
+	// one schema per creation to keep the overlap check out of the way
+	// (except the final subtest, which deliberately reuses schema 1)
+	for i := uint64(1); i <= 5; i++ {
+		csKeeper.UpdateMockCredentialSchema(i, trID,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+	}
+
+	t.Run("nil effective_from resolves to block time", func(t *testing.T) {
+		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
+			Corporation: authority, Operator: authority,
+			SchemaId: 1, Did: validDid,
+			EffectiveUntil: &farFuture,
+		})
+		require.NoError(t, err)
+		participant, err := k.GetParticipantByID(sdkCtx, resp.Id)
+		require.NoError(t, err)
+		require.NotNil(t, participant.EffectiveFrom)
+		require.Equal(t, now.Unix(), participant.EffectiveFrom.Unix())
+		require.NoError(t, keeper.IsValidParticipant(participant, now),
+			"participant must be active in its creation block")
+
+		var found bool
+		for _, ev := range sdkCtx.EventManager().Events() {
+			if ev.Type != types.EventTypeCreateRootParticipant {
+				continue
+			}
+			for _, attr := range ev.Attributes {
+				if attr.Key == types.AttributeKeyEffectiveFrom {
+					require.Equal(t, now.String(), attr.Value)
+					found = true
+				}
+			}
+		}
+		require.True(t, found, "event must carry the resolved effective_from")
+	})
+
+	t.Run("effective_from equal to block time accepted", func(t *testing.T) {
+		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
+			Corporation: authority, Operator: authority,
+			SchemaId: 2, Did: validDid,
+			EffectiveFrom: &now, EffectiveUntil: &farFuture,
+		})
+		require.NoError(t, err)
+		participant, err := k.GetParticipantByID(sdkCtx, resp.Id)
+		require.NoError(t, err)
+		require.Equal(t, now.Unix(), participant.EffectiveFrom.Unix())
+		require.NoError(t, keeper.IsValidParticipant(participant, now))
+	})
+
+	t.Run("effective_from before block time rejected", func(t *testing.T) {
+		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
+			Corporation: authority, Operator: authority,
+			SchemaId: 3, Did: validDid,
+			EffectiveFrom: &pastTime, EffectiveUntil: &farFuture,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "effective_from must not be before the current block time")
+	})
+
+	t.Run("nil effective_from with effective_until at block time rejected", func(t *testing.T) {
+		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
+			Corporation: authority, Operator: authority,
+			SchemaId: 4, Did: validDid,
+			EffectiveUntil: &now,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "effective_until must be greater than effective_from")
+	})
+
+	t.Run("nil effective_from and nil effective_until never expires", func(t *testing.T) {
+		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
+			Corporation: authority, Operator: authority,
+			SchemaId: 5, Did: validDid,
+		})
+		require.NoError(t, err)
+		participant, err := k.GetParticipantByID(sdkCtx, resp.Id)
+		require.NoError(t, err)
+		require.Equal(t, now.Unix(), participant.EffectiveFrom.Unix())
+		require.Nil(t, participant.EffectiveUntil)
+	})
+
+	t.Run("nil effective_from runs the overlap check on the resolved value", func(t *testing.T) {
+		// schema 1 already holds the participant from the first subtest
+		// (effective until farFuture), so the resolved block-time value overlaps it
+		later := now.Add(48 * time.Hour)
+		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
+			Corporation: authority, Operator: authority,
+			SchemaId: 1, Did: validDid,
+			EffectiveUntil: &later,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "overlap")
+	})
 }
 
 func TestCreateRootParticipant_OverlapChecks(t *testing.T) {

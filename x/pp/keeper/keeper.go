@@ -147,14 +147,9 @@ func (k Keeper) UpdateParticipant(ctx sdk.Context, participant types.Participant
 	return k.Participant.Set(ctx, participant.Id, participant)
 }
 
-// IsValidParticipant checks if a participant is valid for a given time
-// A valid participant (ACTIVE state):
-// - Is currently effective (effective_from must be set and effective_from ≤ now < effective_until)
-// - Is not revoked
-// - Is not slashed
-// - Is not repaid
-// According to the spec, if validator participant is INACTIVE (not valid), it must abort.
-// INACTIVE means: effective_from is null OR effective_from equals now() exactly (not before).
+// IsValidParticipant checks if a participant is valid (ACTIVE) at a given time:
+// effective_from is set and <= checkTime, checkTime < effective_until when set,
+// and revoked, slashed and repaid are all null.
 func IsValidParticipant(participant types.Participant, checkTime time.Time) error {
 	// Check if participant is repaid (REPAID state)
 	if participant.Repaid != nil {
@@ -182,15 +177,10 @@ func IsValidParticipant(participant types.Participant, checkTime time.Time) erro
 		return fmt.Errorf("participant not yet effective: begins at %v", participant.EffectiveFrom)
 	}
 
-	// Check if participant is INACTIVE (effective_from is null OR equals now exactly)
-	// For ACTIVE state, effective_from must be set and must be before or equal to now
+	// INACTIVE: effective_from is null (never validated)
 	if participant.EffectiveFrom == nil {
 		return fmt.Errorf("participant is INACTIVE: effective_from is null")
 	}
-
-	// At this point, effective_from is set and checkTime is not before it
-	// This means effective_from <= now, which is required for ACTIVE state
-	// The participant is valid (ACTIVE)
 
 	return nil
 }
