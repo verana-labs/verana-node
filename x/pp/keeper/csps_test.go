@@ -218,6 +218,10 @@ func (m *TrackingTrustDepositKeeper) BurnEcosystemSlashedTrustDeposit(ctx sdk.Co
 	return nil
 }
 
+func (m *TrackingTrustDepositKeeper) HasUnrepaidSlash(_ sdk.Context, _ uint64) (bool, error) {
+	return false, nil
+}
+
 func (m *TrackingTrustDepositKeeper) GetUserAgentRewardRate(ctx sdk.Context) math.LegacyDec {
 	return m.UserAgentRewardRate
 }

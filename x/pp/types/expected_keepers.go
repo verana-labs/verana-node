@@ -79,6 +79,7 @@ type TrustDepositKeeper interface {
 	GetUserAgentRewardRate(ctx sdk.Context) math.LegacyDec
 	GetWalletUserAgentRewardRate(ctx sdk.Context) math.LegacyDec
 	BurnEcosystemSlashedTrustDeposit(ctx sdk.Context, account string, amount uint64) error
+	HasUnrepaidSlash(ctx sdk.Context, corporationID uint64) (bool, error)
 }
 
 // DigestKeeper defines the expected interface for the Digest (DI) module.

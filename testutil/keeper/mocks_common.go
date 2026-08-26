@@ -23,10 +23,18 @@ func (MockExchangeRateKeeper) GetPrice(_ context.Context, _ cstypes.PricingAsset
 // MockTrustDepositKeeper is a no-op mock satisfying x/cs / x/pp /
 // trustDeposit-consumer interfaces in test wiring. Extracted from the
 // pre-rename testutil/keeper/trustregistry.go.
-type MockTrustDepositKeeper struct{}
+type MockTrustDepositKeeper struct {
+	UnrepaidSlashCorps map[uint64]bool
+	AdjustAmounts      []int64
+}
 
-func (m *MockTrustDepositKeeper) AdjustTrustDeposit(_ sdk.Context, _ string, _ int64, _ string) error {
+func (m *MockTrustDepositKeeper) AdjustTrustDeposit(_ sdk.Context, _ string, augend int64, _ string) error {
+	m.AdjustAmounts = append(m.AdjustAmounts, augend)
 	return nil
+}
+
+func (m *MockTrustDepositKeeper) HasUnrepaidSlash(_ sdk.Context, corpID uint64) (bool, error) {
+	return m.UnrepaidSlashCorps[corpID], nil
 }
 
 func (m *MockTrustDepositKeeper) AdjustTrustDepositOnBehalf(_ sdk.Context, _ string, _ sdk.AccAddress, _ int64) error {
@@ -59,6 +67,8 @@ func (m *MockTrustDepositKeeper) BurnEcosystemSlashedTrustDeposit(_ sdk.Context,
 // testutil/keeper/trustregistry.go.
 type MockDelegationKeeper struct {
 	ErrToReturn error
+
+	OperatorSpendCalls []sdk.Coins
 
 	// Per-method overrides take precedence over ErrToReturn when non-nil, so a
 	// test can fail one authorization path while another succeeds (e.g. force the
@@ -106,7 +116,8 @@ func (m *MockDelegationKeeper) CheckVSOperatorFeeGrant(_ context.Context, _ uint
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) ConsumeOperatorSpend(_ context.Context, _, _, _ string, _ time.Time, _ sdk.Coins) error {
+func (m *MockDelegationKeeper) ConsumeOperatorSpend(_ context.Context, _, _, _ string, _ time.Time, amount sdk.Coins) error {
+	m.OperatorSpendCalls = append(m.OperatorSpendCalls, amount)
 	return m.ErrToReturn
 }
 

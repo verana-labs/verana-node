@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/collections"
@@ -77,6 +78,19 @@ func (k Keeper) Logger() log.Logger {
 // GetTrustDepositMap returns the TrustDeposit collections.Map for migration purposes.
 func (k Keeper) GetTrustDepositMap() collections.Map[uint64, types.TrustDeposit] {
 	return k.TrustDeposit
+}
+
+// HasUnrepaidSlash reports whether the corporation's trust deposit carries an
+// unrepaid network slash. A missing entry means no slash.
+func (k Keeper) HasUnrepaidSlash(ctx sdk.Context, corporationID uint64) (bool, error) {
+	td, err := k.TrustDeposit.Get(ctx, corporationID)
+	if errors.Is(err, collections.ErrNotFound) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return td.SlashedDeposit > td.RepaidDeposit, nil
 }
 
 // resolveCorporationID resolves a corporation policy_address (account) to its

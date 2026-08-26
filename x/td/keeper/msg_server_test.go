@@ -1332,3 +1332,26 @@ func TestAdjustTrustDepositSlashedGuard(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "slashed and not fully repaid")
 }
+
+func TestHasUnrepaidSlash(t *testing.T) {
+	k, ctx, _, coKeeper := keepertest.TrustdepositKeeperWithCorp(t)
+	corpID := coKeeper.IDFor("verana1hasunrepaidslashcorp")
+
+	has, err := k.HasUnrepaidSlash(ctx, corpID)
+	require.NoError(t, err)
+	require.False(t, has, "missing trust deposit entry must mean no unrepaid slash")
+
+	require.NoError(t, k.TrustDeposit.Set(ctx, corpID, types.TrustDeposit{
+		CorporationId: corpID, SlashedDeposit: 100, RepaidDeposit: 40,
+	}))
+	has, err = k.HasUnrepaidSlash(ctx, corpID)
+	require.NoError(t, err)
+	require.True(t, has)
+
+	require.NoError(t, k.TrustDeposit.Set(ctx, corpID, types.TrustDeposit{
+		CorporationId: corpID, SlashedDeposit: 100, RepaidDeposit: 100,
+	}))
+	has, err = k.HasUnrepaidSlash(ctx, corpID)
+	require.NoError(t, err)
+	require.False(t, has)
+}
