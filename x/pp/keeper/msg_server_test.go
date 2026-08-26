@@ -4931,11 +4931,7 @@ func TestCreateRootParticipant(t *testing.T) {
 				require.NotZero(t, participant.CorporationId)
 				require.Equal(t, now, *participant.Created)
 				require.Equal(t, now, *participant.Modified)
-				if tc.msg.EffectiveFrom != nil {
-					require.Equal(t, tc.msg.EffectiveFrom.Unix(), participant.EffectiveFrom.Unix())
-				} else {
-					require.Equal(t, now.Unix(), participant.EffectiveFrom.Unix())
-				}
+				require.Equal(t, tc.msg.EffectiveFrom.Unix(), participant.EffectiveFrom.Unix())
 				if tc.msg.EffectiveUntil != nil {
 					require.Equal(t, tc.msg.EffectiveUntil.Unix(), participant.EffectiveUntil.Unix())
 				} else {

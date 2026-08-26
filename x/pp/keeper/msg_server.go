@@ -709,7 +709,7 @@ func (ms msgServer) CreateRootParticipant(goCtx context.Context, msg *types.MsgC
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(rootCorpID, 10)),
 			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
-			sdk.NewAttribute(types.AttributeKeyEffectiveFrom, formatTimePtr(effectiveFromR)),
+			sdk.NewAttribute(types.AttributeKeyEffectiveFrom, effectiveFromR.String()),
 			sdk.NewAttribute(types.AttributeKeyEffectiveUntil, formatTimePtr(msg.EffectiveUntil)),
 			sdk.NewAttribute(types.AttributeKeyValidationFees, strconv.FormatUint(msg.ValidationFees, 10)),
 			sdk.NewAttribute(types.AttributeKeyIssuanceFees, strconv.FormatUint(msg.IssuanceFees, 10)),
@@ -723,27 +723,35 @@ func (ms msgServer) CreateRootParticipant(goCtx context.Context, msg *types.MsgC
 	}, nil
 }
 
+// resolveEffectiveFrom returns effective_from_r: the provided effective_from,
+// else the block time. A provided value must not be before the block time.
+func resolveEffectiveFrom(provided *time.Time, now time.Time) (time.Time, error) {
+	if provided == nil {
+		return now, nil
+	}
+	if provided.Before(now) {
+		return time.Time{}, fmt.Errorf("effective_from must not be before the current block time")
+	}
+	return *provided, nil
+}
+
 // [MOD-PP-MSG-7-2-1] Create Root Participant basic checks.
 // Returns effective_from_r: the provided effective_from, else the block time.
-func (ms msgServer) validateCreateRootParticipantBasicChecks(ctx sdk.Context, msg *types.MsgCreateRootParticipant, now time.Time) (*time.Time, error) {
+func (ms msgServer) validateCreateRootParticipantBasicChecks(ctx sdk.Context, msg *types.MsgCreateRootParticipant, now time.Time) (time.Time, error) {
 	// schema_id MUST be a valid uint64 and a credential schema entry with this id MUST exist
 	_, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, msg.SchemaId)
 	if err != nil {
-		return nil, fmt.Errorf("credential schema not found: %w", err)
+		return time.Time{}, fmt.Errorf("credential schema not found: %w", err)
 	}
 
-	// effective_from, if present, must not be before the block time; if absent it
-	// resolves to the block time
-	effectiveFromR := msg.EffectiveFrom
-	if effectiveFromR == nil {
-		effectiveFromR = &now
-	} else if effectiveFromR.Before(now) {
-		return nil, fmt.Errorf("effective_from must not be before the current block time")
+	effectiveFromR, err := resolveEffectiveFrom(msg.EffectiveFrom, now)
+	if err != nil {
+		return time.Time{}, err
 	}
 
 	// effective_until, if not null, must be greater than effective_from
-	if msg.EffectiveUntil != nil && !msg.EffectiveUntil.After(*effectiveFromR) {
-		return nil, fmt.Errorf("effective_until must be greater than effective_from")
+	if msg.EffectiveUntil != nil && !msg.EffectiveUntil.After(effectiveFromR) {
+		return time.Time{}, fmt.Errorf("effective_until must be greater than effective_from")
 	}
 
 	return effectiveFromR, nil
@@ -778,7 +786,7 @@ func (ms msgServer) validateCreateRootParticipantAuthority(ctx sdk.Context, msg 
 // not repaid) for (schema_id, ECOSYSTEM, corporation). Unlike other overlap
 // checks, validator_participant_id is not checked because ECOSYSTEM participants
 // always have validator_participant_id = NULL.
-func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *types.MsgCreateRootParticipant, effectiveFromR *time.Time) error {
+func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *types.MsgCreateRootParticipant, effectiveFromR time.Time) error {
 	msgCorpId, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
 		return err
@@ -802,7 +810,7 @@ func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *type
 		}
 
 		// if p.effective_until is greater than effective_from, abort
-		if participant.EffectiveUntil.After(*effectiveFromR) {
+		if participant.EffectiveUntil.After(effectiveFromR) {
 			return true, fmt.Errorf("existing participant %d overlaps: its effective_until is after the new effective_from", participant.Id)
 		}
 
@@ -818,7 +826,7 @@ func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *type
 
 // [MOD-PP-MSG-7-3] Create Root Participant execution
 // spec: participant.type is hardcoded to ECOSYSTEM.
-func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.MsgCreateRootParticipant, now time.Time, effectiveFromR *time.Time) (uint64, error) {
+func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.MsgCreateRootParticipant, now time.Time, effectiveFromR time.Time) (uint64, error) {
 	corporationId, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
 		return 0, err
@@ -840,7 +848,7 @@ func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.Msg
 		CorporationId:    corporationId,
 		VsOperator:       msg.VsOperator,
 		Created:          &now,
-		EffectiveFrom:    effectiveFromR,
+		EffectiveFrom:    &effectiveFromR,
 		EffectiveUntil:   msg.EffectiveUntil,
 		ValidationFees:   msg.ValidationFees,
 		IssuanceFees:     msg.IssuanceFees,
@@ -1656,16 +1664,13 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 		return nil, fmt.Errorf("validator participant is not active or future")
 	}
 
-	// [MOD-PP-MSG-14-2-1] effective_from_r: the provided effective_from, else the
-	// block time. Window checks below run on the resolved value, so an absent
-	// effective_from with a future validator aborts.
-	effectiveFrom := msg.EffectiveFrom
-	if effectiveFrom == nil {
-		effectiveFrom = &now
-	} else if effectiveFrom.Before(now) {
-		return nil, fmt.Errorf("effective_from must not be before the current block time")
+	// [MOD-PP-MSG-14-2-1] effective_from_r: window checks below run on the
+	// resolved value, so an absent effective_from with a future validator aborts.
+	effectiveFrom, err := resolveEffectiveFrom(msg.EffectiveFrom, now)
+	if err != nil {
+		return nil, err
 	}
-	if validatorParticipant.EffectiveFrom != nil && effectiveFrom.Before(*validatorParticipant.EffectiveFrom) {
+	if effectiveFrom.Before(*validatorParticipant.EffectiveFrom) {
 		return nil, fmt.Errorf("effective_from must be >= validator_participant.effective_from")
 	}
 	if validatorParticipant.EffectiveUntil != nil && !effectiveFrom.Before(*validatorParticipant.EffectiveUntil) {
@@ -1680,7 +1685,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 		}
 	} else {
 		// must be greater than effective_from
-		if !msg.EffectiveUntil.After(*effectiveFrom) {
+		if !msg.EffectiveUntil.After(effectiveFrom) {
 			return nil, fmt.Errorf("effective_until must be greater than effective_from")
 		}
 		// if validator_participant.effective_until is not null, MUST be <= validator_participant.effective_until
@@ -1749,7 +1754,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 		CorporationId:          corporationId,
 		VsOperator:             msg.VsOperator,
 		Created:                &now,
-		EffectiveFrom:          effectiveFrom,
+		EffectiveFrom:          &effectiveFrom,
 		EffectiveUntil:         msg.EffectiveUntil,
 		ValidationFees:         0,
 		IssuanceFees:           0,
@@ -1798,7 +1803,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(corporationId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 			sdk.NewAttribute(types.AttributeKeyRole, msg.Role.String()),
-			sdk.NewAttribute(types.AttributeKeyEffectiveFrom, formatTimePtr(effectiveFrom)),
+			sdk.NewAttribute(types.AttributeKeyEffectiveFrom, effectiveFrom.String()),
 			sdk.NewAttribute(types.AttributeKeyEffectiveUntil, formatTimePtr(msg.EffectiveUntil)),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
 		),
@@ -1810,7 +1815,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 }
 
 // [MOD-PP-MSG-14-2-4] Overlap checks for SelfCreateParticipant
-func (ms msgServer) checkCreateParticipantOverlap(ctx sdk.Context, schemaId uint64, msg *types.MsgSelfCreateParticipant, effectiveFrom *time.Time) error {
+func (ms msgServer) checkCreateParticipantOverlap(ctx sdk.Context, schemaId uint64, msg *types.MsgSelfCreateParticipant, effectiveFrom time.Time) error {
 	// Find all active participants (not revoked, not slashed, not repaid)
 	// for same cs.id, type, validator_participant_id, authority
 	var overlaps []types.Participant
@@ -1838,7 +1843,7 @@ func (ms msgServer) checkCreateParticipantOverlap(ctx sdk.Context, schemaId uint
 			return fmt.Errorf("existing participant %d never expires; adjust it first", p.Id)
 		}
 		// if p.effective_until is greater than effective_from, abort
-		if effectiveFrom != nil && p.EffectiveUntil.After(*effectiveFrom) {
+		if p.EffectiveUntil.After(effectiveFrom) {
 			return fmt.Errorf("existing participant %d overlaps: its effective_until is after your effective_from", p.Id)
 		}
 		// if p.effective_from is lower than effective_until, abort

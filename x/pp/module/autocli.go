@@ -445,6 +445,11 @@ Parameters:
 							DefaultValue: "",
 							Usage:        "The group policy address (corporation) on whose behalf this message is executed",
 						},
+						"effective_from": {
+							Name:         "effective-from",
+							DefaultValue: "",
+							Usage:        "Optional timestamp (RFC3339) from when the participant is effective (defaults to block time; must not be before block time)",
+						},
 					},
 				},
 				{
