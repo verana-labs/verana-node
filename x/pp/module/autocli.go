@@ -290,7 +290,7 @@ Parameters:
 						"effective_from": {
 							Name:         "effective-from",
 							DefaultValue: "",
-							Usage:        "Timestamp (RFC3339) from when the participant is effective (mandatory, must be in the future)",
+							Usage:        "Optional timestamp (RFC3339) from when the participant is effective (defaults to block time; must not be before block time)",
 						},
 						"effective_until": {
 							Name:         "effective-until",
@@ -444,6 +444,11 @@ Parameters:
 						"corporation": {
 							DefaultValue: "",
 							Usage:        "The group policy address (corporation) on whose behalf this message is executed",
+						},
+						"effective_from": {
+							Name:         "effective-from",
+							DefaultValue: "",
+							Usage:        "Optional timestamp (RFC3339) from when the participant is effective (defaults to block time; must not be before block time)",
 						},
 					},
 				},
