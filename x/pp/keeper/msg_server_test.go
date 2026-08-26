@@ -5171,20 +5171,19 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		require.Contains(t, err.Error(), "overlap")
 	})
 
-	t.Run("2. Overlap: existing effective_from before new effective_until", func(t *testing.T) {
-		// new effective_from = +25h (after existing), new effective_until = +48h
-		// But existing.effective_from (+1h) < new.effective_until (+48h) → abort
+	t.Run("2. No overlap: new window starts after existing ends", func(t *testing.T) {
+		// new window [+25h, +48h) is disjoint from existing [+1h, +24h)
 		newFrom := now.Add(25 * time.Hour)
 		newUntil := now.Add(48 * time.Hour)
-		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
+		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
 			Corporation: authority, Operator: operator,
 			SchemaId: 1, Did: validDid,
 
 			EffectiveFrom:  &newFrom,
 			EffectiveUntil: &newUntil,
 		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "overlap")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
 	})
 
 	t.Run("3. Overlap: existing participant with nil effective_until (never expires)", func(t *testing.T) {
@@ -5216,6 +5215,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "never expires")
+		require.Contains(t, err.Error(), "SetParticipantEffectiveUntil")
 	})
 
 	t.Run("4. Revoked/slashed/repaid participants excluded from overlap", func(t *testing.T) {
@@ -5256,10 +5256,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("5. No overlap: new participant starts after existing ends", func(t *testing.T) {
-		// Use schema 1 with existing participant: +1h to +24h
-		// But existing.effective_from < new.effective_until still causes overlap
-		// To truly avoid overlap, need participant on a different schema OR existing must be expired/revoked
+	t.Run("5. No overlap: successor window after existing ends", func(t *testing.T) {
 		csKeeper.UpdateMockCredentialSchema(4, trID,
 			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
@@ -5275,21 +5272,18 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		// New participant starts after first ends: +6h to +10h
-		// existing.effective_until (+5h) < new.effective_from (+6h) → OK
-		// existing.effective_from (+1h) < new.effective_until (+10h) → overlap!
-		// Per spec this is still an overlap, so it should fail
+		// successor window [+6h, +10h) starts after the existing [+1h, +5h) ends
 		secondFrom := now.Add(6 * time.Hour)
 		secondUntil := now.Add(10 * time.Hour)
-		_, err = ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
+		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
 			Corporation: authority, Operator: operator,
 			SchemaId: 4, Did: validDid,
 
 			EffectiveFrom:  &secondFrom,
 			EffectiveUntil: &secondUntil,
 		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "overlap")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
 	})
 }
 

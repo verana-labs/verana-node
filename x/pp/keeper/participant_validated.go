@@ -41,66 +41,40 @@ func calculateVPExp(currentVPExp *time.Time, validityPeriod uint64, now time.Tim
 	return &exp
 }
 
-// [MOD-PP-MSG-3-2-4] Overlap checks for SetParticipantOPToValidated
-// Find all active participants (not revoked, not slashed, not repaid) for schema_id, type, validator_participant_id, authority.
+// [MOD-PP-MSG-3-2-4] Set Participant OP to Validated overlap checks.
+// Two entries of the same applicant (corporation_id, did) must not be effective
+// at the same time under the same validator_participant_id for the same role.
+// The entry being validated becomes effective at now, so any active sibling
+// overlaps it; a future sibling overlaps unless effective_until is set and the
+// sibling starts at or after it. Excluding the applicant itself is required: on
+// a renewal the entry being validated is an active participant and would always
+// match. schema_id is implied by validator_participant_id.
 // For each, check that time ranges don't overlap.
 func (ms msgServer) checkValidatedOverlap(ctx sdk.Context, applicantParticipant types.Participant, effectiveUntil *time.Time) error {
 	now := ctx.BlockTime()
-
-	// Determine the effective_from and effective_until for the participant being validated
-	participantEffectiveFrom := applicantParticipant.EffectiveFrom
-	if participantEffectiveFrom == nil {
-		// First time validation: effective_from will be set to now
-		participantEffectiveFrom = &now
-	}
-
-	participantEffectiveUntil := effectiveUntil
-	// If effectiveUntil is nil, it will be set to op_exp later, but for overlap check
-	// a nil effective_until means never expires
-
-	err := ms.Participant.Walk(ctx, nil, func(key uint64, participant types.Participant) (bool, error) {
-		// Skip self
-		if participant.Id == applicantParticipant.Id {
+	var conflict types.Participant
+	var found bool
+	err := ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+		if p.Id == applicantParticipant.Id ||
+			p.ValidatorParticipantId != applicantParticipant.ValidatorParticipantId ||
+			p.Role != applicantParticipant.Role ||
+			p.CorporationId != applicantParticipant.CorporationId ||
+			p.Did != applicantParticipant.Did {
 			return false, nil
 		}
-
-		// Match on schema_id, role, validator_participant_id, corporation
-		if participant.SchemaId != applicantParticipant.SchemaId ||
-			participant.Role != applicantParticipant.Role ||
-			participant.ValidatorParticipantId != applicantParticipant.ValidatorParticipantId ||
-			participant.CorporationId != applicantParticipant.CorporationId {
-			return false, nil
+		if isActiveParticipant(p, now) ||
+			(isFutureParticipant(p, now) && (effectiveUntil == nil || p.EffectiveFrom.Before(*effectiveUntil))) {
+			conflict = p
+			found = true
+			return true, nil
 		}
-
-		// Skip non-active participants (revoked, slashed, repaid)
-		if participant.Revoked != nil || participant.Slashed != nil || participant.Repaid != nil {
-			return false, nil
-		}
-
-		// Skip participants without effective_from (not yet validated)
-		if participant.EffectiveFrom == nil {
-			return false, nil
-		}
-
-		// [MOD-PP-MSG-3-2-4] if p.effective_until is NULL (never expire), abort
-		if participant.EffectiveUntil == nil {
-			return true, fmt.Errorf("existing participant %d never expires, cannot create overlapping participant", participant.Id)
-		}
-
-		// if p.effective_until is greater than effective_from, abort
-		if participant.EffectiveUntil.After(*participantEffectiveFrom) {
-			return true, fmt.Errorf("existing participant %d overlaps: its effective_until is after this participant's effective_from", participant.Id)
-		}
-
-		// if p.effective_from is lower than effective_until, abort
-		if participantEffectiveUntil != nil && participant.EffectiveFrom.Before(*participantEffectiveUntil) {
-			return true, fmt.Errorf("existing participant %d overlaps: its effective_from is before this participant's effective_until", participant.Id)
-		}
-
 		return false, nil
 	})
 	if err != nil {
 		return err
+	}
+	if found {
+		return overlapError(conflict)
 	}
 	return nil
 }

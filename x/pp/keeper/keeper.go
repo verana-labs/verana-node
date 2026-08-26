@@ -185,6 +185,24 @@ func IsValidParticipant(participant types.Participant, checkTime time.Time) erro
 	return nil
 }
 
+// isActiveParticipant implements the active-participant glossary definition:
+// effective_from is set and <= now, effective_until is nil or > now, and the
+// entry is neither revoked nor slashed.
+func isActiveParticipant(p types.Participant, now time.Time) bool {
+	return p.Revoked == nil && p.Slashed == nil &&
+		p.EffectiveFrom != nil && !p.EffectiveFrom.After(now) &&
+		(p.EffectiveUntil == nil || p.EffectiveUntil.After(now))
+}
+
+// isFutureParticipant implements the future-participant glossary definition:
+// effective_from is set and > now, effective_until is nil or > effective_from,
+// and the entry is neither revoked nor slashed.
+func isFutureParticipant(p types.Participant, now time.Time) bool {
+	return p.Revoked == nil && p.Slashed == nil &&
+		p.EffectiveFrom != nil && p.EffectiveFrom.After(now) &&
+		(p.EffectiveUntil == nil || p.EffectiveUntil.After(*p.EffectiveFrom))
+}
+
 func formatTimePtr(t *time.Time) string {
 	if t == nil {
 		return ""
