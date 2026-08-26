@@ -66,13 +66,14 @@ func (k Keeper) validationTrustDepositInDenomAmount(validationFeesInDenom uint64
 // an onboarding process is already running (PENDING) in it, or if a VALIDATED
 // entry in it never expires (effective_until must be set first via MSG-8).
 // schema_id is implied by validator_participant_id; repaid implies slashed.
-func (ms msgServer) checkOverlap(ctx sdk.Context, participantType types.ParticipantRole, validatorParticipantId uint64, corporationId uint64, did string) error {
+func (ms msgServer) checkOverlap(ctx sdk.Context, role types.ParticipantRole, validatorParticipantId uint64, corporationId uint64, did string) error {
+	var pendingID uint64
 	var pendingFound bool
 	var neverExpiringID uint64
 	var neverExpiringFound bool
 	err := ms.Participant.Walk(ctx, nil, func(key uint64, participant types.Participant) (bool, error) {
 		if participant.ValidatorParticipantId != validatorParticipantId ||
-			participant.Role != participantType ||
+			participant.Role != role ||
 			participant.CorporationId != corporationId ||
 			participant.Did != did ||
 			participant.Revoked != nil || participant.Slashed != nil {
@@ -80,6 +81,7 @@ func (ms msgServer) checkOverlap(ctx sdk.Context, participantType types.Particip
 		}
 		if participant.OpState == types.OnboardingState_PENDING {
 			pendingFound = true
+			pendingID = participant.Id
 			return true, nil // stop walking
 		}
 		if participant.OpState == types.OnboardingState_VALIDATED && participant.EffectiveUntil == nil {
@@ -92,7 +94,7 @@ func (ms msgServer) checkOverlap(ctx sdk.Context, participantType types.Particip
 		return fmt.Errorf("failed to check overlap: %w", err)
 	}
 	if pendingFound {
-		return fmt.Errorf("an onboarding process is already running in this (validator_participant_id, role, corporation_id, did) context")
+		return fmt.Errorf("an onboarding process is already running in this (validator_participant_id, role, corporation_id, did) context: participant %d", pendingID)
 	}
 	if neverExpiringFound {
 		return fmt.Errorf("validated participant %d in this context never expires: set effective_until via SetParticipantEffectiveUntil first", neverExpiringID)
