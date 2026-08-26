@@ -58,7 +58,7 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 	if err != nil {
 		return nil, err
 	}
-	if err := ms.checkOverlap(ctx, validatorParticipant.SchemaId, msg.Role, msg.ValidatorParticipantId, corporationId); err != nil {
+	if err := ms.checkOverlap(ctx, msg.Role, msg.ValidatorParticipantId, corporationId, msg.Did); err != nil {
 		return nil, fmt.Errorf("overlap check failed: %w", err)
 	}
 

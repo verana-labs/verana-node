@@ -5578,8 +5578,9 @@ func TestRevokeParticipant_RequiresActiveParticipant(t *testing.T) {
 	}
 }
 
-// TestStartParticipantVP_OverlapCheck tests [MOD-PP-MSG-1-2-4]:
-// Cannot have 2 active VPs in the same (schema_id, type, validator_participant_id, authority) context.
+// TestStartParticipantVP_OverlapCheck tests [MOD-PP-MSG-1-2-4]: a second onboarding
+// process in the same (validator_participant_id, role, corporation_id, did) context
+// is blocked while one is PENDING, and by a never-expiring VALIDATED entry.
 func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -5622,8 +5623,24 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 
-	// Second VP with same (schema_id, type, validator_participant_id, authority) should fail
-	t.Run("Duplicate PENDING VP in same context", func(t *testing.T) {
+	// Second OP for the same (validator, role, corporation, did) context must fail
+	t.Run("Duplicate PENDING OP in same context", func(t *testing.T) {
+		msg2 := &types.MsgStartParticipantOP{
+			Corporation:            creator,
+			Operator:               creator,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: validatorParticipantID,
+			Did:                    validDid,
+		}
+		resp2, err := ms.StartParticipantOP(ctx, msg2)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "overlap check failed")
+		require.Contains(t, err.Error(), "an onboarding process is already running")
+		require.Nil(t, resp2)
+	})
+
+	// Same validator, same role, different did: a corporation onboards a second service
+	t.Run("Same validator different did no overlap", func(t *testing.T) {
 		msg2 := &types.MsgStartParticipantOP{
 			Corporation:            creator,
 			Operator:               creator,
@@ -5632,10 +5649,8 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 			Did:                    "did:example:different-did",
 		}
 		resp2, err := ms.StartParticipantOP(ctx, msg2)
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "overlap check failed")
-		require.Contains(t, err.Error(), "an active validation process already exists")
-		require.Nil(t, resp2)
+		require.NoError(t, err)
+		require.NotNil(t, resp2)
 	})
 
 	// Different authority should succeed (no overlap)
@@ -5683,12 +5698,249 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp4)
 	})
+
+	// Same did and role through a second validator: concurrent OPs are allowed
+	t.Run("Different validator same did and role no overlap", func(t *testing.T) {
+		secondValidator := types.Participant{
+			SchemaId:      1,
+			Role:          types.ParticipantRole_ISSUER_GRANTOR,
+			Did:           validDid,
+			CorporationId: trkKeeper.RegisterCorp(creator),
+			Created:       &now,
+			Modified:      &now,
+			OpState:       types.OnboardingState_VALIDATED,
+			EffectiveFrom: &pastTime,
+		}
+		secondValidatorID, err := k.CreateParticipant(sdkCtx, secondValidator)
+		require.NoError(t, err)
+
+		msg5 := &types.MsgStartParticipantOP{
+			Corporation:            creator,
+			Operator:               creator,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: secondValidatorID,
+			Did:                    validDid,
+		}
+		resp5, err := ms.StartParticipantOP(ctx, msg5)
+		require.NoError(t, err)
+		require.NotNil(t, resp5)
+	})
+
+	// A completed process with an expiry does not block a new one
+	t.Run("Expiring VALIDATED entry does not block new OP", func(t *testing.T) {
+		expCorp := sdk.AccAddress([]byte("expiring_corp_addr")).String()
+		expired := now.Add(-1 * time.Minute)
+		entry := types.Participant{
+			SchemaId:               1,
+			Role:                   types.ParticipantRole_ISSUER,
+			Did:                    "did:example:expiring-entry",
+			CorporationId:          trkKeeper.RegisterCorp(expCorp),
+			Created:                &now,
+			Modified:               &now,
+			ValidatorParticipantId: validatorParticipantID,
+			OpState:                types.OnboardingState_VALIDATED,
+			EffectiveFrom:          &pastTime,
+			EffectiveUntil:         &expired,
+		}
+		_, err := k.CreateParticipant(sdkCtx, entry)
+		require.NoError(t, err)
+
+		msg6 := &types.MsgStartParticipantOP{
+			Corporation:            expCorp,
+			Operator:               expCorp,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: validatorParticipantID,
+			Did:                    "did:example:expiring-entry",
+		}
+		resp6, err := ms.StartParticipantOP(ctx, msg6)
+		require.NoError(t, err)
+		require.NotNil(t, resp6)
+	})
+
+	// A completed process that never expires blocks until effective_until is set
+	t.Run("Never-expiring VALIDATED entry blocks new OP", func(t *testing.T) {
+		nevCorp := sdk.AccAddress([]byte("neverexp_corp_addr")).String()
+		entry := types.Participant{
+			SchemaId:               1,
+			Role:                   types.ParticipantRole_ISSUER,
+			Did:                    "did:example:never-entry",
+			CorporationId:          trkKeeper.RegisterCorp(nevCorp),
+			Created:                &now,
+			Modified:               &now,
+			ValidatorParticipantId: validatorParticipantID,
+			OpState:                types.OnboardingState_VALIDATED,
+			EffectiveFrom:          &pastTime,
+		}
+		_, err := k.CreateParticipant(sdkCtx, entry)
+		require.NoError(t, err)
+
+		msg7 := &types.MsgStartParticipantOP{
+			Corporation:            nevCorp,
+			Operator:               nevCorp,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: validatorParticipantID,
+			Did:                    "did:example:never-entry",
+		}
+		resp7, err := ms.StartParticipantOP(ctx, msg7)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "never expires")
+		require.Contains(t, err.Error(), "SetParticipantEffectiveUntil")
+		require.Nil(t, resp7)
+	})
+
+	// A completed process still in effect does not block its successor either:
+	// starting the next OP before the current entry expires is the renewal flow
+	t.Run("Still-effective VALIDATED entry does not block new OP", func(t *testing.T) {
+		stillCorp := sdk.AccAddress([]byte("stilleff_corp_addr")).String()
+		future := now.Add(24 * time.Hour)
+		entry := types.Participant{
+			SchemaId:               1,
+			Role:                   types.ParticipantRole_ISSUER,
+			Did:                    "did:example:still-entry",
+			CorporationId:          trkKeeper.RegisterCorp(stillCorp),
+			Created:                &now,
+			Modified:               &now,
+			ValidatorParticipantId: validatorParticipantID,
+			OpState:                types.OnboardingState_VALIDATED,
+			EffectiveFrom:          &pastTime,
+			EffectiveUntil:         &future,
+		}
+		_, err := k.CreateParticipant(sdkCtx, entry)
+		require.NoError(t, err)
+
+		resp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+			Corporation:            stillCorp,
+			Operator:               stillCorp,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: validatorParticipantID,
+			Did:                    "did:example:still-entry",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	// A cancelled, never-validated process does not trigger the never-expires guard
+	t.Run("TERMINATED entry does not block new OP", func(t *testing.T) {
+		termCorp := sdk.AccAddress([]byte("terminat_corp_addr")).String()
+		entry := types.Participant{
+			SchemaId:               1,
+			Role:                   types.ParticipantRole_ISSUER,
+			Did:                    "did:example:terminated-entry",
+			CorporationId:          trkKeeper.RegisterCorp(termCorp),
+			Created:                &now,
+			Modified:               &now,
+			ValidatorParticipantId: validatorParticipantID,
+			OpState:                types.OnboardingState_TERMINATED,
+		}
+		_, err := k.CreateParticipant(sdkCtx, entry)
+		require.NoError(t, err)
+
+		resp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+			Corporation:            termCorp,
+			Operator:               termCorp,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: validatorParticipantID,
+			Did:                    "did:example:terminated-entry",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	// Role is its own context dimension: under ECOSYSTEM onboarding both ISSUER
+	// and VERIFIER OPs share one ECOSYSTEM validator and must not collide
+	t.Run("Same validator and did different role no overlap", func(t *testing.T) {
+		csKeeper.UpdateMockCredentialSchema(2, trID,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS)
+
+		roleCorp := sdk.AccAddress([]byte("rolectx_corp_addr_")).String()
+		ecoValidator := types.Participant{
+			SchemaId:      2,
+			Role:          types.ParticipantRole_ECOSYSTEM,
+			Did:           "did:example:role-validator",
+			CorporationId: trkKeeper.RegisterCorp(creator),
+			Created:       &now,
+			Modified:      &now,
+			OpState:       types.OnboardingState_VALIDATED,
+			EffectiveFrom: &pastTime,
+		}
+		ecoValidatorID, err := k.CreateParticipant(sdkCtx, ecoValidator)
+		require.NoError(t, err)
+
+		issuerResp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+			Corporation:            roleCorp,
+			Operator:               roleCorp,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: ecoValidatorID,
+			Did:                    "did:example:role-entry",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, issuerResp)
+
+		verifierResp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+			Corporation:            roleCorp,
+			Operator:               roleCorp,
+			Role:                   types.ParticipantRole_VERIFIER,
+			ValidatorParticipantId: ecoValidatorID,
+			Did:                    "did:example:role-entry",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, verifierResp)
+	})
+
+	// Overlap is corp-scoped: a foreign corp with the same did fails on DID ownership
+	t.Run("Foreign corporation with same did fails on DID ownership not overlap", func(t *testing.T) {
+		foreignCorp := sdk.AccAddress([]byte("foreign_corp_addr_")).String()
+		_, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+			Corporation:            foreignCorp,
+			Operator:               foreignCorp,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: validatorParticipantID,
+			Did:                    validDid,
+		})
+		require.Error(t, err)
+		require.NotContains(t, err.Error(), "overlap check failed")
+		require.Contains(t, err.Error(), "is controlled by corporation")
+	})
+
+	// When a context holds both a PENDING and a never-expiring VALIDATED entry,
+	// the running-process error takes precedence
+	t.Run("PENDING message wins over never-expiring message", func(t *testing.T) {
+		bothCorp := sdk.AccAddress([]byte("both_corp_address_")).String()
+		bothCorpID := trkKeeper.RegisterCorp(bothCorp)
+		validated := types.Participant{
+			SchemaId: 1, Role: types.ParticipantRole_ISSUER, Did: "did:example:both-entry",
+			CorporationId: bothCorpID, Created: &now, Modified: &now,
+			ValidatorParticipantId: validatorParticipantID,
+			OpState:                types.OnboardingState_VALIDATED,
+			EffectiveFrom:          &pastTime,
+		}
+		_, err := k.CreateParticipant(sdkCtx, validated)
+		require.NoError(t, err)
+		pending := types.Participant{
+			SchemaId: 1, Role: types.ParticipantRole_ISSUER, Did: "did:example:both-entry",
+			CorporationId: bothCorpID, Created: &now, Modified: &now,
+			ValidatorParticipantId: validatorParticipantID,
+			OpState:                types.OnboardingState_PENDING,
+		}
+		_, err = k.CreateParticipant(sdkCtx, pending)
+		require.NoError(t, err)
+
+		_, err = ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+			Corporation:            bothCorp,
+			Operator:               bothCorp,
+			Role:                   types.ParticipantRole_ISSUER,
+			ValidatorParticipantId: validatorParticipantID,
+			Did:                    "did:example:both-entry",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "an onboarding process is already running")
+	})
 }
 
 // TestStartParticipantVP_OverlapCheck_ExcludesInactive tests [MOD-PP-MSG-1-2-4]:
-// revoked, slashed, and repaid participants must not block a new onboarding
-// process in the same (schema_id, role, validator_participant_id, corporation_id)
-// context.
+// revoked and slashed participants must not block a new onboarding process in
+// the same (validator_participant_id, role, corporation_id, did) context.
 func TestStartParticipantVP_OverlapCheck_ExcludesInactive(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -5758,6 +6010,7 @@ func TestStartParticipantVP_OverlapCheck_ExcludesInactive(t *testing.T) {
 			deadParticipant := types.Participant{
 				SchemaId:               1,
 				Role:                   types.ParticipantRole_ISSUER,
+				Did:                    tc.did,
 				CorporationId:          trkKeeper.RegisterCorp(tc.corp),
 				Created:                &now,
 				Modified:               &now,
