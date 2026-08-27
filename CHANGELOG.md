@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.3](https://github.com/verana-labs/verana-node/compare/v0.10.2...v0.10.3) (2026-08-27)
+
+
+### Bug Fixes
+
+* **deps:** bump x/feegrant to v0.2.0 to fix panic on fee grants to fresh accounts ([#41](https://github.com/verana-labs/verana-node/issues/41)) ([9b0135b](https://github.com/verana-labs/verana-node/commit/9b0135bd62f6285a0eaec4c38e81f7afe819a88b))
+* **pp:** align overlap checks of MSG-3, MSG-7, MSG-8 and MSG-14 ([#51](https://github.com/verana-labs/verana-node/issues/51)) ([5b5ed1e](https://github.com/verana-labs/verana-node/commit/5b5ed1e431dda7c27621d38fa981b6e4828ab717))
+* **pp:** block new participants on unrepaid slashes and repay only the outstanding amount ([#50](https://github.com/verana-labs/verana-node/issues/50)) ([9e08400](https://github.com/verana-labs/verana-node/commit/9e08400832561ba85198ce743a72fc76776918b2))
+* **pp:** make effective_from optional on root and self-create participant ([#48](https://github.com/verana-labs/verana-node/issues/48)) ([2e1ee14](https://github.com/verana-labs/verana-node/commit/2e1ee14d42858bc5b5b2e187885f334d42260a31))
+* **pp:** rework start-OP overlap check to per-DID context ([#49](https://github.com/verana-labs/verana-node/issues/49)) ([60f1d01](https://github.com/verana-labs/verana-node/commit/60f1d0170fd22740a77dcc13cbc779b785f587c6))
+
 ## [0.10.2](https://github.com/verana-labs/verana-node/compare/v0.10.1...v0.10.2) (2026-08-13)
 
 
