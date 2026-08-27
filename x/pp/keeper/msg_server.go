@@ -794,47 +794,58 @@ func (ms msgServer) validateCreateRootParticipantAuthority(ctx sdk.Context, msg 
 	return nil
 }
 
+// overlapsWindow reports whether p's effectiveness window overlaps the
+// requested [from, until) window: (until is nil or p.effective_from < until)
+// and (p.effective_until is nil or p.effective_until > from). p.effective_from
+// must be set (guaranteed for active and future participants).
+func overlapsWindow(p types.Participant, from time.Time, until *time.Time) bool {
+	return (until == nil || p.EffectiveFrom.Before(*until)) &&
+		(p.EffectiveUntil == nil || p.EffectiveUntil.After(from))
+}
+
+// overlapError names the conflicting entry; a never-expiring blocker carries
+// the remedy the spec prescribes.
+func overlapError(p types.Participant) error {
+	if p.EffectiveUntil == nil {
+		return fmt.Errorf("existing participant %d never expires: set effective_until via SetParticipantEffectiveUntil first", p.Id)
+	}
+	return fmt.Errorf("existing participant %d would be effective at the same time", p.Id)
+}
+
 // [MOD-PP-MSG-7-2-4] Create Root Participant overlap checks.
-// spec: find all active participants (not revoked, not slashed,
-// not repaid) for (schema_id, ECOSYSTEM, corporation). Unlike other overlap
-// checks, validator_participant_id is not checked because ECOSYSTEM participants
-// always have validator_participant_id = NULL.
+// Two root ECOSYSTEM entries of the same corporation must not be effective at
+// the same time for the same schema_id. There is no validator condition (root
+// entries have none) and no did condition (a root entry represents the
+// ecosystem itself).
 func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *types.MsgCreateRootParticipant, effectiveFromR time.Time) error {
+	now := ctx.BlockTime()
 	msgCorpId, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
 		return err
 	}
-	err = ms.Participant.Walk(ctx, nil, func(key uint64, participant types.Participant) (bool, error) {
-		// Match on schema_id, ECOSYSTEM role, and corporation.
-		if participant.SchemaId != msg.SchemaId ||
-			participant.Role != types.ParticipantRole_ECOSYSTEM ||
-			participant.CorporationId != msgCorpId {
+	var conflict types.Participant
+	var found bool
+	err = ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+		if p.SchemaId != msg.SchemaId ||
+			p.Role != types.ParticipantRole_ECOSYSTEM ||
+			p.CorporationId != msgCorpId {
 			return false, nil
 		}
-
-		// Skip non-active participants (revoked, slashed, or repaid)
-		if participant.Revoked != nil || participant.Slashed != nil || participant.Repaid != nil {
-			return false, nil
+		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&
+			overlapsWindow(p, effectiveFromR, msg.EffectiveUntil) {
+			conflict = p
+			found = true
+			return true, nil
 		}
-
-		// if p.effective_until is NULL (never expire), abort
-		if participant.EffectiveUntil == nil {
-			return true, fmt.Errorf("existing participant %d never expires, cannot create new participant", participant.Id)
-		}
-
-		// if p.effective_until is greater than effective_from, abort
-		if participant.EffectiveUntil.After(effectiveFromR) {
-			return true, fmt.Errorf("existing participant %d overlaps: its effective_until is after the new effective_from", participant.Id)
-		}
-
-		// if p.effective_from is lower than effective_until, abort
-		if msg.EffectiveUntil != nil && participant.EffectiveFrom != nil && participant.EffectiveFrom.Before(*msg.EffectiveUntil) {
-			return true, fmt.Errorf("existing participant %d overlaps: its effective_from is before the new effective_until", participant.Id)
-		}
-
 		return false, nil
 	})
-	return err
+	if err != nil {
+		return err
+	}
+	if found {
+		return overlapError(conflict)
+	}
+	return nil
 }
 
 // [MOD-PP-MSG-7-3] Create Root Participant execution
@@ -1051,53 +1062,38 @@ func (ms msgServer) isSelfCreatedParticipant(ctx sdk.Context, p types.Participan
 	}
 }
 
-// [MOD-PP-MSG-8-2-4] Overlap checks for SetParticipantEffectiveUntil
-// Walk all participants for same (schema_id, type, validator_participant_id, authority),
-// skipping self and inactive (revoked/slashed/repaid).
+// [MOD-PP-MSG-8-2-4] Set Participant Effective Until overlap checks.
+// The adjusted window [applicant.effective_from, effective_until) must not
+// overlap a sibling of the same applicant (corporation_id, did) with the same
+// schema_id, role and validator_participant_id. schema_id is kept because
+// validator_participant_id is 0 for root ECOSYSTEM entries and cannot imply the
+// schema. The applicant is an active participant, so effective_from is set.
 func (ms msgServer) checkAdjustParticipantOverlap(ctx sdk.Context, applicantParticipant types.Participant, effectiveUntil *time.Time) error {
-	err := ms.Participant.Walk(ctx, nil, func(key uint64, participant types.Participant) (bool, error) {
-		// Skip self
-		if participant.Id == applicantParticipant.Id {
+	now := ctx.BlockTime()
+	var conflict types.Participant
+	var found bool
+	err := ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+		if p.Id == applicantParticipant.Id ||
+			p.SchemaId != applicantParticipant.SchemaId ||
+			p.Role != applicantParticipant.Role ||
+			p.ValidatorParticipantId != applicantParticipant.ValidatorParticipantId ||
+			p.CorporationId != applicantParticipant.CorporationId ||
+			p.Did != applicantParticipant.Did {
 			return false, nil
 		}
-
-		// Match on schema_id, role, validator_participant_id, corporation
-		if participant.SchemaId != applicantParticipant.SchemaId ||
-			participant.Role != applicantParticipant.Role ||
-			participant.ValidatorParticipantId != applicantParticipant.ValidatorParticipantId ||
-			participant.CorporationId != applicantParticipant.CorporationId {
-			return false, nil
+		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&
+			overlapsWindow(p, *applicantParticipant.EffectiveFrom, effectiveUntil) {
+			conflict = p
+			found = true
+			return true, nil
 		}
-
-		// Skip non-active participants (revoked, slashed, repaid)
-		if participant.Revoked != nil || participant.Slashed != nil || participant.Repaid != nil {
-			return false, nil
-		}
-
-		// Skip participants without effective_from (not yet validated)
-		if participant.EffectiveFrom == nil {
-			return false, nil
-		}
-
-		// [MOD-PP-MSG-8-2-4] if p.effective_until is NULL (never expire), abort
-		if participant.EffectiveUntil == nil {
-			return true, fmt.Errorf("existing participant %d never expires, cannot create overlapping participant", participant.Id)
-		}
-
-		// if p.effective_until > applicant_participant.effective_from, abort
-		if applicantParticipant.EffectiveFrom != nil && participant.EffectiveUntil.After(*applicantParticipant.EffectiveFrom) {
-			return true, fmt.Errorf("existing participant %d overlaps: its effective_until is after this participant's effective_from", participant.Id)
-		}
-
-		// if p.effective_from < msg.effective_until, abort
-		if effectiveUntil != nil && participant.EffectiveFrom.Before(*effectiveUntil) {
-			return true, fmt.Errorf("existing participant %d overlaps: its effective_from is before the requested effective_until", participant.Id)
-		}
-
 		return false, nil
 	})
 	if err != nil {
 		return err
+	}
+	if found {
+		return overlapError(conflict)
 	}
 	return nil
 }
@@ -1741,8 +1737,8 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	}
 
 	// [MOD-PP-MSG-14-2-4] Overlap checks
-	if err := ms.checkCreateParticipantOverlap(ctx, validatorParticipant.SchemaId, msg, effectiveFrom); err != nil {
-		return nil, err
+	if err := ms.checkCreateParticipantOverlap(ctx, msg, effectiveFrom); err != nil {
+		return nil, fmt.Errorf("overlap check failed: %w", err)
 	}
 
 	// [MOD-PP-MSG-14-3] Execution
@@ -1832,43 +1828,38 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	}, nil
 }
 
-// [MOD-PP-MSG-14-2-4] Overlap checks for SelfCreateParticipant
-func (ms msgServer) checkCreateParticipantOverlap(ctx sdk.Context, schemaId uint64, msg *types.MsgSelfCreateParticipant, effectiveFrom time.Time) error {
-	// Find all active participants (not revoked, not slashed, not repaid)
-	// for same cs.id, type, validator_participant_id, authority
-	var overlaps []types.Participant
+// [MOD-PP-MSG-14-2-4] Self Create Participant overlap checks.
+// Two entries of the same applicant (corporation_id, did) must not be effective
+// at the same time under the same validator_participant_id for the same role.
+// schema_id is implied by validator_participant_id.
+func (ms msgServer) checkCreateParticipantOverlap(ctx sdk.Context, msg *types.MsgSelfCreateParticipant, effectiveFrom time.Time) error {
+	now := ctx.BlockTime()
 	msgCorpId, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
 		return err
 	}
-	err = ms.Participant.Walk(ctx, nil, func(id uint64, p types.Participant) (stop bool, err error) {
-		if p.SchemaId == schemaId &&
-			p.Role == msg.Role &&
-			p.ValidatorParticipantId == msg.ValidatorParticipantId &&
-			p.CorporationId == msgCorpId &&
-			p.Revoked == nil && p.Slashed == nil && p.Repaid == nil {
-			overlaps = append(overlaps, p)
+	var conflict types.Participant
+	var found bool
+	err = ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+		if p.ValidatorParticipantId != msg.ValidatorParticipantId ||
+			p.Role != msg.Role ||
+			p.CorporationId != msgCorpId ||
+			p.Did != msg.Did {
+			return false, nil
+		}
+		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&
+			overlapsWindow(p, effectiveFrom, msg.EffectiveUntil) {
+			conflict = p
+			found = true
+			return true, nil
 		}
 		return false, nil
 	})
 	if err != nil {
-		return fmt.Errorf("failed to check participant overlap: %w", err)
+		return err
 	}
-
-	for _, p := range overlaps {
-		// if p.effective_until is NULL (never expire), abort
-		if p.EffectiveUntil == nil {
-			return fmt.Errorf("existing participant %d never expires; adjust it first", p.Id)
-		}
-		// if p.effective_until is greater than effective_from, abort
-		if p.EffectiveUntil.After(effectiveFrom) {
-			return fmt.Errorf("existing participant %d overlaps: its effective_until is after your effective_from", p.Id)
-		}
-		// if p.effective_from is lower than effective_until, abort
-		if msg.EffectiveUntil != nil && p.EffectiveFrom != nil && p.EffectiveFrom.Before(*msg.EffectiveUntil) {
-			return fmt.Errorf("existing participant %d overlaps: its effective_from is before your effective_until", p.Id)
-		}
+	if found {
+		return overlapError(conflict)
 	}
-
 	return nil
 }
