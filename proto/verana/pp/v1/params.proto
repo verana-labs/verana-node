@@ -10,6 +10,4 @@ option go_package = "github.com/verana-labs/verana-node/x/pp/types";
 message Params {
   option (amino.name) = "verana/x/pp/Params";
   option (gogoproto.equal) = true;
-
-  uint64 validation_term_requested_timeout_days = 1;
 }

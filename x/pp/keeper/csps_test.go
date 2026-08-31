@@ -320,23 +320,17 @@ func (k *TrackingCredentialSchemaKeeper) GetCredentialSchemaById(ctx sdk.Context
 // policy_address → CorporationView so the linked TrackingCorporationKeeper can
 // resolve signers back to a corp.id matching ec.CorporationId.
 type TrackingEcosystemKeeper struct {
-	ecosystems     map[uint64]ectypes.Ecosystem
-	trustUnitPrice uint64
+	ecosystems map[uint64]ectypes.Ecosystem
 	// corporationByPolicyAddr is shared with TrackingCorporationKeeper so the
 	// signer→corp.id resolution mirrors the on-chain co_keeper.
 	corporationByPolicyAddr map[string]types.CorporationView
 }
 
-func NewTrackingEcosystemKeeper(trustUnitPrice uint64) *TrackingEcosystemKeeper {
+func NewTrackingEcosystemKeeper() *TrackingEcosystemKeeper {
 	return &TrackingEcosystemKeeper{
 		ecosystems:              make(map[uint64]ectypes.Ecosystem),
-		trustUnitPrice:          trustUnitPrice,
 		corporationByPolicyAddr: make(map[string]types.CorporationView),
 	}
-}
-
-func (k *TrackingEcosystemKeeper) GetTrustUnitPrice(ctx sdk.Context) uint64 {
-	return k.trustUnitPrice
 }
 
 func (k *TrackingEcosystemKeeper) GetEcosystem(ctx context.Context, id uint64) (ectypes.Ecosystem, error) {
@@ -422,7 +416,7 @@ func (k *TrackingCorporationKeeper) ResolveDIDOwner(_ context.Context, _ string)
 }
 
 // setupTrackingMsgServer creates msg server with tracking mocks
-func setupTrackingMsgServer(t testing.TB, uaRate, wuaRate, tdRate string, trustUnitPrice uint64) (
+func setupTrackingMsgServer(t testing.TB, uaRate, wuaRate, tdRate string) (
 	keeper.Keeper,
 	types.MsgServer,
 	*TrackingCredentialSchemaKeeper,
@@ -444,7 +438,7 @@ func setupTrackingMsgServer(t testing.TB, uaRate, wuaRate, tdRate string, trustU
 
 	// Create tracking keepers
 	csKeeper := NewTrackingCredentialSchemaKeeper()
-	ekKeeper := NewTrackingEcosystemKeeper(trustUnitPrice)
+	ekKeeper := NewTrackingEcosystemKeeper()
 	coKeeper := NewTrackingCorporationKeeper(ekKeeper)
 	bankKeeper := NewTrackingBankKeeper()
 	tdKeeper := NewTrackingTrustDepositKeeper(uaRate, wuaRate, tdRate, bankKeeper)
@@ -487,12 +481,10 @@ func TestAgentRewardsDistribution(t *testing.T) {
 	// - user_agent_reward_rate = 10% (0.1)
 	// - wallet_user_agent_reward_rate = 5% (0.05)
 	// - trust_deposit_rate = 20% (0.2)
-	// - trust_unit_price = 1 (for easy calculation)
 	k, ms, csKeeper, trkKeeper, bankKeeper, tdKeeper, ctx := setupTrackingMsgServer(t,
 		"0.1",  // user_agent_reward_rate
 		"0.05", // wallet_user_agent_reward_rate
 		"0.2",  // trust_deposit_rate
-		1,      // trust_unit_price
 	)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -769,7 +761,6 @@ func TestAgentRewardsWithZeroFees(t *testing.T) {
 		"0.1",  // user_agent_reward_rate
 		"0.05", // wallet_user_agent_reward_rate
 		"0.2",  // trust_deposit_rate
-		1,      // trust_unit_price
 	)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -886,7 +877,6 @@ func TestAgentRewardsWithDiscount(t *testing.T) {
 		"0.1",  // user_agent_reward_rate
 		"0.05", // wallet_user_agent_reward_rate
 		"0.2",  // trust_deposit_rate
-		1,      // trust_unit_price
 	)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -1033,7 +1023,6 @@ func TestParticipantSession_VSToVS_NoAgents(t *testing.T) {
 		"0.1",  // user_agent_reward_rate
 		"0.05", // wallet_user_agent_reward_rate
 		"0.2",  // trust_deposit_rate
-		1,      // trust_unit_price
 	)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
@@ -1143,7 +1132,7 @@ func TestParticipantSession_VSToVS_NoAgents(t *testing.T) {
 // coin while the trust deposit is staked in the native denom (converted via
 // getPrice). trust_deposit_rate = 0.2, no agent rewards.
 func TestParticipantSession_NonNativeCoinPricing(t *testing.T) {
-	k, ms, csKeeper, trkKeeper, bankKeeper, tdKeeper, ctx := setupTrackingMsgServer(t, "0", "0", "0.2", 1)
+	k, ms, csKeeper, trkKeeper, bankKeeper, tdKeeper, ctx := setupTrackingMsgServer(t, "0", "0", "0.2")
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	const pricingCoin = "uusdc"
@@ -1212,7 +1201,7 @@ func TestParticipantSession_NonNativeCoinPricing(t *testing.T) {
 // settled off-chain (no on-chain fee transfer), only the native trust deposit
 // is staked on-chain. trust_deposit_rate = 0.2, no agent rewards.
 func TestParticipantSession_FiatPricing(t *testing.T) {
-	k, ms, csKeeper, trkKeeper, bankKeeper, tdKeeper, ctx := setupTrackingMsgServer(t, "0", "0", "0.2", 1)
+	k, ms, csKeeper, trkKeeper, bankKeeper, tdKeeper, ctx := setupTrackingMsgServer(t, "0", "0", "0.2")
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	creator := sdk.AccAddress([]byte("fiat_creator________")).String()

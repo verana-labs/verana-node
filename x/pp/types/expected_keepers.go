@@ -39,11 +39,9 @@ type CredentialSchemaKeeper interface {
 }
 
 // EcosystemKeeper defines the expected ecosystem keeper: x/pp reads the
-// Ecosystem row (ec.CorporationId) to authorize CredentialSchema owners, and
-// uses trust-unit pricing for fee math.
+// Ecosystem row (ec.CorporationId) to authorize CredentialSchema owners.
 type EcosystemKeeper interface {
 	GetEcosystem(ctx context.Context, id uint64) (ectypes.Ecosystem, error)
-	GetTrustUnitPrice(ctx sdk.Context) uint64
 	ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error)
 }
 

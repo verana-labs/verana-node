@@ -215,12 +215,6 @@
     },
     "verana.ec.v1.Params": {
       "type": "object",
-      "properties": {
-        "trust_unit_price": {
-          "type": "string",
-          "format": "uint64"
-        }
-      },
       "description": "Params defines the parameters for the module."
     },
     "verana.ec.v1.QueryGetEcosystemResponse": {

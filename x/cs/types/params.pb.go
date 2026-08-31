@@ -26,12 +26,12 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Params defines the parameters for the module.
 type Params struct {
-	CredentialSchemaSchemaMaxSize                                  uint64 `protobuf:"varint,2,opt,name=credential_schema_schema_max_size,json=credentialSchemaSchemaMaxSize,proto3" json:"credential_schema_schema_max_size,omitempty"`
-	CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays   uint32 `protobuf:"varint,3,opt,name=credential_schema_issuer_grantor_validation_validity_period_max_days,json=credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays,proto3" json:"credential_schema_issuer_grantor_validation_validity_period_max_days,omitempty"`
-	CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays uint32 `protobuf:"varint,4,opt,name=credential_schema_verifier_grantor_validation_validity_period_max_days,json=credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays,proto3" json:"credential_schema_verifier_grantor_validation_validity_period_max_days,omitempty"`
-	CredentialSchemaIssuerValidationValidityPeriodMaxDays          uint32 `protobuf:"varint,5,opt,name=credential_schema_issuer_validation_validity_period_max_days,json=credentialSchemaIssuerValidationValidityPeriodMaxDays,proto3" json:"credential_schema_issuer_validation_validity_period_max_days,omitempty"`
-	CredentialSchemaVerifierValidationValidityPeriodMaxDays        uint32 `protobuf:"varint,6,opt,name=credential_schema_verifier_validation_validity_period_max_days,json=credentialSchemaVerifierValidationValidityPeriodMaxDays,proto3" json:"credential_schema_verifier_validation_validity_period_max_days,omitempty"`
-	CredentialSchemaHolderValidationValidityPeriodMaxDays          uint32 `protobuf:"varint,7,opt,name=credential_schema_holder_validation_validity_period_max_days,json=credentialSchemaHolderValidationValidityPeriodMaxDays,proto3" json:"credential_schema_holder_validation_validity_period_max_days,omitempty"`
+	CredentialSchemaSchemaMaxSize                                  uint64 `protobuf:"varint,1,opt,name=credential_schema_schema_max_size,json=credentialSchemaSchemaMaxSize,proto3" json:"credential_schema_schema_max_size,omitempty"`
+	CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays   uint32 `protobuf:"varint,2,opt,name=credential_schema_issuer_grantor_validation_validity_period_max_days,json=credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays,proto3" json:"credential_schema_issuer_grantor_validation_validity_period_max_days,omitempty"`
+	CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays uint32 `protobuf:"varint,3,opt,name=credential_schema_verifier_grantor_validation_validity_period_max_days,json=credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays,proto3" json:"credential_schema_verifier_grantor_validation_validity_period_max_days,omitempty"`
+	CredentialSchemaIssuerValidationValidityPeriodMaxDays          uint32 `protobuf:"varint,4,opt,name=credential_schema_issuer_validation_validity_period_max_days,json=credentialSchemaIssuerValidationValidityPeriodMaxDays,proto3" json:"credential_schema_issuer_validation_validity_period_max_days,omitempty"`
+	CredentialSchemaVerifierValidationValidityPeriodMaxDays        uint32 `protobuf:"varint,5,opt,name=credential_schema_verifier_validation_validity_period_max_days,json=credentialSchemaVerifierValidationValidityPeriodMaxDays,proto3" json:"credential_schema_verifier_validation_validity_period_max_days,omitempty"`
+	CredentialSchemaHolderValidationValidityPeriodMaxDays          uint32 `protobuf:"varint,6,opt,name=credential_schema_holder_validation_validity_period_max_days,json=credentialSchemaHolderValidationValidityPeriodMaxDays,proto3" json:"credential_schema_holder_validation_validity_period_max_days,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -123,25 +123,25 @@ var fileDescriptor_00b75c8faa1f4dcc = []byte{
 	0x09, 0x26, 0xe6, 0x66, 0xe6, 0xe5, 0xeb, 0x83, 0x49, 0x88, 0x02, 0x29, 0x91, 0xf4, 0xfc, 0xf4,
 	0x7c, 0x30, 0x53, 0x1f, 0xc4, 0x82, 0x88, 0x2a, 0x75, 0xb0, 0x71, 0xb1, 0x05, 0x80, 0xcd, 0x11,
 	0xf2, 0xe0, 0x52, 0x4c, 0x2e, 0x4a, 0x4d, 0x49, 0xcd, 0x2b, 0xc9, 0x4c, 0xcc, 0x89, 0x2f, 0x4e,
-	0xce, 0x48, 0xcd, 0x4d, 0x84, 0x51, 0xb9, 0x89, 0x15, 0xf1, 0xc5, 0x99, 0x55, 0xa9, 0x12, 0x4c,
+	0xce, 0x48, 0xcd, 0x4d, 0x84, 0x51, 0xb9, 0x89, 0x15, 0xf1, 0xc5, 0x99, 0x55, 0xa9, 0x12, 0x8c,
 	0x0a, 0x8c, 0x1a, 0x2c, 0x41, 0xb2, 0x08, 0x85, 0xc1, 0x60, 0x05, 0x10, 0xd2, 0x37, 0xb1, 0x22,
 	0x38, 0xb3, 0x2a, 0x55, 0xa8, 0x8b, 0x91, 0xcb, 0x05, 0xd3, 0xa8, 0xcc, 0xe2, 0xe2, 0xd2, 0xd4,
 	0xa2, 0xf8, 0xf4, 0xa2, 0xc4, 0xbc, 0x92, 0xfc, 0xa2, 0xf8, 0xb2, 0xc4, 0x9c, 0xcc, 0x94, 0xc4,
 	0x92, 0xcc, 0xfc, 0x3c, 0x08, 0x33, 0xb3, 0xa4, 0x32, 0xbe, 0x20, 0xb5, 0x28, 0x33, 0x3f, 0x05,
-	0x6c, 0x5b, 0x4a, 0x62, 0x65, 0xb1, 0x04, 0xb3, 0x02, 0xa3, 0x06, 0x6f, 0x90, 0x0d, 0xba, 0x6d,
+	0x6c, 0x5b, 0x4a, 0x62, 0x65, 0xb1, 0x04, 0x93, 0x02, 0xa3, 0x06, 0x6f, 0x90, 0x0d, 0xba, 0x6d,
 	0x9e, 0x60, 0x93, 0xdc, 0x21, 0x06, 0x85, 0xc1, 0xcd, 0x09, 0x83, 0x1a, 0x13, 0x00, 0x36, 0xc5,
 	0x37, 0xb1, 0xc2, 0x25, 0xb1, 0xb2, 0x58, 0xa8, 0x8f, 0x91, 0xcb, 0x0d, 0xd3, 0x31, 0x65, 0xa9,
-	0x45, 0x99, 0x69, 0x99, 0x24, 0x3a, 0x87, 0x05, 0xec, 0x1c, 0x3b, 0x74, 0xe7, 0x84, 0x41, 0xcd,
-	0x22, 0xd2, 0x41, 0xd5, 0x5c, 0x36, 0x38, 0x03, 0x87, 0x18, 0x57, 0xb0, 0x82, 0x5d, 0x61, 0x8a,
-	0x3d, 0x50, 0x08, 0x59, 0x5e, 0xcf, 0x65, 0x87, 0x27, 0x30, 0x88, 0xb1, 0x9e, 0x0d, 0x6c, 0xbd,
-	0x39, 0xae, 0x40, 0x20, 0xcb, 0xf7, 0x19, 0xf9, 0x39, 0x29, 0x44, 0x5a, 0xcf, 0x8e, 0xdd, 0xf7,
+	0x45, 0x99, 0x69, 0x99, 0x24, 0x3a, 0x87, 0x19, 0xec, 0x1c, 0x3b, 0x74, 0xe7, 0x84, 0x41, 0xcd,
+	0x22, 0xd2, 0x41, 0xd5, 0x5c, 0x36, 0x38, 0x03, 0x87, 0x18, 0x57, 0xb0, 0x80, 0x5d, 0x61, 0x8a,
+	0x3d, 0x50, 0x08, 0x59, 0x5e, 0xcf, 0x65, 0x87, 0x27, 0x30, 0x88, 0xb1, 0x9e, 0x15, 0x6c, 0xbd,
+	0x39, 0xae, 0x40, 0x20, 0xcb, 0xf7, 0x19, 0xf9, 0x39, 0x29, 0x44, 0x5a, 0xcf, 0x86, 0xdd, 0xf7,
 	0x1e, 0x60, 0x13, 0x08, 0x58, 0x6e, 0x25, 0xfd, 0x62, 0x81, 0x3c, 0x63, 0xd7, 0xf3, 0x0d, 0x5a,
 	0x42, 0xd0, 0x8c, 0x54, 0x01, 0xca, 0x4a, 0x90, 0xf4, 0xef, 0xe4, 0x7e, 0xe2, 0x91, 0x1c, 0xe3,
 	0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c,
 	0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x51, 0xba, 0xe9, 0x99, 0x25, 0x19, 0xa5, 0x49, 0x7a, 0xc9, 0xf9,
 	0xb9, 0xfa, 0x10, 0x8d, 0xba, 0x39, 0x89, 0x49, 0xc5, 0x30, 0x76, 0x5e, 0x7e, 0x4a, 0x2a, 0xc4,
 	0xa4, 0x92, 0xca, 0x82, 0xd4, 0xe2, 0x24, 0x36, 0x70, 0xd6, 0x32, 0x06, 0x04, 0x00, 0x00, 0xff,
-	0xff, 0x83, 0xa0, 0x14, 0xdc, 0xae, 0x03, 0x00, 0x00,
+	0xff, 0x84, 0x0c, 0x27, 0xf6, 0xae, 0x03, 0x00, 0x00,
 }
 
 func (this *Params) Equal(that interface{}) bool {
@@ -206,32 +206,32 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.CredentialSchemaHolderValidationValidityPeriodMaxDays != 0 {
 		i = encodeVarintParams(dAtA, i, uint64(m.CredentialSchemaHolderValidationValidityPeriodMaxDays))
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x30
 	}
 	if m.CredentialSchemaVerifierValidationValidityPeriodMaxDays != 0 {
 		i = encodeVarintParams(dAtA, i, uint64(m.CredentialSchemaVerifierValidationValidityPeriodMaxDays))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x28
 	}
 	if m.CredentialSchemaIssuerValidationValidityPeriodMaxDays != 0 {
 		i = encodeVarintParams(dAtA, i, uint64(m.CredentialSchemaIssuerValidationValidityPeriodMaxDays))
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x20
 	}
 	if m.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays != 0 {
 		i = encodeVarintParams(dAtA, i, uint64(m.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x18
 	}
 	if m.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays != 0 {
 		i = encodeVarintParams(dAtA, i, uint64(m.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x10
 	}
 	if m.CredentialSchemaSchemaMaxSize != 0 {
 		i = encodeVarintParams(dAtA, i, uint64(m.CredentialSchemaSchemaMaxSize))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -309,7 +309,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: Params: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 2:
+		case 1:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaSchemaMaxSize", wireType)
 			}
@@ -328,7 +328,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 3:
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays", wireType)
 			}
@@ -347,7 +347,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 4:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays", wireType)
 			}
@@ -366,7 +366,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 5:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaIssuerValidationValidityPeriodMaxDays", wireType)
 			}
@@ -385,7 +385,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 6:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaVerifierValidationValidityPeriodMaxDays", wireType)
 			}
@@ -404,7 +404,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaHolderValidationValidityPeriodMaxDays", wireType)
 			}

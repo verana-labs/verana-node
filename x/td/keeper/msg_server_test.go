@@ -59,11 +59,10 @@ func TestMsgReclaimTrustDepositYield(t *testing.T) {
 			setup: func() {
 				// Set params with no yield (share value = 1.0)
 				params := types.Params{
-					TrustDepositShareValue:      math.LegacyMustNewDecFromStr("1.0"),
-					TrustDepositReclaimBurnRate: math.LegacyMustNewDecFromStr("0.6"),
-					TrustDepositRate:            math.LegacyMustNewDecFromStr("0.2"),
-					WalletUserAgentRewardRate:   math.LegacyMustNewDecFromStr("0.3"),
-					UserAgentRewardRate:         math.LegacyMustNewDecFromStr("0.2"),
+					TrustDepositShareValue:    math.LegacyMustNewDecFromStr("1.0"),
+					TrustDepositRate:          math.LegacyMustNewDecFromStr("0.2"),
+					WalletUserAgentRewardRate: math.LegacyMustNewDecFromStr("0.3"),
+					UserAgentRewardRate:       math.LegacyMustNewDecFromStr("0.2"),
 				}
 				err := k.SetParams(ctx, params)
 				require.NoError(t, err)
@@ -90,11 +89,10 @@ func TestMsgReclaimTrustDepositYield(t *testing.T) {
 			setup: func() {
 				// Set params with yield (share value = 1.5)
 				params := types.Params{
-					TrustDepositShareValue:      math.LegacyMustNewDecFromStr("1.5"),
-					TrustDepositReclaimBurnRate: math.LegacyMustNewDecFromStr("0.6"),
-					TrustDepositRate:            math.LegacyMustNewDecFromStr("0.2"),
-					WalletUserAgentRewardRate:   math.LegacyMustNewDecFromStr("0.3"),
-					UserAgentRewardRate:         math.LegacyMustNewDecFromStr("0.2"),
+					TrustDepositShareValue:    math.LegacyMustNewDecFromStr("1.5"),
+					TrustDepositRate:          math.LegacyMustNewDecFromStr("0.2"),
+					WalletUserAgentRewardRate: math.LegacyMustNewDecFromStr("0.3"),
+					UserAgentRewardRate:       math.LegacyMustNewDecFromStr("0.2"),
 				}
 				err := k.SetParams(ctx, params)
 				require.NoError(t, err)
@@ -360,11 +358,10 @@ func TestUtilityFunctions(t *testing.T) {
 	t.Run("Parameter getters", func(t *testing.T) {
 		// Set custom params for testing
 		params := types.Params{
-			TrustDepositRate:            math.LegacyMustNewDecFromStr("0.2"),
-			UserAgentRewardRate:         math.LegacyMustNewDecFromStr("0.3"),
-			WalletUserAgentRewardRate:   math.LegacyMustNewDecFromStr("0.4"),
-			TrustDepositShareValue:      math.LegacyMustNewDecFromStr("1.5"),
-			TrustDepositReclaimBurnRate: math.LegacyMustNewDecFromStr("0.6"),
+			TrustDepositRate:          math.LegacyMustNewDecFromStr("0.2"),
+			UserAgentRewardRate:       math.LegacyMustNewDecFromStr("0.3"),
+			WalletUserAgentRewardRate: math.LegacyMustNewDecFromStr("0.4"),
+			TrustDepositShareValue:    math.LegacyMustNewDecFromStr("1.5"),
 		}
 
 		err := k.SetParams(ctx, params)
@@ -392,11 +389,10 @@ func govAuthority() string {
 
 func defaultTestParams() types.Params {
 	return types.Params{
-		TrustDepositShareValue:      math.LegacyMustNewDecFromStr("1.0"),
-		TrustDepositReclaimBurnRate: math.LegacyMustNewDecFromStr("0.6"),
-		TrustDepositRate:            math.LegacyMustNewDecFromStr("0.2"),
-		WalletUserAgentRewardRate:   math.LegacyMustNewDecFromStr("0.3"),
-		UserAgentRewardRate:         math.LegacyMustNewDecFromStr("0.2"),
+		TrustDepositShareValue:    math.LegacyMustNewDecFromStr("1.0"),
+		TrustDepositRate:          math.LegacyMustNewDecFromStr("0.2"),
+		WalletUserAgentRewardRate: math.LegacyMustNewDecFromStr("0.3"),
+		UserAgentRewardRate:       math.LegacyMustNewDecFromStr("0.2"),
 	}
 }
 

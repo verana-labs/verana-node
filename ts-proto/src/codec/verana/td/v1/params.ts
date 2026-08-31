@@ -11,57 +11,46 @@ export const protobufPackage = "verana.td.v1";
 
 /** Params defines the parameters for the module. */
 export interface Params {
-  trustDepositReclaimBurnRate: string;
   trustDepositShareValue: string;
   trustDepositRate: string;
   walletUserAgentRewardRate: string;
   userAgentRewardRate: string;
   /** trust_deposit_max_yield_rate is the maximum annualized yield rate (e.g. 0.15 for 15%) */
   trustDepositMaxYieldRate: string;
-  /** yield_intermediate_pool is the Bech32 string for the Yield Intermediate Pool module account */
-  yieldIntermediatePool: string;
   /** trust_deposit_block_reward_share is the fraction of block rewards allocated to trust deposit yield (e.g. "0.2" for 20%) */
   trustDepositBlockRewardShare: string;
 }
 
 function createBaseParams(): Params {
   return {
-    trustDepositReclaimBurnRate: "",
     trustDepositShareValue: "",
     trustDepositRate: "",
     walletUserAgentRewardRate: "",
     userAgentRewardRate: "",
     trustDepositMaxYieldRate: "",
-    yieldIntermediatePool: "",
     trustDepositBlockRewardShare: "",
   };
 }
 
 export const Params = {
   encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.trustDepositReclaimBurnRate !== "") {
-      writer.uint32(10).string(message.trustDepositReclaimBurnRate);
-    }
     if (message.trustDepositShareValue !== "") {
-      writer.uint32(18).string(message.trustDepositShareValue);
+      writer.uint32(10).string(message.trustDepositShareValue);
     }
     if (message.trustDepositRate !== "") {
-      writer.uint32(26).string(message.trustDepositRate);
+      writer.uint32(18).string(message.trustDepositRate);
     }
     if (message.walletUserAgentRewardRate !== "") {
-      writer.uint32(34).string(message.walletUserAgentRewardRate);
+      writer.uint32(26).string(message.walletUserAgentRewardRate);
     }
     if (message.userAgentRewardRate !== "") {
-      writer.uint32(42).string(message.userAgentRewardRate);
+      writer.uint32(34).string(message.userAgentRewardRate);
     }
     if (message.trustDepositMaxYieldRate !== "") {
-      writer.uint32(50).string(message.trustDepositMaxYieldRate);
-    }
-    if (message.yieldIntermediatePool !== "") {
-      writer.uint32(58).string(message.yieldIntermediatePool);
+      writer.uint32(42).string(message.trustDepositMaxYieldRate);
     }
     if (message.trustDepositBlockRewardShare !== "") {
-      writer.uint32(66).string(message.trustDepositBlockRewardShare);
+      writer.uint32(50).string(message.trustDepositBlockRewardShare);
     }
     return writer;
   },
@@ -78,52 +67,38 @@ export const Params = {
             break;
           }
 
-          message.trustDepositReclaimBurnRate = reader.string();
+          message.trustDepositShareValue = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.trustDepositShareValue = reader.string();
+          message.trustDepositRate = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
-          message.trustDepositRate = reader.string();
+          message.walletUserAgentRewardRate = reader.string();
           continue;
         case 4:
           if (tag !== 34) {
             break;
           }
 
-          message.walletUserAgentRewardRate = reader.string();
+          message.userAgentRewardRate = reader.string();
           continue;
         case 5:
           if (tag !== 42) {
             break;
           }
 
-          message.userAgentRewardRate = reader.string();
+          message.trustDepositMaxYieldRate = reader.string();
           continue;
         case 6:
           if (tag !== 50) {
-            break;
-          }
-
-          message.trustDepositMaxYieldRate = reader.string();
-          continue;
-        case 7:
-          if (tag !== 58) {
-            break;
-          }
-
-          message.yieldIntermediatePool = reader.string();
-          continue;
-        case 8:
-          if (tag !== 66) {
             break;
           }
 
@@ -140,9 +115,6 @@ export const Params = {
 
   fromJSON(object: any): Params {
     return {
-      trustDepositReclaimBurnRate: isSet(object.trustDepositReclaimBurnRate)
-        ? globalThis.String(object.trustDepositReclaimBurnRate)
-        : "",
       trustDepositShareValue: isSet(object.trustDepositShareValue)
         ? globalThis.String(object.trustDepositShareValue)
         : "",
@@ -154,7 +126,6 @@ export const Params = {
       trustDepositMaxYieldRate: isSet(object.trustDepositMaxYieldRate)
         ? globalThis.String(object.trustDepositMaxYieldRate)
         : "",
-      yieldIntermediatePool: isSet(object.yieldIntermediatePool) ? globalThis.String(object.yieldIntermediatePool) : "",
       trustDepositBlockRewardShare: isSet(object.trustDepositBlockRewardShare)
         ? globalThis.String(object.trustDepositBlockRewardShare)
         : "",
@@ -163,9 +134,6 @@ export const Params = {
 
   toJSON(message: Params): unknown {
     const obj: any = {};
-    if (message.trustDepositReclaimBurnRate !== "") {
-      obj.trustDepositReclaimBurnRate = message.trustDepositReclaimBurnRate;
-    }
     if (message.trustDepositShareValue !== "") {
       obj.trustDepositShareValue = message.trustDepositShareValue;
     }
@@ -181,9 +149,6 @@ export const Params = {
     if (message.trustDepositMaxYieldRate !== "") {
       obj.trustDepositMaxYieldRate = message.trustDepositMaxYieldRate;
     }
-    if (message.yieldIntermediatePool !== "") {
-      obj.yieldIntermediatePool = message.yieldIntermediatePool;
-    }
     if (message.trustDepositBlockRewardShare !== "") {
       obj.trustDepositBlockRewardShare = message.trustDepositBlockRewardShare;
     }
@@ -195,13 +160,11 @@ export const Params = {
   },
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
     const message = createBaseParams();
-    message.trustDepositReclaimBurnRate = object.trustDepositReclaimBurnRate ?? "";
     message.trustDepositShareValue = object.trustDepositShareValue ?? "";
     message.trustDepositRate = object.trustDepositRate ?? "";
     message.walletUserAgentRewardRate = object.walletUserAgentRewardRate ?? "";
     message.userAgentRewardRate = object.userAgentRewardRate ?? "";
     message.trustDepositMaxYieldRate = object.trustDepositMaxYieldRate ?? "";
-    message.yieldIntermediatePool = object.yieldIntermediatePool ?? "";
     message.trustDepositBlockRewardShare = object.trustDepositBlockRewardShare ?? "";
     return message;
   },

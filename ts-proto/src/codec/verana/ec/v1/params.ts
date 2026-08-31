@@ -6,24 +6,19 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
-import Long = require("long");
 
 export const protobufPackage = "verana.ec.v1";
 
 /** Params defines the parameters for the module. */
 export interface Params {
-  trustUnitPrice: number;
 }
 
 function createBaseParams(): Params {
-  return { trustUnitPrice: 0 };
+  return {};
 }
 
 export const Params = {
-  encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.trustUnitPrice !== 0) {
-      writer.uint32(16).uint64(message.trustUnitPrice);
-    }
+  encode(_: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
@@ -34,13 +29,6 @@ export const Params = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 2:
-          if (tag !== 16) {
-            break;
-          }
-
-          message.trustUnitPrice = longToNumber(reader.uint64() as Long);
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -50,24 +38,20 @@ export const Params = {
     return message;
   },
 
-  fromJSON(object: any): Params {
-    return { trustUnitPrice: isSet(object.trustUnitPrice) ? globalThis.Number(object.trustUnitPrice) : 0 };
+  fromJSON(_: any): Params {
+    return {};
   },
 
-  toJSON(message: Params): unknown {
+  toJSON(_: Params): unknown {
     const obj: any = {};
-    if (message.trustUnitPrice !== 0) {
-      obj.trustUnitPrice = Math.round(message.trustUnitPrice);
-    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<Params>, I>>(base?: I): Params {
     return Params.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
+  fromPartial<I extends Exact<DeepPartial<Params>, I>>(_: I): Params {
     const message = createBaseParams();
-    message.trustUnitPrice = object.trustUnitPrice ?? 0;
     return message;
   },
 };
@@ -83,22 +67,3 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
-
-function longToNumber(long: Long): number {
-  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-  }
-  if (long.lt(globalThis.Number.MIN_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
-  }
-  return long.toNumber();
-}
-
-if (_m0.util.Long !== Long) {
-  _m0.util.Long = Long as any;
-  _m0.configure();
-}
-
-function isSet(value: any): boolean {
-  return value !== null && value !== undefined;
-}
