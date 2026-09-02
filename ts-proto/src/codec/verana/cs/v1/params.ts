@@ -34,22 +34,22 @@ function createBaseParams(): Params {
 export const Params = {
   encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.credentialSchemaSchemaMaxSize !== 0) {
-      writer.uint32(16).uint64(message.credentialSchemaSchemaMaxSize);
+      writer.uint32(8).uint64(message.credentialSchemaSchemaMaxSize);
     }
     if (message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(24).uint32(message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays);
+      writer.uint32(16).uint32(message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays);
     }
     if (message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(32).uint32(message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays);
+      writer.uint32(24).uint32(message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays);
     }
     if (message.credentialSchemaIssuerValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(40).uint32(message.credentialSchemaIssuerValidationValidityPeriodMaxDays);
+      writer.uint32(32).uint32(message.credentialSchemaIssuerValidationValidityPeriodMaxDays);
     }
     if (message.credentialSchemaVerifierValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(48).uint32(message.credentialSchemaVerifierValidationValidityPeriodMaxDays);
+      writer.uint32(40).uint32(message.credentialSchemaVerifierValidationValidityPeriodMaxDays);
     }
     if (message.credentialSchemaHolderValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(56).uint32(message.credentialSchemaHolderValidationValidityPeriodMaxDays);
+      writer.uint32(48).uint32(message.credentialSchemaHolderValidationValidityPeriodMaxDays);
     }
     return writer;
   },
@@ -61,43 +61,43 @@ export const Params = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.credentialSchemaSchemaMaxSize = longToNumber(reader.uint64() as Long);
+          continue;
         case 2:
           if (tag !== 16) {
             break;
           }
 
-          message.credentialSchemaSchemaMaxSize = longToNumber(reader.uint64() as Long);
+          message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays = reader.uint32();
           continue;
         case 3:
           if (tag !== 24) {
             break;
           }
 
-          message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays = reader.uint32();
+          message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays = reader.uint32();
           continue;
         case 4:
           if (tag !== 32) {
             break;
           }
 
-          message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays = reader.uint32();
+          message.credentialSchemaIssuerValidationValidityPeriodMaxDays = reader.uint32();
           continue;
         case 5:
           if (tag !== 40) {
             break;
           }
 
-          message.credentialSchemaIssuerValidationValidityPeriodMaxDays = reader.uint32();
+          message.credentialSchemaVerifierValidationValidityPeriodMaxDays = reader.uint32();
           continue;
         case 6:
           if (tag !== 48) {
-            break;
-          }
-
-          message.credentialSchemaVerifierValidationValidityPeriodMaxDays = reader.uint32();
-          continue;
-        case 7:
-          if (tag !== 56) {
             break;
           }
 

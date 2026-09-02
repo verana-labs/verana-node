@@ -32,15 +32,6 @@ func TestMsgUpdateParams(t *testing.T) {
 			expErrMsg: "invalid authority",
 		},
 		{
-			name: "empty params rejected by validation",
-			input: &types.MsgUpdateParams{
-				Authority: k.GetAuthority(),
-				Params:    types.Params{},
-			},
-			expErr:    true,
-			expErrMsg: "trust unit price",
-		},
-		{
 			name: "all good",
 			input: &types.MsgUpdateParams{
 				Authority: k.GetAuthority(),
@@ -59,6 +50,7 @@ func TestMsgUpdateParams(t *testing.T) {
 				require.Contains(t, err.Error(), tc.expErrMsg)
 			} else {
 				require.NoError(t, err)
+				require.Equal(t, tc.input.Params, k.GetParams(wctx))
 			}
 		})
 	}

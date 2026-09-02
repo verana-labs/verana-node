@@ -341,12 +341,6 @@
     },
     "verana.pp.v1.Params": {
       "type": "object",
-      "properties": {
-        "validation_term_requested_timeout_days": {
-          "type": "string",
-          "format": "uint64"
-        }
-      },
       "description": "Params defines the parameters for the module."
     },
     "verana.pp.v1.Participant": {

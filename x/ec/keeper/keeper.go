@@ -104,10 +104,3 @@ func (k Keeper) GetNextID(ctx context.Context, entityType string) (uint64, error
 	}
 	return next, nil
 }
-
-// GetTrustUnitPrice retained for cross-module consumers (CS/PERM) that need
-// the configured price for fee math. Signature accepts sdk.Context so the
-// existing PERM expected_keepers contract continues to match.
-func (k Keeper) GetTrustUnitPrice(ctx sdk.Context) uint64 {
-	return k.GetParams(ctx).TrustUnitPrice
-}

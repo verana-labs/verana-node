@@ -84,20 +84,14 @@ func ParticipantKeeperWithTrustDeposit(t testing.TB) (keeper.Keeper, *MockCreden
 // back to a corp.id matching ec.CorporationId.
 type MockParticipantEcosystemKeeper struct {
 	ecosystems              map[uint64]ectypes.Ecosystem
-	trustUnitPrice          uint64
 	corporationByPolicyAddr map[string]types.CorporationView
 }
 
 func NewMockParticipantEcosystemKeeper() *MockParticipantEcosystemKeeper {
 	return &MockParticipantEcosystemKeeper{
 		ecosystems:              make(map[uint64]ectypes.Ecosystem),
-		trustUnitPrice:          1,
 		corporationByPolicyAddr: make(map[string]types.CorporationView),
 	}
-}
-
-func (k *MockParticipantEcosystemKeeper) GetTrustUnitPrice(ctx sdk.Context) uint64 {
-	return k.trustUnitPrice
 }
 
 func (k *MockParticipantEcosystemKeeper) GetEcosystem(ctx context.Context, id uint64) (ectypes.Ecosystem, error) {

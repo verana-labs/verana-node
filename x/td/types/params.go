@@ -4,25 +4,17 @@ import (
 	"fmt"
 
 	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	// DefaultTrustDepositReclaimBurnRate is retained for proto back-compat only.
-	// spec [MOD-TD-MSG-2-3] specifies that the full claimable_yield
-	// is transferred to the corporation on reclaim — there is no burn step.
-	// This field is therefore unused by the handler; remove the proto field
-	// (and this constant) on the next proto regeneration.
-	DefaultTrustDepositReclaimBurnRate = "0" // unused; 0 == no burn
-	DefaultTrustDepositShareValue      = "1.0"
-	DefaultTrustDepositRate            = "0.05" // 5%
-	DefaultWalletUserAgentRewardRate   = "0.1"  // 10% ([GLO])
-	DefaultUserAgentRewardRate         = "0.1"  // 10% ([GLO])
-	DefaultTrustDepositMaxYieldRate    = "0.2"  // 20% annual yield ([GLO])
+	DefaultTrustDepositShareValue    = "1.0"
+	DefaultTrustDepositRate          = "0.05" // 5%
+	DefaultWalletUserAgentRewardRate = "0.1"  // 10% ([GLO])
+	DefaultUserAgentRewardRate       = "0.1"  // 10% ([GLO])
+	DefaultTrustDepositMaxYieldRate  = "0.2"  // 20% annual yield ([GLO])
 	// [GLO] value; the block-reward share is realized by the protocolpool
 	// continuous fund, not read directly here.
 	DefaultTrustDepositBlockRewardShare = "0.2"
@@ -35,30 +27,25 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // NewParams creates a new Params instance
 func NewParams(
-	trustDepositReclaimBurnRate math.LegacyDec,
 	trustDepositShareValue math.LegacyDec,
 	trustDepositRate math.LegacyDec,
 	walletUserAgentRewardRate math.LegacyDec,
 	userAgentRewardRate math.LegacyDec,
 	trustDepositMaxYieldRate math.LegacyDec,
-	yieldIntermediatePool string,
 	trustDepositBlockRewardShare math.LegacyDec,
 ) Params {
 	return Params{
-		TrustDepositReclaimBurnRate:  trustDepositReclaimBurnRate,
 		TrustDepositShareValue:       trustDepositShareValue,
 		TrustDepositRate:             trustDepositRate,
 		WalletUserAgentRewardRate:    walletUserAgentRewardRate,
 		UserAgentRewardRate:          userAgentRewardRate,
 		TrustDepositMaxYieldRate:     trustDepositMaxYieldRate,
-		YieldIntermediatePool:        yieldIntermediatePool,
 		TrustDepositBlockRewardShare: trustDepositBlockRewardShare,
 	}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	TrustDepositReclaimBurnRate, _ := math.LegacyNewDecFromStr(DefaultTrustDepositReclaimBurnRate)
 	TrustDepositShareValue, _ := math.LegacyNewDecFromStr(DefaultTrustDepositShareValue)
 	TrustDepositRate, _ := math.LegacyNewDecFromStr(DefaultTrustDepositRate)
 	WalletUserAgentRewardRate, _ := math.LegacyNewDecFromStr(DefaultWalletUserAgentRewardRate)
@@ -66,17 +53,12 @@ func DefaultParams() Params {
 	TrustDepositMaxYieldRate, _ := math.LegacyNewDecFromStr(DefaultTrustDepositMaxYieldRate)
 	TrustDepositBlockRewardShare, _ := math.LegacyNewDecFromStr(DefaultTrustDepositBlockRewardShare)
 
-	// Default yield intermediate pool is the module account address derived from the module account name.
-	defaultYieldIntermediatePool := authtypes.NewModuleAddress(YieldIntermediatePool).String()
-
 	return NewParams(
-		TrustDepositReclaimBurnRate,
 		TrustDepositShareValue,
 		TrustDepositRate,
 		WalletUserAgentRewardRate,
 		UserAgentRewardRate,
 		TrustDepositMaxYieldRate,
-		defaultYieldIntermediatePool,
 		TrustDepositBlockRewardShare,
 	)
 }
@@ -84,11 +66,6 @@ func DefaultParams() Params {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(
-			[]byte("TrustDepositReclaimBurnRate"),
-			&p.TrustDepositReclaimBurnRate,
-			validateLegacyDec,
-		),
 		paramtypes.NewParamSetPair(
 			[]byte("TrustDepositShareValue"),
 			&p.TrustDepositShareValue,
@@ -115,11 +92,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 			validateLegacyDec,
 		),
 		paramtypes.NewParamSetPair(
-			[]byte("YieldIntermediatePool"),
-			&p.YieldIntermediatePool,
-			validateString,
-		),
-		paramtypes.NewParamSetPair(
 			[]byte("TrustDepositBlockRewardShare"),
 			&p.TrustDepositBlockRewardShare,
 			validateLegacyDec,
@@ -129,9 +101,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 
 // Validate validates the set of params
 func (p Params) Validate() error {
-	if err := validateLegacyDec(p.TrustDepositReclaimBurnRate); err != nil {
-		return err
-	}
 	if err := validatePositiveLegacyDec(p.TrustDepositShareValue); err != nil {
 		return err
 	}
@@ -147,11 +116,6 @@ func (p Params) Validate() error {
 	if err := validateLegacyDec(p.TrustDepositMaxYieldRate); err != nil {
 		return err
 	}
-	if p.YieldIntermediatePool != "" {
-		if _, err := sdk.AccAddressFromBech32(p.YieldIntermediatePool); err != nil {
-			return fmt.Errorf("invalid yield_intermediate_pool address: %w", err)
-		}
-	}
 	if err := validateLegacyDec(p.TrustDepositBlockRewardShare); err != nil {
 		return err
 	}
@@ -163,6 +127,10 @@ func validateLegacyDec(i interface{}) error {
 	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v.IsNil() {
+		return fmt.Errorf("value cannot be nil")
 	}
 
 	if v.IsNegative() {
@@ -183,27 +151,13 @@ func validatePositiveLegacyDec(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
+	if v.IsNil() {
+		return fmt.Errorf("value cannot be nil")
+	}
+
 	if v.IsNegative() || v.IsZero() {
 		return fmt.Errorf("value must be positive: %s", v)
 	}
 
-	return nil
-}
-
-// validateUint64 validates that the parameter is a valid uint64
-func validateUint64(i interface{}) error {
-	_, ok := i.(uint64)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-	return nil
-}
-
-// validateString validates that the parameter is a valid string
-func validateString(i interface{}) error {
-	_, ok := i.(string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
 	return nil
 }

@@ -24,17 +24,11 @@ func (k Keeper) BeginBlocker(ctx context.Context) error {
 	}
 
 	// Skip if yield distribution is not configured
-	if params.YieldIntermediatePool == "" || blocksPerYear == 0 || params.TrustDepositMaxYieldRate.IsZero() {
+	if blocksPerYear == 0 || params.TrustDepositMaxYieldRate.IsZero() {
 		return nil
 	}
 
-	// Get yield intermediate pool address. A misconfigured (non-bech32) param
-	// must not be silently masked by a fallback address: skip distribution.
-	yieldIntermediatePoolAddr, err := sdk.AccAddressFromBech32(params.YieldIntermediatePool)
-	if err != nil {
-		k.Logger().Error("invalid yield_intermediate_pool address, skipping yield distribution", "value", params.YieldIntermediatePool, "error", err)
-		return nil
-	}
+	yieldIntermediatePoolAddr := authtypes.NewModuleAddress(types.YieldIntermediatePool)
 
 	// Get trust deposit module address
 	trustDepositAddr := authtypes.NewModuleAddress(types.ModuleName)

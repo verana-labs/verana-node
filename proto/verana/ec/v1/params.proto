@@ -10,7 +10,4 @@ option go_package = "github.com/verana-labs/verana-node/x/ec/types";
 message Params {
   option (amino.name) = "verana/x/ec/Params";
   option (gogoproto.equal) = true;
-
-  reserved 1; // trust_registry_trust_deposit removed per spec (no trust deposit for EC operations)
-  uint64 trust_unit_price = 2;
 }

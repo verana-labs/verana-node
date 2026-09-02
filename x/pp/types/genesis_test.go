@@ -81,19 +81,6 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
-			desc: "invalid params",
-			genState: &types.GenesisState{
-				Params: types.Params{
-					ValidationTermRequestedTimeoutDays: 0, // Invalid - must be positive
-				},
-				Participants:        []types.Participant{},
-				ParticipantSessions: []types.ParticipantSession{},
-				NextParticipantId:   1,
-			},
-			valid:       false,
-			errorString: "validation term requested timeout days must be positive",
-		},
-		{
 			desc: "duplicate participant IDs",
 			genState: &types.GenesisState{
 				Params:              types.DefaultParams(),
