@@ -286,6 +286,9 @@ func validateParticipantRoleCombination(requestedType, validatorType types.Parti
 		} else {
 			return fmt.Errorf("holder participant not supported with current schema settings")
 		}
+
+	default:
+		return fmt.Errorf("role %s cannot run an onboarding process", requestedType.String())
 	}
 
 	return nil

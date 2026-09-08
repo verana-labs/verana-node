@@ -186,6 +186,11 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 		return nil, fmt.Errorf("credential schema not found: %w", err)
 	}
 
+	// [MOD-PP-MSG-2-2-2] mode/role checks: blocks self-created entries
+	if err := validateParticipantRoleCombination(applicantParticipant.Role, validatorParticipant.Role, cs); err != nil {
+		return nil, err
+	}
+
 	// [MOD-PP-MSG-2-2-4] Unrepaid slash checks. The spec resolves the ecosystem
 	// from applicant_participant.schema_id, which equals the validator's schema
 	// by construction (MSG-1 copies it at creation; renewal preserves it).
