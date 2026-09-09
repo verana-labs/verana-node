@@ -15,7 +15,6 @@ import (
 	evidencemodulev1 "cosmossdk.io/api/cosmos/evidence/module/v1"
 	feegrantmodulev1 "cosmossdk.io/api/cosmos/feegrant/module/v1"
 	genutilmodulev1 "cosmossdk.io/api/cosmos/genutil/module/v1"
-	govmodulev1 "cosmossdk.io/api/cosmos/gov/module/v1"
 	groupmodulev1 "cosmossdk.io/api/cosmos/group/module/v1"
 	mintmodulev1 "cosmossdk.io/api/cosmos/mint/module/v1"
 	nftmodulev1 "cosmossdk.io/api/cosmos/nft/module/v1"
@@ -40,7 +39,6 @@ import (
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -67,6 +65,8 @@ import (
 	ecosystemmoduletypes "github.com/verana-labs/verana-node/x/ec/types"
 	_ "github.com/verana-labs/verana-node/x/gf/module"
 	gfmoduletypes "github.com/verana-labs/verana-node/x/gf/types"
+	_ "github.com/verana-labs/verana-node/x/poa/module"
+	poamoduletypes "github.com/verana-labs/verana-node/x/poa/types"
 	participantmoduletypes "github.com/verana-labs/verana-node/x/pp/types"
 	trustdepositmoduletypes "github.com/verana-labs/verana-node/x/td/types"
 	_ "github.com/verana-labs/verana-node/x/xr/module"
@@ -93,10 +93,10 @@ var (
 		distrtypes.ModuleName,
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
-		govtypes.ModuleName,
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
 		ibcexported.ModuleName,
+		group.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
@@ -108,7 +108,6 @@ var (
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		nft.ModuleName,
-		group.ModuleName,
 		consensustypes.ModuleName,
 		circuittypes.ModuleName,
 		protocolpooltypes.ModuleName,
@@ -122,6 +121,7 @@ var (
 		demoduletypes.ModuleName,
 		dimoduletypes.ModuleName,
 		xrmoduletypes.ModuleName,
+		poamoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	}
 
@@ -162,7 +162,6 @@ var (
 	endBlockers = []string{
 		// cosmos sdk modules
 		crisistypes.ModuleName,
-		govtypes.ModuleName,
 		stakingtypes.ModuleName,
 		feegrant.ModuleName,
 		group.ModuleName,
@@ -200,7 +199,6 @@ var (
 		{Account: minttypes.ModuleName, Permissions: []string{authtypes.Minter}},
 		{Account: stakingtypes.BondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: stakingtypes.NotBondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
-		{Account: govtypes.ModuleName, Permissions: []string{authtypes.Burner}},
 		{Account: nft.ModuleName},
 		{Account: ibctransfertypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner}},
 		{Account: ibcfeetypes.ModuleName},
@@ -211,6 +209,7 @@ var (
 		{Account: protocolpooltypes.ModuleName},
 		{Account: protocolpooltypes.ProtocolPoolEscrowAccount},
 		{Account: trustdepositmoduletypes.YieldIntermediatePool},
+		{Account: poamoduletypes.ModuleName, Permissions: []string{authtypes.Minter}},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 
@@ -222,8 +221,6 @@ var (
 		stakingtypes.BondedPoolName,
 		stakingtypes.NotBondedPoolName,
 		nft.ModuleName,
-		// We allow the following module accounts to receive funds:
-		// govtypes.ModuleName
 	}
 
 	// appConfig application configuration (used by depinject)
@@ -255,9 +252,7 @@ var (
 				Config: appconfig.WrapAny(&authmodulev1.Module{
 					Bech32Prefix:             AccountAddressPrefix,
 					ModuleAccountPermissions: moduleAccPerms,
-					// By default modules authority is the governance module. This is configurable with the following:
-					// Authority: "group", // A custom module authority can be set using a module name
-					// Authority: "cosmos1cwwv22j5ca08ggdv9c2uky355k908694z577tv", // or a specific address
+					Authority:                FrozenAuthority,
 				}),
 			},
 			{
@@ -272,6 +267,7 @@ var (
 				Name: banktypes.ModuleName,
 				Config: appconfig.WrapAny(&bankmodulev1.Module{
 					BlockedModuleAccountsOverride: blockAccAddrs,
+					Authority:                     FrozenAuthority,
 				}),
 			},
 			{
@@ -281,11 +277,12 @@ var (
 					// If not specfied, the auth Bech32Prefix appended with "valoper" and "valcons" is used by default
 					Bech32PrefixValidator: AccountAddressPrefix + "valoper",
 					Bech32PrefixConsensus: AccountAddressPrefix + "valcons",
+					Authority:             FrozenAuthority,
 				}),
 			},
 			{
 				Name:   slashingtypes.ModuleName,
-				Config: appconfig.WrapAny(&slashingmodulev1.Module{}),
+				Config: appconfig.WrapAny(&slashingmodulev1.Module{Authority: FrozenAuthority}),
 			},
 			{
 				Name:   paramstypes.ModuleName,
@@ -305,11 +302,11 @@ var (
 			},
 			{
 				Name:   upgradetypes.ModuleName,
-				Config: appconfig.WrapAny(&upgrademodulev1.Module{}),
+				Config: appconfig.WrapAny(&upgrademodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   distrtypes.ModuleName,
-				Config: appconfig.WrapAny(&distrmodulev1.Module{}),
+				Config: appconfig.WrapAny(&distrmodulev1.Module{Authority: FrozenAuthority}),
 			},
 			{
 				Name:   evidencetypes.ModuleName,
@@ -317,7 +314,7 @@ var (
 			},
 			{
 				Name:   minttypes.ModuleName,
-				Config: appconfig.WrapAny(&mintmodulev1.Module{}),
+				Config: appconfig.WrapAny(&mintmodulev1.Module{Authority: FrozenAuthority}),
 			},
 			{
 				Name: group.ModuleName,
@@ -331,60 +328,60 @@ var (
 				Config: appconfig.WrapAny(&feegrantmodulev1.Module{}),
 			},
 			{
-				Name:   govtypes.ModuleName,
-				Config: appconfig.WrapAny(&govmodulev1.Module{}),
-			},
-			{
 				Name:   crisistypes.ModuleName,
-				Config: appconfig.WrapAny(&crisismodulev1.Module{}),
+				Config: appconfig.WrapAny(&crisismodulev1.Module{Authority: FrozenAuthority}),
 			},
 			{
 				Name:   consensustypes.ModuleName,
-				Config: appconfig.WrapAny(&consensusmodulev1.Module{}),
+				Config: appconfig.WrapAny(&consensusmodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   circuittypes.ModuleName,
-				Config: appconfig.WrapAny(&circuitmodulev1.Module{}),
+				Config: appconfig.WrapAny(&circuitmodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   protocolpooltypes.ModuleName,
-				Config: appconfig.WrapAny(&protocolpoolmodulev1.Module{}),
+				Config: appconfig.WrapAny(&protocolpoolmodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   ecosystemmoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&ecosystemmodulev1.Module{}),
+				Config: appconfig.WrapAny(&ecosystemmodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   comoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&comoduletypes.Module{}),
+				Config: appconfig.WrapAny(&comoduletypes.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   gfmoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&gfmoduletypes.Module{}),
+				Config: appconfig.WrapAny(&gfmoduletypes.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   credentialschemamoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&credentialschemamodulev1.Module{}),
+				Config: appconfig.WrapAny(&credentialschemamodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   participantmoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&participantmodulev1.Module{}),
+				Config: appconfig.WrapAny(&participantmodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   trustdepositmoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&trustdepositmodulev1.Module{}),
+				Config: appconfig.WrapAny(&trustdepositmodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   demoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&demoduletypes.Module{}),
+				Config: appconfig.WrapAny(&demoduletypes.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   dimoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&dimoduletypes.Module{}),
+				Config: appconfig.WrapAny(&dimoduletypes.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   xrmoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&xrmoduletypes.Module{}),
+				Config: appconfig.WrapAny(&xrmoduletypes.Module{Authority: CouncilAuthority}),
+			},
+			{
+				Name:   poamoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&poamoduletypes.Module{Authority: CouncilAuthority}),
 			},
 			// this line is used by starport scaffolding # stargate/app/moduleConfig
 		},

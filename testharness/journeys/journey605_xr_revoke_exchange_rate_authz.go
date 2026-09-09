@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	xrtypes "github.com/verana-labs/verana-node/x/xr/types"
@@ -14,14 +13,13 @@ import (
 )
 
 // RunXrRevokeExchangeRateAuthzJourney implements Journey 605: XR Revoke Exchange Rate Authorization (governance)
-// Revokes the ExchangeRateAuthorization granted in Journey 604 via gov proposal [MOD-XR-MSG-5],
+// Revokes the ExchangeRateAuthorization granted in Journey 604 via council proposal [MOD-XR-MSG-5],
 // then verifies it is gone from GetExchangeRate.authorizations [MOD-XR-QRY-1].
 // Depends on Journey 601 (exchange rate ID), Journey 301 (operator), and Journey 604 (grant).
 func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 605: XR Revoke Exchange Rate Authorization via Governance")
+	fmt.Println("Starting Journey 605: XR Revoke Exchange Rate Authorization via Council")
 
-	govModuleAddr := authtypes.NewModuleAddress("gov").String()
-	coolusrAddr := lib.COOLUSER_ADDRESS
+	council := lib.CouncilAuthority()
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
 
 	// =========================================================================
@@ -43,21 +41,21 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 	fmt.Println("✅ Step 1: Loaded journey results")
 
 	// =========================================================================
-	// Step 2: Submit gov proposal to revoke the authorization
+	// Step 2: Submit council proposal to revoke the authorization
 	// =========================================================================
-	fmt.Println("\n--- Step 2: Submit RevokeExchangeRateAuthorization governance proposal ---")
+	fmt.Println("\n--- Step 2: Submit RevokeExchangeRateAuthorization council proposal ---")
 
 	revokeMsg := &xrtypes.MsgRevokeExchangeRateAuthorization{
-		Authority: govModuleAddr,
+		Authority: council,
 		XrId:      exchangeRateID,
 		Operator:  operatorAddr,
 	}
 
-	proposalID, err := submitXrGovProposal(
-		client, ctx, coolusrAddr, cooluser,
-		revokeMsg,
+	proposalID, err := lib.SubmitCouncilProposal(
+		client, ctx, cooluser,
 		"Revoke Exchange Rate Authorization",
 		fmt.Sprintf("Revoke operator %s authorization on exchange rate %d", operatorAddr, exchangeRateID),
+		revokeMsg,
 	)
 	if err != nil {
 		return fmt.Errorf("step 2 failed: %w", err)
@@ -69,7 +67,7 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 	// =========================================================================
 	fmt.Println("\n--- Step 3: Vote and pass the proposal ---")
 
-	if err := voteAndPassGovProposal(client, ctx, proposalID); err != nil {
+	if err := lib.PassCouncilProposal(client, ctx, proposalID); err != nil {
 		return fmt.Errorf("step 3 failed: %w", err)
 	}
 	fmt.Println("✅ Step 3: RevokeExchangeRateAuthorization proposal passed")
@@ -98,7 +96,7 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 605 completed successfully!")
-	fmt.Println("XR RevokeExchangeRateAuthorization via Governance tested:")
+	fmt.Println("XR RevokeExchangeRateAuthorization via Council tested:")
 	fmt.Println("  - Revoke proposal submitted and passed")
 	fmt.Println("  - Authorization removal verified via GetExchangeRate")
 	fmt.Println("========================================")
