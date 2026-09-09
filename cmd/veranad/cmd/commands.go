@@ -51,7 +51,7 @@ func initRootCmd(
 	// add keybase, auxiliary RPC, query, genesis, and tx child commands
 	rootCmd.AddCommand(
 		server.StatusCommand(),
-		genesisCommand(txConfig, basicManager),
+		genesisCommand(txConfig, basicManager, AddCouncilCmd(app.DefaultNodeHome)),
 		queryCommand(),
 		txCommand(),
 		keys.Commands(),

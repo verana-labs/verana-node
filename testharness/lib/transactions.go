@@ -4,13 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"cosmossdk.io/math"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
@@ -88,69 +85,6 @@ func CreateEcosystem(client cosmosclient.Client, ctx context.Context, creator co
 		}
 	}
 	return "no attribute found", fmt.Errorf("no attribute found")
-}
-
-// SubmitProposal submits a governance proposal
-func SubmitProposal(client cosmosclient.Client, ctx context.Context, proposer cosmosaccount.Account, proposalFile string) error {
-	proposalData, err := os.ReadFile(proposalFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	proposerAddr, err := proposer.Address(addressPrefix)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	content := &govtypes.TextProposal{
-		Title:       "Proposal Title",
-		Description: string(proposalData),
-	}
-
-	any, err := codectypes.NewAnyWithValue(content)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	msg := &govtypes.MsgSubmitProposal{
-		Proposer: proposerAddr,
-		Content:  any,
-	}
-
-	txResp, err := client.BroadcastTx(ctx, proposer, msg)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Print("SubmitProposal:\n\n")
-	prettyJSON := PrettyJSON(client, txResp)
-	fmt.Println(prettyJSON)
-
-	return nil
-}
-
-// VoteOnProposal votes on a governance proposal
-func VoteOnProposal(client cosmosclient.Client, ctx context.Context, voter cosmosaccount.Account, proposalID uint64, voteOption string) error {
-	voterAddr, err := voter.Address(addressPrefix)
-	if err != nil {
-		log.Fatal(err)
-	}
-	msg := &govtypes.MsgVote{
-		Voter:      voterAddr,
-		ProposalId: proposalID,
-		Option:     govtypes.VoteOption(govtypes.VoteOption_value[voteOption]),
-	}
-
-	txResp, err := client.BroadcastTx(ctx, voter, msg)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Print("VoteOnProposal:\n\n")
-	prettyJSON := PrettyJSON(client, txResp)
-	fmt.Println(prettyJSON)
-
-	return nil
 }
 
 // CreateCredentialSchema creates a new credential schema

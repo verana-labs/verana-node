@@ -253,7 +253,8 @@ veranad keys add validator --keyring-backend test
 veranad genesis add-genesis-account validator 1000000000000000000000uvna --keyring-backend test
 
 # Create genesis transaction
-veranad genesis gentx validator 1000000000uvna --chain-id vna-local-1 --keyring-backend test
+veranad genesis add-council validator --keyring-backend test
+veranad genesis gentx validator 1000000uvna --chain-id vna-local-1 --keyring-backend test
 
 # Collect genesis transactions
 veranad genesis collect-gentxs

@@ -17,13 +17,13 @@ APP_TOML_PATH="$HOME_DIR/config/app.toml"
 CONFIG_TOML_PATH="$HOME_DIR/config/config.toml"
 VALIDATOR_NAME="cooluser"
 VALIDATOR_AMOUNT="1000000000000000000000uvna"
-GENTX_AMOUNT="1000000000uvna"
+GENTX_AMOUNT="1000000uvna"
 
 log "Starting Verana blockchain setup..."
 
 # Initialize the chain
 log "Initializing the chain..."
-$BINARY init $MONIKER --chain-id $CHAIN_ID
+$BINARY init $MONIKER --chain-id $CHAIN_ID --default-denom uvna
 if [ $? -ne 0 ]; then
     log "Error: Failed to initialize the chain."
     exit 1
@@ -45,6 +45,18 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Seat the council: one seat, short windows for local development (overridable)
+log "Seating the council in genesis..."
+$BINARY genesis add-council $VALIDATOR_NAME \
+    --voting-period "${COUNCIL_VOTING_PERIOD:-30s}" \
+    --min-execution-period "${COUNCIL_MIN_EXECUTION_PERIOD:-10s}" \
+    --unbonding-time "${COUNCIL_UNBONDING_TIME:-60s}" \
+    --keyring-backend test
+if [ $? -ne 0 ]; then
+    log "Error: Failed to seat the council."
+    exit 1
+fi
+
 # Create gentx
 log "Creating genesis transaction..."
 $BINARY gentx $VALIDATOR_NAME $GENTX_AMOUNT --chain-id $CHAIN_ID --keyring-backend test
@@ -61,14 +73,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Replace all occurrences of "stake" with "uvna" in genesis.json
-log "Replacing 'stake' with 'uvna' in genesis.json..."
-sed -i '' 's/stake/uvna/g' "$GENESIS_JSON_PATH"
-if [ $? -ne 0 ]; then
-    log "Error: Failed to replace 'stake' with 'uvna' in genesis.json."
-    exit 1
-fi
-
 # Collect genesis transactions
 log "Collecting genesis transactions..."
 $BINARY collect-gentxs
@@ -82,15 +86,6 @@ log "Validating genesis file..."
 $BINARY validate-genesis
 if [ $? -ne 0 ]; then
     log "Error: Genesis file validation failed."
-    exit 1
-fi
-
-# Update governance params in genesis.json
-log "Updating governance parameters in genesis.json..."
-sed -i '' 's/"max_deposit_period": ".*"/"max_deposit_period": "100s"/' "$GENESIS_JSON_PATH"
-sed -i '' 's/"voting_period": ".*"/"voting_period": "100s"/' "$GENESIS_JSON_PATH"
-if [ $? -ne 0 ]; then
-    log "Error: Failed to update governance parameters in genesis.json."
     exit 1
 fi
 

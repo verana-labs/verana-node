@@ -6,9 +6,6 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/ibc-go/modules/capability"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
@@ -83,15 +80,8 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 		app.StakingKeeper,
 		app.UpgradeKeeper,
 		scopedIBCKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		FrozenAuthority,
 	)
-
-	// Register the proposal types
-	// Deprecated: Avoid adding new handlers, instead use the new proposal flow
-	// by granting the governance module the right to execute the message.
-	// See: https://docs.cosmos.network/main/modules/gov#proposal-messages
-	govRouter := govv1beta1.NewRouter()
-	govRouter.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler)
 
 	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
 		app.appCodec, app.GetKey(ibcfeetypes.StoreKey),
@@ -111,7 +101,7 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 		app.AccountKeeper,
 		app.BankKeeper,
 		scopedIBCTransferKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		FrozenAuthority,
 	)
 
 	// Create interchain account keepers
@@ -125,7 +115,7 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 		app.AccountKeeper,
 		scopedICAHostKeeper,
 		app.MsgServiceRouter(),
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		FrozenAuthority,
 	)
 	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 
@@ -138,9 +128,8 @@ func (app *App) registerIBCModules(appOpts servertypes.AppOptions) error {
 		app.IBCKeeper.PortKeeper,
 		scopedICAControllerKeeper,
 		app.MsgServiceRouter(),
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		FrozenAuthority,
 	)
-	app.GovKeeper.SetLegacyRouter(govRouter)
 
 	// Create IBC modules with ibcfee middleware
 	transferIBCModule := ibcfee.NewIBCMiddleware(ibctransfer.NewIBCModule(app.TransferKeeper), app.IBCFeeKeeper)

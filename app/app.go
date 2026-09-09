@@ -16,8 +16,10 @@ import (
 	dimodulekeeper "github.com/verana-labs/verana-node/x/di/keeper"
 	_ "github.com/verana-labs/verana-node/x/ec/module" // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/gf/module" // import for side-effects
-	_ "github.com/verana-labs/verana-node/x/pp/module" // import for side-effects
-	_ "github.com/verana-labs/verana-node/x/td/module" // import for side-effects
+	poamodulekeeper "github.com/verana-labs/verana-node/x/poa/keeper"
+	_ "github.com/verana-labs/verana-node/x/poa/module" // import for side-effects
+	_ "github.com/verana-labs/verana-node/x/pp/module"  // import for side-effects
+	_ "github.com/verana-labs/verana-node/x/td/module"  // import for side-effects
 	xrmodulekeeper "github.com/verana-labs/verana-node/x/xr/keeper"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -69,16 +71,11 @@ import (
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/group/module" // import for side-effects
 	_ "github.com/cosmos/cosmos-sdk/x/mint"         // import for side-effects
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/params" // import for side-effects
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	_ "github.com/cosmos/cosmos-sdk/x/slashing" // import for side-effects
@@ -145,7 +142,6 @@ type App struct {
 
 	SlashingKeeper       slashingkeeper.Keeper
 	MintKeeper           mintkeeper.Keeper
-	GovKeeper            *govkeeper.Keeper
 	CrisisKeeper         *crisiskeeper.Keeper
 	UpgradeKeeper        *upgradekeeper.Keeper
 	ParamsKeeper         paramskeeper.Keeper
@@ -181,6 +177,8 @@ type App struct {
 	DeKeeper               demodulekeeper.Keeper
 	DiKeeper               dimodulekeeper.Keeper
 	XrKeeper               xrmodulekeeper.Keeper
+	PoaKeeper              poamodulekeeper.Keeper
+	inGenesis              bool
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// simulation manager
@@ -196,19 +194,6 @@ func init() {
 	}
 }
 
-// getGovProposalHandlers return the chain proposal handlers.
-func getGovProposalHandlers() []govclient.ProposalHandler {
-	var govProposalHandlers []govclient.ProposalHandler
-	// this line is used by starport scaffolding # stargate/app/govProposalHandlers
-
-	govProposalHandlers = append(govProposalHandlers,
-		paramsclient.ProposalHandler,
-		// this line is used by starport scaffolding # stargate/app/govProposalHandler
-	)
-
-	return govProposalHandlers
-}
-
 // AppConfig returns the default app config.
 func AppConfig() depinject.Config {
 	return depinject.Configs(
@@ -219,7 +204,6 @@ func AppConfig() depinject.Config {
 			// supply custom module basics
 			map[string]module.AppModuleBasic{
 				genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-				govtypes.ModuleName:     gov.NewAppModuleBasic(getGovProposalHandlers()),
 				// this line is used by starport scaffolding # stargate/appConfig/moduleBasic
 			},
 		),
@@ -248,10 +232,6 @@ func (app *App) GetBankKeeper() bankkeeper.Keeper {
 
 func (app *App) GetAccountKeeper() authkeeper.AccountKeeper {
 	return app.AccountKeeper
-}
-
-func (app *App) GetGovKeeper() *govkeeper.Keeper {
-	return app.GovKeeper
 }
 
 // New returns a reference to an initialized App.
@@ -302,7 +282,6 @@ func New(
 		&app.ConsensusParamsKeeper,
 		&app.SlashingKeeper,
 		&app.MintKeeper,
-		&app.GovKeeper,
 		&app.CrisisKeeper,
 		&app.UpgradeKeeper,
 		&app.ParamsKeeper,
@@ -322,6 +301,7 @@ func New(
 		&app.DeKeeper,
 		&app.DiKeeper,
 		&app.XrKeeper,
+		&app.PoaKeeper,
 
 		// this line is used by starport scaffolding # stargate/app/keeperDefinition
 	); err != nil {
@@ -342,6 +322,10 @@ func New(
 
 	// register legacy modules
 	if err := app.registerIBCModules(appOpts); err != nil {
+		return nil, err
+	}
+
+	if err := app.setAnteHandler(); err != nil {
 		return nil, err
 	}
 
@@ -369,6 +353,8 @@ func New(
 		if err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap()); err != nil {
 			return nil, err
 		}
+		app.inGenesis = true
+		defer func() { app.inGenesis = false }()
 		res, err := app.App.InitChainer(ctx, req)
 		if err != nil {
 			return nil, err
@@ -376,11 +362,11 @@ func New(
 		if err := app.assertGenesisDIDConsistency(ctx); err != nil {
 			return nil, err
 		}
+		if err := app.assertGenesisCouncil(ctx); err != nil {
+			return nil, err
+		}
 		return res, nil
 	})
-
-	// NOTE: Legacy governance router removed - trust deposit slashing now uses
-	// MsgSlashTrustDeposit with modern v1 governance pattern
 
 	// Use the configurator from the runtime.App (which was used during Build)
 	// This ensures migrations registered in RegisterServices are available
