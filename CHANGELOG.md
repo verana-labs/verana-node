@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.4](https://github.com/verana-labs/verana-node/compare/v0.10.3...v0.10.4) (2026-09-12)
+
+
+### Bug Fixes
+
+* **pp:** block renewal of self-created participants (MOD-PP-MSG-2-2-2) ([#59](https://github.com/verana-labs/verana-node/issues/59)) ([e6f3937](https://github.com/verana-labs/verana-node/commit/e6f3937036bf3a0297fe602c680f1dc16dba34c7))
+* **td,ec,pp,cs:** remove v3 leftover params and renumber param fields ([#53](https://github.com/verana-labs/verana-node/issues/53)) ([769b775](https://github.com/verana-labs/verana-node/commit/769b7756a1ed86e3a03dbc1df503b3cb91bfe5ec))
+
 ## [0.10.3](https://github.com/verana-labs/verana-node/compare/v0.10.2...v0.10.3) (2026-08-27)
 
 
