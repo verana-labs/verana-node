@@ -881,6 +881,114 @@ func TestRenewParticipantVP_ValidateBasic(t *testing.T) {
 	}
 }
 
+func TestRenewParticipantVP_ModeRoleChecks(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	blockTime := time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC)
+	sdkCtx = sdkCtx.WithBlockTime(blockTime)
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	creator := sdk.AccAddress([]byte("test_creator")).String()
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+
+	newParticipant := func(schemaID uint64, role types.ParticipantRole, validatorID uint64) uint64 {
+		p := types.Participant{
+			SchemaId:               schemaID,
+			Role:                   role,
+			CorporationId:          trkKeeper.RegisterCorp(creator),
+			Did:                    "did:example:applicant",
+			Created:                &now,
+			Modified:               &now,
+			ValidatorParticipantId: validatorID,
+			OpState:                types.OnboardingState_VALIDATED,
+			OpLastStateChange:      &now,
+			EffectiveFrom:          &pastTime,
+		}
+		id, err := k.CreateParticipant(sdkCtx, p)
+		require.NoError(t, err)
+		return id
+	}
+
+	t.Run("self-created ISSUER (OPEN mode) cannot renew", func(t *testing.T) {
+		csKeeper.CreateMockCredentialSchema(10,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+		ecoID := newParticipant(10, types.ParticipantRole_ECOSYSTEM, 0)
+		selfID := newParticipant(10, types.ParticipantRole_ISSUER, ecoID)
+
+		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: creator,
+			Operator:    creator,
+			Id:          selfID,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not supported with current schema")
+		require.Nil(t, resp)
+
+		p, err := k.GetParticipantByID(sdkCtx, selfID)
+		require.NoError(t, err)
+		require.Equal(t, types.OnboardingState_VALIDATED, p.OpState)
+		require.Equal(t, uint64(0), p.OpCurrentFees)
+		require.Equal(t, uint64(0), p.OpCurrentDeposit)
+	})
+
+	t.Run("self-created VERIFIER (OPEN mode) cannot renew", func(t *testing.T) {
+		csKeeper.CreateMockCredentialSchema(11,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+		ecoID := newParticipant(11, types.ParticipantRole_ECOSYSTEM, 0)
+		selfID := newParticipant(11, types.ParticipantRole_VERIFIER, ecoID)
+
+		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: creator,
+			Operator:    creator,
+			Id:          selfID,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not supported with current schema")
+		require.Nil(t, resp)
+	})
+
+	t.Run("synthetic state: role outside the onboarding tree cannot renew", func(t *testing.T) {
+		csKeeper.CreateMockCredentialSchema(12,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+		ecoID := newParticipant(12, types.ParticipantRole_ECOSYSTEM, 0)
+		oddID := newParticipant(12, types.ParticipantRole_ECOSYSTEM, ecoID)
+
+		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: creator,
+			Operator:    creator,
+			Id:          oddID,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "cannot run an onboarding process")
+		require.Nil(t, resp)
+	})
+
+	t.Run("OP-managed ISSUER (ECOSYSTEM mode) still renews", func(t *testing.T) {
+		csKeeper.CreateMockCredentialSchema(13,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS)
+		ecoID := newParticipant(13, types.ParticipantRole_ECOSYSTEM, 0)
+		opManagedID := newParticipant(13, types.ParticipantRole_ISSUER, ecoID)
+
+		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: creator,
+			Operator:    creator,
+			Id:          opManagedID,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		p, err := k.GetParticipantByID(sdkCtx, opManagedID)
+		require.NoError(t, err)
+		require.Equal(t, types.OnboardingState_PENDING, p.OpState)
+	})
+}
+
 func TestSetParticipantVPToValidated(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
 	_ = trkKeeper
