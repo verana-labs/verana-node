@@ -180,15 +180,13 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 		return nil, fmt.Errorf("validator participant is not valid: %w", err)
 	}
 
-	// [MOD-PP-MSG-2-2-3] Fee checks
+	// [MOD-PP-MSG-2-2-2] same role/mode tree as MSG-1-2-2
 	cs, err := ms.credentialSchemaKeeper.GetCredentialSchemaById(ctx, validatorParticipant.SchemaId)
 	if err != nil {
 		return nil, fmt.Errorf("credential schema not found: %w", err)
 	}
-
-	// [MOD-PP-MSG-2-2-2] mode/role checks: blocks self-created entries
 	if err := validateParticipantRoleCombination(applicantParticipant.Role, validatorParticipant.Role, cs); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("role/mode check failed: %w", err)
 	}
 
 	// [MOD-PP-MSG-2-2-4] Unrepaid slash checks. The spec resolves the ecosystem
@@ -197,6 +195,8 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 	if err := ms.checkUnrepaidSlash(ctx, applicantParticipant.CorporationId, cs.EcosystemId); err != nil {
 		return nil, fmt.Errorf("unrepaid slash check failed: %w", err)
 	}
+
+	// [MOD-PP-MSG-2-2-3] Fee checks
 	validationFees, feeDenom, validationDeposit, err := ms.validateAndCalculateFees(ctx, cs, validatorParticipant)
 	if err != nil {
 		return nil, fmt.Errorf("fee validation failed: %w", err)

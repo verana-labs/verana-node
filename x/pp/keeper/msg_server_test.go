@@ -951,7 +951,7 @@ func TestRenewParticipantVP_ModeRoleChecks(t *testing.T) {
 		require.Nil(t, resp)
 	})
 
-	t.Run("entry with a role outside the onboarding tree cannot renew", func(t *testing.T) {
+	t.Run("synthetic state: role outside the onboarding tree cannot renew", func(t *testing.T) {
 		csKeeper.CreateMockCredentialSchema(12,
 			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
