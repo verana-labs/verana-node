@@ -43,4 +43,7 @@ var (
 	VSOAByParticipantKey = collections.NewPrefix("vsoa_part_de")
 	// VSOASeqKey backs the VSOperatorAuthorization id counter.
 	VSOASeqKey = collections.NewPrefix("vsoa_seq_de")
+	// WindowEndQueueKey is the window-end queue of MOD-DE-MSG-5-5, keyed
+	// (effective_until, participant_id).
+	WindowEndQueueKey = collections.NewPrefix("vsoa_wend_de")
 )

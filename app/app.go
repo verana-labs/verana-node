@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	ppkeeper "github.com/verana-labs/verana-node/x/pp/keeper"
 
 	_ "github.com/verana-labs/verana-node/x/co/module" // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/cs/module" // import for side-effects
@@ -330,8 +331,10 @@ func New(
 
 	// Wire the x/feegrant keeper into MOD-DE (realizes FeeGrant as an allowance).
 	app.DeKeeper.SetFeegrantKeeper(newDeFeegrantAdapter(app.FeeGrantKeeper))
-	// Wire the tx decoder into MOD-PP (CSPS AUTHZ-CHECK-4 reads the tx fee).
+	// Wire the tx decoder into MOD-PP (AUTHZ-CHECK-4 reads the fee granter).
 	app.ParticipantKeeper.SetTxDecoder(app.txConfig.TxDecoder())
+	// Wire the MOD-PP participant view into MOD-DE (AUTHZ-CHECK-3 step 1, MOD-DE-MSG-5-5).
+	app.DeKeeper.SetParticipantKeeper(ppkeeper.NewPpAsDeParticipantKeeper(app.ParticipantKeeper))
 
 	// add to default baseapp options
 	// enable optimistic execution

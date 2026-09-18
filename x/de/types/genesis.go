@@ -13,6 +13,7 @@ func DefaultGenesis() *GenesisState {
 		OperatorAuthorizations:   []OperatorAuthorization{},
 		FeeGrants:                []FeeGrant{},
 		VsOperatorAuthorizations: []VSOperatorAuthorization{},
+		WindowEndQueue:           []WindowEndQueueEntry{},
 	}
 }
 
@@ -109,6 +110,12 @@ func (gs GenesisState) Validate() error {
 			if len(rec.MsgTypes) == 0 {
 				return fmt.Errorf("vs_operator_authorizations[%d].records[%d]: msg_types cannot be empty", i, j)
 			}
+		}
+	}
+
+	for i, e := range gs.WindowEndQueue {
+		if e.ParticipantId == 0 {
+			return fmt.Errorf("window_end_queue[%d]: participant_id cannot be 0", i)
 		}
 	}
 

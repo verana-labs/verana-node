@@ -24,4 +24,6 @@ var (
 	ErrVSOAOtherCorporation     = errors.Register(ModuleName, 1113, "vs_operator already has a VSOperatorAuthorization from a different corporation; single-corp constraint violated")
 	ErrVSOperatorAuthzNotFound  = errors.Register(ModuleName, 1114, "VS operator authorization not found")
 	ErrVSOFeegrantNotEnabled    = errors.Register(ModuleName, 1115, "VS operator authorization record does not enable fee grant")
+	ErrParticipantNotActive     = errors.Register(ModuleName, 1116, "participant is not an active participant")
+	ErrInvalidFeeSpendLimit     = errors.Register(ModuleName, 1117, "fee_spend_limit must be set and strictly positive iff with_feegrant is true")
 )

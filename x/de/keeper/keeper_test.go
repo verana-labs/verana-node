@@ -41,11 +41,34 @@ func (m *mockCorpKeeper) ResolveCorporationByID(_ context.Context, id uint64) (t
 	return types.CorporationView{Id: id}, nil
 }
 
+// mockParticipantKeeper backs AUTHZ-CHECK-3 step 1 and the MOD-DE-MSG-5-5 scan
+// in MOD-DE tests. Every id is an active participant unless overridden in
+// views, or listed in missing.
+type mockParticipantKeeper struct {
+	views   map[uint64]types.ParticipantView
+	missing map[uint64]bool
+}
+
+func newMockParticipantKeeper() *mockParticipantKeeper {
+	return &mockParticipantKeeper{views: map[uint64]types.ParticipantView{}, missing: map[uint64]bool{}}
+}
+
+func (m *mockParticipantKeeper) ViewParticipant(_ context.Context, id uint64) (types.ParticipantView, bool) {
+	if m.missing[id] {
+		return types.ParticipantView{}, false
+	}
+	if v, ok := m.views[id]; ok {
+		return v, true
+	}
+	return types.ParticipantView{Active: true}, true
+}
+
 type fixture struct {
 	ctx          context.Context
 	keeper       keeper.Keeper
 	addressCodec address.Codec
 	corpKeeper   *mockCorpKeeper
+	participants *mockParticipantKeeper
 }
 
 func initFixture(t *testing.T) *fixture {
@@ -71,6 +94,8 @@ func initFixture(t *testing.T) *fixture {
 	// MOD-CO keeper post-construction via the depinject cycle break).
 	corpKeeper := newMockCorpKeeper()
 	k.SetCorporationKeeper(corpKeeper)
+	participants := newMockParticipantKeeper()
+	k.SetParticipantKeeper(participants)
 
 	// Initialize params
 	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
@@ -82,5 +107,6 @@ func initFixture(t *testing.T) *fixture {
 		keeper:       k,
 		addressCodec: addressCodec,
 		corpKeeper:   corpKeeper,
+		participants: participants,
 	}
 }

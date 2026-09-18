@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"time"
 
 	"cosmossdk.io/core/address"
 	feegrant "cosmossdk.io/x/feegrant"
@@ -52,4 +53,19 @@ type FeegrantKeeper interface {
 	GrantAllowance(ctx context.Context, granter, grantee sdk.AccAddress, allowance feegrant.FeeAllowanceI) error
 	RevokeAllowance(ctx context.Context, granter, grantee sdk.AccAddress) error
 	GetAllowance(ctx context.Context, granter, grantee sdk.AccAddress) (feegrant.FeeAllowanceI, error)
+}
+
+// ParticipantView is what MOD-DE reads about a Participant entry: its glossary
+// state at block time and its window end.
+type ParticipantView struct {
+	Active         bool
+	Future         bool
+	EffectiveUntil *time.Time
+}
+
+// ParticipantKeeper backs AUTHZ-CHECK-3 step 1 and the MOD-DE-MSG-5-5 scan.
+// Wired post-construction via Keeper.SetParticipantKeeper: MOD-PP depends on
+// MOD-DE, so MOD-DE cannot import MOD-PP.
+type ParticipantKeeper interface {
+	ViewParticipant(ctx context.Context, id uint64) (ParticipantView, bool)
 }

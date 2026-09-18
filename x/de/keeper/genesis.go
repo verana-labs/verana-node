@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"time"
 
 	"cosmossdk.io/collections"
 
@@ -68,6 +69,12 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 		return fmt.Errorf("failed to seed vs operator authorization sequence: %w", err)
 	}
 
+	for _, e := range genState.WindowEndQueue {
+		if err := k.WindowEndQueue.Set(ctx, collections.Join(e.WindowEnd, e.ParticipantId)); err != nil {
+			return fmt.Errorf("failed to set window-end queue entry: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -125,6 +132,15 @@ func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) 
 	if genesis.VsoaSeq, err = k.VSOASeq.Peek(ctx); err != nil {
 		return nil, err
 	}
+
+	queue := []types.WindowEndQueueEntry{}
+	if err := k.WindowEndQueue.Walk(ctx, nil, func(key collections.Pair[time.Time, uint64]) (bool, error) {
+		queue = append(queue, types.WindowEndQueueEntry{WindowEnd: key.K1(), ParticipantId: key.K2()})
+		return false, nil
+	}); err != nil {
+		return nil, fmt.Errorf("failed to export window-end queue: %w", err)
+	}
+	genesis.WindowEndQueue = queue
 
 	return genesis, nil
 }
