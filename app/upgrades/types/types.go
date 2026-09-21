@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	credentialschemakeeper "github.com/verana-labs/verana-node/x/cs/keeper"
 	ecosystem "github.com/verana-labs/verana-node/x/ec/keeper"
 	participant "github.com/verana-labs/verana-node/x/pp/keeper"
@@ -27,7 +26,6 @@ type AppKeepers interface {
 	GetCredentialSchemaKeeper() credentialschemakeeper.Keeper
 	GetBankKeeper() bankkeeper.Keeper
 	GetAccountKeeper() authkeeper.AccountKeeper
-	GetGovKeeper() *govkeeper.Keeper
 }
 
 type Upgrade struct {
