@@ -92,7 +92,7 @@ While Verana can run on lower-spec hardware, you may experience reduced performa
 
 ```bash
 git clone https://github.com/verana-labs/verana-node.git
-cd verana
+cd verana-node
 ```
 
 ### 2. Install Dependencies
@@ -215,6 +215,22 @@ cd local-test
 ```
 
 See [local-test/setup-guide.md](local-test/setup-guide.md) for detailed instructions.
+
+### Published Docker image tags
+
+The CD workflow pushes the canonical image to `veranalabs/verana-node` on each release.
+Each release gets an immutable version tag, for example `v0.10.5`.
+A stable release from `main` also moves the floating tags `latest`, `v0` and `v0.10`.
+A dev release from `main` also moves the floating tags `dev`, `v0-dev`, `v0.10-dev` and `v0.10.5-dev`.
+A release from a `release/**` branch moves only the tags of its own line.
+
+```bash
+# Newest stable release
+docker pull veranalabs/verana-node:latest
+
+# Newest dev release from main
+docker pull veranalabs/verana-node:dev
+```
 
 ### Docker on Apple Silicon (M-series Macs)
 
