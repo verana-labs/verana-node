@@ -522,7 +522,7 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 		if err := ms.delegationKeeper.ConsumeRecordSpend(ctx, corpID, msg.Operator, validatorParticipant.Id, opSpend); err != nil {
 			return nil, fmt.Errorf("spend limit exceeded: %w", err)
 		}
-		if err := ms.consumeVSOperatorFeeSpend(ctx, corpID, msg.Operator, validatorParticipant.Id, msg.Corporation); err != nil {
+		if err := ms.checkVSOperatorFeeGrant(ctx, validatorParticipant.Id, msg.Corporation); err != nil {
 			return nil, err
 		}
 	} else if err := ms.delegationKeeper.ConsumeOperatorSpend(ctx, msg.Corporation, msg.Operator, types.MsgSetParticipantOPToValidatedTypeURL, now, opSpend); err != nil {
@@ -893,8 +893,8 @@ func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.Msg
 		return 0, fmt.Errorf("failed to create participant: %w", err)
 	}
 
-	// [MOD-PP-MSG-7-3] If VSOA params provided, create an ACTIVE record
-	// (expiration = effective_until) via [MOD-DE-MSG-5].
+	// [MOD-PP-MSG-7-3] If VSOA params provided, create the record via
+	// [MOD-DE-MSG-5]; the entry is active from creation, so the cycle starts now.
 	if len(msg.VsOperatorAuthzMsgTypes) > 0 {
 		record := detypes.ParticipantAuthorizationRecord{
 			ParticipantId: id,
@@ -903,7 +903,7 @@ func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.Msg
 			FeeSpendLimit: msg.VsOperatorAuthzFeeSpendLimit,
 			WithFeegrant:  msg.VsOperatorAuthzWithFeegrant,
 			Period:        msg.VsOperatorAuthzPeriod,
-			Expiration:    msg.EffectiveUntil, // active immediately
+			Expiration:    vsoaCycleStart(ctx.BlockTime(), msg.VsOperatorAuthzPeriod),
 		}
 		if err := ms.delegationKeeper.GrantVSOperatorAuthorization(ctx, corporationId, msg.VsOperator, record); err != nil {
 			return 0, fmt.Errorf("failed to grant VS operator authorization: %w", err)
@@ -952,10 +952,10 @@ func (ms msgServer) SetParticipantEffectiveUntil(goCtx context.Context, msg *typ
 		return nil, fmt.Errorf("failed to adjust participant: %w", err)
 	}
 
-	// [MOD-PP-MSG-8-3] Sync the VSOA record expiration to the new effective_until
-	// via [MOD-DE-MSG-9]. No-op if no record exists.
-	if err := ms.delegationKeeper.UpdateVSOperatorAuthorizationExpiration(ctx, applicantParticipant.Id, msg.EffectiveUntil); err != nil {
-		return nil, fmt.Errorf("failed to update VS operator authorization expiration: %w", err)
+	// [MOD-PP-MSG-8-3] Sync the VSOA record via [MOD-DE-MSG-9] so the aggregate
+	// fee allowance follows the new effective_until. No-op if no record exists.
+	if err := ms.delegationKeeper.SyncVSOperatorAuthorization(ctx, applicantParticipant.Id); err != nil {
+		return nil, fmt.Errorf("failed to sync VS operator authorization: %w", err)
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -1321,11 +1321,11 @@ func (ms msgServer) revokeVSOperatorAuthorization(ctx sdk.Context, participant t
 	return nil
 }
 
-// consumeVSOperatorFeeSpend enforces the per-record fee cap [AUTHZ-CHECK-4] when
-// the corporation pays the transaction fee via fee grant (fee_granter == corp).
-// It is a no-op when the operator pays its own fee. participantID is the record
-// the vs-operator authorization was checked against in [AUTHZ-CHECK-3].
-func (ms msgServer) consumeVSOperatorFeeSpend(ctx sdk.Context, corpID uint64, operator string, participantID uint64, corporation string) error {
+// checkVSOperatorFeeGrant enforces [AUTHZ-CHECK-4] when the corporation pays the
+// transaction fee via fee grant (fee_granter == corp): the record MUST enable
+// corp-paid fees. The fee cap itself is enforced by the aggregate x/feegrant
+// allowance at fee-processing time. No-op when the operator pays its own fee.
+func (ms msgServer) checkVSOperatorFeeGrant(ctx sdk.Context, participantID uint64, corporation string) error {
 	dec := ms.txDecoder()
 	if dec == nil {
 		return nil
@@ -1342,13 +1342,8 @@ func (ms msgServer) consumeVSOperatorFeeSpend(ctx sdk.Context, corpID uint64, op
 	if err != nil || !bytes.Equal(feeTx.FeeGranter(), corpAddr) {
 		return nil
 	}
-	// [AUTHZ-CHECK-4] step 1: the record MUST opt into corp-paid fees.
 	if err := ms.delegationKeeper.CheckVSOperatorFeeGrant(ctx, participantID); err != nil {
 		return fmt.Errorf("fee grant not authorized: %w", err)
-	}
-	// step 3: abort when remaining_fee_spend is insufficient; deduct after execution.
-	if err := ms.delegationKeeper.ConsumeRecordFeeSpend(ctx, corpID, operator, participantID, feeTx.GetFee()); err != nil {
-		return fmt.Errorf("fee spend limit exceeded: %w", err)
 	}
 	return nil
 }
@@ -1368,7 +1363,7 @@ func (ms msgServer) CreateOrUpdateParticipantSession(goCtx context.Context, msg 
 		return nil, err
 	}
 
-	// [AUTHZ-CHECK-3] step 5: debit the record spend_limit per matching denom.
+	// [AUTHZ-CHECK-3] step 6: debit the record spend_limit per matching denom.
 	// plan.required is the full outflow across every denom, so COIN-priced fees
 	// also count (primary = verifier else issuer).
 	primaryParticipantID := msg.IssuerParticipantId
@@ -1385,8 +1380,8 @@ func (ms msgServer) CreateOrUpdateParticipantSession(goCtx context.Context, msg 
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
 
-	// [AUTHZ-CHECK-4] per-record fee cap when the corporation pays the tx fee.
-	if err := ms.consumeVSOperatorFeeSpend(ctx, primaryCorpID, msg.Operator, primaryParticipantID, msg.Corporation); err != nil {
+	// [AUTHZ-CHECK-4] with_feegrant gate when the corporation pays the tx fee.
+	if err := ms.checkVSOperatorFeeGrant(ctx, primaryParticipantID, msg.Corporation); err != nil {
 		return nil, err
 	}
 
@@ -1796,7 +1791,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	}
 
 	// [MOD-PP-MSG-14-3] OPEN mode: participant is VALIDATED immediately, so create
-	// an ACTIVE record (expiration = effective_until) via [MOD-DE-MSG-5].
+	// the record via [MOD-DE-MSG-5] with its operation cycle started now.
 	if len(msg.VsOperatorAuthzMsgTypes) > 0 {
 		record := detypes.ParticipantAuthorizationRecord{
 			ParticipantId: id,
@@ -1805,7 +1800,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 			FeeSpendLimit: msg.VsOperatorAuthzFeeSpendLimit,
 			WithFeegrant:  msg.VsOperatorAuthzWithFeegrant,
 			Period:        msg.VsOperatorAuthzPeriod,
-			Expiration:    msg.EffectiveUntil, // active immediately
+			Expiration:    vsoaCycleStart(ctx.BlockTime(), msg.VsOperatorAuthzPeriod),
 		}
 		if err := ms.delegationKeeper.GrantVSOperatorAuthorization(ctx, corporationId, msg.VsOperator, record); err != nil {
 			return nil, fmt.Errorf("failed to grant VS operator authorization: %w", err)

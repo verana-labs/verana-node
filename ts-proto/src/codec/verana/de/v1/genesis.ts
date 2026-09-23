@@ -7,7 +7,7 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
-import { FeeGrant, OperatorAuthorization, VSOperatorAuthorization } from "./types";
+import { FeeGrant, OperatorAuthorization, VSOperatorAuthorization, WindowEndQueueEntry } from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
@@ -27,6 +27,8 @@ export interface GenesisState {
   /** Id sequences, exported so ids are never re-issued after a delete. */
   operatorAuthorizationSeq: number;
   vsoaSeq: number;
+  /** window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5. */
+  windowEndQueue: WindowEndQueueEntry[];
 }
 
 function createBaseGenesisState(): GenesisState {
@@ -37,6 +39,7 @@ function createBaseGenesisState(): GenesisState {
     vsOperatorAuthorizations: [],
     operatorAuthorizationSeq: 0,
     vsoaSeq: 0,
+    windowEndQueue: [],
   };
 }
 
@@ -59,6 +62,9 @@ export const GenesisState = {
     }
     if (message.vsoaSeq !== 0) {
       writer.uint32(56).uint64(message.vsoaSeq);
+    }
+    for (const v of message.windowEndQueue) {
+      WindowEndQueueEntry.encode(v!, writer.uint32(66).fork()).ldelim();
     }
     return writer;
   },
@@ -112,6 +118,13 @@ export const GenesisState = {
 
           message.vsoaSeq = longToNumber(reader.uint64() as Long);
           continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.windowEndQueue.push(WindowEndQueueEntry.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -137,6 +150,9 @@ export const GenesisState = {
         ? globalThis.Number(object.operatorAuthorizationSeq)
         : 0,
       vsoaSeq: isSet(object.vsoaSeq) ? globalThis.Number(object.vsoaSeq) : 0,
+      windowEndQueue: globalThis.Array.isArray(object?.windowEndQueue)
+        ? object.windowEndQueue.map((e: any) => WindowEndQueueEntry.fromJSON(e))
+        : [],
     };
   },
 
@@ -160,6 +176,9 @@ export const GenesisState = {
     if (message.vsoaSeq !== 0) {
       obj.vsoaSeq = Math.round(message.vsoaSeq);
     }
+    if (message.windowEndQueue?.length) {
+      obj.windowEndQueue = message.windowEndQueue.map((e) => WindowEndQueueEntry.toJSON(e));
+    }
     return obj;
   },
 
@@ -178,6 +197,7 @@ export const GenesisState = {
       object.vsOperatorAuthorizations?.map((e) => VSOperatorAuthorization.fromPartial(e)) || [];
     message.operatorAuthorizationSeq = object.operatorAuthorizationSeq ?? 0;
     message.vsoaSeq = object.vsoaSeq ?? 0;
+    message.windowEndQueue = object.windowEndQueue?.map((e) => WindowEndQueueEntry.fromPartial(e)) || [];
     return message;
   },
 };

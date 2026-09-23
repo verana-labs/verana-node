@@ -6491,8 +6491,7 @@ func TestVSOA_StartParticipantOPGrantsDisabledRecord(t *testing.T) {
 	require.Len(t, delKeeper.GrantVSOACalls, 1)
 	require.Equal(t, vsOperator, delKeeper.GrantVSOACalls[0].VsOperator)
 	require.Equal(t, resp.ParticipantId, delKeeper.GrantVSOACalls[0].Record.ParticipantId)
-	require.NotNil(t, delKeeper.GrantVSOACalls[0].Record.Expiration)
-	require.True(t, delKeeper.GrantVSOACalls[0].Record.Expiration.Equal(now), "record created disabled (expiration == now)")
+	require.Nil(t, delKeeper.GrantVSOACalls[0].Record.Expiration, "no cycle before validation; step 1 disables the record")
 }
 
 func TestVSOA_StartParticipantOPSkipsWithoutMsgTypes(t *testing.T) {
@@ -6520,7 +6519,7 @@ func TestVSOA_StartParticipantOPSkipsWithoutMsgTypes(t *testing.T) {
 	require.Len(t, delKeeper.GrantVSOACalls, 0)
 }
 
-func TestVSOA_ValidatedUpdatesExpiration(t *testing.T) {
+func TestVSOA_ValidatedSyncsRecord(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
 	ctx = sdk.WrapSDKContext(sdkCtx)
@@ -6560,14 +6559,11 @@ func TestVSOA_ValidatedUpdatesExpiration(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Len(t, delKeeper.UpdateVSOACalls, 1)
-	require.Equal(t, applicantPermID, delKeeper.UpdateVSOACalls[0].ParticipantID)
-	require.True(t, delKeeper.UpdateVSOACalls[0].NewExpiration.Equal(future))
+	require.Equal(t, []uint64{applicantPermID}, delKeeper.SyncVSOACalls)
 }
 
-// [MOD-PP-MSG-8] SetParticipantEffectiveUntil MUST sync the VSOA record to the NEW
-// effective_until (msg value), not the stale stored value.
-func TestVSOA_SetEffectiveUntilSyncsNewExpiration(t *testing.T) {
+// [MOD-PP-MSG-8] SetParticipantEffectiveUntil syncs the VSOA record.
+func TestVSOA_SetEffectiveUntilSyncsRecord(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
 	ctx = sdk.WrapSDKContext(sdkCtx)
@@ -6608,13 +6604,11 @@ func TestVSOA_SetEffectiveUntilSyncsNewExpiration(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Len(t, delKeeper.UpdateVSOACalls, 1)
-	require.True(t, delKeeper.UpdateVSOACalls[0].NewExpiration.Equal(future2),
-		"sync must use new effective_until %s, got %s", future2, delKeeper.UpdateVSOACalls[0].NewExpiration)
+	require.Equal(t, []uint64{applicantPermID}, delKeeper.SyncVSOACalls)
 }
 
-// [MOD-PP-MSG-14] SelfCreateParticipant (OPEN) creates an ACTIVE VSOA record
-// (expiration == effective_until) when msg_types are given, and none otherwise.
+// [MOD-PP-MSG-14] SelfCreateParticipant (OPEN) creates a VSOA record when
+// msg_types are given (no period: no cycle), and none otherwise.
 func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 	k, ms, mockCsKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
@@ -6652,8 +6646,7 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 		require.Len(t, delKeeper.GrantVSOACalls, 1)
 		require.Equal(t, vsOp, delKeeper.GrantVSOACalls[0].VsOperator)
 		require.Equal(t, resp.Id, delKeeper.GrantVSOACalls[0].Record.ParticipantId)
-		require.True(t, delKeeper.GrantVSOACalls[0].Record.Expiration.Equal(farFuture),
-			"active record: expiration == effective_until")
+		require.Nil(t, delKeeper.GrantVSOACalls[0].Record.Expiration, "no period: no cycle")
 	})
 
 	t.Run("no record without msg_types", func(t *testing.T) {
@@ -6670,8 +6663,8 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 	})
 }
 
-// [MOD-PP-MSG-7] CreateRootParticipant with msg_types creates an ACTIVE VSOA record
-// (expiration == effective_until) and assigns vs_operator.
+// [MOD-PP-MSG-7] CreateRootParticipant with msg_types creates a VSOA record whose
+// operation cycle starts at creation, and assigns vs_operator.
 func TestVSOA_CreateRootActiveRecord(t *testing.T) {
 	_, ms, mockCsKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
@@ -6690,18 +6683,21 @@ func TestVSOA_CreateRootActiveRecord(t *testing.T) {
 	delKeeper.Reset()
 
 	vsOp := sdk.AccAddress([]byte("vsoa_root_vsop_a____")).String()
+	period := 30 * 24 * time.Hour
 	resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
 		Corporation: authority, Operator: authority, SchemaId: 1, Did: did,
 		ValidationFees: 100, IssuanceFees: 50, VerificationFees: 25,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 		VsOperator: vsOp, VsOperatorAuthzMsgTypes: []string{types.MsgSetParticipantOPToValidatedTypeURL},
+		VsOperatorAuthzSpendLimit: sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, 1000)),
+		VsOperatorAuthzPeriod:     &period,
 	})
 	require.NoError(t, err)
 	require.Len(t, delKeeper.GrantVSOACalls, 1)
 	require.Equal(t, vsOp, delKeeper.GrantVSOACalls[0].VsOperator)
 	require.Equal(t, resp.Id, delKeeper.GrantVSOACalls[0].Record.ParticipantId)
-	require.True(t, delKeeper.GrantVSOACalls[0].Record.Expiration.Equal(farFuture),
-		"active record: expiration == effective_until")
+	require.True(t, delKeeper.GrantVSOACalls[0].Record.Expiration.Equal(now.Add(period)),
+		"cycle starts at creation: expiration == now + period")
 }
 
 // [MOD-PP-MSG-7] CreateRootParticipant without msg_types creates no VSOA record.

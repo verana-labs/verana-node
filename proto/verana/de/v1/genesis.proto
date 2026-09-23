@@ -28,4 +28,7 @@ message GenesisState {
   // Id sequences, exported so ids are never re-issued after a delete.
   uint64 operator_authorization_seq = 6;
   uint64 vsoa_seq = 7;
+
+  // window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5.
+  repeated WindowEndQueueEntry window_end_queue = 8 [(gogoproto.nullable) = false];
 }

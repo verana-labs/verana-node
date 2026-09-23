@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"time"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -199,8 +200,9 @@ func (ms msgServer) executeStartParticipantVP(ctx sdk.Context, msg *types.MsgSta
 		return 0, fmt.Errorf("failed to create participant: %w", err)
 	}
 
-	// [MOD-PP-MSG-1-3] If VSOA params provided, create a DISABLED record (expiration
-	// = now) via [MOD-DE-MSG-5]; it is activated at validation time by [MOD-DE-MSG-9].
+	// [MOD-PP-MSG-1-3] If VSOA params provided, create the record via [MOD-DE-MSG-5].
+	// AUTHZ-CHECK-3 step 1 disables it until validation; [MOD-DE-MSG-9] then
+	// starts its operation cycle.
 	if len(msg.VsOperatorAuthzMsgTypes) > 0 {
 		record := detypes.ParticipantAuthorizationRecord{
 			ParticipantId: id,
@@ -209,7 +211,6 @@ func (ms msgServer) executeStartParticipantVP(ctx sdk.Context, msg *types.MsgSta
 			FeeSpendLimit: msg.VsOperatorAuthzFeeSpendLimit,
 			WithFeegrant:  msg.VsOperatorAuthzWithFeegrant,
 			Period:        msg.VsOperatorAuthzPeriod,
-			Expiration:    &now, // disabled until validation
 		}
 		if err := ms.delegationKeeper.GrantVSOperatorAuthorization(ctx, corporationId, msg.VsOperator, record); err != nil {
 			return 0, fmt.Errorf("failed to grant VS operator authorization: %w", err)
@@ -292,4 +293,14 @@ func validateParticipantRoleCombination(requestedType, validatorType types.Parti
 	}
 
 	return nil
+}
+
+// vsoaCycleStart starts the operation-budget cycle at creation, for entries that
+// are active from creation (MSG-7 / MSG-14).
+func vsoaCycleStart(now time.Time, period *time.Duration) *time.Time {
+	if period == nil || *period <= 0 {
+		return nil
+	}
+	e := now.Add(*period)
+	return &e
 }
