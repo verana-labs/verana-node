@@ -13,10 +13,8 @@ import (
 	"github.com/verana-labs/verana-node/x/de/types"
 )
 
-// GrantFeeAllowance implements [MOD-DE-MSG-1]. It creates or updates a FeeGrant
-// record keyed by the composite (grantor_corporation_id, grantee). This is an
-// internal method called by GrantOperatorAuthorization and the MSG-5-5
-// recompute subroutine.
+// GrantFeeAllowance implements [MOD-DE-MSG-1] with a fresh budget. The MSG-5-5
+// recompute uses grantFeeAllowance to carry the spent budget instead.
 func (k Keeper) GrantFeeAllowance(
 	goCtx context.Context,
 	grantorCorporationID uint64,
@@ -25,6 +23,20 @@ func (k Keeper) GrantFeeAllowance(
 	expiration *time.Time,
 	spendLimit sdk.Coins,
 	period *time.Duration,
+) error {
+	return k.grantFeeAllowance(goCtx, grantorCorporationID, grantee, msgTypes, expiration, spendLimit, period, spendLimit)
+}
+
+// grantFeeAllowance is GrantFeeAllowance with an explicit remaining budget.
+func (k Keeper) grantFeeAllowance(
+	goCtx context.Context,
+	grantorCorporationID uint64,
+	grantee string,
+	msgTypes []string,
+	expiration *time.Time,
+	spendLimit sdk.Coins,
+	period *time.Duration,
+	remaining sdk.Coins,
 ) error {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
@@ -68,7 +80,7 @@ func (k Keeper) GrantFeeAllowance(
 		Grantee:              grantee,
 		MsgTypes:             msgTypes,
 		SpendLimit:           spendLimit,
-		RemainingSpend:       spendLimit,
+		RemainingSpend:       remaining,
 		Expiration:           expiration,
 		Period:               period,
 	}
@@ -88,7 +100,7 @@ func (k Keeper) GrantFeeAllowance(
 			inner = &feegrant.PeriodicAllowance{
 				Period:           *period,
 				PeriodSpendLimit: spendLimit,
-				PeriodCanSpend:   spendLimit,
+				PeriodCanSpend:   remaining,
 				PeriodReset:      *expiration,
 			}
 		} else {
@@ -170,6 +182,43 @@ func (k Keeper) RevokeFeeAllowance(goCtx context.Context, grantorCorporationID u
 		),
 	)
 	return nil
+}
+
+// carriedFeeBudget keeps the current reset and subtracts what was already spent
+// from the new total, floored at zero; fresh once the period has elapsed.
+func (k Keeper) carriedFeeBudget(ctx context.Context, grantorCorporationID uint64, grantee string, total sdk.Coins, period time.Duration) (time.Time, sdk.Coins) {
+	now := sdk.UnwrapSDKContext(ctx).BlockTime()
+	fresh := now.Add(period)
+	fk := k.feegrantKeeper()
+	if fk == nil {
+		return fresh, total
+	}
+	granter, granteeAddr, err := k.feeGrantAddrs(ctx, grantorCorporationID, grantee)
+	if err != nil {
+		return fresh, total
+	}
+	cur, err := fk.GetAllowance(ctx, granter, granteeAddr)
+	if err != nil {
+		return fresh, total
+	}
+	if wrapped, ok := cur.(*feegrant.AllowedMsgAllowance); ok {
+		if cur, err = wrapped.GetAllowance(); err != nil {
+			return fresh, total
+		}
+	}
+	pa, ok := cur.(*feegrant.PeriodicAllowance)
+	if !ok || !pa.PeriodReset.After(now) {
+		return fresh, total
+	}
+	remaining := sdk.NewCoins()
+	for _, c := range total {
+		spent := pa.PeriodSpendLimit.AmountOf(c.Denom).Sub(pa.PeriodCanSpend.AmountOf(c.Denom))
+		left := c.Amount.Sub(spent)
+		if left.IsPositive() {
+			remaining = remaining.Add(sdk.NewCoin(c.Denom, left))
+		}
+	}
+	return pa.PeriodReset, remaining
 }
 
 // feeGrantAddrs resolves the granter (corp policy_address) and grantee accounts.

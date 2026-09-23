@@ -389,23 +389,30 @@ func TestRecomputeFeeAllowance_Sum(t *testing.T) {
 	require.False(t, has)
 }
 
-// [MOD-DE-MSG-5-5] A contributing entry with an effective_until is scheduled in
-// the window-end queue; one without is not.
+// [MOD-DE-MSG-5-5] A feegrant entry with an effective_until is scheduled in the
+// window-end queue; a non-feegrant one, or one without a window end, is not.
 func TestRecomputeFeeAllowance_QueuesWindowEnd(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	until := ctx.BlockTime().Add(72 * time.Hour)
 	f.participants.views[10] = types.ParticipantView{Active: true, EffectiveUntil: &until}
+	f.participants.views[12] = types.ParticipantView{Active: true, EffectiveUntil: &until}
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uvna", 5))
 
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtCSPS}}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtCSPS}}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee}))
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []string{mtCSPS}}))
 
 	has, err := k.WindowEndQueue.Has(ctx, collections.Join(until, uint64(10)))
 	require.NoError(t, err)
 	require.True(t, has)
+	has, err = k.WindowEndQueue.Has(ctx, collections.Join(until, uint64(12)))
+	require.NoError(t, err)
+	require.False(t, has, "non-feegrant records do not affect the allowance")
 	n := 0
 	require.NoError(t, k.WindowEndQueue.Walk(ctx, nil, func(_ collections.Pair[time.Time, uint64]) (bool, error) {
 		n++

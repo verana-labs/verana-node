@@ -271,14 +271,10 @@ func (k Keeper) SyncVSOperatorAuthorization(ctx context.Context, participantID u
 	return nil
 }
 
-// recomputeFeeAllowance implements [MOD-DE-MSG-5-5]. Records whose Participant
-// entry is active or future contribute: their msg_types are unioned and their
-// fee_spend_limit summed into one PeriodicAllowance cycling on
-// Params.vs_operator_fee_period. Each contributing entry with an effective_until
-// is scheduled in the window-end queue. No contributing feegrant record revokes
-// the allowance.
+// recomputeFeeAllowance implements [MOD-DE-MSG-5-5]: one PeriodicAllowance over
+// the live feegrant records (union of msg_types, sum of fee_spend_limit), their
+// window ends queued, the spent budget carried over. None left: revoke.
 func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperatorAuthorization) error {
-	now := sdk.UnwrapSDKContext(ctx).BlockTime()
 	params, err := k.Params.Get(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to read params: %w", err)
@@ -288,6 +284,9 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 	seen := make(map[string]bool)
 	feegrantMsgTypes := make([]string, 0)
 	for _, r := range vsoa.Records {
+		if !r.WithFeegrant {
+			continue
+		}
 		pv, found := k.participantKeeper().ViewParticipant(ctx, r.ParticipantId)
 		if !found || (!pv.Active && !pv.Future) {
 			continue
@@ -296,9 +295,6 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 			if err := k.WindowEndQueue.Set(ctx, collections.Join(*pv.EffectiveUntil, r.ParticipantId)); err != nil {
 				return fmt.Errorf("failed to schedule window end: %w", err)
 			}
-		}
-		if !r.WithFeegrant {
-			continue
 		}
 		for _, mt := range r.MsgTypes {
 			if !seen[mt] {
@@ -313,6 +309,6 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 		return k.RevokeFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator)
 	}
 	period := params.VsOperatorFeePeriod
-	reset := now.Add(period)
-	return k.GrantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, &reset, total, &period)
+	reset, remaining := k.carriedFeeBudget(ctx, vsoa.CorporationId, vsoa.VsOperator, total, period)
+	return k.grantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, &reset, total, &period, remaining)
 }

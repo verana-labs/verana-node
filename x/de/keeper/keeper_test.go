@@ -2,10 +2,12 @@ package keeper_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"cosmossdk.io/core/address"
 	storetypes "cosmossdk.io/store/types"
+	feegrant "cosmossdk.io/x/feegrant"
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -38,7 +40,52 @@ func (m *mockCorpKeeper) ResolveCorporationByPolicyAddress(_ context.Context, ad
 }
 
 func (m *mockCorpKeeper) ResolveCorporationByID(_ context.Context, id uint64) (types.CorporationView, error) {
-	return types.CorporationView{Id: id}, nil
+	return types.CorporationView{Id: id, PolicyAddress: corpPolicyAddr(id)}, nil
+}
+
+// corpPolicyAddr is the deterministic policy_address of corporation id in tests.
+func corpPolicyAddr(id uint64) string {
+	return sdk.AccAddress([]byte(fmt.Sprintf("corp_policy_%08d", id))).String()
+}
+
+// memFeegrantKeeper is an in-memory x/feegrant keeper with the SDK's rules:
+// a grant cannot overwrite an existing one, revoke and get fail when absent.
+// Allowances are stored by pointer, so Accept mutates them in place like
+// UseGrantedFees does.
+type memFeegrantKeeper struct {
+	grants map[string]feegrant.FeeAllowanceI
+}
+
+func newMemFeegrantKeeper() *memFeegrantKeeper {
+	return &memFeegrantKeeper{grants: map[string]feegrant.FeeAllowanceI{}}
+}
+
+func feegrantKey(granter, grantee sdk.AccAddress) string {
+	return granter.String() + "/" + grantee.String()
+}
+
+func (m *memFeegrantKeeper) GrantAllowance(_ context.Context, granter, grantee sdk.AccAddress, allowance feegrant.FeeAllowanceI) error {
+	if _, ok := m.grants[feegrantKey(granter, grantee)]; ok {
+		return fmt.Errorf("fee allowance already exists")
+	}
+	m.grants[feegrantKey(granter, grantee)] = allowance
+	return nil
+}
+
+func (m *memFeegrantKeeper) RevokeAllowance(_ context.Context, granter, grantee sdk.AccAddress) error {
+	if _, ok := m.grants[feegrantKey(granter, grantee)]; !ok {
+		return fmt.Errorf("fee-grant not found")
+	}
+	delete(m.grants, feegrantKey(granter, grantee))
+	return nil
+}
+
+func (m *memFeegrantKeeper) GetAllowance(_ context.Context, granter, grantee sdk.AccAddress) (feegrant.FeeAllowanceI, error) {
+	a, ok := m.grants[feegrantKey(granter, grantee)]
+	if !ok {
+		return nil, fmt.Errorf("fee-grant not found")
+	}
+	return a, nil
 }
 
 // mockParticipantKeeper backs AUTHZ-CHECK-3 step 1 and the MOD-DE-MSG-5-5 scan
@@ -69,6 +116,7 @@ type fixture struct {
 	addressCodec address.Codec
 	corpKeeper   *mockCorpKeeper
 	participants *mockParticipantKeeper
+	feegrants    *memFeegrantKeeper
 }
 
 func initFixture(t *testing.T) *fixture {
@@ -96,6 +144,8 @@ func initFixture(t *testing.T) *fixture {
 	k.SetCorporationKeeper(corpKeeper)
 	participants := newMockParticipantKeeper()
 	k.SetParticipantKeeper(participants)
+	feegrants := newMemFeegrantKeeper()
+	k.SetFeegrantKeeper(feegrants)
 
 	// Initialize params
 	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
@@ -108,5 +158,6 @@ func initFixture(t *testing.T) *fixture {
 		addressCodec: addressCodec,
 		corpKeeper:   corpKeeper,
 		participants: participants,
+		feegrants:    feegrants,
 	}
 }
