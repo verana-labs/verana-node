@@ -25,9 +25,11 @@ env:
 jobs:
   resolve-version:
     if: github.event_name == 'push'
-    uses: 2060-io/organization/.github/workflows/resolve-version-call.yml@5f813454d8962db006c4e4466f3af1cf4af8dfa4 # v0.5.0
+    uses: 2060-io/organization/.github/workflows/resolve-version-call.yml@562f890be78c7fd3f07695446f4506d383c52219 # v0.5.2
     with:
-      bump-minor-pre-major: false
+      prerelease-branch: ${{ github.ref_name }}
+      feat-release-type: patch
+      breaking-release-type: minor
       create-pre-release: true
       generate-notes: true
       release-title: Release
@@ -393,7 +395,7 @@ jobs:
     if: needs.resolve-version.outputs.new-release-published == 'true' && needs.resolve-version.outputs.release-type == 'stable'
     permissions:
       contents: read
-    uses: 2060-io/organization/.github/workflows/discord-release-notify-call.yml@5f813454d8962db006c4e4466f3af1cf4af8dfa4 # v0.5.0
+    uses: 2060-io/organization/.github/workflows/discord-release-notify-call.yml@562f890be78c7fd3f07695446f4506d383c52219 # v0.5.2
     with:
       tag_name: ${{ needs.resolve-version.outputs.release-version }}
     secrets:
@@ -403,7 +405,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
-    uses: 2060-io/organization/.github/workflows/discord-release-notify-call.yml@5f813454d8962db006c4e4466f3af1cf4af8dfa4 # v0.5.0
+    uses: 2060-io/organization/.github/workflows/discord-release-notify-call.yml@562f890be78c7fd3f07695446f4506d383c52219 # v0.5.2
     with:
       tag_name: ${{ inputs.notify_tag }}
     secrets:
