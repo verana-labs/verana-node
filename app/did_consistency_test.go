@@ -3,7 +3,7 @@ package app
 import (
 	"testing"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -20,7 +20,7 @@ func TestAssertGenesisDIDConsistency(t *testing.T) {
 	appOptions[flags.FlagHome] = DefaultNodeHome
 	appOptions[server.FlagInvCheckPeriod] = uint(0)
 
-	a, err := New(log.NewNopLogger(), dbm.NewMemDB(), nil, true, appOptions)
+	a, err := New(log.NewNopLogger(), dbm.NewMemDB(), true, appOptions)
 	require.NoError(t, err)
 	ctx := a.NewContextLegacy(true, cmtproto.Header{})
 

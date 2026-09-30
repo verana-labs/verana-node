@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/stretchr/testify/require"
+	"github.com/verana-labs/cosmos-group"
 
 	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
 	"github.com/verana-labs/verana-node/x/co/keeper"
@@ -147,7 +147,7 @@ func TestCreateCorporation_DuplicateDID(t *testing.T) {
 	require.NoError(t, err)
 
 	grp.policy = "cosmos1z7z43tkdpkzddxw5t3krh8jjx8amghmhacdj6u" // policy-test-2
-	_, err = ms.CreateCorporation(ctx, validCreateMsg(t))      // same DID, different policy
+	_, err = ms.CreateCorporation(ctx, validCreateMsg(t))        // same DID, different policy
 	require.ErrorIs(t, err, types.ErrDIDAlreadyExists)
 }
 

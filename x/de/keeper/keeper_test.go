@@ -6,14 +6,14 @@ import (
 	"testing"
 
 	"cosmossdk.io/core/address"
-	storetypes "cosmossdk.io/store/types"
-	feegrant "cosmossdk.io/x/feegrant"
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/runtime"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	feegrant "github.com/cosmos/cosmos-sdk/x/feegrant"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/de/keeper"

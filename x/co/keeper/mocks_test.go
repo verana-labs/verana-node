@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/x/group"
+	"github.com/verana-labs/cosmos-group"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
@@ -56,14 +56,14 @@ func (m *mockGroup) CreateGroupWithPolicy(_ context.Context, req *group.MsgCreat
 type mockGF struct {
 	createErr  error
 	createArgs struct {
-		corpID                          uint64
+		corpID                         uint64
 		language, docURL, docDigestSRI string
 	}
 	createCalls int
 
-	listResp  []gftypes.GovernanceFrameworkVersionWithDocs
-	listErr   error
-	listArgs  struct {
+	listResp []gftypes.GovernanceFrameworkVersionWithDocs
+	listErr  error
+	listArgs struct {
 		corpID        uint64
 		activeVersion uint32
 		activeOnly    bool

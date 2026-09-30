@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.5
-ARG GO_VERSION=1.26.4
+ARG GO_VERSION=1.26.8
 ARG BASE_IMAGE=ubuntu:22.04
 
 # Pin the builder to the build host's platform and cross-compile via

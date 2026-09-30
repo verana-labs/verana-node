@@ -6,7 +6,7 @@ import (
 
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
+	"github.com/verana-labs/cosmos-group"
 
 	"github.com/verana-labs/verana-node/x/co/types"
 )

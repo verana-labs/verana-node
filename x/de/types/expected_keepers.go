@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"cosmossdk.io/core/address"
-	feegrant "cosmossdk.io/x/feegrant"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	feegrant "github.com/cosmos/cosmos-sdk/x/feegrant"
 )
 
 // AuthKeeper defines the expected interface for the Auth module.

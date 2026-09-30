@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/x/group"
+	"github.com/verana-labs/cosmos-group"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
