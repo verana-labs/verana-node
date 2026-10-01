@@ -2,12 +2,14 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/core/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/x/group"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/verana-labs/verana-node/x/poa/types"
 )
@@ -73,4 +75,42 @@ func (k Keeper) ValidatorBond(ctx context.Context) (sdk.Coin, error) {
 		return sdk.Coin{}, err
 	}
 	return types.ValidatorBond(params.BondDenom), nil
+}
+
+// seatedValidators counts records that still hold the bond; removed ones linger at zero until unbonding_time.
+func (k Keeper) seatedValidators(ctx context.Context) (int, error) {
+	validators, err := k.staking.GetAllValidators(ctx)
+	if err != nil {
+		return 0, err
+	}
+	n := 0
+	for _, v := range validators {
+		if v.Tokens.IsPositive() {
+			n++
+		}
+	}
+	return n, nil
+}
+
+func (k Keeper) hasActiveValidator(ctx context.Context, addr string) (bool, error) {
+	acc, err := k.addressCodec.StringToBytes(addr)
+	if err != nil {
+		return false, err
+	}
+	v, err := k.staking.GetValidator(ctx, sdk.ValAddress(acc))
+	if errors.Is(err, stakingtypes.ErrNoValidatorFound) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return v.Tokens.IsPositive(), nil
+}
+
+func (k Keeper) councilPolicy(ctx context.Context) (group.DecisionPolicy, error) {
+	res, err := k.groups.GroupPolicyInfo(ctx, &group.QueryGroupPolicyInfoRequest{Address: k.authority})
+	if err != nil {
+		return nil, fmt.Errorf("no council group policy at %s: %w", k.authority, err)
+	}
+	return res.Info.GetDecisionPolicy()
 }

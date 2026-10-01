@@ -2,6 +2,8 @@ package app_test
 
 import (
 	"encoding/json"
+	"fmt"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -15,6 +17,8 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -41,16 +45,20 @@ func newTestApp(t *testing.T) *app.App {
 // genesisWith returns a genesis with one validator and the given council members;
 // nil members means no council at all. The validator operator address is returned.
 func genesisWith(t *testing.T, a *app.App, members func(operator string) []string) map[string]json.RawMessage {
+	return genesisWithAccounts(t, a, members, nil, nil)
+}
+
+func genesisWithAccounts(t *testing.T, a *app.App, members func(operator string) []string, extraAccs []authtypes.GenesisAccount, extraBals []banktypes.Balance) map[string]json.RawMessage {
 	t.Helper()
 	pk := ed25519.GenPrivKey().PubKey()
 	cmtPk, err := cryptocodec.ToCmtPubKeyInterface(pk)
 	require.NoError(t, err)
 	val := cmttypes.NewValidator(cmtPk, 1)
 	operator := sdk.AccAddress(val.Address)
-	acc := authtypes.NewBaseAccount(operator, nil, 0, 0)
-	bal := banktypes.Balance{Address: operator.String(), Coins: sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)))}
+	accs := append([]authtypes.GenesisAccount{authtypes.NewBaseAccount(operator, nil, 0, 0)}, extraAccs...)
+	bals := append([]banktypes.Balance{{Address: operator.String(), Coins: sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100_000_000)))}}, extraBals...)
 	gs, err := simtestutil.GenesisStateWithValSet(a.AppCodec(), a.DefaultGenesis(),
-		cmttypes.NewValidatorSet([]*cmttypes.Validator{val}), []authtypes.GenesisAccount{acc}, bal)
+		cmttypes.NewValidatorSet([]*cmttypes.Validator{val}), accs, bals...)
 	require.NoError(t, err)
 	var ica icagenesistypes.GenesisState
 	a.AppCodec().MustUnmarshalJSON(gs[icatypes.ModuleName], &ica)
@@ -253,4 +261,123 @@ func TestReseatAfterUnbonding_KeepsRecordUntilMature(t *testing.T) {
 	v, err := a.StakingKeeper.GetValidator(a.NewUncachedContext(false, cmtproto.Header{Height: 7}), valAddr)
 	require.NoError(t, err, "record deleted while CometBFT still holds the validator")
 	require.True(t, v.IsUnbonding())
+}
+
+// liveChain drives the app block by block with signed transactions.
+type liveChain struct {
+	app    *app.App
+	height int64
+	now    time.Time
+}
+
+func (c *liveChain) block(t *testing.T, txs ...[]byte) *abci.ResponseFinalizeBlock {
+	t.Helper()
+	c.height++
+	c.now = c.now.Add(time.Second)
+	res, err := c.app.FinalizeBlock(&abci.RequestFinalizeBlock{Height: c.height, Time: c.now, Txs: txs})
+	require.NoError(t, err)
+	_, err = c.app.Commit()
+	require.NoError(t, err)
+	return res
+}
+
+func (c *liveChain) signed(t *testing.T, priv cryptotypes.PrivKey, msgs ...sdk.Msg) []byte {
+	t.Helper()
+	acc := c.app.AccountKeeper.GetAccount(c.app.NewContext(true), sdk.AccAddress(priv.PubKey().Address()))
+	require.NotNil(t, acc)
+	tx, err := simtestutil.GenSignedMockTx(rand.New(rand.NewSource(1)), c.app.TxConfig(), msgs, sdk.Coins{}, 500_000, "council-test",
+		[]uint64{acc.GetAccountNumber()}, []uint64{acc.GetSequence()}, priv)
+	require.NoError(t, err)
+	bz, err := c.app.TxConfig().TxEncoder()(tx)
+	require.NoError(t, err)
+	return bz
+}
+
+// seatedChain starts a chain with one genesis validator and two signing council members.
+func seatedChain(t *testing.T) (*liveChain, string, []*secp256k1.PrivKey) {
+	t.Helper()
+	a := newTestApp(t)
+	privs := []*secp256k1.PrivKey{secp256k1.GenPrivKey(), secp256k1.GenPrivKey()}
+	var accs []authtypes.GenesisAccount
+	var bals []banktypes.Balance
+	for i, p := range privs {
+		addr := sdk.AccAddress(p.PubKey().Address())
+		accs = append(accs, authtypes.NewBaseAccount(addr, nil, uint64(i+1), 0))
+		bals = append(bals, banktypes.Balance{Address: addr.String(), Coins: sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(10_000_000)))})
+	}
+	var operator string
+	gs := genesisWithAccounts(t, a, func(op string) []string {
+		operator = op
+		return []string{op, accs[0].GetAddress().String(), accs[1].GetAddress().String()}
+	}, accs, bals)
+	require.NoError(t, initChain(t, a, gs))
+	c := &liveChain{app: a, now: time.Unix(0, 0).UTC()}
+	c.block(t)
+	return c, operator, privs
+}
+
+func TestAnte_RejectsDelegationTx(t *testing.T) {
+	c, operator, privs := seatedChain(t)
+	member := sdk.AccAddress(privs[0].PubKey().Address()).String()
+	valoper := sdk.ValAddress(sdk.MustAccAddressFromBech32(operator)).String()
+	delegate := &stakingtypes.MsgDelegate{DelegatorAddress: member, ValidatorAddress: valoper, Amount: sdk.NewInt64Coin(sdk.DefaultBondDenom, 1)}
+
+	res := c.block(t, c.signed(t, privs[0], delegate))
+	require.Equal(t, poatypes.ErrMsgNotAllowed.ABCICode(), res.TxResults[0].Code, res.TxResults[0].Log)
+	require.Equal(t, poatypes.ModuleName, res.TxResults[0].Codespace)
+
+	proposal := &group.MsgSubmitProposal{GroupPolicyAddress: app.CouncilAuthority, Proposers: []string{member}, Title: "t", Summary: "s"}
+	require.NoError(t, proposal.SetMsgs([]sdk.Msg{delegate}))
+	res = c.block(t, c.signed(t, privs[0], proposal))
+	require.Equal(t, poatypes.ErrMsgNotAllowed.ABCICode(), res.TxResults[0].Code, res.TxResults[0].Log)
+	require.Equal(t, poatypes.ModuleName, res.TxResults[0].Codespace)
+
+	send := banktypes.NewMsgSend(sdk.MustAccAddressFromBech32(member), sdk.MustAccAddressFromBech32(operator), sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1)))
+	res = c.block(t, c.signed(t, privs[0], send))
+	require.Zero(t, res.TxResults[0].Code, res.TxResults[0].Log)
+}
+
+func TestProposal_SeatsValidatorThroughGroup(t *testing.T) {
+	c, _, privs := seatedChain(t)
+	member1 := sdk.AccAddress(privs[0].PubKey().Address()).String()
+	member2 := sdk.AccAddress(privs[1].PubKey().Address()).String()
+	consPk, err := codectypes.NewAnyWithValue(ed25519.GenPrivKey().PubKey())
+	require.NoError(t, err)
+
+	proposal := &group.MsgSubmitProposal{GroupPolicyAddress: app.CouncilAuthority, Proposers: []string{member1}, Title: "seat", Summary: "seat member2"}
+	require.NoError(t, proposal.SetMsgs([]sdk.Msg{&poatypes.MsgAddValidator{
+		Authority: app.CouncilAuthority, ValidatorAddress: member2, Description: poatypes.Description{Moniker: "m2"}, Pubkey: consPk,
+	}}))
+	res := c.block(t, c.signed(t, privs[0], proposal))
+	require.Zero(t, res.TxResults[0].Code, res.TxResults[0].Log)
+	var proposalID uint64
+	for _, ev := range res.TxResults[0].Events {
+		if ev.Type != "cosmos.group.v1.EventSubmitProposal" {
+			continue
+		}
+		for _, attr := range ev.Attributes {
+			if attr.Key == "proposal_id" {
+				_, err := fmt.Sscanf(attr.Value, "\"%d\"", &proposalID)
+				require.NoError(t, err)
+			}
+		}
+	}
+	require.NotZero(t, proposalID)
+
+	res = c.block(t,
+		c.signed(t, privs[0], &group.MsgVote{ProposalId: proposalID, Voter: member1, Option: group.VOTE_OPTION_YES}),
+		c.signed(t, privs[1], &group.MsgVote{ProposalId: proposalID, Voter: member2, Option: group.VOTE_OPTION_YES}),
+	)
+	for _, r := range res.TxResults {
+		require.Zero(t, r.Code, r.Log)
+	}
+
+	res = c.block(t, c.signed(t, privs[0], &group.MsgExec{ProposalId: proposalID, Executor: member1}))
+	require.Zero(t, res.TxResults[0].Code, res.TxResults[0].Log)
+	require.Len(t, res.ValidatorUpdates, 1)
+	require.EqualValues(t, 1, res.ValidatorUpdates[0].Power)
+
+	v, err := c.app.StakingKeeper.GetValidator(c.app.NewContext(true), sdk.ValAddress(sdk.MustAccAddressFromBech32(member2)))
+	require.NoError(t, err)
+	require.True(t, v.Tokens.Equal(sdk.DefaultPowerReduction))
 }

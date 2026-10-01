@@ -32,11 +32,11 @@ func (k Keeper) addValidator(ctx sdk.Context, msg *types.MsgAddValidator) error 
 	if err != nil {
 		return err
 	}
-	validators, err := k.staking.GetAllValidators(ctx)
+	seated, err := k.seatedValidators(ctx)
 	if err != nil {
 		return err
 	}
-	if uint32(len(validators)) >= params.MaxValidators {
+	if uint32(seated) >= params.MaxValidators {
 		return types.ErrMaxValidatorsReached
 	}
 

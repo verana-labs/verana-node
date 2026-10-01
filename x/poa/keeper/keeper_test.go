@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/log"
@@ -106,13 +107,19 @@ func (b *mockBank) SendCoinsFromModuleToAccount(_ context.Context, module string
 type mockGroups struct {
 	groupID uint64
 	members []string
+	windows group.DecisionPolicyWindows
 }
 
 func (g *mockGroups) GroupPolicyInfo(_ context.Context, req *group.QueryGroupPolicyInfoRequest) (*group.QueryGroupPolicyInfoResponse, error) {
 	if req.Address != authority {
 		return nil, errors.New("not found")
 	}
-	return &group.QueryGroupPolicyInfoResponse{Info: &group.GroupPolicyInfo{Address: authority, GroupId: g.groupID}}, nil
+	info := &group.GroupPolicyInfo{Address: authority, GroupId: g.groupID}
+	windows := g.windows
+	if err := info.SetDecisionPolicy(&group.PercentageDecisionPolicy{Percentage: types.CouncilPercentage, Windows: &windows}); err != nil {
+		return nil, err
+	}
+	return &group.QueryGroupPolicyInfoResponse{Info: info}, nil
 }
 func (g *mockGroups) GroupMembers(context.Context, *group.QueryGroupMembersRequest) (*group.QueryGroupMembersResponse, error) {
 	res := &group.QueryGroupMembersResponse{}
@@ -153,7 +160,7 @@ func newFixture(t *testing.T) *fixture {
 		ctx:     sdk.NewContext(nil, cmtproto.Header{}, false, log.NewNopLogger()),
 		staking: newMockStaking(),
 		bank:    &mockBank{},
-		groups:  &mockGroups{groupID: 1, members: []string{member.String()}},
+		groups:  &mockGroups{groupID: 1, members: []string{member.String()}, windows: group.DecisionPolicyWindows{VotingPeriod: 30 * time.Second, MinExecutionPeriod: 10 * time.Second}},
 		router:  &mockRouter{},
 		member:  member,
 		pubkey:  anyPk,
@@ -196,9 +203,19 @@ func TestAddValidator_RejectsNonMember(t *testing.T) {
 func TestAddValidator_RejectsWhenFull(t *testing.T) {
 	f := newFixture(t)
 	f.staking.params.MaxValidators = 1
-	f.staking.validators["other"] = stakingtypes.Validator{OperatorAddress: "other"}
+	f.staking.validators["other"] = stakingtypes.Validator{OperatorAddress: "other", Status: stakingtypes.Bonded, Tokens: sdk.DefaultPowerReduction}
 	_, err := f.msg.AddValidator(f.ctx, addMsg(f))
 	require.ErrorIs(t, err, types.ErrMaxValidatorsReached)
+}
+
+func TestAddValidator_CapIgnoresUnbondingRecords(t *testing.T) {
+	f := newFixture(t)
+	f.staking.params.MaxValidators = 2
+	f.staking.validators["bonded"] = stakingtypes.Validator{OperatorAddress: "bonded", Status: stakingtypes.Bonded, Tokens: sdk.DefaultPowerReduction}
+	f.staking.validators["gone"] = stakingtypes.Validator{OperatorAddress: "gone", Status: stakingtypes.Unbonding, Jailed: true, Tokens: math.ZeroInt()}
+	_, err := f.msg.AddValidator(f.ctx, addMsg(f))
+	require.NoError(t, err)
+	require.Len(t, f.router.msgs, 1)
 }
 
 func TestAddValidator_RejectsExistingBond(t *testing.T) {

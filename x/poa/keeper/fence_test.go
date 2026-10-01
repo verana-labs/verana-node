@@ -1,8 +1,11 @@
 package keeper_test
 
 import (
+	"strings"
 	"testing"
+	"time"
 
+	"cosmossdk.io/math"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -69,7 +72,7 @@ func TestCheckMessages_CouncilRuleCannotDropBelowTwoThirds(t *testing.T) {
 		require.NoError(t, m.SetDecisionPolicy(p))
 		return m
 	}
-	windows := &group.DecisionPolicyWindows{}
+	windows := &group.DecisionPolicyWindows{VotingPeriod: 30 * time.Second, MinExecutionPeriod: 10 * time.Second}
 	require.ErrorIs(t, check(f, false, policy(&group.PercentageDecisionPolicy{Percentage: "0.2", Windows: windows})), types.ErrCouncilIntegrity)
 	require.ErrorIs(t, check(f, false, policy(&group.ThresholdDecisionPolicy{Threshold: "1", Windows: windows})), types.ErrCouncilIntegrity)
 	require.NoError(t, check(f, false, policy(&group.PercentageDecisionPolicy{Percentage: "0.75", Windows: windows})))
@@ -77,6 +80,62 @@ func TestCheckMessages_CouncilRuleCannotDropBelowTwoThirds(t *testing.T) {
 	other := policy(&group.PercentageDecisionPolicy{Percentage: "0.1", Windows: windows})
 	other.GroupPolicyAddress = f.member.String()
 	require.NoError(t, check(f, false, other))
+}
+
+func TestCheckMessages_CouncilWindowsCannotShrink(t *testing.T) {
+	f := newFixture(t)
+	policy := func(voting, minExec time.Duration) *group.MsgUpdateGroupPolicyDecisionPolicy {
+		m := &group.MsgUpdateGroupPolicyDecisionPolicy{Admin: authority, GroupPolicyAddress: authority}
+		require.NoError(t, m.SetDecisionPolicy(&group.PercentageDecisionPolicy{Percentage: types.CouncilPercentage, Windows: &group.DecisionPolicyWindows{VotingPeriod: voting, MinExecutionPeriod: minExec}}))
+		return m
+	}
+	require.ErrorIs(t, check(f, false, policy(time.Second, 10*time.Second)), types.ErrCouncilIntegrity)
+	require.ErrorIs(t, check(f, false, policy(30*time.Second, 0)), types.ErrCouncilIntegrity)
+	require.NoError(t, check(f, false, policy(30*time.Second, 10*time.Second)))
+	require.NoError(t, check(f, false, policy(time.Hour, time.Minute)))
+
+	noWindows := &group.MsgUpdateGroupPolicyDecisionPolicy{Admin: authority, GroupPolicyAddress: authority}
+	require.NoError(t, noWindows.SetDecisionPolicy(&group.PercentageDecisionPolicy{Percentage: types.CouncilPercentage}))
+	require.ErrorIs(t, check(f, false, noWindows), types.ErrCouncilIntegrity)
+}
+
+func TestCheckMessages_SeatLeavesOnlyWithItsValidator(t *testing.T) {
+	f := newFixture(t)
+	f.seat(t, stakingtypes.Bonded)
+	member := f.member.String()
+	other := sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String()
+	f.groups.members = append(f.groups.members, other)
+
+	drop := &group.MsgUpdateGroupMembers{GroupId: 1, MemberUpdates: []group.MemberRequest{{Address: member, Weight: "0"}}}
+	require.ErrorIs(t, check(f, false, drop), types.ErrCouncilIntegrity)
+	require.NoError(t, check(f, false, drop, &types.MsgRemoveValidator{Authority: authority, ValidatorAddress: member}))
+	require.NoError(t, check(f, false, &group.MsgSubmitProposal{Messages: []*codectypes.Any{anyOf(t, drop), anyOf(t, &types.MsgRemoveValidator{Authority: authority, ValidatorAddress: member})}}))
+
+	leave := &group.MsgLeaveGroup{GroupId: 1, Address: member}
+	require.ErrorIs(t, check(f, false, leave), types.ErrCouncilIntegrity)
+	require.NoError(t, check(f, false, &types.MsgSelfRemoveValidator{ValidatorAddress: member}, leave))
+
+	f.staking.validators[sdk.ValAddress(f.member).String()] = stakingtypes.Validator{OperatorAddress: sdk.ValAddress(f.member).String(), Status: stakingtypes.Unbonding, Tokens: math.ZeroInt()}
+	require.NoError(t, check(f, false, drop))
+	require.NoError(t, check(f, false, leave))
+}
+
+func TestCheckMessages_UppercaseAddressesAreStillTheCouncil(t *testing.T) {
+	f := newFixture(t)
+	upper := strings.ToUpper(authority)
+	other := f.member.String()
+
+	policy := &group.MsgUpdateGroupPolicyDecisionPolicy{Admin: authority, GroupPolicyAddress: upper}
+	require.NoError(t, policy.SetDecisionPolicy(&group.ThresholdDecisionPolicy{Threshold: "1", Windows: &group.DecisionPolicyWindows{VotingPeriod: time.Minute, MinExecutionPeriod: time.Minute}}))
+	require.ErrorIs(t, check(f, false, policy), types.ErrCouncilIntegrity)
+	require.ErrorIs(t, check(f, false, &group.MsgUpdateGroupPolicyAdmin{Admin: authority, GroupPolicyAddress: upper, NewAdmin: other}), types.ErrCouncilIntegrity)
+	require.NoError(t, check(f, false, &group.MsgUpdateGroupAdmin{GroupId: 1, NewAdmin: upper}))
+
+	f.seat(t, stakingtypes.Bonded)
+	f.groups.members = append(f.groups.members, sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address()).String())
+	drop := &group.MsgUpdateGroupMembers{GroupId: 1, MemberUpdates: []group.MemberRequest{{Address: strings.ToUpper(other), Weight: "0"}}}
+	require.ErrorIs(t, check(f, false, drop), types.ErrCouncilIntegrity)
+	require.NoError(t, check(f, false, drop, &types.MsgRemoveValidator{Authority: authority, ValidatorAddress: other}))
 }
 
 func TestCheckMessages_CouncilSeatsStayWeightOneAndNonEmpty(t *testing.T) {
