@@ -2316,68 +2316,16 @@ func (x *_ParticipantAuthorizationRecord_5_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_ParticipantAuthorizationRecord_6_list)(nil)
-
-type _ParticipantAuthorizationRecord_6_list struct {
-	list *[]*v1beta1.Coin
-}
-
-func (x *_ParticipantAuthorizationRecord_6_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_ParticipantAuthorizationRecord_6_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_ParticipantAuthorizationRecord_6_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_ParticipantAuthorizationRecord_6_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_ParticipantAuthorizationRecord_6_list) AppendMutable() protoreflect.Value {
-	v := new(v1beta1.Coin)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_ParticipantAuthorizationRecord_6_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_ParticipantAuthorizationRecord_6_list) NewElement() protoreflect.Value {
-	v := new(v1beta1.Coin)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_ParticipantAuthorizationRecord_6_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
-	md_ParticipantAuthorizationRecord                     protoreflect.MessageDescriptor
-	fd_ParticipantAuthorizationRecord_participant_id      protoreflect.FieldDescriptor
-	fd_ParticipantAuthorizationRecord_msg_types           protoreflect.FieldDescriptor
-	fd_ParticipantAuthorizationRecord_spend_limit         protoreflect.FieldDescriptor
-	fd_ParticipantAuthorizationRecord_remaining_spend     protoreflect.FieldDescriptor
-	fd_ParticipantAuthorizationRecord_fee_spend_limit     protoreflect.FieldDescriptor
-	fd_ParticipantAuthorizationRecord_remaining_fee_spend protoreflect.FieldDescriptor
-	fd_ParticipantAuthorizationRecord_with_feegrant       protoreflect.FieldDescriptor
-	fd_ParticipantAuthorizationRecord_expiration          protoreflect.FieldDescriptor
-	fd_ParticipantAuthorizationRecord_period              protoreflect.FieldDescriptor
+	md_ParticipantAuthorizationRecord                 protoreflect.MessageDescriptor
+	fd_ParticipantAuthorizationRecord_participant_id  protoreflect.FieldDescriptor
+	fd_ParticipantAuthorizationRecord_msg_types       protoreflect.FieldDescriptor
+	fd_ParticipantAuthorizationRecord_spend_limit     protoreflect.FieldDescriptor
+	fd_ParticipantAuthorizationRecord_remaining_spend protoreflect.FieldDescriptor
+	fd_ParticipantAuthorizationRecord_fee_spend_limit protoreflect.FieldDescriptor
+	fd_ParticipantAuthorizationRecord_with_feegrant   protoreflect.FieldDescriptor
+	fd_ParticipantAuthorizationRecord_expiration      protoreflect.FieldDescriptor
+	fd_ParticipantAuthorizationRecord_period          protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -2388,7 +2336,6 @@ func init() {
 	fd_ParticipantAuthorizationRecord_spend_limit = md_ParticipantAuthorizationRecord.Fields().ByName("spend_limit")
 	fd_ParticipantAuthorizationRecord_remaining_spend = md_ParticipantAuthorizationRecord.Fields().ByName("remaining_spend")
 	fd_ParticipantAuthorizationRecord_fee_spend_limit = md_ParticipantAuthorizationRecord.Fields().ByName("fee_spend_limit")
-	fd_ParticipantAuthorizationRecord_remaining_fee_spend = md_ParticipantAuthorizationRecord.Fields().ByName("remaining_fee_spend")
 	fd_ParticipantAuthorizationRecord_with_feegrant = md_ParticipantAuthorizationRecord.Fields().ByName("with_feegrant")
 	fd_ParticipantAuthorizationRecord_expiration = md_ParticipantAuthorizationRecord.Fields().ByName("expiration")
 	fd_ParticipantAuthorizationRecord_period = md_ParticipantAuthorizationRecord.Fields().ByName("period")
@@ -2489,12 +2436,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) Range(f func(protoreflec
 			return
 		}
 	}
-	if len(x.RemainingFeeSpend) != 0 {
-		value := protoreflect.ValueOfList(&_ParticipantAuthorizationRecord_6_list{list: &x.RemainingFeeSpend})
-		if !f(fd_ParticipantAuthorizationRecord_remaining_fee_spend, value) {
-			return
-		}
-	}
 	if x.WithFeegrant != false {
 		value := protoreflect.ValueOfBool(x.WithFeegrant)
 		if !f(fd_ParticipantAuthorizationRecord_with_feegrant, value) {
@@ -2538,8 +2479,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) Has(fd protoreflect.Fiel
 		return len(x.RemainingSpend) != 0
 	case "verana.de.v1.ParticipantAuthorizationRecord.fee_spend_limit":
 		return len(x.FeeSpendLimit) != 0
-	case "verana.de.v1.ParticipantAuthorizationRecord.remaining_fee_spend":
-		return len(x.RemainingFeeSpend) != 0
 	case "verana.de.v1.ParticipantAuthorizationRecord.with_feegrant":
 		return x.WithFeegrant != false
 	case "verana.de.v1.ParticipantAuthorizationRecord.expiration":
@@ -2572,8 +2511,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) Clear(fd protoreflect.Fi
 		x.RemainingSpend = nil
 	case "verana.de.v1.ParticipantAuthorizationRecord.fee_spend_limit":
 		x.FeeSpendLimit = nil
-	case "verana.de.v1.ParticipantAuthorizationRecord.remaining_fee_spend":
-		x.RemainingFeeSpend = nil
 	case "verana.de.v1.ParticipantAuthorizationRecord.with_feegrant":
 		x.WithFeegrant = false
 	case "verana.de.v1.ParticipantAuthorizationRecord.expiration":
@@ -2623,12 +2560,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) Get(descriptor protorefl
 		}
 		listValue := &_ParticipantAuthorizationRecord_5_list{list: &x.FeeSpendLimit}
 		return protoreflect.ValueOfList(listValue)
-	case "verana.de.v1.ParticipantAuthorizationRecord.remaining_fee_spend":
-		if len(x.RemainingFeeSpend) == 0 {
-			return protoreflect.ValueOfList(&_ParticipantAuthorizationRecord_6_list{})
-		}
-		listValue := &_ParticipantAuthorizationRecord_6_list{list: &x.RemainingFeeSpend}
-		return protoreflect.ValueOfList(listValue)
 	case "verana.de.v1.ParticipantAuthorizationRecord.with_feegrant":
 		value := x.WithFeegrant
 		return protoreflect.ValueOfBool(value)
@@ -2676,10 +2607,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) Set(fd protoreflect.Fiel
 		lv := value.List()
 		clv := lv.(*_ParticipantAuthorizationRecord_5_list)
 		x.FeeSpendLimit = *clv.list
-	case "verana.de.v1.ParticipantAuthorizationRecord.remaining_fee_spend":
-		lv := value.List()
-		clv := lv.(*_ParticipantAuthorizationRecord_6_list)
-		x.RemainingFeeSpend = *clv.list
 	case "verana.de.v1.ParticipantAuthorizationRecord.with_feegrant":
 		x.WithFeegrant = value.Bool()
 	case "verana.de.v1.ParticipantAuthorizationRecord.expiration":
@@ -2730,12 +2657,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) Mutable(fd protoreflect.
 		}
 		value := &_ParticipantAuthorizationRecord_5_list{list: &x.FeeSpendLimit}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.ParticipantAuthorizationRecord.remaining_fee_spend":
-		if x.RemainingFeeSpend == nil {
-			x.RemainingFeeSpend = []*v1beta1.Coin{}
-		}
-		value := &_ParticipantAuthorizationRecord_6_list{list: &x.RemainingFeeSpend}
-		return protoreflect.ValueOfList(value)
 	case "verana.de.v1.ParticipantAuthorizationRecord.expiration":
 		if x.Expiration == nil {
 			x.Expiration = new(timestamppb.Timestamp)
@@ -2777,9 +2698,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) NewField(fd protoreflect
 	case "verana.de.v1.ParticipantAuthorizationRecord.fee_spend_limit":
 		list := []*v1beta1.Coin{}
 		return protoreflect.ValueOfList(&_ParticipantAuthorizationRecord_5_list{list: &list})
-	case "verana.de.v1.ParticipantAuthorizationRecord.remaining_fee_spend":
-		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_ParticipantAuthorizationRecord_6_list{list: &list})
 	case "verana.de.v1.ParticipantAuthorizationRecord.with_feegrant":
 		return protoreflect.ValueOfBool(false)
 	case "verana.de.v1.ParticipantAuthorizationRecord.expiration":
@@ -2884,12 +2802,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) ProtoMethods() *protoifa
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
-		if len(x.RemainingFeeSpend) > 0 {
-			for _, e := range x.RemainingFeeSpend {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
 		if x.WithFeegrant {
 			n += 2
 		}
@@ -2967,22 +2879,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) ProtoMethods() *protoifa
 			}
 			i--
 			dAtA[i] = 0x38
-		}
-		if len(x.RemainingFeeSpend) > 0 {
-			for iNdEx := len(x.RemainingFeeSpend) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.RemainingFeeSpend[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x32
-			}
 		}
 		if len(x.FeeSpendLimit) > 0 {
 			for iNdEx := len(x.FeeSpendLimit) - 1; iNdEx >= 0; iNdEx-- {
@@ -3248,40 +3144,6 @@ func (x *fastReflection_ParticipantAuthorizationRecord) ProtoMethods() *protoifa
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 6:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RemainingFeeSpend", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.RemainingFeeSpend = append(x.RemainingFeeSpend, &v1beta1.Coin{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.RemainingFeeSpend[len(x.RemainingFeeSpend)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
 			case 7:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field WithFeegrant", wireType)
@@ -3409,6 +3271,489 @@ func (x *fastReflection_ParticipantAuthorizationRecord) ProtoMethods() *protoifa
 	}
 }
 
+var (
+	md_WindowEndQueueEntry                protoreflect.MessageDescriptor
+	fd_WindowEndQueueEntry_window_end     protoreflect.FieldDescriptor
+	fd_WindowEndQueueEntry_participant_id protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_verana_de_v1_types_proto_init()
+	md_WindowEndQueueEntry = File_verana_de_v1_types_proto.Messages().ByName("WindowEndQueueEntry")
+	fd_WindowEndQueueEntry_window_end = md_WindowEndQueueEntry.Fields().ByName("window_end")
+	fd_WindowEndQueueEntry_participant_id = md_WindowEndQueueEntry.Fields().ByName("participant_id")
+}
+
+var _ protoreflect.Message = (*fastReflection_WindowEndQueueEntry)(nil)
+
+type fastReflection_WindowEndQueueEntry WindowEndQueueEntry
+
+func (x *WindowEndQueueEntry) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_WindowEndQueueEntry)(x)
+}
+
+func (x *WindowEndQueueEntry) slowProtoReflect() protoreflect.Message {
+	mi := &file_verana_de_v1_types_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_WindowEndQueueEntry_messageType fastReflection_WindowEndQueueEntry_messageType
+var _ protoreflect.MessageType = fastReflection_WindowEndQueueEntry_messageType{}
+
+type fastReflection_WindowEndQueueEntry_messageType struct{}
+
+func (x fastReflection_WindowEndQueueEntry_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_WindowEndQueueEntry)(nil)
+}
+func (x fastReflection_WindowEndQueueEntry_messageType) New() protoreflect.Message {
+	return new(fastReflection_WindowEndQueueEntry)
+}
+func (x fastReflection_WindowEndQueueEntry_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_WindowEndQueueEntry
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_WindowEndQueueEntry) Descriptor() protoreflect.MessageDescriptor {
+	return md_WindowEndQueueEntry
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_WindowEndQueueEntry) Type() protoreflect.MessageType {
+	return _fastReflection_WindowEndQueueEntry_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_WindowEndQueueEntry) New() protoreflect.Message {
+	return new(fastReflection_WindowEndQueueEntry)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_WindowEndQueueEntry) Interface() protoreflect.ProtoMessage {
+	return (*WindowEndQueueEntry)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_WindowEndQueueEntry) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.WindowEnd != nil {
+		value := protoreflect.ValueOfMessage(x.WindowEnd.ProtoReflect())
+		if !f(fd_WindowEndQueueEntry_window_end, value) {
+			return
+		}
+	}
+	if x.ParticipantId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ParticipantId)
+		if !f(fd_WindowEndQueueEntry_participant_id, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_WindowEndQueueEntry) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "verana.de.v1.WindowEndQueueEntry.window_end":
+		return x.WindowEnd != nil
+	case "verana.de.v1.WindowEndQueueEntry.participant_id":
+		return x.ParticipantId != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.WindowEndQueueEntry"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.WindowEndQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_WindowEndQueueEntry) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "verana.de.v1.WindowEndQueueEntry.window_end":
+		x.WindowEnd = nil
+	case "verana.de.v1.WindowEndQueueEntry.participant_id":
+		x.ParticipantId = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.WindowEndQueueEntry"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.WindowEndQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_WindowEndQueueEntry) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "verana.de.v1.WindowEndQueueEntry.window_end":
+		value := x.WindowEnd
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "verana.de.v1.WindowEndQueueEntry.participant_id":
+		value := x.ParticipantId
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.WindowEndQueueEntry"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.WindowEndQueueEntry does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_WindowEndQueueEntry) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "verana.de.v1.WindowEndQueueEntry.window_end":
+		x.WindowEnd = value.Message().Interface().(*timestamppb.Timestamp)
+	case "verana.de.v1.WindowEndQueueEntry.participant_id":
+		x.ParticipantId = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.WindowEndQueueEntry"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.WindowEndQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_WindowEndQueueEntry) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.WindowEndQueueEntry.window_end":
+		if x.WindowEnd == nil {
+			x.WindowEnd = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.WindowEnd.ProtoReflect())
+	case "verana.de.v1.WindowEndQueueEntry.participant_id":
+		panic(fmt.Errorf("field participant_id of message verana.de.v1.WindowEndQueueEntry is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.WindowEndQueueEntry"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.WindowEndQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_WindowEndQueueEntry) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.WindowEndQueueEntry.window_end":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "verana.de.v1.WindowEndQueueEntry.participant_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.WindowEndQueueEntry"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.WindowEndQueueEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_WindowEndQueueEntry) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.WindowEndQueueEntry", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_WindowEndQueueEntry) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_WindowEndQueueEntry) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_WindowEndQueueEntry) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_WindowEndQueueEntry) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*WindowEndQueueEntry)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.WindowEnd != nil {
+			l = options.Size(x.WindowEnd)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.ParticipantId != 0 {
+			n += 1 + runtime.Sov(uint64(x.ParticipantId))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*WindowEndQueueEntry)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.ParticipantId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ParticipantId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.WindowEnd != nil {
+			encoded, err := options.Marshal(x.WindowEnd)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*WindowEndQueueEntry)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: WindowEndQueueEntry: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: WindowEndQueueEntry: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field WindowEnd", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.WindowEnd == nil {
+					x.WindowEnd = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.WindowEnd); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ParticipantId", wireType)
+				}
+				x.ParticipantId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ParticipantId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 var _ protoreflect.List = (*_VSOperatorAuthorization_4_list)(nil)
 
 type _VSOperatorAuthorization_4_list struct {
@@ -3486,7 +3831,7 @@ func (x *VSOperatorAuthorization) ProtoReflect() protoreflect.Message {
 }
 
 func (x *VSOperatorAuthorization) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_types_proto_msgTypes[3]
+	mi := &file_verana_de_v1_types_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4296,19 +4641,17 @@ type ParticipantAuthorizationRecord struct {
 	// remaining_spend is the runtime balance for spend_limit. Present iff
 	// spend_limit is set.
 	RemainingSpend []*v1beta1.Coin `protobuf:"bytes,4,rep,name=remaining_spend,json=remainingSpend,proto3" json:"remaining_spend,omitempty"`
-	// fee_spend_limit is the maximum total amount of transaction fees that can be
-	// spent by vs_operator.
+	// fee_spend_limit is this record's contribution to the aggregate fee
+	// allowance of vs_operator, per Params.vs_operator_fee_period. Set iff
+	// with_feegrant is true; every amount is strictly positive.
 	FeeSpendLimit []*v1beta1.Coin `protobuf:"bytes,5,rep,name=fee_spend_limit,json=feeSpendLimit,proto3" json:"fee_spend_limit,omitempty"`
-	// remaining_fee_spend is the runtime balance for fee_spend_limit. Present iff
-	// fee_spend_limit is set.
-	RemainingFeeSpend []*v1beta1.Coin `protobuf:"bytes,6,rep,name=remaining_fee_spend,json=remainingFeeSpend,proto3" json:"remaining_fee_spend,omitempty"`
 	// with_feegrant indicates the corporation pays the transaction fees for
 	// vs_operator.
 	WithFeegrant bool `protobuf:"varint,7,opt,name=with_feegrant,json=withFeegrant,proto3" json:"with_feegrant,omitempty"`
-	// expiration is the authorization window boundary. A record created before
-	// validation is disabled with expiration = now().
+	// expiration is the end of the current operation-budget cycle. Set iff period
+	// is set and the cycle has started; it carries no window semantics.
 	Expiration *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=expiration,proto3" json:"expiration,omitempty"`
-	// period is the reset period for spend_limit and fee_spend_limit.
+	// period is the length of the operation-budget cycle for spend_limit.
 	Period *durationpb.Duration `protobuf:"bytes,9,opt,name=period,proto3" json:"period,omitempty"`
 }
 
@@ -4367,13 +4710,6 @@ func (x *ParticipantAuthorizationRecord) GetFeeSpendLimit() []*v1beta1.Coin {
 	return nil
 }
 
-func (x *ParticipantAuthorizationRecord) GetRemainingFeeSpend() []*v1beta1.Coin {
-	if x != nil {
-		return x.RemainingFeeSpend
-	}
-	return nil
-}
-
 func (x *ParticipantAuthorizationRecord) GetWithFeegrant() bool {
 	if x != nil {
 		return x.WithFeegrant
@@ -4393,6 +4729,52 @@ func (x *ParticipantAuthorizationRecord) GetPeriod() *durationpb.Duration {
 		return x.Period
 	}
 	return nil
+}
+
+// WindowEndQueueEntry is a due date of the window-end queue: the Participant
+// entry's effective_until, at which the aggregate fee allowance of the
+// containing VSOperatorAuthorization is recomputed.
+type WindowEndQueueEntry struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	WindowEnd     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=window_end,json=windowEnd,proto3" json:"window_end,omitempty"`
+	ParticipantId uint64                 `protobuf:"varint,2,opt,name=participant_id,json=participantId,proto3" json:"participant_id,omitempty"`
+}
+
+func (x *WindowEndQueueEntry) Reset() {
+	*x = WindowEndQueueEntry{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_verana_de_v1_types_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *WindowEndQueueEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WindowEndQueueEntry) ProtoMessage() {}
+
+// Deprecated: Use WindowEndQueueEntry.ProtoReflect.Descriptor instead.
+func (*WindowEndQueueEntry) Descriptor() ([]byte, []int) {
+	return file_verana_de_v1_types_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *WindowEndQueueEntry) GetWindowEnd() *timestamppb.Timestamp {
+	if x != nil {
+		return x.WindowEnd
+	}
+	return nil
+}
+
+func (x *WindowEndQueueEntry) GetParticipantId() uint64 {
+	if x != nil {
+		return x.ParticipantId
+	}
+	return 0
 }
 
 // VSOperatorAuthorization is the VS-operator delegation, keyed by its own uint64
@@ -4418,7 +4800,7 @@ type VSOperatorAuthorization struct {
 func (x *VSOperatorAuthorization) Reset() {
 	*x = VSOperatorAuthorization{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_types_proto_msgTypes[3]
+		mi := &file_verana_de_v1_types_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4432,7 +4814,7 @@ func (*VSOperatorAuthorization) ProtoMessage() {}
 
 // Deprecated: Use VSOperatorAuthorization.ProtoReflect.Descriptor instead.
 func (*VSOperatorAuthorization) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_types_proto_rawDescGZIP(), []int{3}
+	return file_verana_de_v1_types_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *VSOperatorAuthorization) GetId() uint64 {
@@ -4541,7 +4923,7 @@ var file_verana_de_v1_types_proto_rawDesc = []byte{
 	0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x42, 0x04, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64,
-	0x22, 0xda, 0x05, 0x0a, 0x1e, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74,
+	0x22, 0xe3, 0x04, 0x0a, 0x1e, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74,
 	0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63,
 	0x6f, 0x72, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61,
 	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x70, 0x61, 0x72,
@@ -4569,49 +4951,50 @@ var file_verana_de_v1_types_proto_rawDesc = []byte{
 	0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
 	0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e,
 	0x73, 0x52, 0x0d, 0x66, 0x65, 0x65, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74,
-	0x12, 0x7b, 0x0a, 0x13, 0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x5f, 0x66, 0x65,
-	0x65, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65,
-	0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf,
-	0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74,
-	0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x11, 0x72, 0x65, 0x6d, 0x61,
-	0x69, 0x6e, 0x69, 0x6e, 0x67, 0x46, 0x65, 0x65, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x12, 0x23, 0x0a,
-	0x0d, 0x77, 0x69, 0x74, 0x68, 0x5f, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x18, 0x07,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x77, 0x69, 0x74, 0x68, 0x46, 0x65, 0x65, 0x67, 0x72, 0x61,
-	0x6e, 0x74, 0x12, 0x40, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
-	0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x09,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
-	0x04, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x22, 0xd9, 0x01,
-	0x0a, 0x17, 0x56, 0x53, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68,
-	0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x72,
-	0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x0d, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
-	0x12, 0x39, 0x0a, 0x0b, 0x76, 0x73, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52,
-	0x0a, 0x76, 0x73, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4c, 0x0a, 0x07, 0x72,
-	0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x74,
-	0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
-	0x52, 0x07, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f,
-	0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0a,
-	0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d,
-	0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76,
-	0x31, 0x3b, 0x64, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72,
-	0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a,
-	0x44, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x23, 0x0a, 0x0d, 0x77, 0x69, 0x74, 0x68, 0x5f, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e,
+	0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x77, 0x69, 0x74, 0x68, 0x46, 0x65, 0x65,
+	0x67, 0x72, 0x61, 0x6e, 0x74, 0x12, 0x40, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70,
+	0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f,
+	0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x42, 0x04, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64,
+	0x4a, 0x04, 0x08, 0x06, 0x10, 0x07, 0x22, 0x81, 0x01, 0x0a, 0x13, 0x57, 0x69, 0x6e, 0x64, 0x6f,
+	0x77, 0x45, 0x6e, 0x64, 0x51, 0x75, 0x65, 0x75, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x43,
+	0x0a, 0x0a, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x5f, 0x65, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08,
+	0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77,
+	0x45, 0x6e, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61,
+	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x70, 0x61, 0x72,
+	0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x22, 0xd9, 0x01, 0x0a, 0x17, 0x56,
+	0x53, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
+	0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d,
+	0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x39, 0x0a,
+	0x0b, 0x76, 0x73, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0a, 0x76, 0x73,
+	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4c, 0x0a, 0x07, 0x72, 0x65, 0x63, 0x6f,
+	0x72, 0x64, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69,
+	0x70, 0x61, 0x6e, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x07, 0x72,
+	0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70,
+	0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62,
+	0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x64,
+	0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x44, 0x65, 0x3a,
+	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4626,31 +5009,32 @@ func file_verana_de_v1_types_proto_rawDescGZIP() []byte {
 	return file_verana_de_v1_types_proto_rawDescData
 }
 
-var file_verana_de_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_verana_de_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_verana_de_v1_types_proto_goTypes = []interface{}{
 	(*OperatorAuthorization)(nil),          // 0: verana.de.v1.OperatorAuthorization
 	(*FeeGrant)(nil),                       // 1: verana.de.v1.FeeGrant
 	(*ParticipantAuthorizationRecord)(nil), // 2: verana.de.v1.ParticipantAuthorizationRecord
-	(*VSOperatorAuthorization)(nil),        // 3: verana.de.v1.VSOperatorAuthorization
-	(*v1beta1.Coin)(nil),                   // 4: cosmos.base.v1beta1.Coin
-	(*timestamppb.Timestamp)(nil),          // 5: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),            // 6: google.protobuf.Duration
+	(*WindowEndQueueEntry)(nil),            // 3: verana.de.v1.WindowEndQueueEntry
+	(*VSOperatorAuthorization)(nil),        // 4: verana.de.v1.VSOperatorAuthorization
+	(*v1beta1.Coin)(nil),                   // 5: cosmos.base.v1beta1.Coin
+	(*timestamppb.Timestamp)(nil),          // 6: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),            // 7: google.protobuf.Duration
 }
 var file_verana_de_v1_types_proto_depIdxs = []int32{
-	4,  // 0: verana.de.v1.OperatorAuthorization.spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	4,  // 1: verana.de.v1.OperatorAuthorization.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
-	5,  // 2: verana.de.v1.OperatorAuthorization.expiration:type_name -> google.protobuf.Timestamp
-	6,  // 3: verana.de.v1.OperatorAuthorization.period:type_name -> google.protobuf.Duration
-	4,  // 4: verana.de.v1.FeeGrant.spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	4,  // 5: verana.de.v1.FeeGrant.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
-	5,  // 6: verana.de.v1.FeeGrant.expiration:type_name -> google.protobuf.Timestamp
-	6,  // 7: verana.de.v1.FeeGrant.period:type_name -> google.protobuf.Duration
-	4,  // 8: verana.de.v1.ParticipantAuthorizationRecord.spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	4,  // 9: verana.de.v1.ParticipantAuthorizationRecord.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
-	4,  // 10: verana.de.v1.ParticipantAuthorizationRecord.fee_spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	4,  // 11: verana.de.v1.ParticipantAuthorizationRecord.remaining_fee_spend:type_name -> cosmos.base.v1beta1.Coin
-	5,  // 12: verana.de.v1.ParticipantAuthorizationRecord.expiration:type_name -> google.protobuf.Timestamp
-	6,  // 13: verana.de.v1.ParticipantAuthorizationRecord.period:type_name -> google.protobuf.Duration
+	5,  // 0: verana.de.v1.OperatorAuthorization.spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	5,  // 1: verana.de.v1.OperatorAuthorization.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
+	6,  // 2: verana.de.v1.OperatorAuthorization.expiration:type_name -> google.protobuf.Timestamp
+	7,  // 3: verana.de.v1.OperatorAuthorization.period:type_name -> google.protobuf.Duration
+	5,  // 4: verana.de.v1.FeeGrant.spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	5,  // 5: verana.de.v1.FeeGrant.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
+	6,  // 6: verana.de.v1.FeeGrant.expiration:type_name -> google.protobuf.Timestamp
+	7,  // 7: verana.de.v1.FeeGrant.period:type_name -> google.protobuf.Duration
+	5,  // 8: verana.de.v1.ParticipantAuthorizationRecord.spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	5,  // 9: verana.de.v1.ParticipantAuthorizationRecord.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
+	5,  // 10: verana.de.v1.ParticipantAuthorizationRecord.fee_spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	6,  // 11: verana.de.v1.ParticipantAuthorizationRecord.expiration:type_name -> google.protobuf.Timestamp
+	7,  // 12: verana.de.v1.ParticipantAuthorizationRecord.period:type_name -> google.protobuf.Duration
+	6,  // 13: verana.de.v1.WindowEndQueueEntry.window_end:type_name -> google.protobuf.Timestamp
 	2,  // 14: verana.de.v1.VSOperatorAuthorization.records:type_name -> verana.de.v1.ParticipantAuthorizationRecord
 	15, // [15:15] is the sub-list for method output_type
 	15, // [15:15] is the sub-list for method input_type
@@ -4702,6 +5086,18 @@ func file_verana_de_v1_types_proto_init() {
 			}
 		}
 		file_verana_de_v1_types_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*WindowEndQueueEntry); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_verana_de_v1_types_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*VSOperatorAuthorization); i {
 			case 0:
 				return &v.state
@@ -4720,7 +5116,7 @@ func file_verana_de_v1_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_verana_de_v1_types_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

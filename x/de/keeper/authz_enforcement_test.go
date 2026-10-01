@@ -83,17 +83,16 @@ func TestFeeGrantSeedsRemaining(t *testing.T) {
 	require.Equal(t, spend, fg.RemainingSpend)
 }
 
-// [MOD-DE-MSG-5] VSOA record seeds remaining_spend/remaining_fee_spend at creation.
+// [MOD-DE-MSG-5] VSOA record seeds remaining_spend at creation.
 func TestVSOARecordSeedsRemaining(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	corpID := uint64(1)
 	vsOp := acc("vsop________________")
 	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 200))
-	fee := sdk.NewCoins(sdk.NewInt64Coin("uvna", 80))
 
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, SpendLimit: spend, FeeSpendLimit: fee,
+		ParticipantId: 10, MsgTypes: []string{mtCSPS}, SpendLimit: spend,
 	}))
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, 10)
@@ -102,7 +101,6 @@ func TestVSOARecordSeedsRemaining(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, vsoa.Records, 1)
 	require.Equal(t, spend, vsoa.Records[0].RemainingSpend)
-	require.Equal(t, fee, vsoa.Records[0].RemainingFeeSpend)
 }
 
 // [AUTHZ-CHECK-1] step 3: ConsumeOperatorSpend debits remaining_spend and rejects
@@ -151,7 +149,7 @@ func TestConsumeOperatorSpend_NoLimit(t *testing.T) {
 	require.NoError(t, f.keeper.ConsumeOperatorSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))))
 }
 
-// [AUTHZ-CHECK-3] step 5: ConsumeRecordSpend debits the record's remaining_spend.
+// [AUTHZ-CHECK-3] step 6: ConsumeRecordSpend debits the record's remaining_spend.
 func TestConsumeRecordSpend(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper

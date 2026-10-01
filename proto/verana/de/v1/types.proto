@@ -92,26 +92,35 @@ message ParticipantAuthorizationRecord {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  // fee_spend_limit is the maximum total amount of transaction fees that can be
-  // spent by vs_operator.
+  // fee_spend_limit is this record's contribution to the aggregate fee
+  // allowance of vs_operator, per Params.vs_operator_fee_period. Set iff
+  // with_feegrant is true; every amount is strictly positive.
   repeated cosmos.base.v1beta1.Coin fee_spend_limit = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  // remaining_fee_spend is the runtime balance for fee_spend_limit. Present iff
-  // fee_spend_limit is set.
-  repeated cosmos.base.v1beta1.Coin remaining_fee_spend = 6 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
+  // Field 6 (remaining_fee_spend) was removed: the fee cap is enforced by the
+  // aggregate x/feegrant allowance, not per record.
+  reserved 6;
   // with_feegrant indicates the corporation pays the transaction fees for
   // vs_operator.
   bool with_feegrant = 7;
-  // expiration is the authorization window boundary. A record created before
-  // validation is disabled with expiration = now().
+  // expiration is the end of the current operation-budget cycle. Set iff period
+  // is set and the cycle has started; it carries no window semantics.
   google.protobuf.Timestamp expiration = 8 [(gogoproto.stdtime) = true];
-  // period is the reset period for spend_limit and fee_spend_limit.
+  // period is the length of the operation-budget cycle for spend_limit.
   google.protobuf.Duration period = 9 [(gogoproto.stdduration) = true];
+}
+
+// WindowEndQueueEntry is a due date of the window-end queue: the Participant
+// entry's effective_until, at which the aggregate fee allowance of the
+// containing VSOperatorAuthorization is recomputed.
+message WindowEndQueueEntry {
+  google.protobuf.Timestamp window_end = 1 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+  uint64 participant_id = 2;
 }
 
 // VSOperatorAuthorization is the VS-operator delegation, keyed by its own uint64

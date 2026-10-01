@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"time"
 
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +15,7 @@ import (
 // GrantVSOperatorAuthorization implements [MOD-DE-MSG-5]. It is a module-call
 // only method: the caller (PP lifecycle handlers) resolves co.id via
 // AUTHZ-CHECK-5 and passes the full ParticipantAuthorizationRecord. No
-// Participant state is read here.
+// Participant state is read here; the recompute reads the participant view.
 func (k Keeper) GrantVSOperatorAuthorization(
 	ctx context.Context,
 	corporationID uint64,
@@ -35,11 +34,23 @@ func (k Keeper) GrantVSOperatorAuthorization(
 	if len(record.SpendLimit) > 0 && !record.SpendLimit.IsValid() {
 		return fmt.Errorf("invalid spend_limit")
 	}
-	if len(record.FeeSpendLimit) > 0 && !record.FeeSpendLimit.IsValid() {
-		return fmt.Errorf("invalid fee_spend_limit")
+	if record.WithFeegrant {
+		if len(record.FeeSpendLimit) == 0 || !record.FeeSpendLimit.IsValid() || !record.FeeSpendLimit.IsAllPositive() {
+			return types.ErrInvalidFeeSpendLimit
+		}
+	} else if len(record.FeeSpendLimit) > 0 {
+		return types.ErrInvalidFeeSpendLimit
 	}
-	if record.Period != nil && *record.Period <= 0 {
-		return fmt.Errorf("period must be a positive duration")
+	if record.Period != nil {
+		if *record.Period <= 0 {
+			return fmt.Errorf("period must be a positive duration")
+		}
+		if len(record.SpendLimit) == 0 {
+			return fmt.Errorf("period requires spend_limit")
+		}
+	}
+	if record.Expiration != nil && record.Period == nil {
+		return fmt.Errorf("expiration requires period")
 	}
 
 	// record.participant_id MUST NOT already exist anywhere (global uniqueness).
@@ -109,12 +120,8 @@ func (k Keeper) GrantVSOperatorAuthorization(
 		}
 	}
 
-	// Seed runtime balances at record creation per [MOD-DE-MSG-5] / AUTHZ-CHECK-3.
 	if len(record.SpendLimit) > 0 {
 		record.RemainingSpend = record.SpendLimit
-	}
-	if len(record.FeeSpendLimit) > 0 {
-		record.RemainingFeeSpend = record.FeeSpendLimit
 	}
 
 	vsoa.Records = append(vsoa.Records, record)
@@ -212,11 +219,12 @@ func (k Keeper) RevokeVSOperatorAuthorization(ctx context.Context, participantID
 	return nil
 }
 
-// UpdateVSOperatorAuthorizationExpiration implements [MOD-DE-MSG-9]. Locates the
-// record by participant_id and updates its expiration; a no-op when no record
-// exists.
-func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration *time.Time) error {
+// SyncVSOperatorAuthorization implements [MOD-DE-MSG-9]. Starts the
+// operation-budget cycle of the record on first activation and recomputes the
+// aggregate fee allowance of its VSOA; a no-op when no record exists.
+func (k Keeper) SyncVSOperatorAuthorization(ctx context.Context, participantID uint64) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	now := sdkCtx.BlockTime()
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, participantID)
 	if err != nil {
@@ -231,20 +239,19 @@ func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, par
 		return fmt.Errorf("failed to load VSOperatorAuthorization %d: %w", vsoaID, err)
 	}
 
-	var exp *time.Time
-	if newExpiration != nil {
-		e := *newExpiration
-		exp = &e
-	}
 	for i := range vsoa.Records {
-		if vsoa.Records[i].ParticipantId == participantID {
-			vsoa.Records[i].Expiration = exp
-			break
+		rec := &vsoa.Records[i]
+		if rec.ParticipantId != participantID {
+			continue
 		}
-	}
-
-	if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
-		return fmt.Errorf("failed to update VSOperatorAuthorization: %w", err)
+		if rec.Period != nil && rec.Expiration == nil {
+			exp := now.Add(*rec.Period)
+			rec.Expiration = &exp
+			if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {
+				return fmt.Errorf("failed to update VSOperatorAuthorization: %w", err)
+			}
+		}
+		break
 	}
 
 	if err := k.recomputeFeeAllowance(ctx, vsoa); err != nil {
@@ -258,35 +265,36 @@ func (k Keeper) UpdateVSOperatorAuthorizationExpiration(ctx context.Context, par
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(vsoa.CorporationId, 10)),
 			sdk.NewAttribute(types.AttributeKeyVsOperator, vsoa.VsOperator),
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(participantID, 10)),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, sdkCtx.BlockTime().String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
 		),
 	)
 	return nil
 }
 
-// recomputeFeeAllowance implements [MOD-DE-MSG-5-5]. It derives the chain-level
-// FeeGrant for (vsoa.corporation_id, vsoa.vs_operator) from the union of all
-// records with with_feegrant=true that are unexpired (unset expiration never
-// expires). Per-record spend limits are enforced at AUTHZ-CHECK-4 time, not on
-// the chain-level allowance.
+// recomputeFeeAllowance implements [MOD-DE-MSG-5-5]: one PeriodicAllowance over
+// the live feegrant records (union of msg_types, sum of fee_spend_limit), their
+// window ends queued, the spent budget carried over. None left: revoke.
 func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperatorAuthorization) error {
-	now := sdk.UnwrapSDKContext(ctx).BlockTime()
+	params, err := k.Params.Get(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to read params: %w", err)
+	}
 
-	var maxExpire *time.Time
-	active := false
-	neverExpires := false
+	total := sdk.NewCoins()
 	seen := make(map[string]bool)
 	feegrantMsgTypes := make([]string, 0)
 	for _, r := range vsoa.Records {
-		if !r.WithFeegrant || (r.Expiration != nil && !r.Expiration.After(now)) {
+		if !r.WithFeegrant {
 			continue
 		}
-		active = true
-		if r.Expiration == nil {
-			neverExpires = true
-		} else if maxExpire == nil || r.Expiration.After(*maxExpire) {
-			e := *r.Expiration
-			maxExpire = &e
+		pv, found := k.participantKeeper().ViewParticipant(ctx, r.ParticipantId)
+		if !found || (!pv.Active && !pv.Future) {
+			continue
+		}
+		if pv.EffectiveUntil != nil {
+			if err := k.WindowEndQueue.Set(ctx, collections.Join(*pv.EffectiveUntil, r.ParticipantId)); err != nil {
+				return fmt.Errorf("failed to schedule window end: %w", err)
+			}
 		}
 		for _, mt := range r.MsgTypes {
 			if !seen[mt] {
@@ -294,14 +302,13 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 				feegrantMsgTypes = append(feegrantMsgTypes, mt)
 			}
 		}
+		total = total.Add(r.FeeSpendLimit...)
 	}
 
-	// No active feegrant-enabled record remains.
-	if !active {
+	if len(feegrantMsgTypes) == 0 {
 		return k.RevokeFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator)
 	}
-	if neverExpires {
-		maxExpire = nil
-	}
-	return k.GrantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, maxExpire, nil, nil)
+	period := params.VsOperatorFeePeriod
+	reset, remaining := k.carriedFeeBudget(ctx, vsoa.CorporationId, vsoa.VsOperator, total, period)
+	return k.grantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, &reset, total, &period, remaining)
 }

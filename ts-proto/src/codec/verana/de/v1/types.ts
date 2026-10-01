@@ -107,29 +107,35 @@ export interface ParticipantAuthorizationRecord {
    */
   remainingSpend: Coin[];
   /**
-   * fee_spend_limit is the maximum total amount of transaction fees that can be
-   * spent by vs_operator.
+   * fee_spend_limit is this record's contribution to the aggregate fee
+   * allowance of vs_operator, per Params.vs_operator_fee_period. Set iff
+   * with_feegrant is true; every amount is strictly positive.
    */
   feeSpendLimit: Coin[];
-  /**
-   * remaining_fee_spend is the runtime balance for fee_spend_limit. Present iff
-   * fee_spend_limit is set.
-   */
-  remainingFeeSpend: Coin[];
   /**
    * with_feegrant indicates the corporation pays the transaction fees for
    * vs_operator.
    */
   withFeegrant: boolean;
   /**
-   * expiration is the authorization window boundary. A record created before
-   * validation is disabled with expiration = now().
+   * expiration is the end of the current operation-budget cycle. Set iff period
+   * is set and the cycle has started; it carries no window semantics.
    */
   expiration:
     | Date
     | undefined;
-  /** period is the reset period for spend_limit and fee_spend_limit. */
+  /** period is the length of the operation-budget cycle for spend_limit. */
   period: Duration | undefined;
+}
+
+/**
+ * WindowEndQueueEntry is a due date of the window-end queue: the Participant
+ * entry's effective_until, at which the aggregate fee allowance of the
+ * containing VSOperatorAuthorization is recomputed.
+ */
+export interface WindowEndQueueEntry {
+  windowEnd: Date | undefined;
+  participantId: number;
 }
 
 /**
@@ -503,7 +509,6 @@ function createBaseParticipantAuthorizationRecord(): ParticipantAuthorizationRec
     spendLimit: [],
     remainingSpend: [],
     feeSpendLimit: [],
-    remainingFeeSpend: [],
     withFeegrant: false,
     expiration: undefined,
     period: undefined,
@@ -526,9 +531,6 @@ export const ParticipantAuthorizationRecord = {
     }
     for (const v of message.feeSpendLimit) {
       Coin.encode(v!, writer.uint32(42).fork()).ldelim();
-    }
-    for (const v of message.remainingFeeSpend) {
-      Coin.encode(v!, writer.uint32(50).fork()).ldelim();
     }
     if (message.withFeegrant !== false) {
       writer.uint32(56).bool(message.withFeegrant);
@@ -584,13 +586,6 @@ export const ParticipantAuthorizationRecord = {
 
           message.feeSpendLimit.push(Coin.decode(reader, reader.uint32()));
           continue;
-        case 6:
-          if (tag !== 50) {
-            break;
-          }
-
-          message.remainingFeeSpend.push(Coin.decode(reader, reader.uint32()));
-          continue;
         case 7:
           if (tag !== 56) {
             break;
@@ -634,9 +629,6 @@ export const ParticipantAuthorizationRecord = {
       feeSpendLimit: globalThis.Array.isArray(object?.feeSpendLimit)
         ? object.feeSpendLimit.map((e: any) => Coin.fromJSON(e))
         : [],
-      remainingFeeSpend: globalThis.Array.isArray(object?.remainingFeeSpend)
-        ? object.remainingFeeSpend.map((e: any) => Coin.fromJSON(e))
-        : [],
       withFeegrant: isSet(object.withFeegrant) ? globalThis.Boolean(object.withFeegrant) : false,
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
       period: isSet(object.period) ? Duration.fromJSON(object.period) : undefined,
@@ -659,9 +651,6 @@ export const ParticipantAuthorizationRecord = {
     }
     if (message.feeSpendLimit?.length) {
       obj.feeSpendLimit = message.feeSpendLimit.map((e) => Coin.toJSON(e));
-    }
-    if (message.remainingFeeSpend?.length) {
-      obj.remainingFeeSpend = message.remainingFeeSpend.map((e) => Coin.toJSON(e));
     }
     if (message.withFeegrant !== false) {
       obj.withFeegrant = message.withFeegrant;
@@ -687,12 +676,85 @@ export const ParticipantAuthorizationRecord = {
     message.spendLimit = object.spendLimit?.map((e) => Coin.fromPartial(e)) || [];
     message.remainingSpend = object.remainingSpend?.map((e) => Coin.fromPartial(e)) || [];
     message.feeSpendLimit = object.feeSpendLimit?.map((e) => Coin.fromPartial(e)) || [];
-    message.remainingFeeSpend = object.remainingFeeSpend?.map((e) => Coin.fromPartial(e)) || [];
     message.withFeegrant = object.withFeegrant ?? false;
     message.expiration = object.expiration ?? undefined;
     message.period = (object.period !== undefined && object.period !== null)
       ? Duration.fromPartial(object.period)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseWindowEndQueueEntry(): WindowEndQueueEntry {
+  return { windowEnd: undefined, participantId: 0 };
+}
+
+export const WindowEndQueueEntry = {
+  encode(message: WindowEndQueueEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.windowEnd !== undefined) {
+      Timestamp.encode(toTimestamp(message.windowEnd), writer.uint32(10).fork()).ldelim();
+    }
+    if (message.participantId !== 0) {
+      writer.uint32(16).uint64(message.participantId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): WindowEndQueueEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseWindowEndQueueEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.windowEnd = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.participantId = longToNumber(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): WindowEndQueueEntry {
+    return {
+      windowEnd: isSet(object.windowEnd) ? fromJsonTimestamp(object.windowEnd) : undefined,
+      participantId: isSet(object.participantId) ? globalThis.Number(object.participantId) : 0,
+    };
+  },
+
+  toJSON(message: WindowEndQueueEntry): unknown {
+    const obj: any = {};
+    if (message.windowEnd !== undefined) {
+      obj.windowEnd = message.windowEnd.toISOString();
+    }
+    if (message.participantId !== 0) {
+      obj.participantId = Math.round(message.participantId);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<WindowEndQueueEntry>, I>>(base?: I): WindowEndQueueEntry {
+    return WindowEndQueueEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<WindowEndQueueEntry>, I>>(object: I): WindowEndQueueEntry {
+    const message = createBaseWindowEndQueueEntry();
+    message.windowEnd = object.windowEnd ?? undefined;
+    message.participantId = object.participantId ?? 0;
     return message;
   },
 };

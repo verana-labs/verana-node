@@ -167,6 +167,57 @@ func (x *_GenesisState_4_list) IsValid() bool {
 	return x.list != nil
 }
 
+var _ protoreflect.List = (*_GenesisState_8_list)(nil)
+
+type _GenesisState_8_list struct {
+	list *[]*WindowEndQueueEntry
+}
+
+func (x *_GenesisState_8_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_GenesisState_8_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_GenesisState_8_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*WindowEndQueueEntry)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_GenesisState_8_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*WindowEndQueueEntry)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_GenesisState_8_list) AppendMutable() protoreflect.Value {
+	v := new(WindowEndQueueEntry)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_8_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_GenesisState_8_list) NewElement() protoreflect.Value {
+	v := new(WindowEndQueueEntry)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_8_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
 	md_GenesisState                            protoreflect.MessageDescriptor
 	fd_GenesisState_params                     protoreflect.FieldDescriptor
@@ -175,6 +226,7 @@ var (
 	fd_GenesisState_vs_operator_authorizations protoreflect.FieldDescriptor
 	fd_GenesisState_operator_authorization_seq protoreflect.FieldDescriptor
 	fd_GenesisState_vsoa_seq                   protoreflect.FieldDescriptor
+	fd_GenesisState_window_end_queue           protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -186,6 +238,7 @@ func init() {
 	fd_GenesisState_vs_operator_authorizations = md_GenesisState.Fields().ByName("vs_operator_authorizations")
 	fd_GenesisState_operator_authorization_seq = md_GenesisState.Fields().ByName("operator_authorization_seq")
 	fd_GenesisState_vsoa_seq = md_GenesisState.Fields().ByName("vsoa_seq")
+	fd_GenesisState_window_end_queue = md_GenesisState.Fields().ByName("window_end_queue")
 }
 
 var _ protoreflect.Message = (*fastReflection_GenesisState)(nil)
@@ -289,6 +342,12 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
+	if len(x.WindowEndQueue) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_8_list{list: &x.WindowEndQueue})
+		if !f(fd_GenesisState_window_end_queue, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -316,6 +375,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return x.OperatorAuthorizationSeq != uint64(0)
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		return x.VsoaSeq != uint64(0)
+	case "verana.de.v1.GenesisState.window_end_queue":
+		return len(x.WindowEndQueue) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.GenesisState"))
@@ -344,6 +405,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.OperatorAuthorizationSeq = uint64(0)
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		x.VsoaSeq = uint64(0)
+	case "verana.de.v1.GenesisState.window_end_queue":
+		x.WindowEndQueue = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.GenesisState"))
@@ -387,6 +450,12 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		value := x.VsoaSeq
 		return protoreflect.ValueOfUint64(value)
+	case "verana.de.v1.GenesisState.window_end_queue":
+		if len(x.WindowEndQueue) == 0 {
+			return protoreflect.ValueOfList(&_GenesisState_8_list{})
+		}
+		listValue := &_GenesisState_8_list{list: &x.WindowEndQueue}
+		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.GenesisState"))
@@ -425,6 +494,10 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		x.OperatorAuthorizationSeq = value.Uint()
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		x.VsoaSeq = value.Uint()
+	case "verana.de.v1.GenesisState.window_end_queue":
+		lv := value.List()
+		clv := lv.(*_GenesisState_8_list)
+		x.WindowEndQueue = *clv.list
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.GenesisState"))
@@ -468,6 +541,12 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_4_list{list: &x.VsOperatorAuthorizations}
 		return protoreflect.ValueOfList(value)
+	case "verana.de.v1.GenesisState.window_end_queue":
+		if x.WindowEndQueue == nil {
+			x.WindowEndQueue = []*WindowEndQueueEntry{}
+		}
+		value := &_GenesisState_8_list{list: &x.WindowEndQueue}
+		return protoreflect.ValueOfList(value)
 	case "verana.de.v1.GenesisState.operator_authorization_seq":
 		panic(fmt.Errorf("field operator_authorization_seq of message verana.de.v1.GenesisState is not mutable"))
 	case "verana.de.v1.GenesisState.vsoa_seq":
@@ -501,6 +580,9 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		return protoreflect.ValueOfUint64(uint64(0))
+	case "verana.de.v1.GenesisState.window_end_queue":
+		list := []*WindowEndQueueEntry{}
+		return protoreflect.ValueOfList(&_GenesisState_8_list{list: &list})
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.GenesisState"))
@@ -598,6 +680,12 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.VsoaSeq != 0 {
 			n += 1 + runtime.Sov(uint64(x.VsoaSeq))
 		}
+		if len(x.WindowEndQueue) > 0 {
+			for _, e := range x.WindowEndQueue {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -626,6 +714,22 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.WindowEndQueue) > 0 {
+			for iNdEx := len(x.WindowEndQueue) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.WindowEndQueue[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x42
+			}
 		}
 		if x.VsoaSeq != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.VsoaSeq))
@@ -924,6 +1028,40 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 8:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field WindowEndQueue", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.WindowEndQueue = append(x.WindowEndQueue, &WindowEndQueueEntry{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.WindowEndQueue[len(x.WindowEndQueue)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -989,6 +1127,8 @@ type GenesisState struct {
 	// Id sequences, exported so ids are never re-issued after a delete.
 	OperatorAuthorizationSeq uint64 `protobuf:"varint,6,opt,name=operator_authorization_seq,json=operatorAuthorizationSeq,proto3" json:"operator_authorization_seq,omitempty"`
 	VsoaSeq                  uint64 `protobuf:"varint,7,opt,name=vsoa_seq,json=vsoaSeq,proto3" json:"vsoa_seq,omitempty"`
+	// window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5.
+	WindowEndQueue []*WindowEndQueueEntry `protobuf:"bytes,8,rep,name=window_end_queue,json=windowEndQueue,proto3" json:"window_end_queue,omitempty"`
 }
 
 func (x *GenesisState) Reset() {
@@ -1053,6 +1193,13 @@ func (x *GenesisState) GetVsoaSeq() uint64 {
 	return 0
 }
 
+func (x *GenesisState) GetWindowEndQueue() []*WindowEndQueueEntry {
+	if x != nil {
+		return x.WindowEndQueue
+	}
+	return nil
+}
+
 var File_verana_de_v1_genesis_proto protoreflect.FileDescriptor
 
 var file_verana_de_v1_genesis_proto_rawDesc = []byte{
@@ -1064,7 +1211,7 @@ var file_verana_de_v1_genesis_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76,
 	0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18,
 	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xac, 0x03, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
+	0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xff, 0x03, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
 	0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x61, 0x72,
 	0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x76, 0x65, 0x72, 0x61,
 	0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42,
@@ -1091,18 +1238,24 @@ var file_verana_de_v1_genesis_proto_rawDesc = []byte{
 	0x28, 0x04, 0x52, 0x18, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68,
 	0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x71, 0x12, 0x19, 0x0a, 0x08,
 	0x76, 0x73, 0x6f, 0x61, 0x5f, 0x73, 0x65, 0x71, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07,
-	0x76, 0x73, 0x6f, 0x61, 0x53, 0x65, 0x71, 0x42, 0xac, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0c, 0x47, 0x65,
-	0x6e, 0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d,
-	0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76,
-	0x31, 0x3b, 0x64, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72,
-	0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a,
-	0x44, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x76, 0x73, 0x6f, 0x61, 0x53, 0x65, 0x71, 0x12, 0x51, 0x0a, 0x10, 0x77, 0x69, 0x6e, 0x64, 0x6f,
+	0x77, 0x5f, 0x65, 0x6e, 0x64, 0x5f, 0x71, 0x75, 0x65, 0x75, 0x65, 0x18, 0x08, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x21, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31,
+	0x2e, 0x57, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x45, 0x6e, 0x64, 0x51, 0x75, 0x65, 0x75, 0x65, 0x45,
+	0x6e, 0x74, 0x72, 0x79, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0e, 0x77, 0x69, 0x6e, 0x64,
+	0x6f, 0x77, 0x45, 0x6e, 0x64, 0x51, 0x75, 0x65, 0x75, 0x65, 0x42, 0xac, 0x01, 0x0a, 0x10, 0x63,
+	0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42,
+	0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
+	0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e,
+	0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64,
+	0x65, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x44, 0x58, 0xaa,
+	0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02,
+	0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18,
+	0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x3a, 0x3a, 0x44, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -1124,17 +1277,19 @@ var file_verana_de_v1_genesis_proto_goTypes = []interface{}{
 	(*OperatorAuthorization)(nil),   // 2: verana.de.v1.OperatorAuthorization
 	(*FeeGrant)(nil),                // 3: verana.de.v1.FeeGrant
 	(*VSOperatorAuthorization)(nil), // 4: verana.de.v1.VSOperatorAuthorization
+	(*WindowEndQueueEntry)(nil),     // 5: verana.de.v1.WindowEndQueueEntry
 }
 var file_verana_de_v1_genesis_proto_depIdxs = []int32{
 	1, // 0: verana.de.v1.GenesisState.params:type_name -> verana.de.v1.Params
 	2, // 1: verana.de.v1.GenesisState.operator_authorizations:type_name -> verana.de.v1.OperatorAuthorization
 	3, // 2: verana.de.v1.GenesisState.fee_grants:type_name -> verana.de.v1.FeeGrant
 	4, // 3: verana.de.v1.GenesisState.vs_operator_authorizations:type_name -> verana.de.v1.VSOperatorAuthorization
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	5, // 4: verana.de.v1.GenesisState.window_end_queue:type_name -> verana.de.v1.WindowEndQueueEntry
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_verana_de_v1_genesis_proto_init() }

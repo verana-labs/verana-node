@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"regexp"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -43,6 +44,28 @@ func vsoaPermittedMsgTypes(role ParticipantRole) map[string]bool {
 // If any vs_operator_authz_* parameter is set, vs_operator_authz_msg_types MUST be
 // non-empty, vs_operator MUST be set, and every msg_type MUST be permitted for the
 // role per the spec whitelist.
+// validateVSOperatorAuthzBudget enforces the record budget rules of
+// [MOD-DE-MSG-5-2]: fee_spend_limit is set and strictly positive iff
+// with_feegrant is true; period requires spend_limit.
+func validateVSOperatorAuthzBudget(withFeegrant bool, feeSpendLimit, spendLimit sdk.Coins, period *time.Duration) error {
+	if withFeegrant {
+		if len(feeSpendLimit) == 0 || !feeSpendLimit.IsValid() || !feeSpendLimit.IsAllPositive() {
+			return fmt.Errorf("vs_operator_authz_fee_spend_limit must be set and strictly positive when vs_operator_authz_with_feegrant is true")
+		}
+	} else if len(feeSpendLimit) > 0 {
+		return fmt.Errorf("vs_operator_authz_fee_spend_limit requires vs_operator_authz_with_feegrant")
+	}
+	if period != nil {
+		if *period <= 0 {
+			return fmt.Errorf("vs_operator_authz_period must be positive")
+		}
+		if len(spendLimit) == 0 {
+			return fmt.Errorf("vs_operator_authz_period requires vs_operator_authz_spend_limit")
+		}
+	}
+	return nil
+}
+
 func validateVSOperatorAuthz(role ParticipantRole, vsOperator string, msgTypes []string, anyParamSet bool) error {
 	if !anyParamSet {
 		return nil
@@ -118,6 +141,9 @@ func (msg *MsgStartParticipantOP) ValidateBasic() error {
 		len(msg.VsOperatorAuthzFeeSpendLimit) > 0 ||
 		msg.VsOperatorAuthzPeriod != nil
 	if err := validateVSOperatorAuthz(ParticipantRole(msg.Role), msg.VsOperator, msg.VsOperatorAuthzMsgTypes, anyParam); err != nil {
+		return err
+	}
+	if err := validateVSOperatorAuthzBudget(msg.VsOperatorAuthzWithFeegrant, msg.VsOperatorAuthzFeeSpendLimit, msg.VsOperatorAuthzSpendLimit, msg.VsOperatorAuthzPeriod); err != nil {
 		return err
 	}
 
@@ -247,8 +273,9 @@ func (msg *MsgCreateRootParticipant) ValidateBasic() error {
 				return fmt.Errorf("msg_type %s is not permitted for root participant (only SetParticipantOPToValidated)", mt)
 			}
 		}
-		// effective_until may be nil: the record is then active with no expiration
-		// (AUTHZ-CHECK-3 treats nil as never-expired).
+	}
+	if err := validateVSOperatorAuthzBudget(msg.VsOperatorAuthzWithFeegrant, msg.VsOperatorAuthzFeeSpendLimit, msg.VsOperatorAuthzSpendLimit, msg.VsOperatorAuthzPeriod); err != nil {
+		return err
 	}
 	if msg.VsOperator != "" {
 		if _, err := sdk.AccAddressFromBech32(msg.VsOperator); err != nil {
@@ -443,8 +470,9 @@ func (msg *MsgSelfCreateParticipant) ValidateBasic() error {
 	if err := validateVSOperatorAuthz(msg.Role, msg.VsOperator, msg.VsOperatorAuthzMsgTypes, anyParam); err != nil {
 		return err
 	}
-	// effective_until may be nil: the record is then active with no expiration
-	// (AUTHZ-CHECK-3 treats nil as never-expired).
+	if err := validateVSOperatorAuthzBudget(msg.VsOperatorAuthzWithFeegrant, msg.VsOperatorAuthzFeeSpendLimit, msg.VsOperatorAuthzSpendLimit, msg.VsOperatorAuthzPeriod); err != nil {
+		return err
+	}
 
 	return nil
 }

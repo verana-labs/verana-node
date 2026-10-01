@@ -881,6 +881,114 @@ func TestRenewParticipantVP_ValidateBasic(t *testing.T) {
 	}
 }
 
+func TestRenewParticipantVP_ModeRoleChecks(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	blockTime := time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC)
+	sdkCtx = sdkCtx.WithBlockTime(blockTime)
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	creator := sdk.AccAddress([]byte("test_creator")).String()
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+
+	newParticipant := func(schemaID uint64, role types.ParticipantRole, validatorID uint64) uint64 {
+		p := types.Participant{
+			SchemaId:               schemaID,
+			Role:                   role,
+			CorporationId:          trkKeeper.RegisterCorp(creator),
+			Did:                    "did:example:applicant",
+			Created:                &now,
+			Modified:               &now,
+			ValidatorParticipantId: validatorID,
+			OpState:                types.OnboardingState_VALIDATED,
+			OpLastStateChange:      &now,
+			EffectiveFrom:          &pastTime,
+		}
+		id, err := k.CreateParticipant(sdkCtx, p)
+		require.NoError(t, err)
+		return id
+	}
+
+	t.Run("self-created ISSUER (OPEN mode) cannot renew", func(t *testing.T) {
+		csKeeper.CreateMockCredentialSchema(10,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+		ecoID := newParticipant(10, types.ParticipantRole_ECOSYSTEM, 0)
+		selfID := newParticipant(10, types.ParticipantRole_ISSUER, ecoID)
+
+		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: creator,
+			Operator:    creator,
+			Id:          selfID,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not supported with current schema")
+		require.Nil(t, resp)
+
+		p, err := k.GetParticipantByID(sdkCtx, selfID)
+		require.NoError(t, err)
+		require.Equal(t, types.OnboardingState_VALIDATED, p.OpState)
+		require.Equal(t, uint64(0), p.OpCurrentFees)
+		require.Equal(t, uint64(0), p.OpCurrentDeposit)
+	})
+
+	t.Run("self-created VERIFIER (OPEN mode) cannot renew", func(t *testing.T) {
+		csKeeper.CreateMockCredentialSchema(11,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+		ecoID := newParticipant(11, types.ParticipantRole_ECOSYSTEM, 0)
+		selfID := newParticipant(11, types.ParticipantRole_VERIFIER, ecoID)
+
+		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: creator,
+			Operator:    creator,
+			Id:          selfID,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not supported with current schema")
+		require.Nil(t, resp)
+	})
+
+	t.Run("synthetic state: role outside the onboarding tree cannot renew", func(t *testing.T) {
+		csKeeper.CreateMockCredentialSchema(12,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+		ecoID := newParticipant(12, types.ParticipantRole_ECOSYSTEM, 0)
+		oddID := newParticipant(12, types.ParticipantRole_ECOSYSTEM, ecoID)
+
+		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: creator,
+			Operator:    creator,
+			Id:          oddID,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "cannot run an onboarding process")
+		require.Nil(t, resp)
+	})
+
+	t.Run("OP-managed ISSUER (ECOSYSTEM mode) still renews", func(t *testing.T) {
+		csKeeper.CreateMockCredentialSchema(13,
+			cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+			cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS)
+		ecoID := newParticipant(13, types.ParticipantRole_ECOSYSTEM, 0)
+		opManagedID := newParticipant(13, types.ParticipantRole_ISSUER, ecoID)
+
+		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
+			Corporation: creator,
+			Operator:    creator,
+			Id:          opManagedID,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		p, err := k.GetParticipantByID(sdkCtx, opManagedID)
+		require.NoError(t, err)
+		require.Equal(t, types.OnboardingState_PENDING, p.OpState)
+	})
+}
+
 func TestSetParticipantVPToValidated(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx := setupMsgServer(t)
 	_ = trkKeeper
@@ -6383,8 +6491,7 @@ func TestVSOA_StartParticipantOPGrantsDisabledRecord(t *testing.T) {
 	require.Len(t, delKeeper.GrantVSOACalls, 1)
 	require.Equal(t, vsOperator, delKeeper.GrantVSOACalls[0].VsOperator)
 	require.Equal(t, resp.ParticipantId, delKeeper.GrantVSOACalls[0].Record.ParticipantId)
-	require.NotNil(t, delKeeper.GrantVSOACalls[0].Record.Expiration)
-	require.True(t, delKeeper.GrantVSOACalls[0].Record.Expiration.Equal(now), "record created disabled (expiration == now)")
+	require.Nil(t, delKeeper.GrantVSOACalls[0].Record.Expiration, "no cycle before validation; step 1 disables the record")
 }
 
 func TestVSOA_StartParticipantOPSkipsWithoutMsgTypes(t *testing.T) {
@@ -6412,7 +6519,7 @@ func TestVSOA_StartParticipantOPSkipsWithoutMsgTypes(t *testing.T) {
 	require.Len(t, delKeeper.GrantVSOACalls, 0)
 }
 
-func TestVSOA_ValidatedUpdatesExpiration(t *testing.T) {
+func TestVSOA_ValidatedSyncsRecord(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
 	ctx = sdk.WrapSDKContext(sdkCtx)
@@ -6452,14 +6559,11 @@ func TestVSOA_ValidatedUpdatesExpiration(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Len(t, delKeeper.UpdateVSOACalls, 1)
-	require.Equal(t, applicantPermID, delKeeper.UpdateVSOACalls[0].ParticipantID)
-	require.True(t, delKeeper.UpdateVSOACalls[0].NewExpiration.Equal(future))
+	require.Equal(t, []uint64{applicantPermID}, delKeeper.SyncVSOACalls)
 }
 
-// [MOD-PP-MSG-8] SetParticipantEffectiveUntil MUST sync the VSOA record to the NEW
-// effective_until (msg value), not the stale stored value.
-func TestVSOA_SetEffectiveUntilSyncsNewExpiration(t *testing.T) {
+// [MOD-PP-MSG-8] SetParticipantEffectiveUntil syncs the VSOA record.
+func TestVSOA_SetEffectiveUntilSyncsRecord(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
 	ctx = sdk.WrapSDKContext(sdkCtx)
@@ -6500,13 +6604,11 @@ func TestVSOA_SetEffectiveUntilSyncsNewExpiration(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Len(t, delKeeper.UpdateVSOACalls, 1)
-	require.True(t, delKeeper.UpdateVSOACalls[0].NewExpiration.Equal(future2),
-		"sync must use new effective_until %s, got %s", future2, delKeeper.UpdateVSOACalls[0].NewExpiration)
+	require.Equal(t, []uint64{applicantPermID}, delKeeper.SyncVSOACalls)
 }
 
-// [MOD-PP-MSG-14] SelfCreateParticipant (OPEN) creates an ACTIVE VSOA record
-// (expiration == effective_until) when msg_types are given, and none otherwise.
+// [MOD-PP-MSG-14] SelfCreateParticipant (OPEN) creates a VSOA record when
+// msg_types are given (no period: no cycle), and none otherwise.
 func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 	k, ms, mockCsKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
@@ -6544,8 +6646,7 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 		require.Len(t, delKeeper.GrantVSOACalls, 1)
 		require.Equal(t, vsOp, delKeeper.GrantVSOACalls[0].VsOperator)
 		require.Equal(t, resp.Id, delKeeper.GrantVSOACalls[0].Record.ParticipantId)
-		require.True(t, delKeeper.GrantVSOACalls[0].Record.Expiration.Equal(farFuture),
-			"active record: expiration == effective_until")
+		require.Nil(t, delKeeper.GrantVSOACalls[0].Record.Expiration, "no period: no cycle")
 	})
 
 	t.Run("no record without msg_types", func(t *testing.T) {
@@ -6562,8 +6663,8 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 	})
 }
 
-// [MOD-PP-MSG-7] CreateRootParticipant with msg_types creates an ACTIVE VSOA record
-// (expiration == effective_until) and assigns vs_operator.
+// [MOD-PP-MSG-7] CreateRootParticipant with msg_types creates a VSOA record whose
+// operation cycle starts at creation, and assigns vs_operator.
 func TestVSOA_CreateRootActiveRecord(t *testing.T) {
 	_, ms, mockCsKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
 	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
@@ -6582,18 +6683,21 @@ func TestVSOA_CreateRootActiveRecord(t *testing.T) {
 	delKeeper.Reset()
 
 	vsOp := sdk.AccAddress([]byte("vsoa_root_vsop_a____")).String()
+	period := 30 * 24 * time.Hour
 	resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
 		Corporation: authority, Operator: authority, SchemaId: 1, Did: did,
 		ValidationFees: 100, IssuanceFees: 50, VerificationFees: 25,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 		VsOperator: vsOp, VsOperatorAuthzMsgTypes: []string{types.MsgSetParticipantOPToValidatedTypeURL},
+		VsOperatorAuthzSpendLimit: sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, 1000)),
+		VsOperatorAuthzPeriod:     &period,
 	})
 	require.NoError(t, err)
 	require.Len(t, delKeeper.GrantVSOACalls, 1)
 	require.Equal(t, vsOp, delKeeper.GrantVSOACalls[0].VsOperator)
 	require.Equal(t, resp.Id, delKeeper.GrantVSOACalls[0].Record.ParticipantId)
-	require.True(t, delKeeper.GrantVSOACalls[0].Record.Expiration.Equal(farFuture),
-		"active record: expiration == effective_until")
+	require.True(t, delKeeper.GrantVSOACalls[0].Record.Expiration.Equal(now.Add(period)),
+		"cycle starts at creation: expiration == now + period")
 }
 
 // [MOD-PP-MSG-7] CreateRootParticipant without msg_types creates no VSOA record.

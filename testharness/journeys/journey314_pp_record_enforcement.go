@@ -21,8 +21,8 @@ import (
 )
 
 // RunPermissionRecordEnforcementJourney implements Journey 314: AUTHZ-CHECK-3
-// (VSOA record spend_limit) and AUTHZ-CHECK-4 (VSOA per-record fee_spend_limit)
-// enforcement inside CreateOrUpdateParticipantSession (CSPS), #324.
+// (VSOA record spend_limit) enforcement inside CreateOrUpdateParticipantSession
+// (CSPS), #324. The fee cap is the aggregate x/feegrant allowance (AUTHZ-CHECK-4).
 //
 // The record (VSOA) limits can only be set at participant creation via
 // StartParticipantOP's --vs-operator-authz-* flags, so the fee-bearing issuers
@@ -123,7 +123,7 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 	// remaining_spend is debited below the granted spend_limit.
 	// =========================================================================
 	fmt.Println("\n=== CHECK-3 positive: CSPS debits the record spend_limit ===")
-	beforeSpend, _, ok := queryVsoaRemaining(ctx, client, vsOperatorAddr, issuerX)
+	beforeSpend, ok := queryVsoaRemaining(ctx, client, vsOperatorAddr, issuerX)
 	if !ok {
 		return fmt.Errorf("check-3 failed: no VSOA record for issuer-X %d", issuerX)
 	}
@@ -134,7 +134,7 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 		return fmt.Errorf("check-3 failed: CSPS within limit: %w", err)
 	}
 	waitForTx("CSPS issuer-X (CHECK-3)")
-	afterSpend, _, _ := queryVsoaRemaining(ctx, client, vsOperatorAddr, issuerX)
+	afterSpend, _ := queryVsoaRemaining(ctx, client, vsOperatorAddr, issuerX)
 	if !afterSpend.LT(beforeSpend) {
 		return fmt.Errorf("check-3 failed: remaining_spend not debited (before=%s after=%s)", beforeSpend, afterSpend)
 	}
@@ -271,25 +271,24 @@ func waitRootActive(ctx context.Context, client cosmosclient.Client, effectiveFr
 	return fmt.Errorf("root did not become active in time")
 }
 
-// queryVsoaRemaining returns the (remaining_spend, remaining_fee_spend) for the
-// vs_operator's VSOA record on the given participant, in uvna.
+// queryVsoaRemaining returns the remaining_spend of the vs_operator's VSOA
+// record on the given participant, in uvna.
 func queryVsoaRemaining(
 	ctx context.Context, client cosmosclient.Client, vsOperatorAddr string, participantID uint64,
-) (math.Int, math.Int, bool) {
+) (math.Int, bool) {
 	qc := detypes.NewQueryClient(client.Context())
 	resp, err := qc.ListVSOperatorAuthorizations(ctx, &detypes.QueryListVSOperatorAuthorizationsRequest{
 		VsOperator: vsOperatorAddr,
 	})
 	if err != nil {
-		return math.ZeroInt(), math.ZeroInt(), false
+		return math.ZeroInt(), false
 	}
 	for _, vsoa := range resp.VsOperatorAuthorizations {
 		for _, rec := range vsoa.Records {
 			if rec.ParticipantId == participantID {
-				return rec.RemainingSpend.AmountOf(permtypes.BondDenom),
-					rec.RemainingFeeSpend.AmountOf(permtypes.BondDenom), true
+				return rec.RemainingSpend.AmountOf(permtypes.BondDenom), true
 			}
 		}
 	}
-	return math.ZeroInt(), math.ZeroInt(), false
+	return math.ZeroInt(), false
 }

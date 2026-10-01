@@ -41,7 +41,8 @@ func TestMsgUpdateParams(t *testing.T) {
 				Authority: authorityStr,
 				Params:    types.Params{},
 			},
-			expErr: false,
+			expErr:    true,
+			expErrMsg: "vs_operator_fee_period must be positive",
 		},
 		{
 			name: "all good",

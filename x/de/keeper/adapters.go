@@ -34,3 +34,17 @@ func (StubCorporationKeeper) ResolveCorporationByID(_ context.Context, id uint64
 type feegrantKeeperRef struct {
 	K types.FeegrantKeeper
 }
+
+// participantKeeperRef holds the ParticipantKeeper behind a shared pointer, like
+// corpKeeperRef. Wired via SetParticipantKeeper.
+type participantKeeperRef struct {
+	K types.ParticipantKeeper
+}
+
+// StubParticipantKeeper is the pre-wiring default: no entry is ever found, so
+// AUTHZ-CHECK-3 step 1 aborts and the recompute skips every record.
+type StubParticipantKeeper struct{}
+
+func (StubParticipantKeeper) ViewParticipant(_ context.Context, _ uint64) (types.ParticipantView, bool) {
+	return types.ParticipantView{}, false
+}

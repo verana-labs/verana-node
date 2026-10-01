@@ -3,6 +3,7 @@ package verana.de.v1;
 
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/de/types";
 
@@ -10,4 +11,11 @@ option go_package = "github.com/verana-labs/verana-node/x/de/types";
 message Params {
   option (amino.name) = "verana/x/de/Params";
   option (gogoproto.equal) = true;
+
+  // vs_operator_fee_period is the network-wide cycle of the aggregate VS
+  // operator fee allowance; each record's fee_spend_limit is a budget per period.
+  google.protobuf.Duration vs_operator_fee_period = 1 [
+    (gogoproto.stdduration) = true,
+    (gogoproto.nullable) = false
+  ];
 }

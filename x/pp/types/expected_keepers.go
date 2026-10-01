@@ -100,17 +100,15 @@ type DelegationKeeper interface {
 	ConsumeOperatorSpend(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time, amount sdk.Coins) error
 	// [AUTHZ-CHECK-3] record-based VS operator authorization check on a participant.
 	CheckVSOperatorAuthorizationOnParticipant(ctx context.Context, corporationID uint64, operator string, participantID uint64, msgType string) error
-	// [AUTHZ-CHECK-3] step 5: debit the operation's nominal spend from the record's remaining_spend.
+	// [AUTHZ-CHECK-3] step 6: debit the operation's nominal spend from the record's remaining_spend.
 	ConsumeRecordSpend(ctx context.Context, corporationID uint64, operator string, participantID uint64, amount sdk.Coins) error
-	// [AUTHZ-CHECK-4] record-based VS operator fee grant check.
+	// [AUTHZ-CHECK-4] the record MUST enable corporation-paid fees.
 	CheckVSOperatorFeeGrant(ctx context.Context, participantID uint64) error
-	// [AUTHZ-CHECK-4] step 3: debit the corp-paid tx fee from the record's remaining_fee_spend.
-	ConsumeRecordFeeSpend(ctx context.Context, corporationID uint64, operator string, participantID uint64, fee sdk.Coins) error
 	// [MOD-DE-MSG-5] grant a VS operator authorization record (module call).
 	GrantVSOperatorAuthorization(ctx context.Context, corporationID uint64, vsOperator string, record detypes.ParticipantAuthorizationRecord) error
 	// [MOD-DE-MSG-6] revoke a VS operator authorization record by participant id.
 	RevokeVSOperatorAuthorization(ctx context.Context, participantID uint64) error
-	// [MOD-DE-MSG-9] update a record's expiration by participant id; nil means
-	// the record never expires.
-	UpdateVSOperatorAuthorizationExpiration(ctx context.Context, participantID uint64, newExpiration *time.Time) error
+	// [MOD-DE-MSG-9] start the record's operation cycle on first activation and
+	// recompute the aggregate fee allowance; no-op when no record exists.
+	SyncVSOperatorAuthorization(ctx context.Context, participantID uint64) error
 }

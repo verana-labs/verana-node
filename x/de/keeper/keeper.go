@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/address"
 	corestore "cosmossdk.io/core/store"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/de/types"
 )
@@ -26,7 +28,7 @@ type Keeper struct {
 
 	// OperatorAuthorization: keyed by its own uint64 id; (corporation_id,
 	// operator) is a unique secondary index. Runtime spend balances live
-	// on-object (remaining_spend / remaining_fee_spend).
+	// on-object (remaining_spend).
 	OperatorAuthorizations        collections.Map[uint64, types.OperatorAuthorization]
 	OperatorAuthorizationByCorpOp collections.Map[collections.Pair[uint64, string], uint64]
 	OperatorAuthorizationSeq      collections.Sequence
@@ -41,6 +43,9 @@ type Keeper struct {
 	VSOAByCorpOp             collections.Map[collections.Pair[uint64, string], uint64]
 	VSOAByParticipant        collections.Map[uint64, uint64]
 	VSOASeq                  collections.Sequence
+	// WindowEndQueue holds (effective_until, participant_id) due dates at which
+	// the containing VSOA's fee allowance is recomputed (MOD-DE-MSG-5-5).
+	WindowEndQueue collections.KeySet[collections.Pair[time.Time, uint64]]
 
 	// corpRef backs AUTHZ-CHECK-5; wired post-construction via
 	// SetCorporationKeeper to break the MOD-DE ↔ MOD-CO cycle (#308).
@@ -48,6 +53,10 @@ type Keeper struct {
 
 	// feegrantRef holds the cosmos x/feegrant keeper, wired via SetFeegrantKeeper.
 	feegrantRef *feegrantKeeperRef
+
+	// participantRef backs AUTHZ-CHECK-3 step 1 and the MOD-DE-MSG-5-5 scan;
+	// wired post-construction via SetParticipantKeeper (MOD-PP depends on MOD-DE).
+	participantRef *participantKeeperRef
 }
 
 func NewKeeper(
@@ -66,12 +75,13 @@ func NewKeeper(
 	corpOpKeyCodec := collections.PairKeyCodec(collections.Uint64Key, collections.StringKey)
 
 	k := Keeper{
-		storeService: storeService,
-		cdc:          cdc,
-		addressCodec: addressCodec,
-		authority:    authority,
-		corpRef:      &corpKeeperRef{K: StubCorporationKeeper{}},
-		feegrantRef:  &feegrantKeeperRef{},
+		storeService:   storeService,
+		cdc:            cdc,
+		addressCodec:   addressCodec,
+		authority:      authority,
+		corpRef:        &corpKeeperRef{K: StubCorporationKeeper{}},
+		feegrantRef:    &feegrantKeeperRef{},
+		participantRef: &participantKeeperRef{K: StubParticipantKeeper{}},
 
 		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
 
@@ -91,6 +101,8 @@ func NewKeeper(
 		VSOAByParticipant: collections.NewMap(sb, types.VSOAByParticipantKey, "vsoa_by_participant",
 			collections.Uint64Key, collections.Uint64Value),
 		VSOASeq: collections.NewSequence(sb, types.VSOASeqKey, "vsoa_seq"),
+		WindowEndQueue: collections.NewKeySet(sb, types.WindowEndQueueKey, "window_end_queue",
+			collections.PairKeyCodec(sdk.TimeKey, collections.Uint64Key)),
 	}
 
 	schema, err := sb.Build()
@@ -123,6 +135,16 @@ func (k Keeper) SetFeegrantKeeper(f types.FeegrantKeeper) {
 // feegrantKeeper returns the wired x/feegrant keeper, or nil if not wired.
 func (k Keeper) feegrantKeeper() types.FeegrantKeeper {
 	return k.feegrantRef.K
+}
+
+// SetParticipantKeeper wires the MOD-PP participant view after both keepers exist.
+func (k Keeper) SetParticipantKeeper(p types.ParticipantKeeper) {
+	k.participantRef.K = p
+}
+
+// participantKeeper returns the wired participant view (real or stub).
+func (k Keeper) participantKeeper() types.ParticipantKeeper {
+	return k.participantRef.K
 }
 
 // corporationKeeper returns the wired CorporationKeeper (real or stub) used by

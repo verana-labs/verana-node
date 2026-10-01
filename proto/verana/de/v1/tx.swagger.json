@@ -264,6 +264,12 @@
     },
     "verana.de.v1.Params": {
       "type": "object",
+      "properties": {
+        "vs_operator_fee_period": {
+          "type": "string",
+          "description": "vs_operator_fee_period is the network-wide cycle of the aggregate VS\noperator fee allowance; each record's fee_spend_limit is a budget per period."
+        }
+      },
       "description": "Params defines the parameters for the module."
     }
   }

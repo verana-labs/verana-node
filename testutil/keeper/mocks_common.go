@@ -78,7 +78,7 @@ type MockDelegationKeeper struct {
 
 	GrantVSOACalls  []GrantVSOACall
 	RevokeVSOACalls []uint64 // participant ids
-	UpdateVSOACalls []UpdateVSOACall
+	SyncVSOACalls   []uint64 // participant ids
 }
 
 type GrantVSOACall struct {
@@ -87,15 +87,10 @@ type GrantVSOACall struct {
 	Record        detypes.ParticipantAuthorizationRecord
 }
 
-type UpdateVSOACall struct {
-	ParticipantID uint64
-	NewExpiration *time.Time
-}
-
 func (m *MockDelegationKeeper) Reset() {
 	m.GrantVSOACalls = nil
 	m.RevokeVSOACalls = nil
-	m.UpdateVSOACalls = nil
+	m.SyncVSOACalls = nil
 }
 
 func (m *MockDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
@@ -125,10 +120,6 @@ func (m *MockDelegationKeeper) ConsumeRecordSpend(_ context.Context, _ uint64, _
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) ConsumeRecordFeeSpend(_ context.Context, _ uint64, _ string, _ uint64, _ sdk.Coins) error {
-	return m.ErrToReturn
-}
-
 func (m *MockDelegationKeeper) GrantVSOperatorAuthorization(_ context.Context, corporationID uint64, vsOperator string, record detypes.ParticipantAuthorizationRecord) error {
 	m.GrantVSOACalls = append(m.GrantVSOACalls, GrantVSOACall{CorporationID: corporationID, VsOperator: vsOperator, Record: record})
 	return m.ErrToReturn
@@ -139,7 +130,7 @@ func (m *MockDelegationKeeper) RevokeVSOperatorAuthorization(_ context.Context, 
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) UpdateVSOperatorAuthorizationExpiration(_ context.Context, participantID uint64, newExpiration *time.Time) error {
-	m.UpdateVSOACalls = append(m.UpdateVSOACalls, UpdateVSOACall{ParticipantID: participantID, NewExpiration: newExpiration})
+func (m *MockDelegationKeeper) SyncVSOperatorAuthorization(_ context.Context, participantID uint64) error {
+	m.SyncVSOACalls = append(m.SyncVSOACalls, participantID)
 	return m.ErrToReturn
 }

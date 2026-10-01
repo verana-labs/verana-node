@@ -281,51 +281,144 @@ func TestRevokeVSOperatorAuthorization(t *testing.T) {
 	require.NotEqual(t, vsoaID, newID)
 }
 
-func TestUpdateVSOperatorAuthorizationExpiration(t *testing.T) {
+// [MOD-DE-MSG-5-2] fee_spend_limit is set and strictly positive iff
+// with_feegrant; period requires spend_limit; expiration requires period.
+func TestGrantVSOperatorAuthorization_BudgetRules(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	k := f.keeper
+	vsOp := acc("vsop________________")
+	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 100))
+	period := time.Hour
+	now := ctx.BlockTime()
+
+	require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true,
+	}), types.ErrInvalidFeeSpendLimit)
+	require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true,
+		FeeSpendLimit: sdk.Coins{sdk.NewInt64Coin("uvna", 0)},
+	}), types.ErrInvalidFeeSpendLimit)
+	require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS}, FeeSpendLimit: spend,
+	}), types.ErrInvalidFeeSpendLimit)
+	require.ErrorContains(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS}, Period: &period,
+	}), "period requires spend_limit")
+	require.ErrorContains(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS}, SpendLimit: spend, Expiration: &now,
+	}), "expiration requires period")
+
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
+		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: spend,
+		SpendLimit: spend, Period: &period,
+	}))
+}
+
+// [MOD-DE-MSG-9] Sync starts the operation cycle once, and recomputes.
+func TestSyncVSOperatorAuthorization(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	now := ctx.BlockTime()
+	period := 48 * time.Hour
+	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 100))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtValidated}, Expiration: &now}))
-
-	future := now.Add(48 * time.Hour)
-	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 10, &future))
+		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtValidated}, SpendLimit: spend, Period: &period}))
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtValidated}}))
 	vsoaID, _ := k.VSOAByParticipant.Get(ctx, 10)
+
+	require.NoError(t, k.SyncVSOperatorAuthorization(ctx, 10))
 	vsoa, _ := k.VSOperatorAuthorizations.Get(ctx, vsoaID)
 	require.NotNil(t, vsoa.Records[0].Expiration)
-	require.True(t, vsoa.Records[0].Expiration.Equal(future))
+	require.True(t, vsoa.Records[0].Expiration.Equal(now.Add(period)))
 
-	// A nil expiration marks the record as never-expiring.
-	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 10, nil))
+	// A second sync leaves a started cycle alone.
+	later := ctx.WithBlockTime(now.Add(time.Hour))
+	require.NoError(t, k.SyncVSOperatorAuthorization(later, 10))
 	vsoa, _ = k.VSOperatorAuthorizations.Get(ctx, vsoaID)
-	require.Nil(t, vsoa.Records[0].Expiration)
+	require.True(t, vsoa.Records[0].Expiration.Equal(now.Add(period)))
+
+	// No period: no cycle.
+	require.NoError(t, k.SyncVSOperatorAuthorization(ctx, 11))
+	vsoa, _ = k.VSOperatorAuthorizations.Get(ctx, vsoaID)
+	require.Nil(t, vsoa.Records[1].Expiration)
 
 	// No-op when no record exists.
-	require.NoError(t, k.UpdateVSOperatorAuthorizationExpiration(ctx, 999, &future))
+	require.NoError(t, k.SyncVSOperatorAuthorization(ctx, 999))
 }
 
-// [MOD-DE-MSG-5-5] Recompute drives the chain-level fee allowance from records.
-func TestRecomputeFeeAllowance(t *testing.T) {
+// [MOD-DE-MSG-5-5] The allowance is a PeriodicAllowance over the union of the
+// live feegrant records' msg_types, capped at the sum of their fee_spend_limit.
+func TestRecomputeFeeAllowance_Sum(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	corpID := uint64(1)
 	vsOp := acc("vsop________________")
 	now := ctx.BlockTime()
-	future := now.Add(24 * time.Hour)
+	f.participants.views[12] = types.ParticipantView{}             // pending
+	f.participants.views[13] = types.ParticipantView{Future: true} // future counts
 
-	// A with_feegrant record with a future expiration grants the allowance.
+	fee := func(n int64) sdk.Coins { return sdk.NewCoins(sdk.NewInt64Coin("uvna", n)) }
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, Expiration: &future}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee(5)}))
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtValidated, mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee(3)}))
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee(100)}))
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 13, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee(2)}))
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 14, MsgTypes: []string{mtCSPS}}))
+
+	fg, err := k.FeeGrants.Get(ctx, collections.Join(corpID, vsOp))
+	require.NoError(t, err)
+	require.Equal(t, fee(10), fg.SpendLimit)
+	require.NotNil(t, fg.Period)
+	require.Equal(t, types.DefaultVsOperatorFeePeriod, *fg.Period)
+	require.NotNil(t, fg.Expiration)
+	require.True(t, fg.Expiration.Equal(now.Add(types.DefaultVsOperatorFeePeriod)))
+	require.ElementsMatch(t, []string{mtCSPS, mtValidated}, fg.MsgTypes)
+
+	// Pending entries contribute nothing: with only 12 left, the allowance goes.
+	for _, id := range []uint64{10, 11, 13, 14} {
+		require.NoError(t, k.RevokeVSOperatorAuthorization(ctx, id))
+	}
 	has, err := k.FeeGrants.Has(ctx, collections.Join(corpID, vsOp))
 	require.NoError(t, err)
-	require.True(t, has)
-
-	// Revoking it removes the allowance.
-	require.NoError(t, k.RevokeVSOperatorAuthorization(ctx, 10))
-	has, err = k.FeeGrants.Has(ctx, collections.Join(corpID, vsOp))
-	require.NoError(t, err)
 	require.False(t, has)
+}
+
+// [MOD-DE-MSG-5-5] A feegrant entry with an effective_until is scheduled in the
+// window-end queue; a non-feegrant one, or one without a window end, is not.
+func TestRecomputeFeeAllowance_QueuesWindowEnd(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	k := f.keeper
+	vsOp := acc("vsop________________")
+	until := ctx.BlockTime().Add(72 * time.Hour)
+	f.participants.views[10] = types.ParticipantView{Active: true, EffectiveUntil: &until}
+	f.participants.views[12] = types.ParticipantView{Active: true, EffectiveUntil: &until}
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uvna", 5))
+
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee}))
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee}))
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []string{mtCSPS}}))
+
+	has, err := k.WindowEndQueue.Has(ctx, collections.Join(until, uint64(10)))
+	require.NoError(t, err)
+	require.True(t, has)
+	has, err = k.WindowEndQueue.Has(ctx, collections.Join(until, uint64(12)))
+	require.NoError(t, err)
+	require.False(t, has, "non-feegrant records do not affect the allowance")
+	n := 0
+	require.NoError(t, k.WindowEndQueue.Walk(ctx, nil, func(_ collections.Pair[time.Time, uint64]) (bool, error) {
+		n++
+		return false, nil
+	}))
+	require.Equal(t, 1, n)
 }
 
 func TestQueriesNotFound(t *testing.T) {

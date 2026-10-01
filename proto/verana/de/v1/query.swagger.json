@@ -297,6 +297,12 @@
     },
     "verana.de.v1.Params": {
       "type": "object",
+      "properties": {
+        "vs_operator_fee_period": {
+          "type": "string",
+          "description": "vs_operator_fee_period is the network-wide cycle of the aggregate VS\noperator fee allowance; each record's fee_spend_limit is a budget per period."
+        }
+      },
       "description": "Params defines the parameters for the module."
     },
     "verana.de.v1.ParticipantAuthorizationRecord": {
@@ -336,15 +342,7 @@
             "type": "object",
             "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
           },
-          "description": "fee_spend_limit is the maximum total amount of transaction fees that can be\nspent by vs_operator."
-        },
-        "remaining_fee_spend": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
-          },
-          "description": "remaining_fee_spend is the runtime balance for fee_spend_limit. Present iff\nfee_spend_limit is set."
+          "description": "fee_spend_limit is this record's contribution to the aggregate fee\nallowance of vs_operator, per Params.vs_operator_fee_period. Set iff\nwith_feegrant is true; every amount is strictly positive."
         },
         "with_feegrant": {
           "type": "boolean",
@@ -353,11 +351,11 @@
         "expiration": {
           "type": "string",
           "format": "date-time",
-          "description": "expiration is the authorization window boundary. A record created before\nvalidation is disabled with expiration = now()."
+          "description": "expiration is the end of the current operation-budget cycle. Set iff period\nis set and the cycle has started; it carries no window semantics."
         },
         "period": {
           "type": "string",
-          "description": "period is the reset period for spend_limit and fee_spend_limit."
+          "description": "period is the length of the operation-budget cycle for spend_limit."
         }
       },
       "description": "ParticipantAuthorizationRecord is a per-participant VS-operator authorization\nnested inside a VSOperatorAuthorization. Keyed by participant_id, which is\nglobally unique across all records of all VSOperatorAuthorizations."
