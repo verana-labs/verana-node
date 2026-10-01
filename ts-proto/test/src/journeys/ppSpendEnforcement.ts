@@ -29,6 +29,7 @@ import {
   generateUniqueDID,
   fundAccount,
   config,
+  connectRpc,
 } from "../helpers/client";
 import { typeUrls } from "../helpers/registry";
 import { IssuerOnboardingMode } from "../../../src/codec/verana/cs/v1/types";
@@ -41,7 +42,6 @@ import { createPermPrerequisites, createRootPermWithOperator, createCSWithOperat
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { connectComet } from "@cosmjs/tendermint-rpc";
 import type { SigningStargateClient } from "@cosmjs/stargate";
 
 const COOLUSER_MNEMONIC =
@@ -147,7 +147,7 @@ async function reGrantWithSpendLimit(
 
 /** Reads the operator's remaining_spend (in config.denom) from the DE module. */
 async function queryRemainingSpend(operator: string): Promise<bigint> {
-  const cometClient = await connectComet(config.rpcEndpoint);
+  const cometClient = await connectRpc();
   try {
     const queryClient = new QueryClient(cometClient as any);
     const rpc = createProtobufRpcClient(queryClient);

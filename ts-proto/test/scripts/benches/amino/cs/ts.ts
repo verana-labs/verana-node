@@ -2,6 +2,7 @@ import { Secp256k1HdWallet, makeSignDoc, serializeSignDoc } from "@cosmjs/amino"
 import { Secp256k1, Secp256k1Signature, sha256 } from "@cosmjs/crypto";
 import { fromBase64, toHex } from "@cosmjs/encoding";
 import { StargateClient } from "@cosmjs/stargate";
+import { Comet38Client } from "@cosmjs/tendermint-rpc";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,7 +67,7 @@ async function main() {
   let accountNumber = 0;
   let sequence = 111;
   try {
-    const queryClient = await StargateClient.connect(RPC_ENDPOINT);
+    const queryClient = await StargateClient.create(await Comet38Client.connect(RPC_ENDPOINT));
     ({ accountNumber, sequence } = await queryClient.getSequence(account.address));
     queryClient.disconnect();
     console.log(
