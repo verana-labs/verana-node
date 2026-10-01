@@ -7,6 +7,7 @@ import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Secp256k1HdWallet } from "@cosmjs/amino";
 import { SigningStargateClient, StargateClient, GasPrice, calculateFee, DeliverTxResponse } from "@cosmjs/stargate";
 import { stringToPath } from "@cosmjs/crypto";
+import { Comet38Client } from "@cosmjs/tendermint-rpc";
 import { createVeranaRegistry } from "./registry";
 import { createVeranaAminoTypes } from "../../../src/signing";
 
@@ -151,8 +152,8 @@ export async function createSigningClient(
           clientOptions.aminoTypes = createVeranaAminoTypes();
         }
 
-        const client = await SigningStargateClient.connectWithSigner(
-          config.rpcEndpoint,
+        const client = await SigningStargateClient.createWithSigner(
+          await connectRpc(),
           wallet,
           clientOptions
         );
@@ -184,7 +185,13 @@ export async function createSigningClient(
  * Creates a query-only client (no signing capability).
  */
 export async function createQueryClient(): Promise<StargateClient> {
-  return StargateClient.connect(config.rpcEndpoint);
+  return StargateClient.create(await connectRpc());
+}
+
+// cosmjs connectComet does not recognise CometBFT 0.39 and falls back to an
+// older adaptor; 0.39 keeps the 0.38 RPC format, so pin that client.
+export async function connectRpc(): Promise<Comet38Client> {
+  return Comet38Client.connect(config.rpcEndpoint);
 }
 
 /**
@@ -468,8 +475,8 @@ export async function fundAccount(
   // are structurally identical but nominally distinct; cast through `any` to
   // bridge them. This duplication is a Node module-resolution artefact only —
   // there is exactly one Registry implementation at runtime.
-  const directClient = await SigningStargateClient.connectWithSigner(
-    config.rpcEndpoint,
+  const directClient = await SigningStargateClient.createWithSigner(
+    await connectRpc(),
     directWallet,
     {
       registry: registry as any,

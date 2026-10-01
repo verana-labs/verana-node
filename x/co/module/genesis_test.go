@@ -4,20 +4,19 @@ import (
 	"encoding/json"
 	"testing"
 
-	"cosmossdk.io/log"
-	"cosmossdk.io/store"
-	"cosmossdk.io/store/metrics"
-	storetypes "cosmossdk.io/store/types"
+	"cosmossdk.io/log/v2"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
+	"github.com/cosmos/cosmos-sdk/store/v2"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	"github.com/stretchr/testify/require"
+	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
 
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 
@@ -44,7 +43,7 @@ func TestAppModuleBasic_TrivialMethods(t *testing.T) {
 func TestAppModule_InitExportGenesis(t *testing.T) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 	db := dbm.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
+	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
 	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, stateStore.LoadLatestVersion())
 	cdc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
@@ -52,14 +51,14 @@ func TestAppModule_InitExportGenesis(t *testing.T) {
 	// Build a GF keeper too (its concrete is required by the InitGenesis chain
 	// indirectly — but only the CO keeper runs here).
 	gfStoreKey := storetypes.NewKVStoreKey(gftypes.StoreKey)
-	gfStateStore := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
+	gfStateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
 	gfStateStore.MountStoreWithDB(gfStoreKey, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, gfStateStore.LoadLatestVersion())
 
 	// Build a DE keeper too: MOD-CO wires it post-construction via the #308
 	// cycle break (in.DeKeeper.SetCorporationKeeper), so it must be a real keeper.
 	deStoreKey := storetypes.NewKVStoreKey(detypes.StoreKey)
-	deStateStore := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
+	deStateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
 	deStateStore.MountStoreWithDB(deStoreKey, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, deStateStore.LoadLatestVersion())
 	addrCodec := addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix())
@@ -94,7 +93,7 @@ func TestProvideModule_CustomAuthority(t *testing.T) {
 	gfStoreKey := storetypes.NewKVStoreKey(gftypes.StoreKey)
 	deStoreKey := storetypes.NewKVStoreKey(detypes.StoreKey)
 	db := dbm.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
+	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
 	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(gfStoreKey, storetypes.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(deStoreKey, storetypes.StoreTypeIAVL, db)

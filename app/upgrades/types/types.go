@@ -1,14 +1,14 @@
 package types
 
 import (
-	store "cosmossdk.io/store/types"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	store "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	credentialschemakeeper "github.com/verana-labs/verana-node/x/cs/keeper"
 	ecosystem "github.com/verana-labs/verana-node/x/ec/keeper"
 	participant "github.com/verana-labs/verana-node/x/pp/keeper"

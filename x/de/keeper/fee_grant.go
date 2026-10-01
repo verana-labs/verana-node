@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"cosmossdk.io/collections"
-	feegrant "cosmossdk.io/x/feegrant"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	feegrant "github.com/cosmos/cosmos-sdk/x/feegrant"
 
 	"github.com/verana-labs/verana-node/x/de/types"
 )

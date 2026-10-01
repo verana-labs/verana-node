@@ -8,7 +8,7 @@ import (
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/depinject"
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -16,8 +16,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
 
 	modulev1 "github.com/verana-labs/verana-node/api/verana/co/module/v1"
 	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"

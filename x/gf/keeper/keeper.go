@@ -6,7 +6,7 @@ import (
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/store"
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -65,13 +65,13 @@ func NewKeeper(
 
 	sb := collections.NewSchemaBuilder(storeService)
 	k := Keeper{
-		cdc:          cdc,
-		storeService: storeService,
-		authority:    authority,
-		logger:       logger,
-		Params:       collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
-		GFVersion:    collections.NewMap(sb, types.GovernanceFrameworkVersionKey, "gf_version", collections.Uint64Key, codec.CollValue[types.GovernanceFrameworkVersion](cdc)),
-		GFDocument:   collections.NewMap(sb, types.GovernanceFrameworkDocumentKey, "gf_document", collections.Uint64Key, codec.CollValue[types.GovernanceFrameworkDocument](cdc)),
+		cdc:                    cdc,
+		storeService:           storeService,
+		authority:              authority,
+		logger:                 logger,
+		Params:                 collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		GFVersion:              collections.NewMap(sb, types.GovernanceFrameworkVersionKey, "gf_version", collections.Uint64Key, codec.CollValue[types.GovernanceFrameworkVersion](cdc)),
+		GFDocument:             collections.NewMap(sb, types.GovernanceFrameworkDocumentKey, "gf_document", collections.Uint64Key, codec.CollValue[types.GovernanceFrameworkDocument](cdc)),
 		GFVersionByEcosystem:   collections.NewMap(sb, types.GFVersionByEcosystemKey, "gf_version_by_ecosystem", collections.PairKeyCodec(collections.Uint64Key, collections.Uint32Key), collections.Uint64Value),
 		GFVersionByCorporation: collections.NewMap(sb, types.GFVersionByCorporationKey, "gf_version_by_corporation", collections.PairKeyCodec(collections.Uint64Key, collections.Uint32Key), collections.Uint64Value),
 		GFDocumentByGFVLang:    collections.NewMap(sb, types.GFDocumentByGFVLangKey, "gf_document_by_gfv_lang", collections.PairKeyCodec(collections.Uint64Key, collections.StringKey), collections.Uint64Value),

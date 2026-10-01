@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	feegrant "cosmossdk.io/x/feegrant"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	feegrant "github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	"github.com/verana-labs/verana-node/testharness/lib"

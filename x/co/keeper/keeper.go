@@ -6,7 +6,7 @@ import (
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/store"
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -19,12 +19,12 @@ type Keeper struct {
 	logger       log.Logger
 	authority    string
 
-	Schema                    collections.Schema
-	Params                    collections.Item[types.Params]
-	Corporation               collections.Map[uint64, types.Corporation]
-	CorporationByPolicyAddr   collections.Map[string, uint64]
-	CorporationByDID          collections.Map[string, uint64]
-	Counter                   collections.Map[string, uint64]
+	Schema                  collections.Schema
+	Params                  collections.Item[types.Params]
+	Corporation             collections.Map[uint64, types.Corporation]
+	CorporationByPolicyAddr collections.Map[string, uint64]
+	CorporationByDID        collections.Map[string, uint64]
+	Counter                 collections.Map[string, uint64]
 
 	delegationKeeper types.DelegationKeeper
 	groupKeeper      types.GroupKeeper
@@ -50,12 +50,12 @@ func NewKeeper(
 
 	sb := collections.NewSchemaBuilder(storeService)
 	k := Keeper{
-		cdc:          cdc,
-		storeService: storeService,
-		logger:       logger,
-		authority:    authority,
-		Params:       collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
-		Corporation:  collections.NewMap(sb, types.CorporationKey, "corporation", collections.Uint64Key, codec.CollValue[types.Corporation](cdc)),
+		cdc:                     cdc,
+		storeService:            storeService,
+		logger:                  logger,
+		authority:               authority,
+		Params:                  collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		Corporation:             collections.NewMap(sb, types.CorporationKey, "corporation", collections.Uint64Key, codec.CollValue[types.Corporation](cdc)),
 		CorporationByPolicyAddr: collections.NewMap(sb, types.CorporationByPolicyAddressKey, "corporation_by_policy_addr", collections.StringKey, collections.Uint64Value),
 		CorporationByDID:        collections.NewMap(sb, types.CorporationByDIDKey, "corporation_by_did", collections.StringKey, collections.Uint64Value),
 		Counter:                 collections.NewMap(sb, types.CounterKey, "counter", collections.StringKey, collections.Uint64Value),
