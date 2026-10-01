@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -23,11 +23,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	icagenesistypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/genesis/types"
-	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+	icagenesistypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/genesis/types"
+	icatypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/types"
 	"github.com/stretchr/testify/require"
+	"github.com/verana-labs/cosmos-group"
 
 	"github.com/verana-labs/verana-node/app"
 	poakeeper "github.com/verana-labs/verana-node/x/poa/keeper"
@@ -36,7 +36,7 @@ import (
 
 func newTestApp(t *testing.T) *app.App {
 	t.Helper()
-	a, err := app.New(log.NewNopLogger(), dbm.NewMemDB(), nil, true,
+	a, err := app.New(log.NewNopLogger(), dbm.NewMemDB(), true,
 		simtestutil.NewAppOptionsWithFlagHome(t.TempDir()), baseapp.SetChainID("council-test"))
 	require.NoError(t, err)
 	return a

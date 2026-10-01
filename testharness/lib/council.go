@@ -7,9 +7,9 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosaccount"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
+	"github.com/verana-labs/cosmos-group"
 
 	poatypes "github.com/verana-labs/verana-node/x/poa/types"
 )

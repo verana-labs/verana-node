@@ -7,8 +7,8 @@ import (
 	"cosmossdk.io/depinject/appconfig"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
 
 	"github.com/verana-labs/verana-node/x/poa/keeper"
 	"github.com/verana-labs/verana-node/x/poa/types"

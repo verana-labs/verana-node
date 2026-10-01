@@ -9,9 +9,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	"github.com/stretchr/testify/require"
+	"github.com/verana-labs/cosmos-group"
+	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
 
 	"github.com/verana-labs/verana-node/x/poa/types"
 )

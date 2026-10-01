@@ -20,7 +20,7 @@ jobs:
       - name: Set up Go environment
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
-          go-version: 1.26.4
+          go-version: 1.26.8
 
       - name: Display go version
         run: go version
@@ -41,7 +41,7 @@ jobs:
       - name: Set up Go environment
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
-          go-version: 1.26.4
+          go-version: 1.26.8
 
       # Compile veranad up front so a build break fails fast and cheaply,
       # before spending time on the Docker image build and the harness run.
@@ -109,9 +109,9 @@ jobs:
             /bin/bash -lc 'set -e
               # veranad is already baked into the image from the build-veranad job.
               # Go is still needed here because the harness journeys run via
-              # "go run cmd/main.go"; the distro golang is too old, so fetch 1.26.4.
+              # "go run cmd/main.go"; the distro golang is too old, so fetch 1.26.8.
               if ! command -v go >/dev/null 2>&1; then
-                GO_VERSION="1.26.4"
+                GO_VERSION="1.26.8"
                 curl -fsSL --retry 5 --retry-delay 3 --retry-all-errors "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -o /tmp/go.tgz
                 rm -rf /usr/local/go
                 tar -C /usr/local -xzf /tmp/go.tgz
@@ -178,7 +178,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
-          go-version: '1.26.4'
+          go-version: '1.26.8'
           # Repo is checked out into ./verana, so point the cache key at its go.sum.
           cache-dependency-path: ${{ env.VERANA_BLOCKCHAIN_PATH }}/go.sum
 

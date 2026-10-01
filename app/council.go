@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/verana-labs/cosmos-group"
 
 	poaante "github.com/verana-labs/verana-node/x/poa/ante"
 	poatypes "github.com/verana-labs/verana-node/x/poa/types"

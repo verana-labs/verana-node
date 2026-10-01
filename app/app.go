@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 
@@ -23,35 +22,31 @@ import (
 	_ "github.com/verana-labs/verana-node/x/td/module"  // import for side-effects
 	xrmodulekeeper "github.com/verana-labs/verana-node/x/xr/keeper"
 
-	upgradetypes "cosmossdk.io/x/upgrade/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/verana-labs/verana-node/app/upgrades"
 
 	_ "cosmossdk.io/api/cosmos/tx/config/v1" // import for side-effects
 	clienthelpers "cosmossdk.io/client/v2/helpers"
 	"cosmossdk.io/depinject"
-	"cosmossdk.io/log"
-	storetypes "cosmossdk.io/store/types"
-	_ "cosmossdk.io/x/circuit" // import for side-effects
-	circuitkeeper "cosmossdk.io/x/circuit/keeper"
-	_ "cosmossdk.io/x/evidence" // import for side-effects
-	evidencekeeper "cosmossdk.io/x/evidence/keeper"
-	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
-	_ "cosmossdk.io/x/feegrant/module" // import for side-effects
-	nftkeeper "cosmossdk.io/x/nft/keeper"
-	_ "cosmossdk.io/x/nft/module" // import for side-effects
-	_ "cosmossdk.io/x/upgrade"    // import for side-effects
-	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
+	"cosmossdk.io/log/v2"
 	abci "github.com/cometbft/cometbft/abci/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	_ "github.com/cosmos/cosmos-sdk/contrib/x/circuit" // import for side-effects
+	circuitkeeper "github.com/cosmos/cosmos-sdk/contrib/x/circuit/keeper"
+	_ "github.com/cosmos/cosmos-sdk/contrib/x/crisis" // import for side-effects
+	crisiskeeper "github.com/cosmos/cosmos-sdk/contrib/x/crisis/keeper"
+	nftkeeper "github.com/cosmos/cosmos-sdk/contrib/x/nft/keeper"
+	_ "github.com/cosmos/cosmos-sdk/contrib/x/nft/module" // import for side-effects
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -66,15 +61,15 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/consensus" // import for side-effects
 	consensuskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
-	_ "github.com/cosmos/cosmos-sdk/x/crisis" // import for side-effects
-	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/distribution" // import for side-effects
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
+	_ "github.com/cosmos/cosmos-sdk/x/evidence" // import for side-effects
+	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	_ "github.com/cosmos/cosmos-sdk/x/feegrant/module" // import for side-effects
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
-	_ "github.com/cosmos/cosmos-sdk/x/group/module" // import for side-effects
-	_ "github.com/cosmos/cosmos-sdk/x/mint"         // import for side-effects
+	_ "github.com/cosmos/cosmos-sdk/x/mint" // import for side-effects
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/params" // import for side-effects
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
@@ -83,15 +78,15 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/staking" // import for side-effects
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	_ "github.com/cosmos/ibc-go/modules/capability" // import for side-effects
-	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
-	_ "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts" // import for side-effects
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
-	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
-	_ "github.com/cosmos/ibc-go/v8/modules/apps/29-fee" // import for side-effects
-	ibcfeekeeper "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/keeper"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	_ "github.com/cosmos/cosmos-sdk/x/upgrade" // import for side-effects
+	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
+	_ "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts" // import for side-effects
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/controller/keeper"
+	icahostkeeper "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/host/keeper"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v11/modules/apps/transfer/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v11/modules/core/keeper"
+	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
+	_ "github.com/verana-labs/cosmos-group/module" // import for side-effects
 
 	comodulekeeper "github.com/verana-labs/verana-node/x/co/keeper"
 	ecmodulekeeper "github.com/verana-labs/verana-node/x/ec/keeper"
@@ -156,18 +151,9 @@ type App struct {
 
 	// IBC
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	CapabilityKeeper    *capabilitykeeper.Keeper
-	IBCFeeKeeper        ibcfeekeeper.Keeper
-	ICAControllerKeeper icacontrollerkeeper.Keeper
-	ICAHostKeeper       icahostkeeper.Keeper
-	TransferKeeper      ibctransferkeeper.Keeper
-
-	// Scoped IBC
-	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
-	ScopedIBCTransferKeeper   capabilitykeeper.ScopedKeeper
-	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
-	ScopedKeepers             map[string]capabilitykeeper.ScopedKeeper
+	ICAControllerKeeper *icacontrollerkeeper.Keeper
+	ICAHostKeeper       *icahostkeeper.Keeper
+	TransferKeeper      *ibctransferkeeper.Keeper
 
 	EcosystemKeeper        ecmodulekeeper.Keeper
 	CoKeeper               comodulekeeper.Keeper
@@ -239,13 +225,12 @@ func (app *App) GetAccountKeeper() authkeeper.AccountKeeper {
 func New(
 	logger log.Logger,
 	db dbm.DB,
-	traceStore io.Writer,
 	loadLatest bool,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) (*App, error) {
 	var (
-		app        = &App{ScopedKeepers: make(map[string]capabilitykeeper.ScopedKeeper)}
+		app        = &App{}
 		appBuilder *runtime.AppBuilder
 
 		// merge the AppConfig and other configuration in one config
@@ -259,7 +244,6 @@ func New(
 				// Passing the getter, the app IBC Keeper will always be accessible.
 				// This needs to be removed after IBC supports App Wiring.
 				app.GetIBCKeeper,
-				app.GetCapabilityScopedKeeper,
 
 				// here alternative options can be supplied to the DI container.
 				// those options can be used f.e to override the default behavior of some modules.
@@ -321,7 +305,7 @@ func New(
 	baseAppOptions = append(baseAppOptions, baseapp.SetOptimisticExecution())
 
 	// build app
-	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
+	app.App = appBuilder.Build(db, baseAppOptions...)
 
 	// register legacy modules
 	if err := app.registerIBCModules(appOpts); err != nil {
@@ -483,16 +467,6 @@ func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
 // GetIBCKeeper returns the IBC keeper.
 func (app *App) GetIBCKeeper() *ibckeeper.Keeper {
 	return app.IBCKeeper
-}
-
-// GetCapabilityScopedKeeper returns the capability scoped keeper.
-func (app *App) GetCapabilityScopedKeeper(moduleName string) capabilitykeeper.ScopedKeeper {
-	sk, ok := app.ScopedKeepers[moduleName]
-	if !ok {
-		sk = app.CapabilityKeeper.ScopeToModule(moduleName)
-		app.ScopedKeepers[moduleName] = sk
-	}
-	return sk
 }
 
 // SimulationManager implements the SimulationApp interface.

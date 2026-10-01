@@ -82,7 +82,7 @@ While Verana can run on lower-spec hardware, you may experience reduced performa
 
 ## Prerequisites
 
-- **Go 1.26.4+** ([Installation Guide](https://golang.org/doc/install))
+- **Go 1.26.8+** ([Installation Guide](https://golang.org/doc/install))
 - **Docker** (optional, for local multi-validator network)
 - **jq** (optional, for JSON parsing in scripts)
 
@@ -143,7 +143,7 @@ sudo mv ignite /usr/local/bin/ignite
 ignite version
 ```
 
-You should see Ignite CLI version `v28.x.y` and Cosmos SDK v0.50.x.
+You should see Ignite CLI version `v28.x.y` and Cosmos SDK v0.54.x.
 
 #### Generate Protobuf Files
 

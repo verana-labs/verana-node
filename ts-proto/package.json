@@ -52,8 +52,8 @@
     "typescript": "5.7.3"
   },
   "peerDependencies": {
-    "@cosmjs/proto-signing": "^0.32.3",
-    "@cosmjs/stargate": "^0.32.3"
+    "@cosmjs/proto-signing": "^0.32.3 || ^0.39.0",
+    "@cosmjs/stargate": "^0.32.3 || ^0.39.0"
   },
   "repository": {
     "type": "git",

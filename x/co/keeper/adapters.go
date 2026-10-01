@@ -3,15 +3,15 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/x/group"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
+	"github.com/verana-labs/cosmos-group"
+	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
 
 	"github.com/verana-labs/verana-node/x/co/types"
 	gfkeeper "github.com/verana-labs/verana-node/x/gf/keeper"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
-// GroupKeeperAdapter narrows the SDK's x/group keeper down to the
+// GroupKeeperAdapter narrows the x/group keeper down to the
 // types.GroupKeeper surface that MOD-CO actually uses.
 type GroupKeeperAdapter struct {
 	k groupkeeper.Keeper

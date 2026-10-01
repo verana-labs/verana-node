@@ -3,9 +3,9 @@ package app
 import (
 	"context"
 
-	feegrant "cosmossdk.io/x/feegrant"
-	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	feegrant "github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 )
 
 // deFeegrantAdapter adapts the x/feegrant keeper to MOD-DE's FeegrantKeeper; revoke routes via the msg server.

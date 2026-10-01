@@ -5,20 +5,19 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/log"
-	"cosmossdk.io/store"
-	"cosmossdk.io/store/metrics"
-	storetypes "cosmossdk.io/store/types"
+	"cosmossdk.io/log/v2"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
+	"github.com/cosmos/cosmos-sdk/store/v2"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	"github.com/stretchr/testify/require"
+	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
 
@@ -47,7 +46,7 @@ func newGFKeeperForAdapter(t *testing.T) (gfkeeper.Keeper, sdk.Context) {
 	t.Helper()
 	storeKey := storetypes.NewKVStoreKey(gftypes.StoreKey)
 	db := dbm.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
+	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
 	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, stateStore.LoadLatestVersion())
 

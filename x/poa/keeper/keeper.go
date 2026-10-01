@@ -8,8 +8,8 @@ import (
 	"cosmossdk.io/core/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/verana-labs/cosmos-group"
 
 	"github.com/verana-labs/verana-node/x/poa/types"
 )

@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
+	"github.com/verana-labs/cosmos-group"
 
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 	xrtypes "github.com/verana-labs/verana-node/x/xr/types"

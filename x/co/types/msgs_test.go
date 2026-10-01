@@ -5,8 +5,8 @@ import (
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	group "github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/stretchr/testify/require"
+	group "github.com/verana-labs/cosmos-group"
 
 	"github.com/verana-labs/verana-node/x/co/types"
 )
