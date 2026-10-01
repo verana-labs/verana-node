@@ -1,0 +1,25 @@
+syntax = "proto3";
+package verana.poa.v1;
+
+import "cosmos_proto/cosmos.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/poa/types";
+
+// Query defines the poa Query service.
+service Query {
+  // Council returns the council authority, its members, and members without a bonded validator.
+  rpc Council(QueryCouncilRequest) returns (QueryCouncilResponse) {
+    option (google.api.http).get = "/poa/v1/council";
+  }
+}
+
+message QueryCouncilRequest {}
+
+message QueryCouncilResponse {
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 group_id = 2;
+  repeated string members = 3;
+  repeated string members_without_validator = 4;
+  repeated string validators_without_seat = 5;
+}

@@ -1,0 +1,14 @@
+syntax = "proto3";
+package verana.poa.module.v1;
+
+import "cosmos/app/v1alpha1/module.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/poa/types";
+
+// Module is the config object for the module.
+message Module {
+  option (cosmos.app.v1alpha1.module) = {go_import: "github.com/verana-labs/verana-node/x/poa"};
+
+  // authority is the council policy account. Required.
+  string authority = 1;
+}
