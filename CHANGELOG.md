@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.6](https://github.com/verana-labs/verana-node/compare/v0.10.5...v0.10.6) (2026-10-06)
+
+
+### Bug Fixes
+
+* stable release ([8e6ba50](https://github.com/verana-labs/verana-node/commit/8e6ba5046a3dd154e509793f4921db09a4da5a98))
+
 ## [0.10.5](https://github.com/verana-labs/verana-node/compare/v0.10.4...v0.10.5) (2026-09-23)
 
 
