@@ -1849,6 +1849,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		existingParticipant := types.Participant{
 			SchemaId:               1,
 			Role:                   types.ParticipantRole_ISSUER,
+			Did:                    "did:example:overlap-never",
 			CorporationId:          trkKeeper.RegisterCorp(overlapAddr),
 			Created:                &now,
 			Adjusted:               &now,
@@ -1865,6 +1866,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		newParticipant := types.Participant{
 			SchemaId:               1,
 			Role:                   types.ParticipantRole_ISSUER,
+			Did:                    "did:example:overlap-never",
 			CorporationId:          trkKeeper.RegisterCorp(overlapAddr),
 			Created:                &now,
 			Adjusted:               &now,
@@ -1901,6 +1903,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		existingParticipant := types.Participant{
 			SchemaId:               1,
 			Role:                   types.ParticipantRole_ISSUER,
+			Did:                    "did:example:overlap-range",
 			CorporationId:          trkKeeper.RegisterCorp(overlapAddr2),
 			Created:                &now,
 			Adjusted:               &now,
@@ -1917,6 +1920,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		newParticipant := types.Participant{
 			SchemaId:               1,
 			Role:                   types.ParticipantRole_ISSUER,
+			Did:                    "did:example:overlap-range",
 			CorporationId:          trkKeeper.RegisterCorp(overlapAddr2),
 			Created:                &now,
 			Adjusted:               &now,

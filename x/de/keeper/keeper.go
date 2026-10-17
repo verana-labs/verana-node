@@ -42,6 +42,7 @@ type Keeper struct {
 	VSOperatorAuthorizations collections.Map[uint64, types.VSOperatorAuthorization]
 	VSOAByCorpOp             collections.Map[collections.Pair[uint64, string], uint64]
 	VSOAByParticipant        collections.Map[uint64, uint64]
+	VSOACorpByOperator       collections.Map[string, uint64]
 	VSOASeq                  collections.Sequence
 	// WindowEndQueue holds (effective_until, participant_id) due dates at which
 	// the containing VSOA's fee allowance is recomputed (MOD-DE-MSG-5-5).
@@ -100,6 +101,8 @@ func NewKeeper(
 			corpOpKeyCodec, collections.Uint64Value),
 		VSOAByParticipant: collections.NewMap(sb, types.VSOAByParticipantKey, "vsoa_by_participant",
 			collections.Uint64Key, collections.Uint64Value),
+		VSOACorpByOperator: collections.NewMap(sb, types.VSOACorpByOperatorKey, "vsoa_corp_by_operator",
+			collections.StringKey, collections.Uint64Value),
 		VSOASeq: collections.NewSequence(sb, types.VSOASeqKey, "vsoa_seq"),
 		WindowEndQueue: collections.NewKeySet(sb, types.WindowEndQueueKey, "window_end_queue",
 			collections.PairKeyCodec(sdk.TimeKey, collections.Uint64Key)),

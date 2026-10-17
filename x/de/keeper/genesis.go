@@ -52,6 +52,9 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 		if err := k.VSOAByCorpOp.Set(ctx, collections.Join(vsoa.CorporationId, vsoa.VsOperator), vsoa.Id); err != nil {
 			return fmt.Errorf("failed to set vs operator authorization index: %w", err)
 		}
+		if err := k.VSOACorpByOperator.Set(ctx, vsoa.VsOperator, vsoa.CorporationId); err != nil {
+			return fmt.Errorf("failed to set vs_operator index: %w", err)
+		}
 		for _, rec := range vsoa.Records {
 			if err := k.VSOAByParticipant.Set(ctx, rec.ParticipantId, vsoa.Id); err != nil {
 				return fmt.Errorf("failed to set participant index: %w", err)
