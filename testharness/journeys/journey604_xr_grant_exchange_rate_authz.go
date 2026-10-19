@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	xrtypes "github.com/verana-labs/verana-node/x/xr/types"
@@ -15,14 +14,13 @@ import (
 )
 
 // RunXrGrantExchangeRateAuthzJourney implements Journey 604: XR Grant Exchange Rate Authorization (governance)
-// Grants an ExchangeRateAuthorization to an operator for a specific exchange rate via gov proposal [MOD-XR-MSG-4],
+// Grants an ExchangeRateAuthorization to an operator for a specific exchange rate via council proposal [MOD-XR-MSG-4],
 // then verifies it appears in GetExchangeRate.authorizations [MOD-XR-QRY-1].
 // Depends on Journey 601 (exchange rate ID) and Journey 301 (operator).
 func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 604: XR Grant Exchange Rate Authorization via Governance")
+	fmt.Println("Starting Journey 604: XR Grant Exchange Rate Authorization via Council")
 
-	govModuleAddr := authtypes.NewModuleAddress("gov").String()
-	coolusrAddr := lib.COOLUSER_ADDRESS
+	council := lib.CouncilAuthority()
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
 
 	// =========================================================================
@@ -44,23 +42,23 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 	fmt.Println("✅ Step 1: Loaded journey results")
 
 	// =========================================================================
-	// Step 2: Submit gov proposal to grant the authorization
+	// Step 2: Submit council proposal to grant the authorization
 	// =========================================================================
-	fmt.Println("\n--- Step 2: Submit GrantExchangeRateAuthorization governance proposal ---")
+	fmt.Println("\n--- Step 2: Submit GrantExchangeRateAuthorization council proposal ---")
 
 	expiration := time.Now().Add(720 * time.Hour)
 	grantMsg := &xrtypes.MsgGrantExchangeRateAuthorization{
-		Authority:  govModuleAddr,
+		Authority:  council,
 		XrId:       exchangeRateID,
 		Operator:   operatorAddr,
 		Expiration: &expiration,
 	}
 
-	proposalID, err := submitXrGovProposal(
-		client, ctx, coolusrAddr, cooluser,
-		grantMsg,
+	proposalID, err := lib.SubmitCouncilProposal(
+		client, ctx, cooluser,
 		"Grant Exchange Rate Authorization",
 		fmt.Sprintf("Authorize operator %s to update exchange rate %d", operatorAddr, exchangeRateID),
+		grantMsg,
 	)
 	if err != nil {
 		return fmt.Errorf("step 2 failed: %w", err)
@@ -72,7 +70,7 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 	// =========================================================================
 	fmt.Println("\n--- Step 3: Vote and pass the proposal ---")
 
-	if err := voteAndPassGovProposal(client, ctx, proposalID); err != nil {
+	if err := lib.PassCouncilProposal(client, ctx, proposalID); err != nil {
 		return fmt.Errorf("step 3 failed: %w", err)
 	}
 	fmt.Println("✅ Step 3: GrantExchangeRateAuthorization proposal passed")
@@ -111,7 +109,7 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 604 completed successfully!")
-	fmt.Println("XR GrantExchangeRateAuthorization via Governance tested:")
+	fmt.Println("XR GrantExchangeRateAuthorization via Council tested:")
 	fmt.Println("  - Grant proposal submitted and passed")
 	fmt.Println("  - Authorization verified via GetExchangeRate")
 	fmt.Println("========================================")
