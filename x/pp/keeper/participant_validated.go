@@ -54,12 +54,11 @@ func (ms msgServer) checkValidatedOverlap(ctx sdk.Context, applicantParticipant 
 	now := ctx.BlockTime()
 	var conflict types.Participant
 	var found bool
-	err := ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+	err := ms.walkParticipantsByDID(ctx, applicantParticipant.Did, func(p types.Participant) (bool, error) {
 		if p.Id == applicantParticipant.Id ||
 			p.ValidatorParticipantId != applicantParticipant.ValidatorParticipantId ||
 			p.Role != applicantParticipant.Role ||
-			p.CorporationId != applicantParticipant.CorporationId ||
-			p.Did != applicantParticipant.Did {
+			p.CorporationId != applicantParticipant.CorporationId {
 			return false, nil
 		}
 		if isActiveParticipant(p, now) ||
