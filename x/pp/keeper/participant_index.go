@@ -13,6 +13,11 @@ func (k Keeper) IndexParticipant(ctx context.Context, p types.Participant) error
 	if err := k.IndexParticipantDID(ctx, p); err != nil {
 		return err
 	}
+	return k.indexParticipantLookups(ctx, p)
+}
+
+// indexParticipantLookups writes the root and unrepaid-slash rows.
+func (k Keeper) indexParticipantLookups(ctx context.Context, p types.Participant) error {
 	if p.Role == types.ParticipantRole_ECOSYSTEM {
 		if err := k.RootParticipantBySchemaCorp.Set(ctx, collections.Join3(p.SchemaId, p.CorporationId, p.Id)); err != nil {
 			return err
