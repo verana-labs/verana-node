@@ -1326,20 +1326,12 @@ func (ms msgServer) revokeVSOperatorAuthorization(ctx sdk.Context, participant t
 // corp-paid fees. The fee cap itself is enforced by the aggregate x/feegrant
 // allowance at fee-processing time. No-op when the operator pays its own fee.
 func (ms msgServer) checkVSOperatorFeeGrant(ctx sdk.Context, participantID uint64, corporation string) error {
-	dec := ms.txDecoder()
-	if dec == nil {
-		return nil
-	}
-	tx, err := dec(ctx.TxBytes())
-	if err != nil {
-		return nil
-	}
-	feeTx, ok := tx.(sdk.FeeTx)
-	if !ok || len(feeTx.FeeGranter()) == 0 {
+	granter := feeGranterFromContext(ctx)
+	if len(granter) == 0 {
 		return nil
 	}
 	corpAddr, err := sdk.AccAddressFromBech32(corporation)
-	if err != nil || !bytes.Equal(feeTx.FeeGranter(), corpAddr) {
+	if err != nil || !bytes.Equal(granter, corpAddr) {
 		return nil
 	}
 	if err := ms.delegationKeeper.CheckVSOperatorFeeGrant(ctx, participantID); err != nil {

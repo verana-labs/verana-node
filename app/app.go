@@ -315,8 +315,6 @@ func New(
 
 	// Wire the x/feegrant keeper into MOD-DE (realizes FeeGrant as an allowance).
 	app.DeKeeper.SetFeegrantKeeper(newDeFeegrantAdapter(app.FeeGrantKeeper))
-	// Wire the tx decoder into MOD-PP (AUTHZ-CHECK-4 reads the fee granter).
-	app.ParticipantKeeper.SetTxDecoder(app.txConfig.TxDecoder())
 	// Wire the MOD-PP participant view into MOD-DE (AUTHZ-CHECK-3 step 1, MOD-DE-MSG-5-5).
 	app.DeKeeper.SetParticipantKeeper(ppkeeper.NewPpAsDeParticipantKeeper(app.ParticipantKeeper))
 
@@ -326,6 +324,9 @@ func New(
 
 	// build app
 	app.App = appBuilder.Build(db, baseAppOptions...)
+
+	// MOD-PP AUTHZ-CHECK-4 reads the fee granter the ante handler stores per tx.
+	app.SetAnteHandler(ppkeeper.NewFeeGranterAnteHandler(app.AnteHandler()))
 
 	// register legacy modules
 	if err := app.registerIBCModules(appOpts); err != nil {
