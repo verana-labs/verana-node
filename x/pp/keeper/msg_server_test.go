@@ -4274,6 +4274,115 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	_ = authority // suppress unused
 }
 
+func TestSlashParticipantTrustDeposit_CumulativeBound(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, _, _, _ := setupMsgServerWithTrustDeposit(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC))
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	controller := sdk.AccAddress([]byte("test_tr_ctrl____")).String()
+	operator := sdk.AccAddress([]byte("test_operator___")).String()
+	corp := sdk.AccAddress([]byte("test_applicant__")).String()
+
+	trID := trkKeeper.CreateMockEcosystem(controller, "did:example:123456789abcdefghi")
+	csKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	corpID := trkKeeper.RegisterCorp(corp)
+
+	create := func(deposit, slashed, repaid uint64) uint64 {
+		p := types.Participant{
+			SchemaId:       1,
+			Role:           types.ParticipantRole_ISSUER,
+			CorporationId:  corpID,
+			Created:        &now,
+			Modified:       &now,
+			OpState:        types.OnboardingState_VALIDATED,
+			EffectiveFrom:  &pastTime,
+			Deposit:        deposit,
+			SlashedDeposit: slashed,
+			RepaidDeposit:  repaid,
+		}
+		if slashed > 0 {
+			p.Slashed = &pastTime
+		}
+		if repaid > 0 {
+			p.Repaid = &pastTime
+		}
+		id, err := k.CreateParticipant(sdkCtx, p)
+		require.NoError(t, err)
+		return id
+	}
+	slash := func(id, amount uint64) error {
+		_, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
+			Corporation: controller,
+			Operator:    operator,
+			Id:          id,
+			Amount:      amount,
+		})
+		return err
+	}
+	get := func(id uint64) types.Participant {
+		p, err := k.GetParticipantByID(sdkCtx, id)
+		require.NoError(t, err)
+		return p
+	}
+
+	t.Run("Second full slash rejected", func(t *testing.T) {
+		id := create(100, 0, 0)
+		require.NoError(t, slash(id, 100))
+		err := slash(id, 100)
+		require.ErrorContains(t, err, "amount exceeds available deposit: 100 > 0")
+		require.Equal(t, uint64(100), get(id).SlashedDeposit)
+	})
+
+	t.Run("Partial slashes stop at the deposit", func(t *testing.T) {
+		id := create(100, 0, 0)
+		require.NoError(t, slash(id, 60))
+		require.ErrorContains(t, slash(id, 41), "amount exceeds available deposit: 41 > 40")
+		require.NoError(t, slash(id, 40))
+		require.ErrorContains(t, slash(id, 1), "amount exceeds available deposit: 1 > 0")
+		require.Equal(t, uint64(100), get(id).SlashedDeposit)
+	})
+
+	t.Run("Repay makes the deposit slashable again", func(t *testing.T) {
+		id := create(100, 0, 0)
+		require.NoError(t, slash(id, 100))
+		_, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
+			Corporation: corp,
+			Operator:    operator,
+			Id:          id,
+		})
+		require.NoError(t, err)
+		require.NoError(t, slash(id, 100))
+		require.ErrorContains(t, slash(id, 1), "amount exceeds available deposit: 1 > 0")
+		p := get(id)
+		require.Equal(t, uint64(200), p.SlashedDeposit)
+		require.Equal(t, uint64(100), p.RepaidDeposit)
+	})
+
+	t.Run("Existing over-slashed entry", func(t *testing.T) {
+		id := create(100, 300, 0)
+		require.ErrorContains(t, slash(id, 1), "amount exceeds available deposit: 1 > 0")
+		require.Equal(t, uint64(300), get(id).SlashedDeposit)
+	})
+
+	t.Run("Existing partly repaid entry", func(t *testing.T) {
+		id := create(100, 150, 100)
+		require.ErrorContains(t, slash(id, 51), "amount exceeds available deposit: 51 > 50")
+		require.NoError(t, slash(id, 50))
+		require.Equal(t, uint64(200), get(id).SlashedDeposit)
+	})
+
+	t.Run("Repaid above slashed counts as nothing outstanding", func(t *testing.T) {
+		id := create(100, 50, 80)
+		require.ErrorContains(t, slash(id, 101), "amount exceeds available deposit: 101 > 100")
+		require.NoError(t, slash(id, 100))
+	})
+}
+
 func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 	k, ms, csKeeper, trkKeeper, ctx, delKeeper, tdKeeper, bankKeeper := setupMsgServerWithTrustDeposit(t)
 	_ = trkKeeper
