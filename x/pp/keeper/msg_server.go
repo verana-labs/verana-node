@@ -1281,22 +1281,6 @@ func (ms msgServer) checkEcosystemControllerOption(ctx sdk.Context, authority st
 
 // [MOD-PP-MSG-9-3] Revoke Participant execution
 func (ms msgServer) executeRevokeParticipant(ctx sdk.Context, participant types.Participant, now time.Time) error {
-	// Free associated trust deposit if non-zero
-	if participant.Deposit > 0 {
-		corpAcct, err := ms.corpAccountFromID(ctx, participant.CorporationId)
-		if err != nil {
-			return err
-		}
-		depositI64, err := uint64ToInt64(participant.Deposit, "revoke_release_deposit")
-		if err != nil {
-			return err
-		}
-		if err := ms.trustDeposit.AdjustTrustDeposit(ctx, corpAcct, -depositI64, "participant_revoke_release_deposit"); err != nil {
-			return fmt.Errorf("failed to release trust deposit on revocation: %w", err)
-		}
-		participant.Deposit = 0
-	}
-
 	// set applicant_participant.revoked to now
 	participant.Revoked = &now
 
