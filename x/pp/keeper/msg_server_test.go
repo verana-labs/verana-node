@@ -3329,6 +3329,28 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 	verifierParticipantID, err := k.CreateParticipant(sdkCtx, verifierParticipant)
 	require.NoError(t, err)
 
+	// Create verifier and agent participants of another schema
+	csKeeper.CreateMockCredentialSchema(2,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+	otherSchemaVerifier := verifierParticipant
+	otherSchemaVerifier.SchemaId = 2
+	otherSchemaVerifierID, err := k.CreateParticipant(sdkCtx, otherSchemaVerifier)
+	require.NoError(t, err)
+
+	otherSchemaAgent := types.Participant{
+		SchemaId:      2,
+		Role:          types.ParticipantRole_ISSUER,
+		CorporationId: trkKeeper.RegisterCorp(otherAuthority),
+		Created:       &now,
+		Adjusted:      &now,
+		Modified:      &now,
+		OpState:       types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime,
+	}
+	otherSchemaAgentID, err := k.CreateParticipant(sdkCtx, otherSchemaAgent)
+	require.NoError(t, err)
+
 	// Create agent participant
 	agentParticipant := types.Participant{
 		SchemaId:               1,
@@ -3545,6 +3567,46 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 				VerifierParticipantId:    0,
 				AgentParticipantId:       agentParticipantID,
 				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr: false,
+		},
+		{
+			name: "Happy path with issuer and verifier",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantID,
+				VerifierParticipantId:    verifierParticipantID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr: false,
+		},
+		{
+			name: "Issuer and verifier schema mismatch",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantID,
+				VerifierParticipantId:    otherSchemaVerifierID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr:  true,
+			errMessage: "verifier participant schema does not match issuer participant schema",
+		},
+		{
+			name: "Agent participants of another schema",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantID,
+				VerifierParticipantId:    verifierParticipantID,
+				AgentParticipantId:       otherSchemaAgentID,
+				WalletAgentParticipantId: otherSchemaAgentID,
 			},
 			expectErr: false,
 		},

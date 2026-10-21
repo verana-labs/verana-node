@@ -111,6 +111,11 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 			return fmt.Errorf("verifier participant is not valid: %w", err)
 		}
 
+		// if issuer_participant is not null and verifier_participant.schema_id != issuer_participant.schema_id, abort
+		if hasIssuer && verifierParticipant.SchemaId != issuerParticipant.SchemaId {
+			return fmt.Errorf("verifier participant schema does not match issuer participant schema")
+		}
+
 		// if verifier_participant.vs_operator is not equal to operator, abort
 		if verifierParticipant.VsOperator != msg.Operator {
 			return fmt.Errorf("verifier participant vs_operator does not match operator")
