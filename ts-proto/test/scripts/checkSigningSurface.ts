@@ -56,6 +56,33 @@ assert.equal(deRoundTrip.authzSpendLimitPeriod?.nanos, 5);
 assert.equal(deRoundTrip.withFeegrant, true);
 assert.equal(deRoundTrip.feegrantSpendLimitPeriod?.seconds, 7200);
 
+// The chain's aminojson writes a Duration as a string of total nanoseconds
+// (x/tx/signing/aminojson marshalDuration). The sign bytes break if this drifts
+// back to a {seconds, nanos} object, so pin the wire shape, not just the
+// round trip.
+const deAmino = deConverter.toAmino(deMsg);
+assert.equal(deAmino.authz_spend_limit_period, "3600000000005");
+assert.equal(deAmino.feegrant_spend_limit_period, "7200000000000");
+
+// A one-year period is past 2^53 nanoseconds, so the conversion has to keep
+// 64-bit precision instead of going through a JS number.
+const deLongPeriod = deConverter.toAmino(
+  MsgGrantOperatorAuthorization.fromPartial({
+    authzSpendLimitPeriod: { seconds: 31536000, nanos: 0 },
+  }),
+);
+assert.equal(deLongPeriod.authz_spend_limit_period, "31536000000000000");
+
+// A period that is set but zero is still written; only an absent one is omitted.
+const deZeroPeriod = deConverter.toAmino(
+  MsgGrantOperatorAuthorization.fromPartial({ authzSpendLimitPeriod: { seconds: 0, nanos: 0 } }),
+);
+assert.equal(deZeroPeriod.authz_spend_limit_period, "0");
+assert.ok(
+  !("authz_spend_limit_period" in deConverter.toAmino(MsgGrantOperatorAuthorization.fromPartial({}))),
+  "an absent period must not be written",
+);
+
 const diConverter = amino.register[veranaTypeUrls.MsgStoreDigest];
 const diMsg = MsgStoreDigest.fromPartial({
   corporation: "verana1corp0000000000000000000000000000000000",
