@@ -75,6 +75,9 @@ type MockDelegationKeeper struct {
 	// operator path to fail to exercise the vs-operator delegation path).
 	OperatorAuthErr   error
 	VSOperatorAuthErr error
+	FeeGrantErr       error
+
+	FeeGrantCheckCalls []uint64 // participant ids
 
 	GrantVSOACalls  []GrantVSOACall
 	RevokeVSOACalls []uint64 // participant ids
@@ -88,6 +91,7 @@ type GrantVSOACall struct {
 }
 
 func (m *MockDelegationKeeper) Reset() {
+	m.FeeGrantCheckCalls = nil
 	m.GrantVSOACalls = nil
 	m.RevokeVSOACalls = nil
 	m.SyncVSOACalls = nil
@@ -107,7 +111,11 @@ func (m *MockDelegationKeeper) CheckVSOperatorAuthorizationOnParticipant(_ conte
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) CheckVSOperatorFeeGrant(_ context.Context, _ uint64) error {
+func (m *MockDelegationKeeper) CheckVSOperatorFeeGrant(_ context.Context, participantID uint64) error {
+	m.FeeGrantCheckCalls = append(m.FeeGrantCheckCalls, participantID)
+	if m.FeeGrantErr != nil {
+		return m.FeeGrantErr
+	}
 	return m.ErrToReturn
 }
 
