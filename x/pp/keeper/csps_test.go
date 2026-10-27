@@ -1257,3 +1257,212 @@ func TestParticipantSession_FiatPricing(t *testing.T) {
 	require.Equal(t, int64(20), tdKeeper.GetTotalAdjustment(ecosystem), "beneficiary trust deposit staked in native")
 	require.Equal(t, int64(20), tdKeeper.GetTotalAdjustment(creator), "payer trust deposit staked in native")
 }
+
+// TestParticipantSession_CrossSchemaIssuer: a verification that references an
+// issuer entry of another schema MUST abort, for a new session and for an update.
+func TestParticipantSession_CrossSchemaIssuer(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, bankKeeper, tdKeeper, ctx := setupTrackingMsgServer(t, "0", "0", "0.2")
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	const pricingCoin = "uusdc"
+
+	corp := sdk.AccAddress([]byte("xs_corp_____________")).String()
+	eco1 := sdk.AccAddress([]byte("xs_ecosystem_one____")).String()
+	eco2 := sdk.AccAddress([]byte("xs_ecosystem_two____")).String()
+	bankKeeper.SetBalance(corp, sdk.NewCoins(
+		sdk.NewInt64Coin(types.BondDenom, 100000),
+		sdk.NewInt64Coin(pricingCoin, 100000),
+	))
+
+	// S1 is priced in the native denom, S2 in uusdc.
+	ec1 := trkKeeper.CreateMockEcosystem(eco1, "did:example:xs1")
+	ec2 := trkKeeper.CreateMockEcosystem(eco2, "did:example:xs2")
+	csKeeper.UpdateMockCredentialSchema(1, ec1,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+	csKeeper.UpdateMockCredentialSchema(2, ec2,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+	csKeeper.SetPricing(2, cstypes.PricingAssetType_COIN, pricingCoin)
+
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+
+	root1ID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM,
+		CorporationId: trkKeeper.RegisterCorp(eco1),
+		Created:       &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, VerificationFees: 20, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+	root2ID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 2, Role: types.ParticipantRole_ECOSYSTEM,
+		CorporationId: trkKeeper.RegisterCorp(eco2),
+		Created:       &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, VerificationFees: 20, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+
+	// Same corporation and vs_operator for both entries.
+	issuerS1ID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ISSUER,
+		CorporationId: trkKeeper.RegisterCorp(corp),
+		Created:       &now, Modified: &now,
+		ValidatorParticipantId: root1ID,
+		OpState:                types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime, VsOperator: corp,
+	})
+	require.NoError(t, err)
+	verifierS2ID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 2, Role: types.ParticipantRole_VERIFIER,
+		CorporationId: trkKeeper.RegisterCorp(corp),
+		Created:       &now, Modified: &now,
+		ValidatorParticipantId: root2ID,
+		OpState:                types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime, VsOperator: corp,
+	})
+	require.NoError(t, err)
+
+	crossSchema := func(id string) *types.MsgCreateOrUpdateParticipantSession {
+		return &types.MsgCreateOrUpdateParticipantSession{
+			Corporation:           corp,
+			Operator:              corp,
+			Id:                    id,
+			IssuerParticipantId:   issuerS1ID,
+			VerifierParticipantId: verifierS2ID,
+		}
+	}
+
+	t.Run("New session aborts", func(t *testing.T) {
+		sessionID := uuid.New().String()
+		transfers, moduleTransfers := len(bankKeeper.TransferLog), len(bankKeeper.ModuleTransferLog)
+		events := len(sdkCtx.EventManager().Events())
+
+		_, err := ms.CreateOrUpdateParticipantSession(ctx, crossSchema(sessionID))
+		require.ErrorContains(t, err, "verifier participant schema does not match issuer participant schema")
+
+		require.Len(t, bankKeeper.TransferLog, transfers)
+		require.Len(t, bankKeeper.ModuleTransferLog, moduleTransfers)
+		require.Zero(t, tdKeeper.GetTotalAdjustment(corp))
+		require.Len(t, sdkCtx.EventManager().Events(), events)
+		has, err := k.ParticipantSession.Has(sdkCtx, sessionID)
+		require.NoError(t, err)
+		require.False(t, has)
+	})
+
+	t.Run("Existing session update aborts", func(t *testing.T) {
+		sessionID := uuid.New().String()
+		_, err := ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
+			Corporation:           corp,
+			Operator:              corp,
+			Id:                    sessionID,
+			VerifierParticipantId: verifierS2ID,
+		})
+		require.NoError(t, err)
+		require.Equal(t, int64(16), bankKeeper.GetTotalReceived(eco2).AmountOf(pricingCoin).Int64(),
+			"verifier-only session is priced in S2's asset")
+		transfers, moduleTransfers := len(bankKeeper.TransferLog), len(bankKeeper.ModuleTransferLog)
+
+		_, err = ms.CreateOrUpdateParticipantSession(ctx, crossSchema(sessionID))
+		require.ErrorContains(t, err, "verifier participant schema does not match issuer participant schema")
+
+		require.Len(t, bankKeeper.TransferLog, transfers)
+		require.Len(t, bankKeeper.ModuleTransferLog, moduleTransfers)
+		session, err := k.ParticipantSession.Get(sdkCtx, sessionID)
+		require.NoError(t, err)
+		require.Len(t, session.SessionRecords, 1)
+	})
+
+	t.Run("Stored cross-schema session accepts a valid update", func(t *testing.T) {
+		sessionID := uuid.New().String()
+		require.NoError(t, k.ParticipantSession.Set(sdkCtx, sessionID, types.ParticipantSession{
+			Id:            sessionID,
+			CorporationId: trkKeeper.RegisterCorp(corp),
+			VsOperator:    corp,
+			Created:       &now,
+			Modified:      &now,
+			SessionRecords: []*types.ParticipantSessionRecord{
+				{Id: 1, Created: &now, IssuerParticipantId: issuerS1ID, VerifierParticipantId: verifierS2ID},
+			},
+		}))
+
+		_, err := ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
+			Corporation:           corp,
+			Operator:              corp,
+			Id:                    sessionID,
+			VerifierParticipantId: verifierS2ID,
+		})
+		require.NoError(t, err)
+		session, err := k.ParticipantSession.Get(sdkCtx, sessionID)
+		require.NoError(t, err)
+		require.Len(t, session.SessionRecords, 2)
+	})
+}
+
+// TestParticipantSession_SameSchemaIssuer: a verification that references an
+// issuer entry of the verifier's schema is priced in that schema's asset.
+func TestParticipantSession_SameSchemaIssuer(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, bankKeeper, _, ctx := setupTrackingMsgServer(t, "0", "0", "0.2")
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	const pricingCoin = "uusdc"
+
+	corp := sdk.AccAddress([]byte("ss_corp_____________")).String()
+	ecosystem := sdk.AccAddress([]byte("ss_ecosystem________")).String()
+	bankKeeper.SetBalance(corp, sdk.NewCoins(
+		sdk.NewInt64Coin(types.BondDenom, 100000),
+		sdk.NewInt64Coin(pricingCoin, 100000),
+	))
+
+	trID := trkKeeper.CreateMockEcosystem(ecosystem, "did:example:ss")
+	csKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+	csKeeper.SetPricing(1, cstypes.PricingAssetType_COIN, pricingCoin)
+
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+
+	rootID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM,
+		CorporationId: trkKeeper.RegisterCorp(ecosystem),
+		Created:       &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, VerificationFees: 20, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+	issuerID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ISSUER,
+		CorporationId: trkKeeper.RegisterCorp(corp),
+		Created:       &now, Modified: &now,
+		ValidatorParticipantId: rootID,
+		OpState:                types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime, VsOperator: corp,
+	})
+	require.NoError(t, err)
+	verifierID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_VERIFIER,
+		CorporationId: trkKeeper.RegisterCorp(corp),
+		Created:       &now, Modified: &now,
+		ValidatorParticipantId: rootID,
+		OpState:                types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime, VsOperator: corp,
+	})
+	require.NoError(t, err)
+
+	sessionID := uuid.New().String()
+	_, err = ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
+		Corporation:           corp,
+		Operator:              corp,
+		Id:                    sessionID,
+		IssuerParticipantId:   issuerID,
+		VerifierParticipantId: verifierID,
+	})
+	require.NoError(t, err)
+
+	// root fee 20 in uusdc, counted once: payee gets 20*(1-0.2)=16 uusdc.
+	received := bankKeeper.GetTotalReceived(ecosystem)
+	require.Equal(t, int64(16), received.AmountOf(pricingCoin).Int64())
+	require.True(t, received.AmountOf(types.BondDenom).IsZero())
+
+	session, err := k.ParticipantSession.Get(sdkCtx, sessionID)
+	require.NoError(t, err)
+	require.Len(t, session.SessionRecords, 1)
+	require.Equal(t, issuerID, session.SessionRecords[0].IssuerParticipantId)
+	require.Equal(t, verifierID, session.SessionRecords[0].VerifierParticipantId)
+}

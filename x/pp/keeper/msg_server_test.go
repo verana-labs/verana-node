@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"context"
 	"fmt"
+	"math"
 	"testing"
 	"time"
 
@@ -3333,6 +3334,28 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 	verifierParticipantID, err := k.CreateParticipant(sdkCtx, verifierParticipant)
 	require.NoError(t, err)
 
+	// Create verifier and agent participants of another schema
+	csKeeper.CreateMockCredentialSchema(2,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+	otherSchemaVerifier := verifierParticipant
+	otherSchemaVerifier.SchemaId = 2
+	otherSchemaVerifierID, err := k.CreateParticipant(sdkCtx, otherSchemaVerifier)
+	require.NoError(t, err)
+
+	otherSchemaAgent := types.Participant{
+		SchemaId:      2,
+		Role:          types.ParticipantRole_ISSUER,
+		CorporationId: trkKeeper.RegisterCorp(otherAuthority),
+		Created:       &now,
+		Adjusted:      &now,
+		Modified:      &now,
+		OpState:       types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime,
+	}
+	otherSchemaAgentID, err := k.CreateParticipant(sdkCtx, otherSchemaAgent)
+	require.NoError(t, err)
+
 	// Create agent participant
 	agentParticipant := types.Participant{
 		SchemaId:               1,
@@ -3549,6 +3572,46 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 				VerifierParticipantId:    0,
 				AgentParticipantId:       agentParticipantID,
 				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr: false,
+		},
+		{
+			name: "Happy path with issuer and verifier",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantID,
+				VerifierParticipantId:    verifierParticipantID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr: false,
+		},
+		{
+			name: "Issuer and verifier schema mismatch",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantID,
+				VerifierParticipantId:    otherSchemaVerifierID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr:  true,
+			errMessage: "verifier participant schema does not match issuer participant schema",
+		},
+		{
+			name: "Agent participants of another schema",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantID,
+				VerifierParticipantId:    verifierParticipantID,
+				AgentParticipantId:       otherSchemaAgentID,
+				WalletAgentParticipantId: otherSchemaAgentID,
 			},
 			expectErr: false,
 		},
@@ -4276,6 +4339,115 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	})
 
 	_ = authority // suppress unused
+}
+
+func TestSlashParticipantTrustDeposit_CumulativeBound(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, _, _, _ := setupMsgServerWithTrustDeposit(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC))
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	controller := sdk.AccAddress([]byte("test_tr_ctrl____")).String()
+	operator := sdk.AccAddress([]byte("test_operator___")).String()
+	corp := sdk.AccAddress([]byte("test_applicant__")).String()
+
+	trID := trkKeeper.CreateMockEcosystem(controller, "did:example:123456789abcdefghi")
+	csKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	corpID := trkKeeper.RegisterCorp(corp)
+
+	create := func(deposit, slashed, repaid uint64) uint64 {
+		p := types.Participant{
+			SchemaId:       1,
+			Role:           types.ParticipantRole_ISSUER,
+			CorporationId:  corpID,
+			Created:        &now,
+			Modified:       &now,
+			OpState:        types.OnboardingState_VALIDATED,
+			EffectiveFrom:  &pastTime,
+			Deposit:        deposit,
+			SlashedDeposit: slashed,
+			RepaidDeposit:  repaid,
+		}
+		if slashed > 0 {
+			p.Slashed = &pastTime
+		}
+		if repaid > 0 {
+			p.Repaid = &pastTime
+		}
+		id, err := k.CreateParticipant(sdkCtx, p)
+		require.NoError(t, err)
+		return id
+	}
+	slash := func(id, amount uint64) error {
+		_, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
+			Corporation: controller,
+			Operator:    operator,
+			Id:          id,
+			Amount:      amount,
+		})
+		return err
+	}
+	get := func(id uint64) types.Participant {
+		p, err := k.GetParticipantByID(sdkCtx, id)
+		require.NoError(t, err)
+		return p
+	}
+
+	t.Run("Second full slash rejected", func(t *testing.T) {
+		id := create(100, 0, 0)
+		require.NoError(t, slash(id, 100))
+		err := slash(id, 100)
+		require.ErrorContains(t, err, "amount exceeds available deposit: 100 > 0")
+		require.Equal(t, uint64(100), get(id).SlashedDeposit)
+	})
+
+	t.Run("Partial slashes stop at the deposit", func(t *testing.T) {
+		id := create(100, 0, 0)
+		require.NoError(t, slash(id, 60))
+		require.ErrorContains(t, slash(id, 41), "amount exceeds available deposit: 41 > 40")
+		require.NoError(t, slash(id, 40))
+		require.ErrorContains(t, slash(id, 1), "amount exceeds available deposit: 1 > 0")
+		require.Equal(t, uint64(100), get(id).SlashedDeposit)
+	})
+
+	t.Run("Repay makes the deposit slashable again", func(t *testing.T) {
+		id := create(100, 0, 0)
+		require.NoError(t, slash(id, 100))
+		_, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
+			Corporation: corp,
+			Operator:    operator,
+			Id:          id,
+		})
+		require.NoError(t, err)
+		require.NoError(t, slash(id, 100))
+		require.ErrorContains(t, slash(id, 1), "amount exceeds available deposit: 1 > 0")
+		p := get(id)
+		require.Equal(t, uint64(200), p.SlashedDeposit)
+		require.Equal(t, uint64(100), p.RepaidDeposit)
+	})
+
+	t.Run("Existing over-slashed entry", func(t *testing.T) {
+		id := create(100, 300, 0)
+		require.ErrorContains(t, slash(id, 1), "amount exceeds available deposit: 1 > 0")
+		require.Equal(t, uint64(300), get(id).SlashedDeposit)
+	})
+
+	t.Run("Existing partly repaid entry", func(t *testing.T) {
+		id := create(100, 150, 100)
+		require.ErrorContains(t, slash(id, 51), "amount exceeds available deposit: 51 > 50")
+		require.NoError(t, slash(id, 50))
+		require.Equal(t, uint64(200), get(id).SlashedDeposit)
+	})
+
+	t.Run("Repaid above slashed counts as nothing outstanding", func(t *testing.T) {
+		id := create(100, 50, 80)
+		require.ErrorContains(t, slash(id, 101), "amount exceeds available deposit: 101 > 100")
+		require.NoError(t, slash(id, 100))
+	})
 }
 
 func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
@@ -5747,6 +5919,111 @@ func TestRevokeParticipant_RequiresActiveParticipant(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestRevokeParticipant_KeepsDeposit tests [MOD-PP-MSG-9-3]: revoke leaves the deposit locked and slashable.
+func TestRevokeParticipant_KeepsDeposit(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, _, tdKeeper, _ := setupMsgServerWithTrustDeposit(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC))
+	ctx = sdkCtx
+
+	owner := sdk.AccAddress([]byte("test_authority__")).String()
+	operator := sdk.AccAddress([]byte("test_operator___")).String()
+	ecoCtrl := sdk.AccAddress([]byte("test_eco_ctrl___")).String()
+
+	ecID := trkKeeper.CreateMockEcosystem(ecoCtrl, "did:example:ecosystem")
+	csKeeper.UpdateMockCredentialSchema(1, ecID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+
+	now := sdkCtx.BlockTime()
+	past := now.Add(-time.Hour)
+	future := now.Add(time.Hour)
+	create := func(p types.Participant) uint64 {
+		p.SchemaId = 1
+		p.Role = types.ParticipantRole_ISSUER
+		p.CorporationId = trkKeeper.RegisterCorp(owner)
+		p.Created, p.Modified, p.EffectiveFrom = &now, &now, &past
+		id, err := k.CreateParticipant(sdkCtx, p)
+		require.NoError(t, err)
+		return id
+	}
+	get := func(id uint64) types.Participant {
+		p, err := k.GetParticipantByID(sdkCtx, id)
+		require.NoError(t, err)
+		return p
+	}
+	revoke := func(id uint64) error {
+		_, err := ms.RevokeParticipant(ctx, &types.MsgRevokeParticipant{Corporation: owner, Operator: operator, Id: id})
+		return err
+	}
+	cancel := func(id uint64) error {
+		_, err := ms.CancelParticipantOPLastRequest(ctx, &types.MsgCancelParticipantOPLastRequest{Corporation: owner, Operator: operator, Id: id})
+		return err
+	}
+	slash := func(id, amount uint64) error {
+		_, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
+			Corporation: ecoCtrl, Operator: operator, Id: id, Amount: amount, Reason: "fraud",
+		})
+		return err
+	}
+
+	t.Run("revoke does not touch the trust deposit", func(t *testing.T) {
+		id := create(types.Participant{OpState: types.OnboardingState_VALIDATED, Deposit: 1000})
+		adjusts := len(tdKeeper.AdjustAmounts)
+
+		require.NoError(t, revoke(id))
+
+		require.Len(t, tdKeeper.AdjustAmounts, adjusts)
+		p := get(id)
+		require.Equal(t, uint64(1000), p.Deposit)
+		require.Equal(t, now, *p.Revoked)
+		require.Equal(t, now, *p.Modified)
+	})
+
+	t.Run("self-revoked participant can still be slashed up to its deposit", func(t *testing.T) {
+		id := create(types.Participant{OpState: types.OnboardingState_VALIDATED, Deposit: 1000})
+		require.NoError(t, revoke(id))
+
+		require.ErrorContains(t, slash(id, 1001), "amount exceeds available deposit: 1001 > 1000")
+		require.NoError(t, slash(id, 1000))
+		require.Equal(t, uint64(1000), get(id).SlashedDeposit)
+	})
+
+	t.Run("deposit above max int64 does not block revoke", func(t *testing.T) {
+		id := create(types.Participant{OpState: types.OnboardingState_VALIDATED, Deposit: math.MaxUint64})
+
+		require.NoError(t, revoke(id))
+		require.Equal(t, uint64(math.MaxUint64), get(id).Deposit)
+	})
+
+	pendingRenewal := types.Participant{
+		OpState: types.OnboardingState_PENDING, OpExp: &future, Deposit: 150, OpCurrentDeposit: 50,
+	}
+
+	t.Run("renewal deposit is refunded once when revoke follows cancel", func(t *testing.T) {
+		id := create(pendingRenewal)
+		adjusts := len(tdKeeper.AdjustAmounts)
+
+		require.NoError(t, cancel(id))
+		require.NoError(t, revoke(id))
+
+		require.Equal(t, []int64{-50}, tdKeeper.AdjustAmounts[adjusts:])
+		require.Equal(t, uint64(150), get(id).Deposit)
+	})
+
+	t.Run("renewal deposit is refunded once when cancel follows revoke", func(t *testing.T) {
+		id := create(pendingRenewal)
+		adjusts := len(tdKeeper.AdjustAmounts)
+
+		require.NoError(t, revoke(id))
+		require.NoError(t, cancel(id))
+
+		require.Equal(t, []int64{-50}, tdKeeper.AdjustAmounts[adjusts:])
+		p := get(id)
+		require.Equal(t, uint64(150), p.Deposit)
+		require.Zero(t, p.OpCurrentDeposit)
+	})
 }
 
 // TestStartParticipantVP_OverlapCheck tests [MOD-PP-MSG-1-2-4]: a second onboarding

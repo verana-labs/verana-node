@@ -1281,22 +1281,6 @@ func (ms msgServer) checkEcosystemControllerOption(ctx sdk.Context, authority st
 
 // [MOD-PP-MSG-9-3] Revoke Participant execution
 func (ms msgServer) executeRevokeParticipant(ctx sdk.Context, participant types.Participant, now time.Time) error {
-	// Free associated trust deposit if non-zero
-	if participant.Deposit > 0 {
-		corpAcct, err := ms.corpAccountFromID(ctx, participant.CorporationId)
-		if err != nil {
-			return err
-		}
-		depositI64, err := uint64ToInt64(participant.Deposit, "revoke_release_deposit")
-		if err != nil {
-			return err
-		}
-		if err := ms.trustDeposit.AdjustTrustDeposit(ctx, corpAcct, -depositI64, "participant_revoke_release_deposit"); err != nil {
-			return fmt.Errorf("failed to release trust deposit on revocation: %w", err)
-		}
-		participant.Deposit = 0
-	}
-
 	// set applicant_participant.revoked to now
 	participant.Revoked = &now
 
@@ -1326,20 +1310,12 @@ func (ms msgServer) revokeVSOperatorAuthorization(ctx sdk.Context, participant t
 // corp-paid fees. The fee cap itself is enforced by the aggregate x/feegrant
 // allowance at fee-processing time. No-op when the operator pays its own fee.
 func (ms msgServer) checkVSOperatorFeeGrant(ctx sdk.Context, participantID uint64, corporation string) error {
-	dec := ms.txDecoder()
-	if dec == nil {
-		return nil
-	}
-	tx, err := dec(ctx.TxBytes())
-	if err != nil {
-		return nil
-	}
-	feeTx, ok := tx.(sdk.FeeTx)
-	if !ok || len(feeTx.FeeGranter()) == 0 {
+	granter := feeGranterFromContext(ctx)
+	if len(granter) == 0 {
 		return nil
 	}
 	corpAddr, err := sdk.AccAddressFromBech32(corporation)
-	if err != nil || !bytes.Equal(feeTx.FeeGranter(), corpAddr) {
+	if err != nil || !bytes.Equal(granter, corpAddr) {
 		return nil
 	}
 	if err := ms.delegationKeeper.CheckVSOperatorFeeGrant(ctx, participantID); err != nil {
@@ -1484,9 +1460,17 @@ func (ms msgServer) validateSlashParticipantBasicChecks(ctx sdk.Context, msg *ty
 	}
 	applicantParticipant = participant
 
-	// [MOD-PP-MSG-12-2-1] amount MUST be lower or equal to applicant_participant.deposit else MUST abort
-	if msg.Amount > applicantParticipant.Deposit {
-		return applicantParticipant, fmt.Errorf("amount exceeds available deposit: %d > %d", msg.Amount, applicantParticipant.Deposit)
+	// [MOD-PP-MSG-12-2-1] amount MUST NOT exceed applicant_participant.deposit less its unrepaid slashed_deposit
+	var outstanding uint64
+	if applicantParticipant.SlashedDeposit > applicantParticipant.RepaidDeposit {
+		outstanding = applicantParticipant.SlashedDeposit - applicantParticipant.RepaidDeposit
+	}
+	var available uint64
+	if applicantParticipant.Deposit > outstanding {
+		available = applicantParticipant.Deposit - outstanding
+	}
+	if msg.Amount > available {
+		return applicantParticipant, fmt.Errorf("amount exceeds available deposit: %d > %d", msg.Amount, available)
 	}
 
 	// Note: Even if the participant has expired or is revoked, it is still possible to slash it.

@@ -63,20 +63,33 @@ export const isoToDate = (s?: string | null) =>
 export const dateToAmino = dateToIsoAmino;
 export const dateFromAmino = isoToDate;
 
+const NANOS_PER_SECOND = 1_000_000_000;
+
 export const durationToAmino = (d?: Duration | null) => {
   if (!d) return undefined;
-  return clean({
-    seconds: Long.fromValue(d.seconds).toString(),
-    nanos: d.nanos === 0 ? undefined : d.nanos,
-  });
+  return Long.fromValue(d.seconds)
+    .multiply(NANOS_PER_SECOND)
+    .add(d.nanos || 0)
+    .toString();
 };
 
 export const aminoToDuration = (
-  d?: { seconds?: string | number | null; nanos?: string | number | null } | null,
+  d?:
+    | string
+    | number
+    | { seconds?: string | number | null; nanos?: string | number | null }
+    | null,
 ): Duration | undefined => {
   if (!d) return undefined;
+  if (typeof d === "object") {
+    return {
+      seconds: d.seconds == null ? 0 : Number(d.seconds),
+      nanos: d.nanos == null ? 0 : Number(d.nanos),
+    };
+  }
+  const total = Long.fromString(String(d));
   return {
-    seconds: d.seconds == null ? 0 : Number(d.seconds),
-    nanos: d.nanos == null ? 0 : Number(d.nanos),
+    seconds: total.divide(NANOS_PER_SECOND).toNumber(),
+    nanos: total.mod(NANOS_PER_SECOND).toNumber(),
   };
 };

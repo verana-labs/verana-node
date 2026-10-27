@@ -40,12 +40,7 @@ type (
 		bankKeeper             types.BankKeeper
 		delegationKeeper       types.DelegationKeeper
 		digestKeeper           types.DigestKeeper
-
-		// txDecoderRef holds the tx decoder; CSPS reads the tx fee for AUTHZ-CHECK-4.
-		txDecoderRef *txDecoderHolder
 	}
-
-	txDecoderHolder struct{ decode sdk.TxDecoder }
 )
 
 func NewKeeper(
@@ -87,17 +82,7 @@ func NewKeeper(
 		bankKeeper:                  bankKeeper,
 		delegationKeeper:            delegationKeeper,
 		digestKeeper:                digestKeeper,
-		txDecoderRef:                &txDecoderHolder{},
 	}
-}
-
-// SetTxDecoder wires the tx decoder after construction (used by CSPS AUTHZ-CHECK-4).
-func (k Keeper) SetTxDecoder(d sdk.TxDecoder) {
-	k.txDecoderRef.decode = d
-}
-
-func (k Keeper) txDecoder() sdk.TxDecoder {
-	return k.txDecoderRef.decode
 }
 
 // GetAuthority returns the module's authority.
