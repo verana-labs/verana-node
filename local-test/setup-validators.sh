@@ -298,26 +298,67 @@ echo "=============================================="
 echo
 
 # =============================================================================
-# VALIDATOR 1 SETUP (Special case - genesis validator)
+# PHASE 1: INITIALISE EVERY VALIDATOR HOME AND IMPORT ITS WALLET
 # =============================================================================
-print_status "Setting up Validator 1 in ${VALIDATOR_TIMEZONES[0]}..."
+for i in {1..5}; do
+    validator="validator$i"
+    wallet="wallet$i"
+    mkdir -p "$validator"
+    docker run --rm -v "$(pwd)/$validator:/root/.verana" $DOCKER_IMAGE init "$validator" --chain-id $CHAIN_ID
+    mnemonic="${VALIDATOR_MNEMONICS[$((i-1))]}"
+    echo "$mnemonic" | docker run --rm -i \
+        -v "$(pwd)/$validator:/root/.verana" \
+        $DOCKER_IMAGE \
+        keys add "$wallet" --recover --keyring-backend test
+done
 
-# Create validator1 directory
-mkdir -p validator1
-
-# Initialize the node
-docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE init validator1 --chain-id $CHAIN_ID
+# =============================================================================
+# PHASE 2: GENESIS ON VALIDATOR 1 — accounts, council, gentx from every validator
+# =============================================================================
+print_status "Building genesis on validator1..."
 
 # Replace stake with uvna in genesis file
 sed -i.bak 's/stake/uvna/g' validator1/config/genesis.json
 
-# Update unbonding time to 60 seconds for testing
-# sed -i.bak 's/172800s/60s/g' validator1/config/genesis.json
+# Every wallet is a genesis account and a council member
+COUNCIL_MEMBERS=""
+for i in {1..5}; do
+    wallet="wallet$i"
+    mnemonic="${VALIDATOR_MNEMONICS[$((i-1))]}"
+    echo "$mnemonic" | docker run --rm -i \
+        -v "$(pwd)/validator1:/root/.verana" \
+        $DOCKER_IMAGE \
+        keys add "$wallet" --recover --keyring-backend test >/dev/null 2>&1 || true
+    docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE add-genesis-account "$wallet" 10000000000000000000uvna --keyring-backend test
+    COUNCIL_MEMBERS="${COUNCIL_MEMBERS:+$COUNCIL_MEMBERS,}$wallet"
+done
 
-# Update governance parameters for faster testing
-# sed -i.bak 's/"max_deposit_period": ".*"/"max_deposit_period": "100s"/' validator1/config/genesis.json
-# sed -i.bak 's/"voting_period": ".*"/"voting_period": "100s"/' validator1/config/genesis.json
+# Seat the council: 5 weight-1 members, 2/3 policy (4 of 5), short windows for local testing
+docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE genesis add-council "$COUNCIL_MEMBERS" \
+    --voting-period 60s --min-execution-period 0s --unbonding-time 60s --keyring-backend test
 
+# Every validator signs its own gentx against the shared genesis; bond is the fixed council bond
+for i in {1..5}; do
+    validator="validator$i"
+    wallet="wallet$i"
+    if [ "$i" -ne 1 ]; then
+        cp validator1/config/genesis.json "$validator/config/genesis.json"
+    fi
+    printf "$PASSPHRASE" \
+    | docker run --rm -i -v "$(pwd)/$validator:/root/.verana" $DOCKER_IMAGE gentx "$wallet" 1000000uvna \
+        --chain-id $CHAIN_ID --moniker "$validator" --keyring-backend test
+    if [ "$i" -ne 1 ]; then
+        cp "$validator"/config/gentx/*.json validator1/config/gentx/
+    fi
+done
+
+# Collect genesis transactions and validate
+docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE collect-gentxs
+docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE validate-genesis
+
+# =============================================================================
+# PHASE 3: NODE CONFIGURATION (shared) AND START
+# =============================================================================
 # Set minimum gas prices
 sed -i.bak 's/minimum-gas-prices = ""/minimum-gas-prices = "0.25uvna"/g' validator1/config/app.toml
 
@@ -339,33 +380,8 @@ sed -i.bak 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/' valid
 # Fix the minimum gas prices if they're still set to stake
 sed -i.bak 's/minimum-gas-prices = "0stake"/minimum-gas-prices = "0.25uvna"/g' validator1/config/app.toml
 
-# Update moniker
-sed -i.bak 's/moniker = "validator1"/moniker = "validator1"/g' validator1/config/config.toml
-
-# Import all wallets using predefined mnemonics
-for i in {1..5}; do
-    wallet="wallet$i"
-    mnemonic="${VALIDATOR_MNEMONICS[$((i-1))]}"
-    print_status "[DEBUG] About to import $wallet for validator1 using predefined mnemonic"
-    echo "$mnemonic" | docker run --rm -i \
-        -v "$(pwd)/validator1:/root/.verana" \
-        $DOCKER_IMAGE \
-        keys add "$wallet" --recover --keyring-backend test
-    print_status "[DEBUG] Finished importing $wallet for validator1"
-    docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE add-genesis-account "$wallet" 10000000000000000000uvna --keyring-backend test
-done
-
-# Generate validator transaction
-printf "$PASSPHRASE" \
-| docker run --rm -i -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE gentx wallet1 1000000000uvna --chain-id $CHAIN_ID --keyring-backend test
-
-# Collect genesis transactions
-docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE collect-gentxs
-
-# Validate genesis
-docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE validate-genesis
-
 # Start validator 1 with timezone
+print_status "Setting up Validator 1 in ${VALIDATOR_TIMEZONES[0]}..."
 start_validator_with_timezone "validator1" "${VALIDATOR_PORTS[1]}"
 
 # Check if the container is running before proceeding
@@ -375,87 +391,23 @@ if ! docker ps --format '{{.Names}}' | grep -q "^validator1$"; then
     exit 1
 fi
 
-# Wait for blocks to be produced
-wait_for_blocks "http://localhost:$(get_rpc_port "${VALIDATOR_PORTS[1]}")" 60
-
-print_status "Validator 1 is ready!"
-
-# =============================================================================
-# VALIDATORS 2-5 SETUP (Loop through remaining validators)
-# =============================================================================
+# Validators 2-5: copy the final genesis and config, peer with the earlier ones, start
 for i in {2..5}; do
     validator="validator$i"
-    wallet="wallet$i"
 
     print_status "Setting up $validator in ${VALIDATOR_TIMEZONES[$((i-1))]}..."
 
-    # Create directory for validator
-    mkdir -p "$validator"
-
-    # Initialize validator node
-    docker run --rm -v "$(pwd)/$validator:/root/.verana" $DOCKER_IMAGE init "$validator" --chain-id $CHAIN_ID
-
-    # Copy configuration files from validator 1
     cp validator1/config/genesis.json "$validator/config/genesis.json"
     cp validator1/config/app.toml "$validator/config/app.toml"
     cp validator1/config/config.toml "$validator/config/config.toml"
 
-    # Build persistent peers for this validator
     persistent_peers=$(build_persistent_peers "$validator")
     print_status "$validator persistent peers: $persistent_peers"
-
-    # Set persistent peers
     sed -i.bak "s/persistent_peers = \"\"/persistent_peers = \"$persistent_peers\"/g" "$validator/config/config.toml"
-
-    # Update moniker
     sed -i.bak "s/moniker = \"validator1\"/moniker = \"$validator\"/g" "$validator/config/config.toml"
 
-    # Import wallet using the SAME mnemonic that was added to genesis
-    mnemonic="${VALIDATOR_MNEMONICS[$((i-1))]}"
-    echo "$mnemonic" | docker run --rm -i \
-        -v "$(pwd)/$validator:/root/.verana" \
-        $DOCKER_IMAGE \
-        keys add "$wallet" --recover --keyring-backend test
-
-    # Get pubkey using a one-off docker run, not docker exec
-    PUBKEY=$(docker run --rm -v "$(pwd)/$validator:/root/.verana" $DOCKER_IMAGE tendermint show-validator | jq -c '.')
-    cat > $validator/validator.json <<EOF
-{
-  "pubkey": $PUBKEY,
-  "amount": "1000000000uvna",
-  "moniker": "$validator",
-  "identity": "",
-  "website": "",
-  "security": "",
-  "details": "",
-  "commission-rate": "0.10",
-  "commission-max-rate": "0.20",
-  "commission-max-change-rate": "0.01",
-  "min-self-delegation": "1"
-}
-EOF
-
-    # Extract the RPC port for this validator from the dynamic port assignment
-    ports=${VALIDATOR_PORTS[$i]}
-    IFS=':' read -ra PORT_ARRAY <<< "$ports"
-    RPC_PORT=${PORT_ARRAY[1]}
-
-    # Start the validator container before running create-validator
     start_validator_with_timezone "$validator" "${VALIDATOR_PORTS[$i]}"
-    sleep 20
-    # Run the create-validator transaction inside the running container
-    print_status "Creating $validator..."
-    printf "$PASSPHRASE" \
-    | docker exec -i $validator veranad tx staking create-validator /root/.verana/validator.json \
-        --from="$wallet" \
-        --chain-id $CHAIN_ID \
-        --broadcast-mode=sync \
-        --fees=65000uvna \
-        --keyring-backend test \
-        --yes \
-        --node tcp://localhost:26657
 
-    # Check if the container is running before proceeding
     if ! docker ps --format '{{.Names}}' | grep -q "^$validator$"; then
         print_error "$validator container failed to start. Printing logs:"
         docker logs $validator || true
@@ -463,10 +415,10 @@ EOF
     fi
 
     print_status "$validator is ready!"
-
-    # Wait before setting up next validator
-    sleep 20
 done
+
+# Wait for blocks with the full set signing
+wait_for_blocks "http://localhost:$(get_rpc_port "${VALIDATOR_PORTS[1]}")" 60
 
 # =============================================================================
 # SUMMARY WITH TIMEZONE INFO
