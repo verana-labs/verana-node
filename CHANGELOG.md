@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.10.7](https://github.com/verana-labs/verana-node/compare/v0.10.6...v0.10.7) (2026-10-27)
+
+
+### Bug Fixes
+
+* **pp,de:** index participant and vsoa checks instead of walking the store ([#68](https://github.com/verana-labs/verana-node/issues/68)) ([0799231](https://github.com/verana-labs/verana-node/commit/07992311ecbba8e926589dbf9caf201fc659f408))
+* **pp:** bound participant slash by deposit minus unrepaid slashed deposit ([#76](https://github.com/verana-labs/verana-node/issues/76)) ([fdb8fea](https://github.com/verana-labs/verana-node/commit/fdb8fea6f4dfea413190d776bc54ce3db7976143))
+* **pp:** keep the participant trust deposit on revoke ([#75](https://github.com/verana-labs/verana-node/issues/75)) ([78f68fa](https://github.com/verana-labs/verana-node/commit/78f68faf2d2a1b5c64968210b9944c38f23e5cbb))
+* **pp:** read the AUTHZ-CHECK-4 fee granter once per tx ([#74](https://github.com/verana-labs/verana-node/issues/74)) ([1c2e588](https://github.com/verana-labs/verana-node/commit/1c2e588391b46ffa799709183d9521121e8c6c9b))
+* **pp:** reject sessions whose issuer and verifier belong to different schemas (MOD-PP-MSG-10-2) ([#78](https://github.com/verana-labs/verana-node/issues/78)) ([cd8caad](https://github.com/verana-labs/verana-node/commit/cd8caad60f778f34ae717c1b0fd3cf5a11097b54))
+* revoke self fee grants through the feegrant keeper, not its msg server ([#77](https://github.com/verana-labs/verana-node/issues/77)) ([235ea6c](https://github.com/verana-labs/verana-node/commit/235ea6c4a6c709e4fe4a12b29d4f61530df4378f))
+* **ts-proto:** encode amino durations as total nanoseconds so periods can be signed ([#81](https://github.com/verana-labs/verana-node/issues/81)) ([4b7fc6f](https://github.com/verana-labs/verana-node/commit/4b7fc6f98ce6fbf1f2d15b70537c24a38fa7b172))
+
 ## [0.10.6](https://github.com/verana-labs/verana-node/compare/v0.10.5...v0.10.6) (2026-10-06)
 
 
