@@ -24,10 +24,12 @@ type (
 		// should be the x/gov module account.
 		authority string
 		// state
-		Participant          collections.Map[uint64, types.Participant]
-		ParticipantByDIDCorp collections.Map[collections.Pair[string, uint64], uint64]
-		ParticipantCounter   collections.Item[uint64]
-		ParticipantSession   collections.Map[string, types.ParticipantSession]
+		Participant                 collections.Map[uint64, types.Participant]
+		ParticipantByDIDCorp        collections.Map[collections.Pair[string, uint64], uint64]
+		RootParticipantBySchemaCorp collections.KeySet[collections.Triple[uint64, uint64, uint64]]
+		UnrepaidSlashByCorp         collections.KeySet[collections.Triple[uint64, uint64, uint64]]
+		ParticipantCounter          collections.Item[uint64]
+		ParticipantSession          collections.Map[string, types.ParticipantSession]
 
 		// external keeper
 		credentialSchemaKeeper types.CredentialSchemaKeeper
@@ -62,22 +64,24 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		cdc:                    cdc,
-		storeService:           storeService,
-		authority:              authority,
-		logger:                 logger,
-		Participant:            collections.NewMap(sb, types.ParticipantKey, "participant", collections.Uint64Key, codec.CollValue[types.Participant](cdc)),
-		ParticipantByDIDCorp:   collections.NewMap(sb, types.ParticipantByDIDCorpKey, "participant_by_did_corp", collections.PairKeyCodec(collections.StringKey, collections.Uint64Key), collections.Uint64Value),
-		ParticipantCounter:     collections.NewItem(sb, types.ParticipantCounterKey, "participant_counter", collections.Uint64Value),
-		ParticipantSession:     collections.NewMap(sb, types.ParticipantSessionKey, "participant_session", collections.StringKey, codec.CollValue[types.ParticipantSession](cdc)),
-		credentialSchemaKeeper: credentialSchemaKeeper,
-		ecosystemKeeper:        ecosystemKeeper,
-		exchangeRateKeeper:     exchangeRateKeeper,
-		coKeeper:               coKeeper,
-		trustDeposit:           trustDeposit,
-		bankKeeper:             bankKeeper,
-		delegationKeeper:       delegationKeeper,
-		digestKeeper:           digestKeeper,
+		cdc:                         cdc,
+		storeService:                storeService,
+		authority:                   authority,
+		logger:                      logger,
+		Participant:                 collections.NewMap(sb, types.ParticipantKey, "participant", collections.Uint64Key, codec.CollValue[types.Participant](cdc)),
+		ParticipantByDIDCorp:        collections.NewMap(sb, types.ParticipantByDIDCorpKey, "participant_by_did_corp", collections.PairKeyCodec(collections.StringKey, collections.Uint64Key), collections.Uint64Value),
+		RootParticipantBySchemaCorp: collections.NewKeySet(sb, types.RootParticipantBySchemaCorpKey, "root_participant_by_schema_corp", collections.TripleKeyCodec(collections.Uint64Key, collections.Uint64Key, collections.Uint64Key)),
+		UnrepaidSlashByCorp:         collections.NewKeySet(sb, types.UnrepaidSlashByCorpKey, "unrepaid_slash_by_corp", collections.TripleKeyCodec(collections.Uint64Key, collections.Uint64Key, collections.Uint64Key)),
+		ParticipantCounter:          collections.NewItem(sb, types.ParticipantCounterKey, "participant_counter", collections.Uint64Value),
+		ParticipantSession:          collections.NewMap(sb, types.ParticipantSessionKey, "participant_session", collections.StringKey, codec.CollValue[types.ParticipantSession](cdc)),
+		credentialSchemaKeeper:      credentialSchemaKeeper,
+		ecosystemKeeper:             ecosystemKeeper,
+		exchangeRateKeeper:          exchangeRateKeeper,
+		coKeeper:                    coKeeper,
+		trustDeposit:                trustDeposit,
+		bankKeeper:                  bankKeeper,
+		delegationKeeper:            delegationKeeper,
+		digestKeeper:                digestKeeper,
 	}
 }
 
@@ -105,8 +109,7 @@ func (k Keeper) CreateParticipant(ctx sdk.Context, participant types.Participant
 	if err := k.Participant.Set(ctx, id, participant); err != nil {
 		return 0, err
 	}
-	// Maintain the (did, id) index (single chokepoint for all create paths).
-	if err := k.IndexParticipantDID(ctx, participant); err != nil {
+	if err := k.IndexParticipant(ctx, participant); err != nil {
 		return 0, err
 	}
 
@@ -129,7 +132,10 @@ func (k Keeper) getNextParticipantID(ctx sdk.Context) (uint64, error) {
 }
 
 func (k Keeper) UpdateParticipant(ctx sdk.Context, participant types.Participant) error {
-	return k.Participant.Set(ctx, participant.Id, participant)
+	if err := k.Participant.Set(ctx, participant.Id, participant); err != nil {
+		return err
+	}
+	return k.indexUnrepaidSlash(ctx, participant)
 }
 
 // IsValidParticipant checks if a participant is valid (ACTIVE) at a given time:

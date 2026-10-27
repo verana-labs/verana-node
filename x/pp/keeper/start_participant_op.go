@@ -72,18 +72,17 @@ func (ms msgServer) checkOverlap(ctx sdk.Context, role types.ParticipantRole, va
 	var pendingFound bool
 	var neverExpiringID uint64
 	var neverExpiringFound bool
-	err := ms.Participant.Walk(ctx, nil, func(key uint64, participant types.Participant) (bool, error) {
+	err := ms.walkParticipantsByDID(ctx, did, func(participant types.Participant) (bool, error) {
 		if participant.ValidatorParticipantId != validatorParticipantId ||
 			participant.Role != role ||
 			participant.CorporationId != corporationId ||
-			participant.Did != did ||
 			participant.Revoked != nil || participant.Slashed != nil {
 			return false, nil
 		}
 		if participant.OpState == types.OnboardingState_PENDING {
 			pendingFound = true
 			pendingID = participant.Id
-			return true, nil // stop walking
+			return true, nil
 		}
 		if participant.OpState == types.OnboardingState_VALIDATED && participant.EffectiveUntil == nil {
 			neverExpiringFound = true

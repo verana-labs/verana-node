@@ -87,17 +87,11 @@ func (k Keeper) GrantVSOperatorAuthorization(
 
 	// Single-corp constraint: no other VSOperatorAuthorization may exist where
 	// vs_operator == vsOperator AND corporation_id != corporationID.
-	var conflict bool
-	if err := k.VSOperatorAuthorizations.Walk(ctx, nil, func(_ uint64, v types.VSOperatorAuthorization) (bool, error) {
-		if v.VsOperator == vsOperator && v.CorporationId != corporationID {
-			conflict = true
-			return true, nil
-		}
-		return false, nil
-	}); err != nil {
-		return fmt.Errorf("failed to scan VSOperatorAuthorizations: %w", err)
+	ownerCorp, err := k.VSOACorpByOperator.Get(ctx, vsOperator)
+	if err != nil && !errors.Is(err, collections.ErrNotFound) {
+		return fmt.Errorf("failed to read vs_operator index: %w", err)
 	}
-	if conflict {
+	if err == nil && ownerCorp != corporationID {
 		return types.ErrVSOAOtherCorporation
 	}
 
@@ -131,6 +125,9 @@ func (k Keeper) GrantVSOperatorAuthorization(
 	}
 	if err := k.VSOAByCorpOp.Set(ctx, collections.Join(corporationID, vsOperator), vsoa.Id); err != nil {
 		return fmt.Errorf("failed to set VSOA index: %w", err)
+	}
+	if err := k.VSOACorpByOperator.Set(ctx, vsOperator, corporationID); err != nil {
+		return fmt.Errorf("failed to set vs_operator index: %w", err)
 	}
 	if err := k.VSOAByParticipant.Set(ctx, record.ParticipantId, vsoa.Id); err != nil {
 		return fmt.Errorf("failed to set participant index: %w", err)
@@ -193,6 +190,9 @@ func (k Keeper) RevokeVSOperatorAuthorization(ctx context.Context, participantID
 		}
 		if err := k.VSOAByCorpOp.Remove(ctx, collections.Join(vsoa.CorporationId, vsoa.VsOperator)); err != nil {
 			return fmt.Errorf("failed to remove VSOA index: %w", err)
+		}
+		if err := k.VSOACorpByOperator.Remove(ctx, vsoa.VsOperator); err != nil {
+			return fmt.Errorf("failed to remove vs_operator index: %w", err)
 		}
 	} else {
 		if err := k.VSOperatorAuthorizations.Set(ctx, vsoaID, vsoa); err != nil {

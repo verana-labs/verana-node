@@ -2,6 +2,7 @@ package upgrades
 
 import (
 	"github.com/verana-labs/verana-node/app/upgrades/types"
+	v0_10_7 "github.com/verana-labs/verana-node/app/upgrades/v0_10_7"
 )
 
 // Upgrades is the list of on-chain upgrade handlers registered by the app.
@@ -27,4 +28,6 @@ import (
 //     var Upgrades = []types.Upgrade{
 //     v1.Upgrade,
 //     }
-var Upgrades = []types.Upgrade{}
+var Upgrades = []types.Upgrade{
+	v0_10_7.Upgrade,
+}

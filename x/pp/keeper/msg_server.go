@@ -10,6 +10,7 @@ import (
 	credentialschematypes "github.com/verana-labs/verana-node/x/cs/types"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -830,11 +831,11 @@ func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *type
 	}
 	var conflict types.Participant
 	var found bool
-	err = ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
-		if p.SchemaId != msg.SchemaId ||
-			p.Role != types.ParticipantRole_ECOSYSTEM ||
-			p.CorporationId != msgCorpId {
-			return false, nil
+	rng := collections.NewSuperPrefixedTripleRange[uint64, uint64, uint64](msg.SchemaId, msgCorpId)
+	err = ms.RootParticipantBySchemaCorp.Walk(ctx, rng, func(key collections.Triple[uint64, uint64, uint64]) (bool, error) {
+		p, err := ms.Participant.Get(ctx, key.K3())
+		if err != nil {
+			return true, err
 		}
 		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&
 			overlapsWindow(p, effectiveFromR, msg.EffectiveUntil) {
@@ -1077,13 +1078,12 @@ func (ms msgServer) checkAdjustParticipantOverlap(ctx sdk.Context, applicantPart
 	now := ctx.BlockTime()
 	var conflict types.Participant
 	var found bool
-	err := ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+	err := ms.walkParticipantsByDID(ctx, applicantParticipant.Did, func(p types.Participant) (bool, error) {
 		if p.Id == applicantParticipant.Id ||
 			p.SchemaId != applicantParticipant.SchemaId ||
 			p.Role != applicantParticipant.Role ||
 			p.ValidatorParticipantId != applicantParticipant.ValidatorParticipantId ||
-			p.CorporationId != applicantParticipant.CorporationId ||
-			p.Did != applicantParticipant.Did {
+			p.CorporationId != applicantParticipant.CorporationId {
 			return false, nil
 		}
 		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&
@@ -1824,11 +1824,10 @@ func (ms msgServer) checkCreateParticipantOverlap(ctx sdk.Context, msg *types.Ms
 	}
 	var conflict types.Participant
 	var found bool
-	err = ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+	err = ms.walkParticipantsByDID(ctx, msg.Did, func(p types.Participant) (bool, error) {
 		if p.ValidatorParticipantId != msg.ValidatorParticipantId ||
 			p.Role != msg.Role ||
-			p.CorporationId != msgCorpId ||
-			p.Did != msg.Did {
+			p.CorporationId != msgCorpId {
 			return false, nil
 		}
 		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&

@@ -26,6 +26,10 @@ var (
 	// participant's owning corporation can be resolved by DID in O(log n) instead
 	// of a linear Participant walk. Mirrors x/ec EcosystemByDIDCorpKey.
 	ParticipantByDIDCorpKey = collections.NewPrefix(3)
+	// RootParticipantBySchemaCorpKey indexes (schema_id, corporation_id, participant_id) for ECOSYSTEM entries.
+	RootParticipantBySchemaCorpKey = collections.NewPrefix(4)
+	// UnrepaidSlashByCorpKey indexes (corporation_id, schema_id, participant_id) while a slash is unrepaid.
+	UnrepaidSlashByCorpKey = collections.NewPrefix(5)
 )
 
 func KeyPrefix(p string) []byte {
