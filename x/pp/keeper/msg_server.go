@@ -1460,9 +1460,17 @@ func (ms msgServer) validateSlashParticipantBasicChecks(ctx sdk.Context, msg *ty
 	}
 	applicantParticipant = participant
 
-	// [MOD-PP-MSG-12-2-1] amount MUST be lower or equal to applicant_participant.deposit else MUST abort
-	if msg.Amount > applicantParticipant.Deposit {
-		return applicantParticipant, fmt.Errorf("amount exceeds available deposit: %d > %d", msg.Amount, applicantParticipant.Deposit)
+	// [MOD-PP-MSG-12-2-1] amount MUST NOT exceed applicant_participant.deposit less its unrepaid slashed_deposit
+	var outstanding uint64
+	if applicantParticipant.SlashedDeposit > applicantParticipant.RepaidDeposit {
+		outstanding = applicantParticipant.SlashedDeposit - applicantParticipant.RepaidDeposit
+	}
+	var available uint64
+	if applicantParticipant.Deposit > outstanding {
+		available = applicantParticipant.Deposit - outstanding
+	}
+	if msg.Amount > available {
+		return applicantParticipant, fmt.Errorf("amount exceeds available deposit: %d > %d", msg.Amount, available)
 	}
 
 	// Note: Even if the participant has expired or is revoked, it is still possible to slash it.
