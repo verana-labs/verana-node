@@ -390,8 +390,7 @@ jobs:
             USE_PREBUILT=true
             PREBUILT_BINARY=binaries/veranad-linux-amd64
 
-      # Source backup: a git bundle with the full history, published next to the image under the
-      # same tags, so every release keeps a copy of its source outside GitHub.
+      # Source backup: git bundle published under the same tags as the image.
       - name: Create source bundle
         run: |
           set -euo pipefail
