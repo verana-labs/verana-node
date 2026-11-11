@@ -5,6 +5,11 @@ genesis:
     staking:
       params:
         bond_denom: "uvna"
+        max_validators: 25
+    slashing:
+      params:
+        slash_fraction_downtime: "0.000000000000000000"
+        slash_fraction_double_sign: "0.000000000000000000"
     mint:
       params:
         mint_denom: "uvna"
@@ -12,16 +17,44 @@ genesis:
       constant_fee:
         denom: "uvna"
         amount: "1000"
-    gov:
-      params:
-        min_deposit:
-          - denom: "uvna"
-            amount: "10000000"
-        expedited_min_deposit:
-          - denom: "uvna"
-            amount: "50000000"
+    interchainaccounts:
+      host_genesis_state:
+        params:
+          allow_messages:
+            - "/cosmos.bank.v1beta1.MsgSend"
+    group:
+      group_seq: "1"
+      groups:
+        - id: "1"
+          admin: "verana1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzsh3z8fv"
+          metadata: "Verana Council"
+          version: "1"
+          total_weight: "1"
+          created_at: "2026-01-01T00:00:00Z"
+      group_members:
+        - group_id: "1"
+          member:
+            address: "verana16mzeyu9l6kua2cdg9x0jk5g6e7h0kk8q6uadu4"
+            weight: "1"
+            metadata: ""
+            added_at: "2026-01-01T00:00:00Z"
+      group_policy_seq: "1"
+      group_policies:
+        - address: "verana1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzsh3z8fv"
+          group_id: "1"
+          admin: "verana1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzsh3z8fv"
+          metadata: "Verana Council"
+          version: "1"
+          decision_policy:
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy"
+            percentage: "0.6666"
+            windows:
+              voting_period: "1209600s"
+              min_execution_period: "172800s"
+          created_at: "2026-01-01T00:00:00Z"
 accounts:
   - name: alice
+    mnemonic: "pink glory help gown abstract eight nice crazy forward ketchup skill cheese"
     coins:
       - 200000000uvna
   - name: bob
@@ -36,4 +69,4 @@ faucet:
     - 100000uvna
 validators:
   - name: alice
-    bonded: 100000000uvna
+    bonded: 1000000uvna

@@ -21,7 +21,6 @@ HOME_DIR="$HOME/.verana$VALIDATOR_NUM"
 APP_TOML_PATH="$HOME_DIR/config/app.toml"
 CONFIG_TOML_PATH="$HOME_DIR/config/config.toml"
 VALIDATOR_NAME="validator$VALIDATOR_NUM"
-STAKE_AMOUNT="1000000000uvna"  # Equal voting power with first validator
 
 # Calculate ports (increment from default ports)
 P2P_PORT=$((26656 + ($VALIDATOR_NUM - 1) * 100))
@@ -98,35 +97,45 @@ $BINARY tx bank send \
 log "Waiting for tokens to arrive..."
 sleep 10
 
-# Create validator.json
-log "Creating validator configuration..."
-cat > "$HOME_DIR/validator.json" << EOF
+# Seating requires a council proposal: write it and print the commands
+COUNCIL_AUTHORITY=$($BINARY query poa council -o json | jq -r .authority)
+PROPOSER_ADDRESS=$($BINARY keys show cooluser -a --keyring-backend test --home ~/.verana)
+PROPOSAL_FILE="$HOME_DIR/add-validator-proposal.json"
+cat > "$PROPOSAL_FILE" << EOF
 {
-  "pubkey": $($BINARY tendermint show-validator --home $HOME_DIR),
-  "amount": "$STAKE_AMOUNT",
-  "moniker": "$MONIKER",
-  "identity": "",
-  "website": "",
-  "security": "",
-  "details": "Validator $VALIDATOR_NUM",
-  "commission-rate": "0.1",
-  "commission-max-rate": "0.2",
-  "commission-max-change-rate": "0.01",
-  "min-self-delegation": "1"
+  "group_policy_address": "$COUNCIL_AUTHORITY",
+  "proposers": ["$PROPOSER_ADDRESS"],
+  "title": "Seat $MONIKER",
+  "summary": "Admit $VALIDATOR_ADDRESS to the council and seat its validator",
+  "metadata": "",
+  "messages": [
+    {
+      "@type": "/cosmos.group.v1.MsgUpdateGroupMembers",
+      "admin": "$COUNCIL_AUTHORITY",
+      "group_id": "1",
+      "member_updates": [{"address": "$VALIDATOR_ADDRESS", "weight": "1", "metadata": "$MONIKER"}]
+    },
+    {
+      "@type": "/verana.poa.v1.MsgAddValidator",
+      "authority": "$COUNCIL_AUTHORITY",
+      "validator_address": "$VALIDATOR_ADDRESS",
+      "description": {"moniker": "$MONIKER", "identity": "", "website": "", "security_contact": "", "details": "Validator $VALIDATOR_NUM"},
+      "pubkey": $($BINARY tendermint show-validator --home $HOME_DIR)
+    }
+  ]
 }
 EOF
-
-# Create validator transaction
-log "Creating validator..."
-$BINARY tx staking create-validator "$HOME_DIR/validator.json" \
-    --from=$VALIDATOR_NAME \
-    --chain-id=$CHAIN_ID \
-    --keyring-backend=test \
-    --home $HOME_DIR \
-    --fees 800000uvna \
-    --gas 800000 \
-    --gas-adjustment 1.3 \
-    -y
+log "Submitting the seating proposal from cooluser and voting..."
+SUBMIT_HASH=$($BINARY tx group submit-proposal "$PROPOSAL_FILE" --from cooluser --keyring-backend test --home ~/.verana --chain-id $CHAIN_ID --fees 800000uvna --gas 600000 -y -o json -b sync | jq -r .txhash)
+sleep 6
+PROPOSAL_ID=$($BINARY q tx "$SUBMIT_HASH" -o json | jq -r '.events[] | select(.type=="cosmos.group.v1.EventSubmitProposal") | .attributes[] | select(.key=="proposal_id") | .value' | tr -d '"')
+$BINARY tx group vote "$PROPOSAL_ID" "$PROPOSER_ADDRESS" VOTE_OPTION_YES "" --from cooluser --keyring-backend test --home ~/.verana --chain-id $CHAIN_ID --fees 800000uvna -y -b sync
+for attempt in $(seq 1 20); do
+    sleep 6
+    $BINARY tx group exec "$PROPOSAL_ID" --from cooluser --keyring-backend test --home ~/.verana --chain-id $CHAIN_ID --fees 800000uvna -y -b sync >/dev/null 2>&1 || true
+    if $BINARY query staking validator "$($BINARY keys show $VALIDATOR_NAME -a --bech val --keyring-backend test --home $HOME_DIR)" >/dev/null 2>&1; then break; fi
+done
+log "If the council has more than one seat, the remaining members must vote on proposal $PROPOSAL_ID."
 
 log "Validator $VALIDATOR_NUM setup complete!"
 log "Starting validator with visible logs..."
