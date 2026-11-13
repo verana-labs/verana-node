@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.8](https://github.com/verana-labs/verana-node/compare/v0.10.7...v0.10.8) (2026-11-13)
+
+
+### Bug Fixes
+
+* publish a source bundle image alongside each release ([#83](https://github.com/verana-labs/verana-node/issues/83)) ([d1372ee](https://github.com/verana-labs/verana-node/commit/d1372ee464495234f9b88f8a6ebab4583aefa2bc))
+
 ## [0.10.7](https://github.com/verana-labs/verana-node/compare/v0.10.6...v0.10.7) (2026-10-27)
 
 
