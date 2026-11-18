@@ -15,8 +15,10 @@ APP_TOML_PATH="$HOME_DIR/config/app.toml"
 CONFIG_TOML_PATH="$HOME_DIR/config/config.toml"
 VALIDATOR_NAME="cooluser"
 VALIDATOR_AMOUNT="1000000000000000000000uvna"
-GENTX_AMOUNT="1000000000uvna"
+GENTX_AMOUNT="1000000uvna"
 SEED_PHRASE_COOLUSER="pink glory help gown abstract eight nice crazy forward ketchup skill cheese"
+SEED_PHRASE_COUNCIL_MEMBER1="answer effort virtual mother muffin stadium buddy air enact luggage burger slim couch brass sight merge legend aspect clown boss august wish unknown wasp"
+SEED_PHRASE_COUNCIL_MEMBER2="kitchen enough rough enforce bamboo easily exchange bullet error phone please razor claim quarter bounce stereo execute path pool series invite lucky warfare next"
 
 # Default ports for primary validator
 P2P_PORT="26656"
@@ -51,9 +53,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Replace remaining "stake" references and update governance params BEFORE gentx
+# Replace remaining "stake" references BEFORE gentx
 # Use Python for reliable cross-platform editing
-log "Replacing 'stake' with 'uvna' in genesis.json and updating governance params..."
+log "Replacing 'stake' with 'uvna' in genesis.json..."
 python3 - <<'PYEOF'
 import json, os
 
@@ -69,13 +71,8 @@ content = content.replace('"stake"', '"uvna"')
 with open(genesis_path, "w") as f:
     f.write(content)
 
-# Now update governance params via JSON
 with open(genesis_path) as f:
     g = json.load(f)
-
-g['app_state']['gov']['params']['max_deposit_period'] = '100s'
-g['app_state']['gov']['params']['voting_period'] = '100s'
-g['app_state']['gov']['params']['expedited_voting_period'] = '90s'
 
 # Seed an active TU->uvna exchange rate so TU-priced schemas resolve fees via
 # x/xr getPrice. rate=1000000/scale=0 matches the legacy trust_unit_price
@@ -98,6 +95,21 @@ g['app_state']['xr']['next_exchange_rate_id'] = "2"
 with open(genesis_path, "w") as f:
     json.dump(g, f, indent=2)
 PYEOF
+
+# Council members (vote only; the primary validator is the seated validator)
+log "Adding council member keys and genesis accounts..."
+echo "$SEED_PHRASE_COUNCIL_MEMBER1" | $BINARY keys add council_member1 --recover --keyring-backend test
+echo "$SEED_PHRASE_COUNCIL_MEMBER2" | $BINARY keys add council_member2 --recover --keyring-backend test
+$BINARY add-genesis-account council_member1 1000000000000uvna --keyring-backend test
+$BINARY add-genesis-account council_member2 1000000000000uvna --keyring-backend test
+
+# Seat the council: 3 seats, 2/3 policy; windows are short for devnet and overridable
+log "Seating the council in genesis..."
+$BINARY genesis add-council "$VALIDATOR_NAME,council_member1,council_member2${COUNCIL_MEMBERS:+,$COUNCIL_MEMBERS}" \
+    --voting-period "${COUNCIL_VOTING_PERIOD:-30s}" \
+    --min-execution-period "${COUNCIL_MIN_EXECUTION_PERIOD:-10s}" \
+    --unbonding-time "${COUNCIL_UNBONDING_TIME:-60s}" \
+    --keyring-backend test
 
 # Create gentx (bond_denom=uvna is now set in genesis)
 log "Creating genesis transaction..."

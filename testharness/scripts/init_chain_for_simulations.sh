@@ -3,7 +3,7 @@
 # 
 # This script initializes a fresh Verana blockchain chain optimized for TD yield simulations.
 # It sets up:
-# - Fast voting periods (30s voting, 20s expedited)
+# - A 3-seat council (cooluser + 2 voting members), 30s ballot, no min execution delay
 # - Reduced blocks_per_year (17280 = 1 day = 1 year) for faster yield accumulation
 # - All necessary configuration for running simulations
 
@@ -27,8 +27,10 @@ APP_TOML_PATH="$HOME_DIR/config/app.toml"
 CONFIG_TOML_PATH="$HOME_DIR/config/config.toml"
 VALIDATOR_NAME="cooluser"
 VALIDATOR_AMOUNT="1000000000000000000000uvna"
-GENTX_AMOUNT="1000000000uvna"
+GENTX_AMOUNT="1000000uvna"
 SEED_PHRASE_COOLUSER="pink glory help gown abstract eight nice crazy forward ketchup skill cheese"
+SEED_PHRASE_COUNCIL_MEMBER1="answer effort virtual mother muffin stadium buddy air enact luggage burger slim couch brass sight merge legend aspect clown boss august wish unknown wasp"
+SEED_PHRASE_COUNCIL_MEMBER2="kitchen enough rough enforce bamboo easily exchange bullet error phone please razor claim quarter bounce stereo execute path pool series invite lucky warfare next"
 
 # Simulation-specific parameters
 BLOCKS_PER_YEAR="${BLOCKS_PER_YEAR:-17280}"  # 1 day = 1 year (default, can be overridden via env var)
@@ -70,6 +72,25 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Replace all occurrences of "stake" with "uvna" in genesis.json
+log "Replacing 'stake' with 'uvna' in genesis.json..."
+sedi 's/stake/uvna/g' "$GENESIS_JSON_PATH"
+
+# Council members (vote only; cooluser is the seated validator)
+log "Adding council member keys and genesis accounts..."
+echo "$SEED_PHRASE_COUNCIL_MEMBER1" | $BINARY keys add council_member1 --recover --keyring-backend test
+echo "$SEED_PHRASE_COUNCIL_MEMBER2" | $BINARY keys add council_member2 --recover --keyring-backend test
+$BINARY add-genesis-account council_member1 1000000000000uvna --keyring-backend test
+$BINARY add-genesis-account council_member2 1000000000000uvna --keyring-backend test
+
+# Seat the council: 3 weight-1 members, 2/3 policy, short windows for simulations
+log "Seating the council in genesis..."
+$BINARY genesis add-council cooluser,council_member1,council_member2 \
+    --voting-period 30s \
+    --min-execution-period 0s \
+    --unbonding-time 60s \
+    --keyring-backend test
+
 # Create gentx
 log "Creating genesis transaction..."
 $BINARY gentx $VALIDATOR_NAME $GENTX_AMOUNT \
@@ -94,21 +115,6 @@ sedi 's/^minimum-gas-prices = .*/minimum-gas-prices = "0uvna"/' "$APP_TOML_PATH"
 sedi "s/:1317/:$API_PORT/" "$APP_TOML_PATH"
 sedi "s/:9090/:$GRPC_PORT/" "$APP_TOML_PATH"
 sedi "s/:9091/:$GRPC_WEB_PORT/" "$APP_TOML_PATH"
-
-# Replace all occurrences of "stake" with "uvna" in genesis.json
-log "Replacing 'stake' with 'uvna' in genesis.json..."
-sedi 's/stake/uvna/g' "$GENESIS_JSON_PATH"
-
-# Update governance params in genesis.json (fast periods for simulations)
-log "Updating governance parameters in genesis.json..."
-sedi 's/"max_deposit_period": ".*"/"max_deposit_period": "100s"/' "$GENESIS_JSON_PATH"
-sedi 's/"voting_period": ".*"/"voting_period": "30s"/' "$GENESIS_JSON_PATH"
-sedi 's/"expedited_voting_period": ".*"/"expedited_voting_period": "20s"/' "$GENESIS_JSON_PATH"
-
-if [ $? -ne 0 ]; then
-    log "Error: Failed to update governance parameters in genesis.json."
-    exit 1
-fi
 
 # Update blocks_per_year for fast simulations
 log "Updating blocks_per_year to $BLOCKS_PER_YEAR for fast simulations..."
@@ -235,9 +241,8 @@ log "=========================================="
 log "Simulation Configuration Summary"
 log "=========================================="
 log "blocks_per_year: $BLOCKS_PER_YEAR (1 day = 1 year)"
-log "Voting Period: 30s"
-log "Expedited Voting Period: 20s"
-log "Max Deposit Period: 100s"
+log "Council: cooluser, council_member1, council_member2 (2 of 3 to pass)"
+log "Ballot: 30s, min execution: 0s"
 log ""
 log "Expected per-block yield (for 5M uvna TD, 15% rate):"
 if command -v bc &> /dev/null; then

@@ -32,7 +32,6 @@ SECONDARY_GRPC_PORT="${SECONDARY_GRPC_PORT:-$((9090 + PORT_OFFSET))}"
 SECONDARY_GRPC_WEB_PORT="${SECONDARY_GRPC_WEB_PORT:-$((9091 + PORT_OFFSET))}"
 
 FUND_AMOUNT="${FUND_AMOUNT:-1500000000uvna}"
-STAKE_AMOUNT="${STAKE_AMOUNT:-1000000000uvna}"
 TX_FEES="${TX_FEES:-800000uvna}"
 SECONDARY_LOG_PATH="${SECONDARY_LOG_PATH:-/tmp/verana-validator${VALIDATOR_NUM}.log}"
 
@@ -98,31 +97,6 @@ send_funds_with_retry() {
   return 1
 }
 
-create_validator_with_retry() {
-  local validator_file="$1"
-  local max_attempts=5
-
-  for attempt in $(seq 1 "$max_attempts"); do
-    if "$BINARY" tx staking create-validator "$validator_file" \
-      --from "$VALIDATOR_NAME" \
-      --chain-id "$CHAIN_ID" \
-      --keyring-backend test \
-      --home "$SECONDARY_HOME" \
-      --node "$PRIMARY_RPC" \
-      --fees "$TX_FEES" \
-      --gas 800000 \
-      --gas-adjustment 1.3 \
-      -y >/tmp/secondary-validator-create.log 2>&1; then
-      return 0
-    fi
-
-    log "Create-validator tx failed (attempt ${attempt}/${max_attempts}), retrying..."
-    sleep 3
-  done
-
-  return 1
-}
-
 log "Bootstrapping secondary validator ${VALIDATOR_NUM}..."
 log "Chain ID: ${CHAIN_ID}"
 log "Primary RPC: ${PRIMARY_HTTP_RPC}"
@@ -168,38 +142,61 @@ sed_inplace 's/swagger = false/swagger = true/' "$APP_TOML_PATH"
 sed_inplace 's/enabled-unsafe-cors = false/enabled-unsafe-cors = true/' "$APP_TOML_PATH"
 sed_inplace 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["*"\]/' "$CONFIG_TOML_PATH"
 
+SEATED=0
 if "$BINARY" query staking validator "$SECONDARY_OPERATOR_ADDRESS" --node "$PRIMARY_RPC" >/dev/null 2>&1; then
-  log "Validator ${SECONDARY_OPERATOR_ADDRESS} already exists on-chain, skipping create-validator tx."
+  log "Validator ${SECONDARY_OPERATOR_ADDRESS} already seated on-chain."
+  SEATED=1
 else
-  log "Funding secondary validator address ${SECONDARY_ADDRESS}..."
+  log "Funding secondary validator address ${SECONDARY_ADDRESS} for fees..."
   if ! send_funds_with_retry "$SECONDARY_ADDRESS"; then
     log "Error: failed to fund secondary validator after retries."
     cat /tmp/secondary-validator-fund.log || true
     exit 1
   fi
 
-  sleep 5
-
-  log "Submitting create-validator for ${SECONDARY_OPERATOR_ADDRESS}..."
-  cat > "$SECONDARY_HOME/validator.json" <<EOF
+  COUNCIL_AUTHORITY="$("$BINARY" query poa council --node "$PRIMARY_RPC" -o json | jq -r .authority)"
+  PROPOSER_ADDRESS="$("$BINARY" keys show cooluser -a --keyring-backend test --home "$PRIMARY_HOME")"
+  PROPOSAL_FILE="$SECONDARY_HOME/add-validator-proposal.json"
+  cat > "$PROPOSAL_FILE" <<EOF
 {
-  "pubkey": $("$BINARY" tendermint show-validator --home "$SECONDARY_HOME"),
-  "amount": "${STAKE_AMOUNT}",
-  "moniker": "${MONIKER}",
-  "identity": "",
-  "website": "",
-  "security": "",
-  "details": "Validator ${VALIDATOR_NUM}",
-  "commission-rate": "0.10",
-  "commission-max-rate": "0.20",
-  "commission-max-change-rate": "0.01",
-  "min-self-delegation": "1"
+  "group_policy_address": "${COUNCIL_AUTHORITY}",
+  "proposers": ["${PROPOSER_ADDRESS}"],
+  "title": "Seat ${MONIKER}",
+  "summary": "Admit ${SECONDARY_ADDRESS} to the council and seat its validator",
+  "metadata": "",
+  "messages": [
+    {
+      "@type": "/cosmos.group.v1.MsgUpdateGroupMembers",
+      "admin": "${COUNCIL_AUTHORITY}",
+      "group_id": "1",
+      "member_updates": [{"address": "${SECONDARY_ADDRESS}", "weight": "1", "metadata": "${MONIKER}"}]
+    },
+    {
+      "@type": "/verana.poa.v1.MsgAddValidator",
+      "authority": "${COUNCIL_AUTHORITY}",
+      "validator_address": "${SECONDARY_ADDRESS}",
+      "description": {"moniker": "${MONIKER}", "identity": "", "website": "", "security_contact": "", "details": "Validator ${VALIDATOR_NUM}"},
+      "pubkey": $("$BINARY" tendermint show-validator --home "$SECONDARY_HOME")
+    }
+  ]
 }
 EOF
-
-  if ! create_validator_with_retry "$SECONDARY_HOME/validator.json"; then
-    log "Error: failed to create secondary validator after retries."
-    cat /tmp/secondary-validator-create.log || true
+  log "Submitting the seating proposal from cooluser and voting with cooluser + council_member1..."
+  SUBMIT_JSON="$("$BINARY" tx group submit-proposal "$PROPOSAL_FILE" --from cooluser --keyring-backend test --home "$PRIMARY_HOME" --node "$PRIMARY_RPC" --chain-id "$CHAIN_ID" --fees "$TX_FEES" --gas 600000 -y -o json -b sync)"
+  SUBMIT_HASH="$(echo "$SUBMIT_JSON" | jq -r .txhash)"
+  sleep 4
+  PROPOSAL_ID="$("$BINARY" q tx "$SUBMIT_HASH" --node "$PRIMARY_RPC" -o json | jq -r '.events[] | select(.type=="cosmos.group.v1.EventSubmitProposal") | .attributes[] | select(.key=="proposal_id") | .value' | tr -d '"')"
+  for voter in cooluser council_member1; do
+    "$BINARY" tx group vote "$PROPOSAL_ID" "$("$BINARY" keys show "$voter" -a --keyring-backend test --home "$PRIMARY_HOME")" VOTE_OPTION_YES "" --from "$voter" --keyring-backend test --home "$PRIMARY_HOME" --node "$PRIMARY_RPC" --chain-id "$CHAIN_ID" --fees "$TX_FEES" -y -b sync >/dev/null
+    sleep 2
+  done
+  for attempt in $(seq 1 20); do
+    "$BINARY" tx group exec "$PROPOSAL_ID" --from cooluser --keyring-backend test --home "$PRIMARY_HOME" --node "$PRIMARY_RPC" --chain-id "$CHAIN_ID" --fees "$TX_FEES" -y -b sync >/dev/null 2>&1 || true
+    sleep 3
+    if "$BINARY" query staking validator "$SECONDARY_OPERATOR_ADDRESS" --node "$PRIMARY_RPC" >/dev/null 2>&1; then SEATED=1; break; fi
+  done
+  if [[ "$SEATED" != "1" ]]; then
+    log "Error: proposal ${PROPOSAL_ID} did not seat ${SECONDARY_OPERATOR_ADDRESS}; the council windows may be long."
     exit 1
   fi
 fi
