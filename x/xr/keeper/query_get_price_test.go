@@ -58,6 +58,60 @@ func TestGetPrice_SameAsset(t *testing.T) {
 	require.Equal(t, "1000", resp.Price)
 }
 
+func TestGetPrice_ZeroAmount(t *testing.T) {
+	f := initFixture(t)
+	qs := keeper.NewQueryServerImpl(f.keeper)
+
+	req := &types.QueryGetPriceRequest{
+		BaseAssetType:  cstypes.PricingAssetType_COIN,
+		BaseAsset:      "uverana",
+		QuoteAssetType: cstypes.PricingAssetType_FIAT,
+		QuoteAsset:     "USD",
+		Amount:         "0",
+	}
+
+	// No exchange rate.
+	resp, err := qs.GetPrice(f.ctx, req)
+	require.NoError(t, err)
+	require.Equal(t, "0", resp.Price)
+
+	// Inactive and expired exchange rate.
+	seedPriceExchangeRate(t, f, "500", 2, false, true)
+
+	resp, err = qs.GetPrice(f.ctx, req)
+	require.NoError(t, err)
+	require.Equal(t, "0", resp.Price)
+}
+
+func TestGetPrice_ZeroAmountInvalidAsset(t *testing.T) {
+	f := initFixture(t)
+	qs := keeper.NewQueryServerImpl(f.keeper)
+
+	_, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
+		BaseAssetType:  cstypes.PricingAssetType_FIAT,
+		BaseAsset:      "usd",
+		QuoteAssetType: cstypes.PricingAssetType_COIN,
+		QuoteAsset:     "uverana",
+		Amount:         "0",
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "ISO-4217")
+}
+
+func TestGetPrice_NegativeAmount(t *testing.T) {
+	f := initFixture(t)
+	qs := keeper.NewQueryServerImpl(f.keeper)
+
+	_, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
+		BaseAssetType:  cstypes.PricingAssetType_COIN,
+		BaseAsset:      "uverana",
+		QuoteAssetType: cstypes.PricingAssetType_COIN,
+		QuoteAsset:     "uverana",
+		Amount:         "-1",
+	})
+	require.ErrorIs(t, err, types.ErrInvalidAmount)
+}
+
 func TestGetPrice_ValidConversion(t *testing.T) {
 	f := initFixture(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
