@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strings"
 	"testing"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 
 	"github.com/stretchr/testify/require"
 
@@ -7006,6 +7008,124 @@ func TestVSOA_CreateRootSkipsWithoutMsgTypes(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Len(t, delKeeper.GrantVSOACalls, 0)
+}
+
+// ownPolicyVsOperators are the encodings of corp's own policy_address.
+func ownPolicyVsOperators(corp string) map[string]string {
+	return map[string]string{"policy address": corp, "upper case": strings.ToUpper(corp)}
+}
+
+// [MOD-PP-MSG-1-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+func TestStartParticipantVP_VsOperatorOwnPolicy(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
+	ctx = sdk.WrapSDKContext(sdkCtx)
+	now := sdkCtx.BlockTime()
+	past := now.Add(-1 * time.Hour)
+
+	corp := sdk.AccAddress([]byte("own_policy_start____")).String()
+	operator := sdk.AccAddress([]byte("own_policy_start_op_")).String()
+	csKeeper.CreateMockCredentialSchema(1,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+	validatorID := vsoaValidator(t, k, sdkCtx, trkKeeper, corp, now, past)
+	delKeeper.Reset()
+
+	for name, vsOp := range ownPolicyVsOperators(corp) {
+		for _, msgTypes := range [][]string{nil, {types.MsgCreateOrUpdateParticipantSessionTypeURL}} {
+			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
+				msg := &types.MsgStartParticipantOP{
+					Corporation: corp, Operator: operator, Role: types.ParticipantRole_ISSUER,
+					ValidatorParticipantId: validatorID, Did: "did:example:own-policy-start",
+					VsOperator: vsOp, VsOperatorAuthzMsgTypes: msgTypes,
+				}
+				require.NoError(t, msg.ValidateBasic())
+				_, err := ms.StartParticipantOP(ctx, msg)
+				require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
+				require.Empty(t, delKeeper.GrantVSOACalls)
+				_, err = k.GetParticipantByID(sdkCtx, validatorID+1)
+				require.Error(t, err)
+			})
+		}
+	}
+}
+
+// [MOD-PP-MSG-7-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+func TestCreateRootParticipant_VsOperatorOwnPolicy(t *testing.T) {
+	k, ms, mockCsKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
+	ctx = sdk.WrapSDKContext(sdkCtx)
+
+	corp := sdk.AccAddress([]byte("own_policy_root_____")).String()
+	operator := sdk.AccAddress([]byte("own_policy_root_op__")).String()
+	did := "did:example:own-policy-root"
+	trID := trkKeeper.CreateMockEcosystem(corp, did)
+	mockCsKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+	trkKeeper.RegisterCorp(corp)
+	delKeeper.Reset()
+
+	for name, vsOp := range ownPolicyVsOperators(corp) {
+		for _, msgTypes := range [][]string{nil, {types.MsgSetParticipantOPToValidatedTypeURL}} {
+			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
+				msg := &types.MsgCreateRootParticipant{
+					Corporation: corp, Operator: operator, SchemaId: 1, Did: did,
+					VsOperator: vsOp, VsOperatorAuthzMsgTypes: msgTypes,
+				}
+				require.NoError(t, msg.ValidateBasic())
+				_, err := ms.CreateRootParticipant(ctx, msg)
+				require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
+				require.Empty(t, delKeeper.GrantVSOACalls)
+				_, err = k.GetParticipantByID(sdkCtx, 1)
+				require.Error(t, err)
+			})
+		}
+	}
+}
+
+// [MOD-PP-MSG-14-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+func TestSelfCreateParticipant_VsOperatorOwnPolicy(t *testing.T) {
+	k, ms, mockCsKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC))
+	ctx = sdk.WrapSDKContext(sdkCtx)
+	now := sdkCtx.BlockTime()
+	past := now.Add(-1 * time.Hour)
+
+	ecoDid := "did:example:own-policy-eco"
+	ecoCorp := sdk.AccAddress([]byte("own_policy_eco______")).String()
+	trID := trkKeeper.CreateMockEcosystem(ecoCorp, ecoDid)
+	mockCsKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+	rootID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM, Did: ecoDid,
+		CorporationId: trkKeeper.RegisterCorp(ecoCorp), Created: &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, EffectiveFrom: &past,
+	})
+	require.NoError(t, err)
+	corp := sdk.AccAddress([]byte("own_policy_self_____")).String()
+	operator := sdk.AccAddress([]byte("own_policy_self_op__")).String()
+	trkKeeper.RegisterCorp(corp)
+	delKeeper.Reset()
+
+	for name, vsOp := range ownPolicyVsOperators(corp) {
+		for _, msgTypes := range [][]string{nil, {types.MsgCreateOrUpdateParticipantSessionTypeURL}} {
+			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
+				msg := &types.MsgSelfCreateParticipant{
+					Corporation: corp, Operator: operator, Role: types.ParticipantRole_ISSUER,
+					ValidatorParticipantId: rootID, Did: "did:example:own-policy-self",
+					VsOperator: vsOp, VsOperatorAuthzMsgTypes: msgTypes,
+				}
+				require.NoError(t, msg.ValidateBasic())
+				_, err := ms.SelfCreateParticipant(ctx, msg)
+				require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
+				require.Empty(t, delKeeper.GrantVSOACalls)
+				_, err = k.GetParticipantByID(sdkCtx, rootID+1)
+				require.Error(t, err)
+			})
+		}
+	}
 }
 
 // TestSetParticipantVPToValidated_ViaVSOperatorDelegation covers the dual

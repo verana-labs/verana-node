@@ -31,6 +31,14 @@ func (k Keeper) GrantVSOperatorAuthorization(
 	if vsOperator == "" {
 		return fmt.Errorf("vs_operator cannot be empty")
 	}
+	// vs_operator MUST NOT be the corporation's own policy_address.
+	co, err := k.corporationKeeper().ResolveCorporationByID(ctx, corporationID)
+	if err != nil {
+		return fmt.Errorf("resolve corporation %d: %w", corporationID, err)
+	}
+	if types.IsOwnPolicyAddress(co.PolicyAddress, vsOperator) {
+		return types.ErrOwnPolicyAddress
+	}
 	if len(record.SpendLimit) > 0 && !record.SpendLimit.IsValid() {
 		return fmt.Errorf("invalid spend_limit")
 	}

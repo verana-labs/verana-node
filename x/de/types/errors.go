@@ -26,4 +26,5 @@ var (
 	ErrVSOFeegrantNotEnabled    = errors.Register(ModuleName, 1115, "VS operator authorization record does not enable fee grant")
 	ErrParticipantNotActive     = errors.Register(ModuleName, 1116, "participant is not an active participant")
 	ErrInvalidFeeSpendLimit     = errors.Register(ModuleName, 1117, "fee_spend_limit must be set and strictly positive iff with_feegrant is true")
+	ErrOwnPolicyAddress         = errors.Register(ModuleName, 1118, "grantee or vs_operator must not be the corporation's own policy_address")
 )

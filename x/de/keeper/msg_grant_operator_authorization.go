@@ -54,6 +54,11 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 		return nil, fmt.Errorf("authz_spend_limit_period must be a positive duration")
 	}
 
+	// grantee MUST NOT be the corporation's own policy_address.
+	if types.IsOwnPolicyAddress(co.PolicyAddress, msg.Grantee) {
+		return nil, types.ErrOwnPolicyAddress
+	}
+
 	// Mutual exclusivity: a VSOperatorAuthorization MUST NOT exist for
 	// (corporation_id, grantee).
 	hasVSOA, err := ms.VSOAByCorpOp.Has(ctx, collections.Join(co.Id, msg.Grantee))
