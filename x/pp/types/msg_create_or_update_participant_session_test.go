@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	"strings"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -56,6 +57,14 @@ func TestMsgCreateOrUpdateParticipantSession_ValidateBasic(t *testing.T) {
 		{"invalid corporation rejected", func(m *types.MsgCreateOrUpdateParticipantSession) {
 			m.Corporation = "bad"
 		}, "invalid corporation"},
+		{"valid verification with a 256-byte digest", func(m *types.MsgCreateOrUpdateParticipantSession) {
+			m.VerifierParticipantId = 2
+			m.Digest = strings.Repeat("a", 256)
+		}, ""},
+		{"verification with a 257-byte digest rejected", func(m *types.MsgCreateOrUpdateParticipantSession) {
+			m.VerifierParticipantId = 2
+			m.Digest = strings.Repeat("a", 257)
+		}, "digest exceeds maximum length"},
 	}
 
 	for _, tc := range tests {

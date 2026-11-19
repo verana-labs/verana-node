@@ -424,6 +424,19 @@ func setupTrackingMsgServer(t testing.TB, uaRate, wuaRate, tdRate string) (
 	*TrackingTrustDepositKeeper,
 	sdk.Context,
 ) {
+	return setupTrackingMsgServerWithDigest(t, uaRate, wuaRate, tdRate, &keepertest.MockDigestKeeper{})
+}
+
+// setupTrackingMsgServerWithDigest is setupTrackingMsgServer with a caller-supplied digest keeper.
+func setupTrackingMsgServerWithDigest(t testing.TB, uaRate, wuaRate, tdRate string, digestKeeper types.DigestKeeper) (
+	keeper.Keeper,
+	types.MsgServer,
+	*TrackingCredentialSchemaKeeper,
+	*TrackingEcosystemKeeper,
+	*TrackingBankKeeper,
+	*TrackingTrustDepositKeeper,
+	sdk.Context,
+) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
 	db := dbm.NewMemDB()
@@ -454,7 +467,7 @@ func setupTrackingMsgServer(t testing.TB, uaRate, wuaRate, tdRate string) (
 		tdKeeper,
 		bankKeeper,
 		&keepertest.MockDelegationKeeper{}, // permissive mock for CSPS tests
-		&keepertest.MockDigestKeeper{},     // permissive mock for CSPS tests
+		digestKeeper,
 	)
 
 	// Set a specific block time for consistent testing
@@ -1256,6 +1269,89 @@ func TestParticipantSession_FiatPricing(t *testing.T) {
 	require.True(t, bankKeeper.GetTotalReceived(ecosystem).IsZero(), "fiat fees are settled off-chain")
 	require.Equal(t, int64(20), tdKeeper.GetTotalAdjustment(ecosystem), "beneficiary trust deposit staked in native")
 	require.Equal(t, int64(20), tdKeeper.GetTotalAdjustment(creator), "payer trust deposit staked in native")
+}
+
+// TestParticipantSession_DigestIssuanceOnly: the digest is stored in a
+// Credential Issuance and ignored in a Credential Verification.
+func TestParticipantSession_DigestIssuanceOnly(t *testing.T) {
+	digestKeeper := &keepertest.MockDigestKeeper{}
+	k, ms, csKeeper, trkKeeper, _, _, ctx := setupTrackingMsgServerWithDigest(t, "0", "0", "0.2", digestKeeper)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	corp := sdk.AccAddress([]byte("dg_corp_____________")).String()
+	ecosystem := sdk.AccAddress([]byte("dg_ecosystem________")).String()
+
+	trID := trkKeeper.CreateMockEcosystem(ecosystem, "did:example:dg")
+	csKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+
+	rootID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM,
+		CorporationId: trkKeeper.RegisterCorp(ecosystem),
+		Created:       &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+	issuerID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ISSUER,
+		CorporationId: trkKeeper.RegisterCorp(corp),
+		Created:       &now, Modified: &now,
+		ValidatorParticipantId: rootID,
+		OpState:                types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime, VsOperator: corp,
+	})
+	require.NoError(t, err)
+	verifierID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_VERIFIER,
+		CorporationId: trkKeeper.RegisterCorp(corp),
+		Created:       &now, Modified: &now,
+		ValidatorParticipantId: rootID,
+		OpState:                types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime, VsOperator: corp,
+	})
+	require.NoError(t, err)
+
+	issuanceID := uuid.New().String()
+	tests := []struct {
+		name       string
+		sessionID  string
+		issuerID   uint64
+		verifierID uint64
+		digest     string
+		stored     bool
+		records    int
+	}{
+		{"Issuance stores the digest", issuanceID, issuerID, 0, "sha384-issuance", true, 1},
+		{"Verification with issuer ignores the digest", uuid.New().String(), issuerID, verifierID, "sha384-verification", false, 1},
+		{"Verification without issuer ignores the digest", uuid.New().String(), 0, verifierID, "sha384-verifier-only", false, 1},
+		{"Update with a verification ignores the digest", issuanceID, issuerID, verifierID, "sha384-update", false, 2},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			digestKeeper.Stored = nil
+
+			_, err := ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:           corp,
+				Operator:              corp,
+				Id:                    tc.sessionID,
+				IssuerParticipantId:   tc.issuerID,
+				VerifierParticipantId: tc.verifierID,
+				Digest:                tc.digest,
+			})
+			require.NoError(t, err)
+
+			if tc.stored {
+				require.Equal(t, []keepertest.MockDigestRecord{{Authority: corp, Digest: tc.digest}}, digestKeeper.Stored)
+			} else {
+				require.Empty(t, digestKeeper.Stored)
+			}
+			session, err := k.ParticipantSession.Get(sdkCtx, tc.sessionID)
+			require.NoError(t, err)
+			require.Len(t, session.SessionRecords, tc.records)
+		})
+	}
 }
 
 // TestParticipantSession_CrossSchemaIssuer: a verification that references an

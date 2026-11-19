@@ -374,7 +374,7 @@ Parameters:
 						},
 						"digest": {
 							Name:         "digest",
-							Usage:        "Optional digest derived from an issued or verified credential",
+							Usage:        "Optional digestJCS of the credential being issued; ignored in a Credential Verification",
 							DefaultValue: "",
 						},
 					},
