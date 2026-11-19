@@ -194,15 +194,17 @@ func TestCreateOrUpdateParticipantSession_FeeGrantCheck(t *testing.T) {
 	other := sdk.AccAddress([]byte("csps_other_granter__"))
 
 	cases := []struct {
-		name      string
-		verifier  bool
-		granter   sdk.AccAddress
-		feeErr    error
-		wantCalls int
-		wantErr   string
+		name          string
+		verifier      bool
+		foreignIssuer bool
+		granter       sdk.AccAddress
+		feeErr        error
+		wantCalls     int
+		wantErr       string
 	}{
 		{name: "issuer, corp pays", granter: corporation, wantCalls: 1},
 		{name: "verifier, corp pays", verifier: true, granter: corporation, wantCalls: 1},
+		{name: "verifier with another corporation's issuer, corp pays", verifier: true, foreignIssuer: true, granter: corporation, wantCalls: 1},
 		{name: "corp pays, record without with_feegrant", granter: corporation, feeErr: errors.New("feegrant not enabled"), wantCalls: 1, wantErr: "fee grant not authorized"},
 		{name: "other granter", granter: other, feeErr: errors.New("unused")},
 		{name: "operator pays", feeErr: errors.New("unused")},
@@ -240,6 +242,14 @@ func TestCreateOrUpdateParticipantSession_FeeGrantCheck(t *testing.T) {
 				msg.IssuerParticipantId = 0
 				wantID = newVS(types.ParticipantRole_VERIFIER)
 				msg.VerifierParticipantId = wantID
+			}
+			if tc.foreignIssuer {
+				msg.IssuerParticipantId, err = k.CreateParticipant(ctx, types.Participant{
+					SchemaId: 1, Role: types.ParticipantRole_ISSUER, CorporationId: trkKeeper.RegisterCorp(other.String()), VsOperator: other.String(),
+					Created: &now, Adjusted: &now, Modified: &now, ValidatorParticipantId: ecosystemID,
+					OpState: types.OnboardingState_VALIDATED, EffectiveFrom: &past,
+				})
+				require.NoError(t, err)
 			}
 
 			del.FeeGrantErr = tc.feeErr
