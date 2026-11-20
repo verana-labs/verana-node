@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.10.8](https://github.com/verana-labs/verana-node/compare/v0.10.7...v0.10.8) (2026-11-20)
+
+
+### Bug Fixes
+
+* **de,pp:** refuse the corporation's own policy_address as grantee or vs_operator (MOD-DE-MSG-3-2, MOD-DE-MSG-5-2) ([#92](https://github.com/verana-labs/verana-node/issues/92)) ([069e1c0](https://github.com/verana-labs/verana-node/commit/069e1c0c6fbc5065b44236115cbcb25186b29840))
+* **pp:** apply session ownership checks to the primary participant only (MOD-PP-MSG-10-2) ([#89](https://github.com/verana-labs/verana-node/issues/89)) ([b9df2b2](https://github.com/verana-labs/verana-node/commit/b9df2b2a9af2cd75e11595f56e2684b7d4f97575))
+* **pp:** store the credential digest only in a Credential Issuance (MOD-PP-MSG-10-4) ([#91](https://github.com/verana-labs/verana-node/issues/91)) ([0eb0c32](https://github.com/verana-labs/verana-node/commit/0eb0c32c35e6883038288a8c0291410689ffc0be))
+* publish a source bundle image alongside each release ([#83](https://github.com/verana-labs/verana-node/issues/83)) ([d1372ee](https://github.com/verana-labs/verana-node/commit/d1372ee464495234f9b88f8a6ebab4583aefa2bc))
+* **xr:** return 0 from Get Price for a zero amount without an exchange rate (MOD-XR-QRY-3-3) ([#90](https://github.com/verana-labs/verana-node/issues/90)) ([886e84d](https://github.com/verana-labs/verana-node/commit/886e84d20e3762557902d0b4952b0e953bc474b2))
+
 ## [0.10.7](https://github.com/verana-labs/verana-node/compare/v0.10.6...v0.10.7) (2026-10-27)
 
 
