@@ -3320,6 +3320,12 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 	issuerParticipantDiffAuthID, err := k.CreateParticipant(sdkCtx, issuerParticipantDiffAuth)
 	require.NoError(t, err)
 
+	// Create expired issuer participant with different authority
+	issuerParticipantExpired := issuerParticipantDiffAuth
+	issuerParticipantExpired.EffectiveUntil = &pastTime
+	issuerParticipantExpiredID, err := k.CreateParticipant(sdkCtx, issuerParticipantExpired)
+	require.NoError(t, err)
+
 	// Create verifier participant
 	verifierParticipant := types.Participant{
 		SchemaId:               1,
@@ -3334,6 +3340,18 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 		EffectiveFrom:          &pastTime,
 	}
 	verifierParticipantID, err := k.CreateParticipant(sdkCtx, verifierParticipant)
+	require.NoError(t, err)
+
+	// Create verifier participant with different vs_operator
+	verifierParticipantDiffOp := verifierParticipant
+	verifierParticipantDiffOp.VsOperator = otherOperator
+	verifierParticipantDiffOpID, err := k.CreateParticipant(sdkCtx, verifierParticipantDiffOp)
+	require.NoError(t, err)
+
+	// Create verifier participant with different authority
+	verifierParticipantDiffAuth := verifierParticipant
+	verifierParticipantDiffAuth.CorporationId = trkKeeper.RegisterCorp(otherAuthority)
+	verifierParticipantDiffAuthID, err := k.CreateParticipant(sdkCtx, verifierParticipantDiffAuth)
 	require.NoError(t, err)
 
 	// Create verifier and agent participants of another schema
@@ -3589,6 +3607,74 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 				WalletAgentParticipantId: walletAgentParticipantID,
 			},
 			expectErr: false,
+		},
+		{
+			name: "Verification with issuer of another vs_operator",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantDiffOpID,
+				VerifierParticipantId:    verifierParticipantID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr: false,
+		},
+		{
+			name: "Verification with issuer of another authority",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantDiffAuthID,
+				VerifierParticipantId:    verifierParticipantID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr: false,
+		},
+		{
+			name: "Verification with expired issuer of another authority",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantExpiredID,
+				VerifierParticipantId:    verifierParticipantID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr:  true,
+			errMessage: "issuer participant is not valid",
+		},
+		{
+			name: "Verifier vs_operator mismatch",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority,
+				Operator:                 operator, // does not match verifierParticipantDiffOp.VsOperator
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantID,
+				VerifierParticipantId:    verifierParticipantDiffOpID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr:  true,
+			errMessage: "verifier participant vs_operator does not match operator",
+		},
+		{
+			name: "Verifier authority mismatch",
+			msg: &types.MsgCreateOrUpdateParticipantSession{
+				Corporation:              authority, // not the corporation of verifierParticipantDiffAuth
+				Operator:                 operator,
+				Id:                       uuid.New().String(),
+				IssuerParticipantId:      issuerParticipantID,
+				VerifierParticipantId:    verifierParticipantDiffAuthID,
+				AgentParticipantId:       agentParticipantID,
+				WalletAgentParticipantId: walletAgentParticipantID,
+			},
+			expectErr:  true,
+			errMessage: "verifier participant authority does not match authority",
 		},
 		{
 			name: "Issuer and verifier schema mismatch",

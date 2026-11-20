@@ -1562,3 +1562,85 @@ func TestParticipantSession_SameSchemaIssuer(t *testing.T) {
 	require.Equal(t, issuerID, session.SessionRecords[0].IssuerParticipantId)
 	require.Equal(t, verifierID, session.SessionRecords[0].VerifierParticipantId)
 }
+
+// TestParticipantSession_CrossCorporationIssuer: a verification may reference
+// the issuer entry of another corporation, which is paid as a beneficiary.
+func TestParticipantSession_CrossCorporationIssuer(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, bankKeeper, tdKeeper, ctx := setupTrackingMsgServer(t, "0", "0", "0.2")
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	verifierCorp := sdk.AccAddress([]byte("xc_verifier_corp____")).String()
+	verifierOp := sdk.AccAddress([]byte("xc_verifier_operator")).String()
+	issuerCorp := sdk.AccAddress([]byte("xc_issuer_corp______")).String()
+	issuerOp := sdk.AccAddress([]byte("xc_issuer_operator__")).String()
+	ecosystem := sdk.AccAddress([]byte("xc_ecosystem________")).String()
+	bankKeeper.SetBalance(verifierCorp, sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, 100000)))
+
+	trID := trkKeeper.CreateMockEcosystem(ecosystem, "did:example:xc")
+	csKeeper.UpdateMockCredentialSchema(1, trID,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN)
+
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+
+	rootID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ECOSYSTEM,
+		CorporationId: trkKeeper.RegisterCorp(ecosystem),
+		Created:       &now, Modified: &now,
+		OpState: types.OnboardingState_VALIDATED, VerificationFees: 20, EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+	issuerID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_ISSUER,
+		CorporationId: trkKeeper.RegisterCorp(issuerCorp),
+		Created:       &now, Modified: &now,
+		ValidatorParticipantId: rootID,
+		OpState:                types.OnboardingState_VALIDATED, VerificationFees: 10, EffectiveFrom: &pastTime, VsOperator: issuerOp,
+	})
+	require.NoError(t, err)
+	verifierID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId: 1, Role: types.ParticipantRole_VERIFIER,
+		CorporationId: trkKeeper.RegisterCorp(verifierCorp),
+		Created:       &now, Modified: &now,
+		ValidatorParticipantId: rootID,
+		OpState:                types.OnboardingState_VALIDATED, EffectiveFrom: &pastTime, VsOperator: verifierOp,
+	})
+	require.NoError(t, err)
+
+	sessionID := uuid.New().String()
+	_, err = ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
+		Corporation:           verifierCorp,
+		Operator:              verifierOp,
+		Id:                    sessionID,
+		IssuerParticipantId:   issuerID,
+		VerifierParticipantId: verifierID,
+	})
+	require.NoError(t, err)
+
+	// issuer fee 10 and root fee 20: payees get 8 and 16, deposits 2 and 4.
+	require.Equal(t, int64(8), bankKeeper.GetTotalReceived(issuerCorp).AmountOf(types.BondDenom).Int64())
+	require.Equal(t, int64(16), bankKeeper.GetTotalReceived(ecosystem).AmountOf(types.BondDenom).Int64())
+	require.Equal(t, int64(2), tdKeeper.GetTotalAdjustment(issuerCorp))
+	require.Equal(t, int64(4), tdKeeper.GetTotalAdjustment(ecosystem))
+	require.Equal(t, int64(6), tdKeeper.GetTotalAdjustment(verifierCorp))
+
+	// only the verifier's corporation pays
+	require.True(t, bankKeeper.GetTotalDeducted(issuerCorp).IsZero())
+	require.True(t, bankKeeper.GetTotalDeducted(ecosystem).IsZero())
+
+	issuer, err := k.Participant.Get(sdkCtx, issuerID)
+	require.NoError(t, err)
+	require.Equal(t, uint64(2), issuer.Deposit)
+	verifier, err := k.Participant.Get(sdkCtx, verifierID)
+	require.NoError(t, err)
+	require.Equal(t, uint64(6), verifier.Deposit)
+
+	session, err := k.ParticipantSession.Get(sdkCtx, sessionID)
+	require.NoError(t, err)
+	require.Equal(t, trkKeeper.RegisterCorp(verifierCorp), session.CorporationId)
+	require.Equal(t, verifierOp, session.VsOperator)
+	require.Len(t, session.SessionRecords, 1)
+	require.Equal(t, issuerID, session.SessionRecords[0].IssuerParticipantId)
+	require.Equal(t, verifierID, session.SessionRecords[0].VerifierParticipantId)
+}
