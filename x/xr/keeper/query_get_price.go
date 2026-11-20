@@ -42,9 +42,8 @@ func (k Keeper) GetPrice(ctx context.Context, baseAssetType cstypes.PricingAsset
 		return "", status.Error(codes.InvalidArgument, "invalid amount: must be a valid integer")
 	}
 
-	// Amount must be positive
-	if !amountInt.IsPositive() {
-		return "", errorsmod.Wrapf(types.ErrInvalidAmount, "amount must be positive, got %s", amount)
+	if amountInt.IsNegative() {
+		return "", errorsmod.Wrapf(types.ErrInvalidAmount, "amount must not be negative, got %s", amount)
 	}
 
 	// [MOD-XR-QRY-3-1] asset_type/identifier consistency for both sides.
@@ -53,6 +52,11 @@ func (k Keeper) GetPrice(ctx context.Context, baseAssetType cstypes.PricingAsset
 	}
 	if err := types.ValidateAssetIdentifier(quoteAssetType, quoteAsset, "quote"); err != nil {
 		return "", status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	// [MOD-XR-QRY-3-3] zero converts to 0 without an exchange rate.
+	if amountInt.IsZero() {
+		return "0", nil
 	}
 
 	// Same asset pair: return amount directly
