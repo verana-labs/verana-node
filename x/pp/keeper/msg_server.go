@@ -48,6 +48,11 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
+	// [MOD-PP-MSG-1-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+	if detypes.IsOwnPolicyAddress(msg.Corporation, msg.VsOperator) {
+		return nil, detypes.ErrOwnPolicyAddress
+	}
+
 	// [MOD-PP-MSG-1-2-2] Participant checks
 	validatorParticipant, err := ms.validateParticipantChecks(ctx, msg)
 	if err != nil {
@@ -695,6 +700,11 @@ func (ms msgServer) CreateRootParticipant(goCtx context.Context, msg *types.MsgC
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
+	}
+
+	// [MOD-PP-MSG-7-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+	if detypes.IsOwnPolicyAddress(msg.Corporation, msg.VsOperator) {
+		return nil, detypes.ErrOwnPolicyAddress
 	}
 
 	// [MOD-PP-MSG-7-2-1] Create Root Participant basic checks
@@ -1628,6 +1638,11 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	}
 	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, "/verana.pp.v1.MsgSelfCreateParticipant", now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
+	}
+
+	// [MOD-PP-MSG-14-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+	if detypes.IsOwnPolicyAddress(msg.Corporation, msg.VsOperator) {
+		return nil, detypes.ErrOwnPolicyAddress
 	}
 
 	// [MOD-PP-MSG-14-2-1] Load validator_participant from validator_participant_id

@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -171,6 +172,38 @@ func TestGrantOperatorAuthorization_OperatorPath(t *testing.T) {
 	require.Error(t, err)
 }
 
+// [MOD-DE-MSG-3-2] grantee MUST NOT be the corporation's own policy_address.
+func TestGrantOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	operator := acc("operator____________")
+
+	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
+		Corporation: corporation, Operator: corporation, Grantee: operator,
+		MsgTypes: []string{"/verana.de.v1.MsgGrantOperatorAuthorization"},
+	})
+	require.NoError(t, err)
+
+	for name, msg := range map[string]*types.MsgGrantOperatorAuthorization{
+		"group proposal": {Corporation: corporation, Operator: corporation, Grantee: corporation},
+		"with feegrant":  {Corporation: corporation, Operator: corporation, Grantee: corporation, WithFeegrant: true, FeegrantSpendLimit: uvna(10)},
+		"operator path":  {Corporation: corporation, Operator: operator, Grantee: corporation},
+		"upper case":     {Corporation: corporation, Operator: corporation, Grantee: strings.ToUpper(corporation), WithFeegrant: true},
+	} {
+		t.Run(name, func(t *testing.T) {
+			msg.MsgTypes = []string{mtEcosystem}
+			require.NoError(t, msg.ValidateBasic())
+			_, err := ms.GrantOperatorAuthorization(ctx, msg)
+			require.ErrorIs(t, err, types.ErrOwnPolicyAddress)
+
+			has, err := f.keeper.OperatorAuthorizationByCorpOp.Has(ctx, collections.Join(uint64(1), msg.Grantee))
+			require.NoError(t, err)
+			require.False(t, has)
+			require.Empty(t, f.feegrants.grants)
+		})
+	}
+}
+
 func TestRevokeOperatorAuthorization(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
@@ -239,6 +272,29 @@ func TestGrantVSOperatorAuthorization_MutualExclusivity(t *testing.T) {
 	err := k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
 		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []string{mtValidated}})
 	require.ErrorIs(t, err, types.ErrOperatorAuthzExistsMutex)
+}
+
+// [MOD-DE-MSG-5-2] vs_operator MUST NOT be the corporation's own policy_address.
+func TestGrantVSOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	k := f.keeper
+	policy := corpPolicyAddr(1)
+
+	for name, vsOp := range map[string]string{"policy address": policy, "upper case": strings.ToUpper(policy)} {
+		t.Run(name, func(t *testing.T) {
+			require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 5)), types.ErrOwnPolicyAddress)
+			require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
+				types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtValidated}}), types.ErrOwnPolicyAddress)
+
+			has, err := k.VSOAByCorpOp.Has(ctx, collections.Join(uint64(1), vsOp))
+			require.NoError(t, err)
+			require.False(t, has)
+			require.Empty(t, f.feegrants.grants)
+		})
+	}
+
+	// Another corporation's policy_address stays a valid vs_operator.
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, corpPolicyAddr(2), feegrantRecord(10, 5)))
 }
 
 func TestGrantVSOperatorAuthorization_SingleCorp(t *testing.T) {

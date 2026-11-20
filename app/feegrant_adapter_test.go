@@ -185,23 +185,42 @@ func newSelfGrantEnv(t *testing.T) selfGrantEnv {
 	return e
 }
 
-// selfCreate creates an ISSUER of X whose vs_operator is X's own policy address.
+// seedSelfVSOA stores p for X with X's own policy address as vs_operator and a
+// fee-granting record, the state the handlers accepted before refusing it.
+func (e selfGrantEnv) seedSelfVSOA(t *testing.T, p pptypes.Participant) uint64 {
+	t.Helper()
+	X, de := e.pX.String(), e.a.DeKeeper
+	p.CorporationId, p.VsOperator = 2, X
+	id, err := e.a.ParticipantKeeper.CreateParticipant(e.ctx, p)
+	require.NoError(t, err)
+	n, err := de.VSOASeq.Next(e.ctx)
+	require.NoError(t, err)
+	require.NoError(t, de.VSOperatorAuthorizations.Set(e.ctx, n+1, detypes.VSOperatorAuthorization{
+		Id: n + 1, CorporationId: 2, VsOperator: X,
+		Records: []detypes.ParticipantAuthorizationRecord{{
+			ParticipantId: id, MsgTypes: []string{pptypes.MsgCreateOrUpdateParticipantSessionTypeURL},
+			WithFeegrant: true, FeeSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", 1)),
+		}},
+	}))
+	require.NoError(t, de.VSOAByCorpOp.Set(e.ctx, collections.Join(uint64(2), X), n+1))
+	require.NoError(t, de.VSOACorpByOperator.Set(e.ctx, X, 2))
+	require.NoError(t, de.VSOAByParticipant.Set(e.ctx, id, n+1))
+	require.NoError(t, de.SyncVSOperatorAuthorization(e.ctx, id))
+	return id
+}
+
+// selfCreate seeds an active ISSUER of X whose vs_operator is X's own policy address.
 func (e selfGrantEnv) selfCreate(t *testing.T, effectiveUntil *time.Time) uint64 {
 	t.Helper()
-	msg := &pptypes.MsgSelfCreateParticipant{
-		Corporation: e.pX.String(), Operator: e.opX.String(), Role: pptypes.ParticipantRole_ISSUER,
-		ValidatorParticipantId: e.rootID, Did: "did:example:issuerx", VsOperator: e.pX.String(),
-		EffectiveUntil:               effectiveUntil,
-		VsOperatorAuthzMsgTypes:      []string{pptypes.MsgCreateOrUpdateParticipantSessionTypeURL},
-		VsOperatorAuthzWithFeegrant:  true,
-		VsOperatorAuthzFeeSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", 1)),
-	}
-	require.NoError(t, msg.ValidateBasic())
-	res, err := e.pps.SelfCreateParticipant(e.ctx, msg)
+	now := e.ctx.BlockTime()
+	id := e.seedSelfVSOA(t, pptypes.Participant{
+		Role: pptypes.ParticipantRole_ISSUER, SchemaId: 1, ValidatorParticipantId: e.rootID, Did: "did:example:issuerx",
+		Created: &now, Modified: &now, EffectiveFrom: &now, EffectiveUntil: effectiveUntil,
+		OpState: pptypes.OnboardingState_VALIDATED, OpLastStateChange: &now,
+	})
+	_, err := e.a.FeeGrantKeeper.GetAllowance(e.ctx, e.pX, e.pX)
 	require.NoError(t, err)
-	_, err = e.a.FeeGrantKeeper.GetAllowance(e.ctx, e.pX, e.pX)
-	require.NoError(t, err)
-	return res.Id
+	return id
 }
 
 func (e selfGrantEnv) requireNoSelfGrant(t *testing.T, ctx sdk.Context) {
@@ -232,27 +251,51 @@ func TestSelfFeeGrant_RevokeParticipant(t *testing.T) {
 
 func TestSelfFeeGrant_OperatorAuthorization(t *testing.T) {
 	e := newSelfGrantEnv(t)
-	X := e.pX.String()
-	grant := func(withFeegrant bool) error {
-		msg := &detypes.MsgGrantOperatorAuthorization{Corporation: X, Operator: X, Grantee: X, MsgTypes: []string{"/verana.ec.v1.MsgCreateEcosystem"}, WithFeegrant: withFeegrant}
-		if withFeegrant {
-			msg.FeegrantSpendLimit = sdk.NewCoins(sdk.NewInt64Coin("uvna", 10))
-		}
-		_, err := e.des.GrantOperatorAuthorization(e.ctx, msg)
-		return err
-	}
+	X, de := e.pX.String(), e.a.DeKeeper
+	msgTypes := []string{"/verana.ec.v1.MsgCreateEcosystem"}
 
-	require.NoError(t, grant(true))
-	require.NoError(t, grant(true))
-	_, err := e.a.FeeGrantKeeper.GetAllowance(e.ctx, e.pX, e.pX)
+	// Stored before the handler refused the corporation as its own grantee.
+	n, err := de.OperatorAuthorizationSeq.Next(e.ctx)
+	require.NoError(t, err)
+	require.NoError(t, de.OperatorAuthorizations.Set(e.ctx, n+1, detypes.OperatorAuthorization{Id: n + 1, CorporationId: 2, Operator: X, MsgTypes: msgTypes}))
+	require.NoError(t, de.OperatorAuthorizationByCorpOp.Set(e.ctx, collections.Join(uint64(2), X), n+1))
+	require.NoError(t, de.GrantFeeAllowance(e.ctx, 2, X, msgTypes, nil, sdk.NewCoins(sdk.NewInt64Coin("uvna", 10)), nil))
+	_, err = e.a.FeeGrantKeeper.GetAllowance(e.ctx, e.pX, e.pX)
 	require.NoError(t, err)
 
-	require.NoError(t, grant(false))
-	e.requireNoSelfGrant(t, e.ctx)
+	_, err = e.des.GrantOperatorAuthorization(e.ctx, &detypes.MsgGrantOperatorAuthorization{Corporation: X, Operator: X, Grantee: X, MsgTypes: msgTypes})
+	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
 
-	require.NoError(t, grant(true))
 	_, err = e.des.RevokeOperatorAuthorization(e.ctx, &detypes.MsgRevokeOperatorAuthorization{Corporation: X, Operator: X, Grantee: X})
 	require.NoError(t, err)
+	e.requireNoSelfGrant(t, e.ctx)
+}
+
+// Each call is stopped by a different check: participant handler, module call,
+// operator authorization handler.
+func TestSelfFeeGrant_Refused(t *testing.T) {
+	e := newSelfGrantEnv(t)
+	X := e.pX.String()
+	limit := sdk.NewCoins(sdk.NewInt64Coin("uvna", 1))
+
+	_, err := e.pps.SelfCreateParticipant(e.ctx, &pptypes.MsgSelfCreateParticipant{
+		Corporation: X, Operator: e.opX.String(), Role: pptypes.ParticipantRole_ISSUER,
+		ValidatorParticipantId: e.rootID, Did: "did:example:issuerx", VsOperator: X,
+	})
+	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
+
+	err = e.a.DeKeeper.GrantVSOperatorAuthorization(e.ctx, 2, X, detypes.ParticipantAuthorizationRecord{
+		ParticipantId: 99, MsgTypes: []string{pptypes.MsgCreateOrUpdateParticipantSessionTypeURL},
+		WithFeegrant: true, FeeSpendLimit: limit,
+	})
+	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
+
+	_, err = e.des.GrantOperatorAuthorization(e.ctx, &detypes.MsgGrantOperatorAuthorization{
+		Corporation: X, Operator: X, Grantee: X, MsgTypes: []string{"/verana.ec.v1.MsgCreateEcosystem"},
+		WithFeegrant: true, FeegrantSpendLimit: limit,
+	})
+	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
+
 	e.requireNoSelfGrant(t, e.ctx)
 }
 
@@ -321,7 +364,7 @@ func TestSelfFeeGrant_ValidatedEntry(t *testing.T) {
 
 	_, err = e.des.GrantOperatorAuthorization(ctx, &detypes.MsgGrantOperatorAuthorization{
 		Corporation: e.pX.String(), Operator: e.pX.String(), Grantee: e.opX.String(),
-		MsgTypes: []string{"/verana.pp.v1.MsgStartParticipantOP", "/verana.pp.v1.MsgRenewParticipantOP"},
+		MsgTypes: []string{"/verana.pp.v1.MsgRenewParticipantOP"},
 	})
 	require.NoError(t, err)
 	_, err = e.des.GrantOperatorAuthorization(ctx, &detypes.MsgGrantOperatorAuthorization{
@@ -330,15 +373,11 @@ func TestSelfFeeGrant_ValidatedEntry(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	res, err := e.pps.StartParticipantOP(ctx, &pptypes.MsgStartParticipantOP{
-		Corporation: e.pX.String(), Operator: e.opX.String(), Role: pptypes.ParticipantRole_ISSUER,
-		ValidatorParticipantId: rootID, Did: "did:example:issuerx2", VsOperator: e.pX.String(),
-		VsOperatorAuthzMsgTypes:      []string{pptypes.MsgCreateOrUpdateParticipantSessionTypeURL},
-		VsOperatorAuthzWithFeegrant:  true,
-		VsOperatorAuthzFeeSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", 1)),
+	now := ctx.BlockTime()
+	id := e.seedSelfVSOA(t, pptypes.Participant{
+		Role: pptypes.ParticipantRole_ISSUER, SchemaId: 2, ValidatorParticipantId: rootID, Did: "did:example:issuerx2",
+		Created: &now, Modified: &now, OpState: pptypes.OnboardingState_PENDING, OpLastStateChange: &now,
 	})
-	require.NoError(t, err)
-	id := res.ParticipantId
 	validate := &pptypes.MsgSetParticipantOPToValidated{Corporation: e.pE.String(), Operator: e.opE.String(), Id: id}
 	_, err = e.pps.SetParticipantOPToValidated(ctx, validate)
 	require.NoError(t, err)

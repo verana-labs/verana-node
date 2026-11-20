@@ -44,7 +44,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "GrantOperatorAuthorization",
 					Use:       "grant-operator-authz [grantee]",
 					Short:     "Grant operator authorization to a grantee on behalf of a corporation",
-					Long:      "[MOD-DE-MSG-3] Grant operator authorization. The signer (--from) is the operator: the corporation's policy_address on the group-proposal path, or an authorized operator. The grantee receives authorization to execute specified message types on behalf of the corporation. Optionally includes a fee grant.",
+					Long:      "[MOD-DE-MSG-3] Grant operator authorization. The signer (--from) is the operator: the corporation's policy_address on the group-proposal path, or an authorized operator. The grantee receives authorization to execute specified message types on behalf of the corporation and cannot be the corporation's own policy_address. Optionally includes a fee grant.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "grantee"},
 					},

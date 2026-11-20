@@ -145,7 +145,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						},
 						"vs_operator": {
 							Name:         "vs-operator",
-							Usage:        "Optional Verifiable Service operator account address",
+							Usage:        "Optional Verifiable Service operator account address (cannot be the corporation's own policy_address)",
 							DefaultValue: "",
 						},
 						"vs_operator_authz_msg_types": {
