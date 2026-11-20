@@ -471,11 +471,8 @@ func (ms msgServer) executeCreateOrUpdateParticipantSession(ctx sdk.Context, msg
 		return fmt.Errorf("failed to create/update session: %w", err)
 	}
 
-	// [MOD-PP-MSG-10] If this transaction is for issuance of a credential, persist
-	// the digest SRI by calling [MOD-DI-MSG-1] keeper-to-keeper. Spec explicitly
-	// lets participant invoke DI with no signer/AUTHZ check. Scoped to the issuance
-	// path and only when the caller supplied a non-empty digest.
-	if msg.Digest != "" && msg.IssuerParticipantId != 0 {
+	// [MOD-PP-MSG-10-4] Credential Issuance only: persist the digest via [MOD-DI-MSG-1].
+	if msg.Digest != "" && !isVerification {
 		if ms.digestKeeper == nil {
 			return fmt.Errorf("digest keeper is required but not set")
 		}
