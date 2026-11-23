@@ -24,21 +24,29 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
+// delegate, and returns the resolved corporation id.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (uint64, error) {
+	if ms.delegationKeeper == nil {
+		return 0, fmt.Errorf("delegation keeper is required for delegate authorization")
+	}
+	co, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
+	if err != nil {
+		return 0, err
+	}
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, delegate, msgType, ctx.BlockTime()); err != nil {
+		return 0, fmt.Errorf("authorization check failed: %w", err)
+	}
+	return co.Id, nil
+}
+
 func (ms msgServer) CreateCredentialSchema(goCtx context.Context, msg *types.MsgCreateCredentialSchema) (*types.MsgCreateCredentialSchemaResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// [MOD-CS-MSG-1-2-1] [AUTHZ-CHECK] Verify delegate authorization
-	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
-	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Delegate,
-		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
-		ctx.BlockTime(),
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
+	// [MOD-CS-MSG-1-2-1] [AUTHZ-CHECK]
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA)
+	if err != nil {
+		return nil, err
 	}
 
 	// Generate next ID
@@ -48,7 +56,7 @@ func (ms msgServer) CreateCredentialSchema(goCtx context.Context, msg *types.Msg
 	}
 
 	// [MOD-CS-MSG-1-2-1] Basic checks
-	if err := ms.validateCreateCredentialSchemaParams(ctx, msg); err != nil {
+	if err := ms.validateCreateCredentialSchemaParams(ctx, msg, corporationID); err != nil {
 		return nil, err
 	}
 
@@ -66,18 +74,10 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-CS-MSG-2-2-1] [AUTHZ-CHECK] Verify delegate authorization
-	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
-	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Delegate,
-		detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA,
-		now,
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
+	// [MOD-CS-MSG-2-2-1] [AUTHZ-CHECK]
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA)
+	if err != nil {
+		return nil, err
 	}
 
 	// Get credential schema
@@ -87,7 +87,7 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 	}
 
 	// [MOD-CS-MSG-2-2-1] Check ecosystem authority
-	if err := ms.checkSchemaOwnership(ctx, cs, msg.Corporation); err != nil {
+	if err := ms.checkSchemaOwnership(ctx, cs, corporationID); err != nil {
 		return nil, err
 	}
 
@@ -175,18 +175,10 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-CS-MSG-3-2-1] [AUTHZ-CHECK] Verify delegate authorization
-	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
-	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Delegate,
-		detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA,
-		now,
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
+	// [MOD-CS-MSG-3-2-1] [AUTHZ-CHECK]
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA)
+	if err != nil {
+		return nil, err
 	}
 
 	// Get credential schema
@@ -196,7 +188,7 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 	}
 
 	// [MOD-CS-MSG-3-2-1] Check ecosystem authority
-	if err := ms.checkSchemaOwnership(ctx, cs, msg.Corporation); err != nil {
+	if err := ms.checkSchemaOwnership(ctx, cs, corporationID); err != nil {
 		return nil, err
 	}
 

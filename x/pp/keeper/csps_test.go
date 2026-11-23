@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 	ectypes "github.com/verana-labs/verana-node/x/ec/types"
 	"github.com/verana-labs/verana-node/x/pp/keeper"
@@ -396,9 +397,12 @@ func NewTrackingCorporationKeeper(ekKeeper *TrackingEcosystemKeeper) *TrackingCo
 	return &TrackingCorporationKeeper{corporationByPolicyAddr: ekKeeper.corporationByPolicyAddr}
 }
 
-func (k *TrackingCorporationKeeper) ResolveByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, bool) {
+func (k *TrackingCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context, policyAddress string) (types.CorporationView, error) {
 	v, ok := k.corporationByPolicyAddr[policyAddress]
-	return v, ok
+	if !ok {
+		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
+	}
+	return v, nil
 }
 
 func (k *TrackingCorporationKeeper) ResolveByID(ctx context.Context, id uint64) (types.CorporationView, bool) {

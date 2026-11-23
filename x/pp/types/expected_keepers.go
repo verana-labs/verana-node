@@ -64,7 +64,7 @@ type CorporationView struct {
 // participants persist corporation_id (uint64), but fund-flows (trust deposit,
 // feegrant, slashing) operate on the Corporation policy_address account.
 type CorporationKeeper interface {
-	ResolveByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, bool)
+	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 	ResolveByID(ctx context.Context, id uint64) (CorporationView, bool)
 	ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error)
 }
@@ -94,10 +94,10 @@ type DigestKeeper interface {
 // its co.id (via AUTHZ-CHECK-5) before invoking the VSOA lifecycle / check
 // methods, which take corporation_id (uint64).
 type DelegationKeeper interface {
-	// [AUTHZ-CHECK-1] delegate authorization check (corporation account + delegate).
-	CheckDelegateAuthorization(ctx context.Context, authority string, delegate string, msgType detypes.MsgType, now time.Time) error
+	// [AUTHZ-CHECK-1] delegate authorization check (corporation id + delegate).
+	CheckDelegateAuthorization(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time) error
 	// [AUTHZ-CHECK-1] step 3: debit the operation's nominal spend from remaining_spend.
-	ConsumeDelegateSpend(ctx context.Context, authority string, delegate string, msgType detypes.MsgType, now time.Time, amount sdk.Coins) error
+	ConsumeDelegateSpend(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time, amount sdk.Coins) error
 	// [AUTHZ-CHECK-3] record-based VS operator authorization check on a participant.
 	CheckVSOperatorAuthorizationOnParticipant(ctx context.Context, corporationID uint64, vsOperator string, participantID uint64, msgType detypes.MsgType) error
 	// [AUTHZ-CHECK-3] step 6: debit the operation's nominal spend from the record's remaining_spend.

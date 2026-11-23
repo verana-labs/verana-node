@@ -25,6 +25,9 @@ func setupMsgServer(t *testing.T) (*fixture, types.MsgServer, sdk.Context) {
 
 func acc(s string) string { return sdk.AccAddress([]byte(s)).String() }
 
+// testCorpID is the id mockCorpKeeper resolves every corporation account to.
+const testCorpID uint64 = 1
+
 const (
 	mtEcosystem = types.MsgType_MSG_TYPE_CREATE_ECOSYSTEM
 	mtSchema    = types.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA

@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	dekeeper "github.com/verana-labs/verana-node/x/de/keeper"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
-	"github.com/verana-labs/verana-node/x/pp/keeper"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -28,33 +28,12 @@ type plainTxStub struct{ sdk.Tx }
 func anteCtx(t *testing.T, ctx sdk.Context, tx sdk.Tx) sdk.Context {
 	t.Helper()
 	var got sdk.Context
-	_, err := keeper.NewFeeGranterAnteHandler(func(c sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
+	_, err := dekeeper.NewFeeGranterAnteHandler(func(c sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
 		got = c
 		return c, nil
 	})(ctx, tx, false)
 	require.NoError(t, err)
 	return got
-}
-
-func TestFeeGranterAnteHandler_CallsNextOnce(t *testing.T) {
-	_, _, ctx, _, _ := setupTriggerResolver(t)
-	tx := feeTxStub{granter: sdk.AccAddress([]byte("corp_trigger________"))}
-	nextErr := errors.New("next failed")
-
-	var calls int
-	var gotTx sdk.Tx
-	var gotSimulate bool
-	out, err := keeper.NewFeeGranterAnteHandler(func(c sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
-		calls++
-		gotTx, gotSimulate = tx, simulate
-		return c.WithBlockHeight(7), nextErr
-	})(ctx, tx, true)
-
-	require.ErrorIs(t, err, nextErr)
-	require.Equal(t, 1, calls)
-	require.Equal(t, tx, gotTx)
-	require.True(t, gotSimulate)
-	require.EqualValues(t, 7, out.BlockHeight())
 }
 
 func TestTriggerResolver_FeeGrantCheck(t *testing.T) {

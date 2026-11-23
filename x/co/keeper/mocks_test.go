@@ -15,12 +15,14 @@ import (
 // mockDelegation lets a test pre-program AUTHZ-CHECK-1 results.
 // Default zero value returns nil from CheckDelegateAuthorization (auth granted).
 type mockDelegation struct {
-	err   error
-	calls int
+	err       error
+	calls     int
+	gotCorpID uint64
 }
 
-func (m *mockDelegation) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (m *mockDelegation) CheckDelegateAuthorization(_ context.Context, corporationID uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	m.calls++
+	m.gotCorpID = corporationID
 	return m.err
 }
 
@@ -71,6 +73,18 @@ type mockGF struct {
 		preferredLang string
 	}
 	listCalls int
+
+	ngfErr   error
+	ngfCalls int
+	ngfCo    gftypes.CorporationView
+	ngfNow   time.Time
+}
+
+func (m *mockGF) CheckNetworkGFAcceptance(_ context.Context, co gftypes.CorporationView, now time.Time) error {
+	m.ngfCalls++
+	m.ngfCo = co
+	m.ngfNow = now
+	return m.ngfErr
 }
 
 func (m *mockGF) CreateInitialGFVersionForCorporation(_ context.Context, corpID uint64, language, docURL, docDigestSRI string) error {

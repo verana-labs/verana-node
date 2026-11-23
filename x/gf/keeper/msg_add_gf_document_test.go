@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/gf/keeper"
 	"github.com/verana-labs/verana-node/x/gf/types"
@@ -25,8 +26,20 @@ const (
 // mockDelegation implements types.DelegationKeeper.
 type mockDelegation struct{ err error }
 
-func (m mockDelegation) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (m mockDelegation) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return m.err
+}
+
+// recordingDelegation records the AUTHZ-CHECK-1 calls it receives.
+type recordingDelegation struct {
+	calls     int
+	gotCorpID uint64
+}
+
+func (m *recordingDelegation) CheckDelegateAuthorization(_ context.Context, corporationID uint64, _ string, _ detypes.MsgType, _ time.Time) error {
+	m.calls++
+	m.gotCorpID = corporationID
+	return nil
 }
 
 // mockEcosystem implements types.EcosystemKeeper.
@@ -53,8 +66,11 @@ type mockCorporation struct {
 	setFn func(uint64, uint32) error
 }
 
-func (m *mockCorporation) ResolveByPolicyAddress(_ context.Context, _ string) (types.CorporationView, bool) {
-	return m.view, m.found
+func (m *mockCorporation) ResolveCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
+	if !m.found {
+		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
+	}
+	return m.view, nil
 }
 func (m *mockCorporation) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool) {
 	return m.view, m.found
@@ -187,15 +203,28 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		require.ErrorIs(t, err, types.ErrSubjectNotFound)
 	})
 
-	t.Run("MOD-GF-MSG-1-2-1: corporation not registered aborts (StubCorporationKeeper behaviour)", func(t *testing.T) {
-		// found: false — simulates the StubCorporationKeeper that returns
-		// (zero, false) from ResolveByPolicyAddress until MOD-CO (#303) lands.
+	t.Run("AUTHZ-CHECK-5: unregistered corporation aborts before AUTHZ-CHECK-1", func(t *testing.T) {
 		corp := &mockCorporation{found: false}
-		eco := &mockEcosystem{}
-		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
+		del := &recordingDelegation{}
+		k, ctx := keepertest.GfKeeperWithDelegation(t, del, &mockEcosystem{}, corp)
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
-		require.ErrorIs(t, err, types.ErrSubjectNotFound)
+		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
+		require.Zero(t, del.calls)
+	})
+
+	t.Run("AUTHZ-CHECK-1 gets the resolved corporation id", func(t *testing.T) {
+		corp := &mockCorporation{
+			view:  types.CorporationView{Id: 7, PolicyAddress: testCorp, Language: "en"},
+			found: true,
+		}
+		del := &recordingDelegation{}
+		k, ctx := keepertest.GfKeeperWithDelegation(t, del, &mockEcosystem{}, corp)
+		ms := keeper.NewMsgServerImpl(k)
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
+		require.NoError(t, err)
+		require.Equal(t, 1, del.calls)
+		require.Equal(t, uint64(7), del.gotCorpID)
 	})
 
 	t.Run("MOD-GF-MSG-1-1: ValidateBasic rejects malformed Msg before AUTHZ-CHECK", func(t *testing.T) {

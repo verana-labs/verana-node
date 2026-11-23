@@ -96,9 +96,10 @@ func (k Keeper) HasUnrepaidSlash(ctx sdk.Context, corporationID uint64) (bool, e
 // resolveCorporationID resolves a corporation policy_address (account) to its
 // registered Corporation id. Trust deposits are keyed by corporation_id, but the
 // account is still needed for bank transfers, so callers pass the account and use
-// the returned id only as the storage key.
+// the returned id only as the storage key. The account need not be the
+// message's corporation, so no GF-CHECK-1 runs here.
 func (k Keeper) resolveCorporationID(ctx sdk.Context, account string) (uint64, error) {
-	co, err := k.coKeeper.ResolveCorporationByPolicyAddress(ctx, account)
+	co, err := k.coKeeper.GetCorporationByPolicyAddress(ctx, account)
 	if err != nil {
 		return 0, err
 	}

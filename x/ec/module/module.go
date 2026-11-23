@@ -138,9 +138,8 @@ func init() {
 }
 
 // ProvideCorporationKeeperForEC supplies ectypes.CorporationKeeper for MOD-ES
-// AUTHZ-CHECK-5, sourced from the concrete x/co keeper. Required because
-// cokeeper does not satisfy ResolveByPolicyAddress directly (the adapter
-// wraps the CorporationByPolicyAddr collection into the interface shape).
+// AUTHZ-CHECK-5, sourced from the concrete x/co keeper. Required because the
+// adapter maps the x/co Corporation onto the MOD-ES view.
 func ProvideCorporationKeeperForEC(co cokeeper.Keeper) types.CorporationKeeper {
 	return keeper.NewCoAsECCorporationKeeper(co)
 }

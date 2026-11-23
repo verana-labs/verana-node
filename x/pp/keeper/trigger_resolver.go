@@ -23,6 +23,12 @@ func (ms msgServer) TriggerResolver(goCtx context.Context, msg *types.MsgTrigger
 		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
 
+	// [AUTHZ-CHECK-5]
+	corpID, err := ms.corpIDFromAccount(ctx, msg.Corporation)
+	if err != nil {
+		return nil, err
+	}
+
 	// [MOD-PP-MSG-15-2-1] Basic checks.
 	perm, err := ms.Keeper.GetParticipantByID(ctx, msg.Id)
 	if err != nil {
@@ -30,12 +36,6 @@ func (ms msgServer) TriggerResolver(goCtx context.Context, msg *types.MsgTrigger
 	}
 	if err := IsValidParticipant(perm, now); err != nil {
 		return nil, fmt.Errorf("participant %d is not active: %w", msg.Id, err)
-	}
-
-	// [AUTHZ-CHECK-5] Resolve the signing corporation account to its co.id.
-	corpID, err := ms.corpIDFromAccount(ctx, msg.Corporation)
-	if err != nil {
-		return nil, err
 	}
 
 	// [MOD-PP-MSG-15-2-2] Authorization (at least one path MUST pass).
@@ -105,7 +105,7 @@ func (ms msgServer) authorizeTriggerResolver(
 			continue
 		}
 		if err := ms.delegationKeeper.CheckDelegateAuthorization(
-			ctx, corpAccount, delegate, msgType, now); err == nil {
+			ctx, corpID, delegate, msgType, now); err == nil {
 			return nil
 		}
 	}

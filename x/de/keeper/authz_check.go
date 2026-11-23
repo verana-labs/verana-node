@@ -24,21 +24,19 @@ func (k Keeper) emitDelegateAuthzUpdated(ctx context.Context, authzID uint64) {
 	)
 }
 
-// CheckDelegateAuthorization implements [AUTHZ-CHECK-1] membership: existence,
-// expiration/period renewal, and msg_type membership. The spend debit (step 3)
-// is applied by ConsumeDelegateSpend once the handler knows the amount.
-//
-// `corporation` is the signing corporation account (policy_address); it is
-// resolved to co.id via AUTHZ-CHECK-5 before the (corporation_id, delegate)
-// index lookup.
+// CheckDelegateAuthorization implements [AUTHZ-CHECK-1] for delegate acting for
+// the corporation that AUTHZ-CHECK-5 resolved to corporationID: existence,
+// expiration/period renewal, msg_type membership and GF-CHECK-2. The spend
+// debit (step 3) is applied by ConsumeDelegateSpend once the handler knows the
+// amount.
 func (k Keeper) CheckDelegateAuthorization(
 	ctx context.Context,
-	corporation string,
+	corporationID uint64,
 	delegate string,
 	msgType types.MsgType,
 	now time.Time,
 ) error {
-	_, err := k.checkDelegateAuthorizationCore(ctx, corporation, delegate, msgType, now)
+	_, err := k.checkDelegateAuthorizationCore(ctx, corporationID, delegate, msgType, now)
 	return err
 }
 
@@ -51,7 +49,7 @@ func (k Keeper) CheckDelegateAuthorization(
 // any later step in the handler fails.
 func (k Keeper) ConsumeDelegateSpend(
 	ctx context.Context,
-	corporation string,
+	corporationID uint64,
 	delegate string,
 	msgType types.MsgType,
 	now time.Time,
@@ -60,7 +58,7 @@ func (k Keeper) ConsumeDelegateSpend(
 	if amount.IsZero() {
 		return nil
 	}
-	da, err := k.checkDelegateAuthorizationCore(ctx, corporation, delegate, msgType, now)
+	da, err := k.checkDelegateAuthorizationCore(ctx, corporationID, delegate, msgType, now)
 	if err != nil {
 		return err
 	}
@@ -80,23 +78,16 @@ func (k Keeper) ConsumeDelegateSpend(
 }
 
 // checkDelegateAuthorizationCore performs the period-renewal / expiration +
-// msg_type checks and returns the loaded DelegateAuthorization.
+// msg_type checks and GF-CHECK-2, and returns the loaded DelegateAuthorization.
 func (k Keeper) checkDelegateAuthorizationCore(
 	ctx context.Context,
-	corporation string,
+	corporationID uint64,
 	delegate string,
 	msgType types.MsgType,
 	now time.Time,
 ) (types.DelegateAuthorization, error) {
-	// Resolve the signing corporation account to its co.id (AUTHZ-CHECK-5). An
-	// unregistered corporation cannot have granted any authorization.
-	co, err := k.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, corporation)
-	if err != nil {
-		return types.DelegateAuthorization{}, types.ErrAuthzNotFound
-	}
-
 	// 1. Load DelegateAuthorization via the (corporation_id, delegate) index.
-	da, found, err := k.getDelegateAuthorizationByCorpDelegate(ctx, co.Id, delegate)
+	da, found, err := k.getDelegateAuthorizationByCorpDelegate(ctx, corporationID, delegate)
 	if err != nil {
 		return types.DelegateAuthorization{}, err
 	}
@@ -125,6 +116,11 @@ func (k Keeper) checkDelegateAuthorizationCore(
 	// 3. Check that the requested msg type is authorized.
 	if !slices.Contains(da.MsgTypes, msgType) {
 		return types.DelegateAuthorization{}, fmt.Errorf("%w: %s", types.ErrAuthzMsgTypeNotFound, msgType)
+	}
+
+	// 4. GF-CHECK-2.
+	if err := k.gfRef.K.CheckDelegateCGFAcceptance(ctx, corporationID, &da, now); err != nil {
+		return types.DelegateAuthorization{}, err
 	}
 
 	return da, nil

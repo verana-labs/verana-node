@@ -3,6 +3,9 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
+
+	"cosmossdk.io/collections"
 
 	"github.com/verana-labs/verana-node/x/de/types"
 )
@@ -47,4 +50,35 @@ type StubParticipantKeeper struct{}
 
 func (StubParticipantKeeper) ViewParticipant(_ context.Context, _ uint64) (types.ParticipantView, bool) {
 	return types.ParticipantView{}, false
+}
+
+// gfKeeperRef holds the GovernanceFrameworkKeeper behind a shared pointer, like
+// corpKeeperRef. Wired via SetGovernanceFrameworkKeeper.
+type gfKeeperRef struct {
+	K types.GovernanceFrameworkKeeper
+}
+
+// StubGovernanceFrameworkKeeper is the pre-wiring default: GF-CHECK-2 aborts
+// instead of passing silently.
+type StubGovernanceFrameworkKeeper struct{}
+
+func (StubGovernanceFrameworkKeeper) CheckDelegateCGFAcceptance(_ context.Context, corporationID uint64, _ *types.DelegateAuthorization, _ time.Time) error {
+	return fmt.Errorf("governance framework keeper not wired: cannot run GF-CHECK-2 for corporation %d", corporationID)
+}
+
+// vsAccountBudgetStoreRef holds the VsAccountBudgetStore behind a shared pointer.
+// Wired via SetVsAccountBudgetStore.
+type vsAccountBudgetStoreRef struct {
+	S types.VsAccountBudgetStore
+}
+
+// StubVsAccountBudgetStore is the pre-wiring default: no entry has a budget.
+type StubVsAccountBudgetStore struct{}
+
+func (StubVsAccountBudgetStore) Get(_ context.Context, _ uint64) (types.VsAccountBudget, error) {
+	return types.VsAccountBudget{}, collections.ErrNotFound
+}
+
+func (StubVsAccountBudgetStore) Set(_ context.Context, vsID uint64, _ types.VsAccountBudget) error {
+	return fmt.Errorf("VS account budget store not wired: cannot write the budget of entry %d", vsID)
 }

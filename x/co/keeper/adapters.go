@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"time"
 
 	"github.com/verana-labs/cosmos-group"
 	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
@@ -41,4 +42,8 @@ func (a GFKeeperAdapter) CreateInitialGFVersionForCorporation(ctx context.Contex
 
 func (a GFKeeperAdapter) ListVersionsByCorporation(ctx context.Context, corpID uint64, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
 	return a.k.ListVersionsByCorporation(ctx, corpID, activeVersion, activeOnly, preferredLang)
+}
+
+func (a GFKeeperAdapter) CheckNetworkGFAcceptance(ctx context.Context, co gftypes.CorporationView, now time.Time) error {
+	return a.k.CheckNetworkGFAcceptance(ctx, co, now)
 }

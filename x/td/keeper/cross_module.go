@@ -26,3 +26,11 @@ func (a CoAsTDCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.C
 	}
 	return types.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, nil
 }
+
+func (a CoAsTDCorporationKeeper) GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, error) {
+	co, err := a.k.GetCorporationByPolicyAddress(ctx, policyAddress)
+	if err != nil {
+		return types.CorporationView{}, err
+	}
+	return types.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, nil
+}

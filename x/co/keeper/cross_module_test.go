@@ -7,6 +7,7 @@ import (
 
 	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
 	"github.com/verana-labs/verana-node/x/co/keeper"
+	"github.com/verana-labs/verana-node/x/co/types"
 )
 
 func TestCoAsGFCorporationKeeper(t *testing.T) {
@@ -18,18 +19,18 @@ func TestCoAsGFCorporationKeeper(t *testing.T) {
 
 	adapter := keeper.NewCoAsGFCorporationKeeper(k)
 
-	// ResolveByPolicyAddress hit.
-	view, ok := adapter.ResolveByPolicyAddress(ctx, "cosmos1corp")
-	require.True(t, ok)
+	// ResolveCorporationByPolicyAddress hit.
+	view, err := adapter.ResolveCorporationByPolicyAddress(ctx, "cosmos1corp")
+	require.NoError(t, err)
 	require.Equal(t, uint64(1), view.Id)
 	require.Equal(t, uint32(1), view.ActiveVersion)
 
 	// Miss.
-	_, ok = adapter.ResolveByPolicyAddress(ctx, "cosmos1nobody")
-	require.False(t, ok)
+	_, err = adapter.ResolveCorporationByPolicyAddress(ctx, "cosmos1nobody")
+	require.ErrorIs(t, err, types.ErrCorporationNotRegistered)
 
 	// GetByID hit + miss.
-	view, ok = adapter.GetByID(ctx, 1)
+	view, ok := adapter.GetByID(ctx, 1)
 	require.True(t, ok)
 	require.Equal(t, "cosmos1corp", view.PolicyAddress)
 	_, ok = adapter.GetByID(ctx, 999)
