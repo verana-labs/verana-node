@@ -73,23 +73,6 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 		if err := IsValidParticipant(issuerParticipant, now); err != nil {
 			return fmt.Errorf("issuer participant is not valid: %w", err)
 		}
-
-		// if issuer_participant.vs_operator is not equal to operator, abort
-		if issuerParticipant.VsOperator != msg.Operator {
-			return fmt.Errorf("issuer participant vs_operator does not match operator")
-		}
-
-		// if issuer_participant.authority is not equal to authority, abort
-		issuerCorpAcct, err := ms.corpAccountFromID(ctx, issuerParticipant.CorporationId)
-		if err != nil {
-			return err
-		}
-		if issuerCorpAcct != msg.Corporation {
-			return fmt.Errorf("issuer participant authority does not match authority")
-		}
-
-		// if digest is present but not a valid digest SRI, abort
-		// (already validated in ValidateBasic)
 	}
 
 	// if verifier_participant_id is not null
@@ -111,30 +94,34 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 			return fmt.Errorf("verifier participant is not valid: %w", err)
 		}
 
-		// if verifier_participant.vs_operator is not equal to operator, abort
-		if verifierParticipant.VsOperator != msg.Operator {
-			return fmt.Errorf("verifier participant vs_operator does not match operator")
+		// if issuer_participant is not null and verifier_participant.schema_id != issuer_participant.schema_id, abort
+		if hasIssuer && verifierParticipant.SchemaId != issuerParticipant.SchemaId {
+			return fmt.Errorf("verifier participant schema does not match issuer participant schema")
 		}
-
-		// if verifier_participant.authority is not equal to authority, abort
-		verifierCorpAcct, err := ms.corpAccountFromID(ctx, verifierParticipant.CorporationId)
-		if err != nil {
-			return err
-		}
-		if verifierCorpAcct != msg.Corporation {
-			return fmt.Errorf("verifier participant authority does not match authority")
-		}
-
-		// if digest is present but not a valid digest SRI, abort
-		// (already validated in ValidateBasic)
 	}
 
-	// Define the primary participant: if verifier_participant is not null, participant = verifier_participant, else participant = issuer_participant
-	var primaryParticipant types.Participant
+	// if digest is present and longer than 256 characters, abort
+	// (already validated in ValidateBasic)
+
+	// Define the primary participant: verifier_participant in a Credential Verification, else issuer_participant.
+	// The vs_operator and corporation checks apply to it only.
+	primaryParticipant, primaryRole := issuerParticipant, "issuer"
 	if hasVerifier {
-		primaryParticipant = verifierParticipant
-	} else if hasIssuer {
-		primaryParticipant = issuerParticipant
+		primaryParticipant, primaryRole = verifierParticipant, "verifier"
+	}
+
+	// if participant.vs_operator is not equal to operator, abort
+	if primaryParticipant.VsOperator != msg.Operator {
+		return fmt.Errorf("%s participant vs_operator does not match operator", primaryRole)
+	}
+
+	// if participant.corporation_id is not the signing corporation, abort
+	primaryCorpAcct, err := ms.corpAccountFromID(ctx, primaryParticipant.CorporationId)
+	if err != nil {
+		return err
+	}
+	if primaryCorpAcct != msg.Corporation {
+		return fmt.Errorf("%s participant authority does not match authority", primaryRole)
 	}
 
 	// [AUTHZ-CHECK-3] MUST pass for the primary participant. Resolve co.id once and
@@ -466,11 +453,8 @@ func (ms msgServer) executeCreateOrUpdateParticipantSession(ctx sdk.Context, msg
 		return fmt.Errorf("failed to create/update session: %w", err)
 	}
 
-	// [MOD-PP-MSG-10] If this transaction is for issuance of a credential, persist
-	// the digest SRI by calling [MOD-DI-MSG-1] keeper-to-keeper. Spec explicitly
-	// lets participant invoke DI with no signer/AUTHZ check. Scoped to the issuance
-	// path and only when the caller supplied a non-empty digest.
-	if msg.Digest != "" && msg.IssuerParticipantId != 0 {
+	// [MOD-PP-MSG-10-4] Credential Issuance only: persist the digest via [MOD-DI-MSG-1].
+	if msg.Digest != "" && !isVerification {
 		if ms.digestKeeper == nil {
 			return fmt.Errorf("digest keeper is required but not set")
 		}

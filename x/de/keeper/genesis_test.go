@@ -28,3 +28,21 @@ func TestGenesis(t *testing.T) {
 	require.True(t, got.WindowEndQueue[0].WindowEnd.Equal(until))
 	require.Equal(t, uint64(7), got.WindowEndQueue[0].ParticipantId)
 }
+
+func TestGenesis_RebuildsOperatorIndex(t *testing.T) {
+	vsOp := acc("vsop_genesis________")
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+		VsOperatorAuthorizations: []types.VSOperatorAuthorization{{
+			Id: 1, CorporationId: 4, VsOperator: vsOp,
+			Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 9, MsgTypes: []string{mtValidated}}},
+		}},
+		VsoaSeq: 1,
+	}
+
+	f := initFixture(t)
+	require.NoError(t, f.keeper.InitGenesis(f.ctx, genesisState))
+	corp, err := f.keeper.VSOACorpByOperator.Get(f.ctx, vsOp)
+	require.NoError(t, err)
+	require.Equal(t, uint64(4), corp)
+}

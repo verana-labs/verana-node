@@ -57,6 +57,17 @@ var VPRDelegableMsgTypes = map[string]bool{
 // authorization msg_types while still allowing it in VSOA fee grants.
 const MsgCreateOrUpdateParticipantSessionTypeURL = "/verana.pp.v1.MsgCreateOrUpdateParticipantSession"
 
+// IsOwnPolicyAddress reports whether account is the corporation's
+// policy_address. Decoded addresses are compared: bech32 accepts both cases.
+func IsOwnPolicyAddress(policyAddress, account string) bool {
+	policy, err := sdk.AccAddressFromBech32(policyAddress)
+	if err != nil {
+		return false
+	}
+	addr, err := sdk.AccAddressFromBech32(account)
+	return err == nil && addr.Equals(policy)
+}
+
 // ValidateBasic performs stateless validation on MsgGrantOperatorAuthorization.
 func (msg *MsgGrantOperatorAuthorization) ValidateBasic() error {
 	// corporation is mandatory

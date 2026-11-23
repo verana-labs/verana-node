@@ -10,6 +10,7 @@ import (
 	credentialschematypes "github.com/verana-labs/verana-node/x/cs/types"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -45,6 +46,11 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
+	}
+
+	// [MOD-PP-MSG-1-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+	if detypes.IsOwnPolicyAddress(msg.Corporation, msg.VsOperator) {
+		return nil, detypes.ErrOwnPolicyAddress
 	}
 
 	// [MOD-PP-MSG-1-2-2] Participant checks
@@ -696,6 +702,11 @@ func (ms msgServer) CreateRootParticipant(goCtx context.Context, msg *types.MsgC
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
+	// [MOD-PP-MSG-7-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+	if detypes.IsOwnPolicyAddress(msg.Corporation, msg.VsOperator) {
+		return nil, detypes.ErrOwnPolicyAddress
+	}
+
 	// [MOD-PP-MSG-7-2-1] Create Root Participant basic checks
 	effectiveFromR, err := ms.validateCreateRootParticipantBasicChecks(ctx, msg, now)
 	if err != nil {
@@ -830,11 +841,11 @@ func (ms msgServer) checkCreateRootParticipantOverlap(ctx sdk.Context, msg *type
 	}
 	var conflict types.Participant
 	var found bool
-	err = ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
-		if p.SchemaId != msg.SchemaId ||
-			p.Role != types.ParticipantRole_ECOSYSTEM ||
-			p.CorporationId != msgCorpId {
-			return false, nil
+	rng := collections.NewSuperPrefixedTripleRange[uint64, uint64, uint64](msg.SchemaId, msgCorpId)
+	err = ms.RootParticipantBySchemaCorp.Walk(ctx, rng, func(key collections.Triple[uint64, uint64, uint64]) (bool, error) {
+		p, err := ms.Participant.Get(ctx, key.K3())
+		if err != nil {
+			return true, err
 		}
 		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&
 			overlapsWindow(p, effectiveFromR, msg.EffectiveUntil) {
@@ -1077,13 +1088,12 @@ func (ms msgServer) checkAdjustParticipantOverlap(ctx sdk.Context, applicantPart
 	now := ctx.BlockTime()
 	var conflict types.Participant
 	var found bool
-	err := ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+	err := ms.walkParticipantsByDID(ctx, applicantParticipant.Did, func(p types.Participant) (bool, error) {
 		if p.Id == applicantParticipant.Id ||
 			p.SchemaId != applicantParticipant.SchemaId ||
 			p.Role != applicantParticipant.Role ||
 			p.ValidatorParticipantId != applicantParticipant.ValidatorParticipantId ||
-			p.CorporationId != applicantParticipant.CorporationId ||
-			p.Did != applicantParticipant.Did {
+			p.CorporationId != applicantParticipant.CorporationId {
 			return false, nil
 		}
 		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&
@@ -1281,22 +1291,6 @@ func (ms msgServer) checkEcosystemControllerOption(ctx sdk.Context, authority st
 
 // [MOD-PP-MSG-9-3] Revoke Participant execution
 func (ms msgServer) executeRevokeParticipant(ctx sdk.Context, participant types.Participant, now time.Time) error {
-	// Free associated trust deposit if non-zero
-	if participant.Deposit > 0 {
-		corpAcct, err := ms.corpAccountFromID(ctx, participant.CorporationId)
-		if err != nil {
-			return err
-		}
-		depositI64, err := uint64ToInt64(participant.Deposit, "revoke_release_deposit")
-		if err != nil {
-			return err
-		}
-		if err := ms.trustDeposit.AdjustTrustDeposit(ctx, corpAcct, -depositI64, "participant_revoke_release_deposit"); err != nil {
-			return fmt.Errorf("failed to release trust deposit on revocation: %w", err)
-		}
-		participant.Deposit = 0
-	}
-
 	// set applicant_participant.revoked to now
 	participant.Revoked = &now
 
@@ -1326,20 +1320,12 @@ func (ms msgServer) revokeVSOperatorAuthorization(ctx sdk.Context, participant t
 // corp-paid fees. The fee cap itself is enforced by the aggregate x/feegrant
 // allowance at fee-processing time. No-op when the operator pays its own fee.
 func (ms msgServer) checkVSOperatorFeeGrant(ctx sdk.Context, participantID uint64, corporation string) error {
-	dec := ms.txDecoder()
-	if dec == nil {
-		return nil
-	}
-	tx, err := dec(ctx.TxBytes())
-	if err != nil {
-		return nil
-	}
-	feeTx, ok := tx.(sdk.FeeTx)
-	if !ok || len(feeTx.FeeGranter()) == 0 {
+	granter := feeGranterFromContext(ctx)
+	if len(granter) == 0 {
 		return nil
 	}
 	corpAddr, err := sdk.AccAddressFromBech32(corporation)
-	if err != nil || !bytes.Equal(feeTx.FeeGranter(), corpAddr) {
+	if err != nil || !bytes.Equal(granter, corpAddr) {
 		return nil
 	}
 	if err := ms.delegationKeeper.CheckVSOperatorFeeGrant(ctx, participantID); err != nil {
@@ -1484,9 +1470,17 @@ func (ms msgServer) validateSlashParticipantBasicChecks(ctx sdk.Context, msg *ty
 	}
 	applicantParticipant = participant
 
-	// [MOD-PP-MSG-12-2-1] amount MUST be lower or equal to applicant_participant.deposit else MUST abort
-	if msg.Amount > applicantParticipant.Deposit {
-		return applicantParticipant, fmt.Errorf("amount exceeds available deposit: %d > %d", msg.Amount, applicantParticipant.Deposit)
+	// [MOD-PP-MSG-12-2-1] amount MUST NOT exceed applicant_participant.deposit less its unrepaid slashed_deposit
+	var outstanding uint64
+	if applicantParticipant.SlashedDeposit > applicantParticipant.RepaidDeposit {
+		outstanding = applicantParticipant.SlashedDeposit - applicantParticipant.RepaidDeposit
+	}
+	var available uint64
+	if applicantParticipant.Deposit > outstanding {
+		available = applicantParticipant.Deposit - outstanding
+	}
+	if msg.Amount > available {
+		return applicantParticipant, fmt.Errorf("amount exceeds available deposit: %d > %d", msg.Amount, available)
 	}
 
 	// Note: Even if the participant has expired or is revoked, it is still possible to slash it.
@@ -1644,6 +1638,11 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	}
 	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, "/verana.pp.v1.MsgSelfCreateParticipant", now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
+	}
+
+	// [MOD-PP-MSG-14-2-1] vs_operator MUST NOT be the corporation's own policy_address.
+	if detypes.IsOwnPolicyAddress(msg.Corporation, msg.VsOperator) {
+		return nil, detypes.ErrOwnPolicyAddress
 	}
 
 	// [MOD-PP-MSG-14-2-1] Load validator_participant from validator_participant_id
@@ -1840,11 +1839,10 @@ func (ms msgServer) checkCreateParticipantOverlap(ctx sdk.Context, msg *types.Ms
 	}
 	var conflict types.Participant
 	var found bool
-	err = ms.Participant.Walk(ctx, nil, func(_ uint64, p types.Participant) (bool, error) {
+	err = ms.walkParticipantsByDID(ctx, msg.Did, func(p types.Participant) (bool, error) {
 		if p.ValidatorParticipantId != msg.ValidatorParticipantId ||
 			p.Role != msg.Role ||
-			p.CorporationId != msgCorpId ||
-			p.Did != msg.Did {
+			p.CorporationId != msgCorpId {
 			return false, nil
 		}
 		if (isActiveParticipant(p, now) || isFutureParticipant(p, now)) &&

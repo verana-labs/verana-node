@@ -182,7 +182,7 @@ export interface MsgCreateOrUpdateParticipantSession {
   agentParticipantId: number;
   /** optional: wallet credential issuer participant id (set only by VUAs; MUST NOT be set when peer is a VS) */
   walletAgentParticipantId: number;
-  /** optional: digest derived from an issued or verified credential */
+  /** optional: digestJCS of the credential being issued; ignored in a Credential Verification */
   digest: string;
 }
 

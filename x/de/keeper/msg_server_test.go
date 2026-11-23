@@ -1,10 +1,13 @@
 package keeper_test
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 	"time"
 
 	"cosmossdk.io/collections"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
@@ -169,6 +172,38 @@ func TestGrantOperatorAuthorization_OperatorPath(t *testing.T) {
 	require.Error(t, err)
 }
 
+// [MOD-DE-MSG-3-2] grantee MUST NOT be the corporation's own policy_address.
+func TestGrantOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	operator := acc("operator____________")
+
+	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
+		Corporation: corporation, Operator: corporation, Grantee: operator,
+		MsgTypes: []string{"/verana.de.v1.MsgGrantOperatorAuthorization"},
+	})
+	require.NoError(t, err)
+
+	for name, msg := range map[string]*types.MsgGrantOperatorAuthorization{
+		"group proposal": {Corporation: corporation, Operator: corporation, Grantee: corporation},
+		"with feegrant":  {Corporation: corporation, Operator: corporation, Grantee: corporation, WithFeegrant: true, FeegrantSpendLimit: uvna(10)},
+		"operator path":  {Corporation: corporation, Operator: operator, Grantee: corporation},
+		"upper case":     {Corporation: corporation, Operator: corporation, Grantee: strings.ToUpper(corporation), WithFeegrant: true},
+	} {
+		t.Run(name, func(t *testing.T) {
+			msg.MsgTypes = []string{mtEcosystem}
+			require.NoError(t, msg.ValidateBasic())
+			_, err := ms.GrantOperatorAuthorization(ctx, msg)
+			require.ErrorIs(t, err, types.ErrOwnPolicyAddress)
+
+			has, err := f.keeper.OperatorAuthorizationByCorpOp.Has(ctx, collections.Join(uint64(1), msg.Grantee))
+			require.NoError(t, err)
+			require.False(t, has)
+			require.Empty(t, f.feegrants.grants)
+		})
+	}
+}
+
 func TestRevokeOperatorAuthorization(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
@@ -239,16 +274,69 @@ func TestGrantVSOperatorAuthorization_MutualExclusivity(t *testing.T) {
 	require.ErrorIs(t, err, types.ErrOperatorAuthzExistsMutex)
 }
 
+// [MOD-DE-MSG-5-2] vs_operator MUST NOT be the corporation's own policy_address.
+func TestGrantVSOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	k := f.keeper
+	policy := corpPolicyAddr(1)
+
+	for name, vsOp := range map[string]string{"policy address": policy, "upper case": strings.ToUpper(policy)} {
+		t.Run(name, func(t *testing.T) {
+			require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 5)), types.ErrOwnPolicyAddress)
+			require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
+				types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtValidated}}), types.ErrOwnPolicyAddress)
+
+			has, err := k.VSOAByCorpOp.Has(ctx, collections.Join(uint64(1), vsOp))
+			require.NoError(t, err)
+			require.False(t, has)
+			require.Empty(t, f.feegrants.grants)
+		})
+	}
+
+	// Another corporation's policy_address stays a valid vs_operator.
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, corpPolicyAddr(2), feegrantRecord(10, 5)))
+}
+
 func TestGrantVSOperatorAuthorization_SingleCorp(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
 		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []string{mtValidated}}))
+	corp, err := k.VSOACorpByOperator.Get(ctx, vsOp)
+	require.NoError(t, err)
+	require.Equal(t, uint64(1), corp)
+
 	// A different corporation cannot also authorize the same vs_operator.
-	err := k.GrantVSOperatorAuthorization(ctx, 2, vsOp,
+	err = k.GrantVSOperatorAuthorization(ctx, 2, vsOp,
 		types.ParticipantAuthorizationRecord{ParticipantId: 2, MsgTypes: []string{mtValidated}})
 	require.ErrorIs(t, err, types.ErrVSOAOtherCorporation)
+
+	// Revoking the last record frees the vs_operator for another corporation.
+	require.NoError(t, k.RevokeVSOperatorAuthorization(ctx, 1))
+	_, err = k.VSOACorpByOperator.Get(ctx, vsOp)
+	require.ErrorIs(t, err, collections.ErrNotFound)
+	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 2, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 2, MsgTypes: []string{mtValidated}}))
+}
+
+// The single-corp check must not grow with the number of other VSOAs.
+func TestGrantVSOperatorAuthorization_GasIndependentOfStoreSize(t *testing.T) {
+	gasFor := func(others int) uint64 {
+		f, _, ctx := setupMsgServer(t)
+		k := f.keeper
+		for i := 0; i < others; i++ {
+			require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, acc(fmt.Sprintf("vsop_%015d", i)),
+				types.ParticipantAuthorizationRecord{ParticipantId: uint64(i + 1), MsgTypes: []string{mtValidated}}))
+		}
+		ctx = ctx.WithGasMeter(storetypes.NewInfiniteGasMeter())
+		require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 2, acc("vsop_target_________"),
+			types.ParticipantAuthorizationRecord{ParticipantId: 1_000_000, MsgTypes: []string{mtValidated}}))
+		return ctx.GasMeter().GasConsumed()
+	}
+	small := gasFor(5)
+	large := gasFor(1000)
+	require.Less(t, large, small*2, "gas grew with store size: %d -> %d", small, large)
 }
 
 func TestRevokeVSOperatorAuthorization(t *testing.T) {

@@ -41,6 +41,9 @@ var (
 	// VSOAByParticipantKey is the tertiary index participant_id -> vsoa.id, used
 	// for global participant_id uniqueness and MSG-6 / MSG-9 lookups.
 	VSOAByParticipantKey = collections.NewPrefix("vsoa_part_de")
+	// VSOACorpByOperatorKey indexes vs_operator -> corporation_id for the
+	// single-corporation rule of MOD-DE-MSG-5-2.
+	VSOACorpByOperatorKey = collections.NewPrefix("vsoa_op_de")
 	// VSOASeqKey backs the VSOperatorAuthorization id counter.
 	VSOASeqKey = collections.NewPrefix("vsoa_seq_de")
 	// WindowEndQueueKey is the window-end queue of MOD-DE-MSG-5-5, keyed

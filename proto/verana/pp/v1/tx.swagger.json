@@ -537,7 +537,7 @@
         },
         "digest": {
           "type": "string",
-          "title": "optional: digest derived from an issued or verified credential"
+          "title": "optional: digestJCS of the credential being issued; ignored in a Credential Verification"
         }
       }
     },

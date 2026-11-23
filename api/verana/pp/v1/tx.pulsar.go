@@ -16388,7 +16388,7 @@ type MsgCreateOrUpdateParticipantSession struct {
 	VerifierParticipantId    uint64 `protobuf:"varint,5,opt,name=verifier_participant_id,json=verifierParticipantId,proto3" json:"verifier_participant_id,omitempty"`            // optional: verifier participant id
 	AgentParticipantId       uint64 `protobuf:"varint,6,opt,name=agent_participant_id,json=agentParticipantId,proto3" json:"agent_participant_id,omitempty"`                     // optional: agent credential issuer participant id (set only by VUAs; MUST NOT be set when peer is a VS)
 	WalletAgentParticipantId uint64 `protobuf:"varint,7,opt,name=wallet_agent_participant_id,json=walletAgentParticipantId,proto3" json:"wallet_agent_participant_id,omitempty"` // optional: wallet credential issuer participant id (set only by VUAs; MUST NOT be set when peer is a VS)
-	Digest                   string `protobuf:"bytes,8,opt,name=digest,proto3" json:"digest,omitempty"`                                                                          // optional: digest derived from an issued or verified credential
+	Digest                   string `protobuf:"bytes,8,opt,name=digest,proto3" json:"digest,omitempty"`                                                                          // optional: digestJCS of the credential being issued; ignored in a Credential Verification
 }
 
 func (x *MsgCreateOrUpdateParticipantSession) Reset() {

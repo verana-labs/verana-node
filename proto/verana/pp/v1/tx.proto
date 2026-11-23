@@ -232,7 +232,7 @@ message MsgCreateOrUpdateParticipantSession {
   uint64 verifier_participant_id = 5; // optional: verifier participant id
   uint64 agent_participant_id = 6 [(amino.dont_omitempty) = true]; // optional: agent credential issuer participant id (set only by VUAs; MUST NOT be set when peer is a VS)
   uint64 wallet_agent_participant_id = 7 [(amino.dont_omitempty) = true]; // optional: wallet credential issuer participant id (set only by VUAs; MUST NOT be set when peer is a VS)
-  string digest = 8; // optional: digest derived from an issued or verified credential
+  string digest = 8; // optional: digestJCS of the credential being issued; ignored in a Credential Verification
 }
 
 message MsgCreateOrUpdateParticipantSessionResponse {
