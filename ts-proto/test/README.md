@@ -12,7 +12,7 @@ We use these TypeScript client tests as an **early warning system** to catch pro
 
 1. **Go Test Harness** (Comprehensive Logic Testing)
    - Tests all blockchain logic and business rules
-   - Validates end-to-end workflows (10 operator-authorization journeys)
+   - Validates end-to-end workflows (10 delegate-authorization journeys)
    - Ensures the blockchain behaves correctly
    - Located in: `testharness/` directory
 
@@ -263,8 +263,8 @@ test/
     │   └── index.ts          # Helper exports
     └── journeys/
         ├── runAll.ts                                # Run all tests sequentially
-        ├── deGrantOperatorAuthorization.ts           # DE: Grant TR operator auth
-        ├── deGrantCsOperatorAuthorization.ts         # DE: Grant CS operator auth
+        ├── deGrantDelegateAuthorization.ts           # DE: Grant TR delegate auth
+        ├── deGrantCsDelegateAuthorization.ts         # DE: Grant CS delegate auth
         ├── trCreateTrustRegistry.ts                  # TR: Create trust registry
         ├── trAddGovernanceFrameworkDocument.ts        # TR: Add GF document
         ├── trIncreaseActiveGovernanceFrameworkVersion.ts # TR: Increase GF version
@@ -402,7 +402,7 @@ Currently tested transaction types:
 
 | Module | Operations | Status |
 |--------|-----------|--------|
-| Delegation Engine (DE) | Grant operator authorization (TR, CS) | Done |
+| Delegation Engine (DE) | Grant delegate authorization (TR, CS) | Done |
 | Trust Registry (TR) | Create, Add GF Document, Increase GF Version, Update, Archive | Done |
 | Credential Schema (CS) | Create, Update, Archive | Done |
 

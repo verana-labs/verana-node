@@ -22,8 +22,8 @@ var _ types.MsgServer = msgServer{}
 //
 // Order of operations (atomic — any error rolls back the whole tx):
 //  1. ValidateBasic.
-//  2. AUTHZ-CHECK: delegationKeeper.CheckOperatorAuthorization for the
-//     (corporation, operator, msgTypeURL) tuple.
+//  2. AUTHZ-CHECK: delegationKeeper.CheckDelegateAuthorization for the
+//     (corporation, delegate, msgTypeURL) tuple.
 //  3. AUTHZ-CHECK-5: resolve msg.Corporation policy_address → co.id; reject
 //     if no Corporation is registered for the signing account.
 //  4. DID consistency precondition (MOD-ES-MSG-1-2-1): for every existing
@@ -47,7 +47,7 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
 	}
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM, now); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -93,7 +93,7 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 		types.EventTypeCreateEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
-		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 		sdk.NewAttribute(types.AttributeKeyDID, msg.Did),
 		sdk.NewAttribute(types.AttributeKeyLanguage, msg.Language),
 	))
@@ -106,7 +106,7 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 // Spec MSG-2-3 literally reads "set ecosystem.did = did; ecosystem.modified =
 // now". This implementation short-circuits on a no-op did rotation — same as
 // MOD-CO's UpdateCorporation: AUTHZ-CHECK still runs so unauthorized
-// operators can't even attempt a no-op write, but persist + event are
+// delegates can't even attempt a no-op write, but persist + event are
 // skipped and `modified` is NOT bumped. Deliberate deviation from spec
 // literal for ergonomics; matches MOD-CO precedent.
 func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateEcosystem) (*types.MsgUpdateEcosystemResponse, error) {
@@ -123,7 +123,7 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
 	}
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM, now); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -135,7 +135,7 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		return nil, fmt.Errorf("get ecosystem: %w", err)
 	}
 	if ec.CorporationId != co.Id {
-		return nil, errors.Wrapf(types.ErrUnauthorizedOperator, "ecosystem %d controlled by corporation %d, signer is corporation %d", ec.Id, ec.CorporationId, co.Id)
+		return nil, errors.Wrapf(types.ErrUnauthorizedDelegate, "ecosystem %d controlled by corporation %d, signer is corporation %d", ec.Id, ec.CorporationId, co.Id)
 	}
 
 	if ec.Did == msg.Did {
@@ -168,7 +168,7 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		types.EventTypeUpdateEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
-		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 		sdk.NewAttribute(types.AttributeKeyDID, ec.Did),
 	))
 
@@ -190,7 +190,7 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
 	}
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM, now); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -202,7 +202,7 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 		return nil, fmt.Errorf("get ecosystem: %w", err)
 	}
 	if ec.CorporationId != co.Id {
-		return nil, errors.Wrapf(types.ErrUnauthorizedOperator, "ecosystem %d controlled by corporation %d, signer is corporation %d", ec.Id, ec.CorporationId, co.Id)
+		return nil, errors.Wrapf(types.ErrUnauthorizedDelegate, "ecosystem %d controlled by corporation %d, signer is corporation %d", ec.Id, ec.CorporationId, co.Id)
 	}
 
 	if ec.Archived == msg.Archive {
@@ -223,7 +223,7 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 		types.EventTypeArchiveEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
-		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 		sdk.NewAttribute(types.AttributeKeyDID, ec.Did),
 		sdk.NewAttribute(types.AttributeKeyArchiveStatus, status),
 	))

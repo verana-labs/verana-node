@@ -15,27 +15,27 @@ import (
 )
 
 // RunPermissionAdjustJourney implements Journey 305: Test AdjustPermission
-// with operator authorization. For the operation: (a) try without auth -> fail,
+// with delegate authorization. For the operation: (a) try without auth -> fail,
 // (b) grant auth, (c) try with auth -> succeed, (d) verify fields,
-// (e) unauthorized operator rejected.
-// Depends on Journey 301 (setup), 302 (group/operator), and 304 (root permission).
+// (e) unauthorized delegate rejected.
+// Depends on Journey 301 (setup), 302 (group/delegate), and 304 (root permission).
 func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 305: AdjustPermission with Operator Authorization")
+	fmt.Println("Starting Journey 305: AdjustPermission with Delegate Authorization")
 
 	// Load results from prior journeys
 	setup301 := lib.LoadJourneyResult("journey301")
 	setup302 := lib.LoadJourneyResult("journey302")
 	setup304 := lib.LoadJourneyResult("journey304")
 	policyAddr := setup302.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
-	operatorAddr := setup302.OperatorAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
+	delegateAddr := setup302.DelegateAddr
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	permID, _ := strconv.ParseUint(setup304.PermissionID, 10, 64)
 
 	fmt.Printf("  Group Policy: %s\n", policyAddr)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 	fmt.Printf("  Permission:   %d\n", permID)
 
 	// =========================================================================
@@ -66,10 +66,10 @@ func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client)
 	fmt.Println("\n=== TEST 1: AdjustPermission ===")
 
 	// 1a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries AdjustPermission without auth (expect failure) ---")
+	fmt.Println("\n--- Step 1a: Delegate tries AdjustPermission without auth (expect failure) ---")
 	newEffectiveUntil := time.Now().Add(720 * 24 * time.Hour) // 720 days from now
 	_, err = lib.AdjustPermission(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		permID, &newEffectiveUntil,
 	)
 	if err := expectAuthorizationError("Step 1a", err); err != nil {
@@ -79,10 +79,10 @@ func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client)
 	waitForTx("AdjustPermission rejection")
 
 	// 1b: Grant authorization for AdjustPermission
-	fmt.Println("\n--- Step 1b: Grant operator auth for AdjustPermission ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1b: Grant delegate auth for AdjustPermission ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL},
 	)
 	if err != nil {
@@ -92,10 +92,10 @@ func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client)
 	waitForTx("grant AdjustPermission auth")
 
 	// 1c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 1c: Operator adjusts permission with auth (expect success) ---")
+	fmt.Println("\n--- Step 1c: Delegate adjusts permission with auth (expect success) ---")
 	newEffectiveUntil = time.Now().Add(720 * 24 * time.Hour)
 	_, err = lib.AdjustPermission(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		permID, &newEffectiveUntil,
 	)
 	if err != nil {
@@ -152,7 +152,7 @@ func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client)
 	fmt.Println("\n=== TEST 3: Reduce effective_until (v4 allows reduction) ===")
 	reducedEffectiveUntil := time.Now().Add(180 * 24 * time.Hour) // 180 days — less than 720
 	_, err = lib.AdjustPermission(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		permID, &reducedEffectiveUntil,
 	)
 	if err != nil {
@@ -176,10 +176,10 @@ func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client)
 	fmt.Println("OK Step 3: Verified effective_until was reduced")
 
 	// =========================================================================
-	// TEST 4: Unauthorized operator (negative test)
+	// TEST 4: Unauthorized delegate (negative test)
 	// =========================================================================
-	fmt.Println("\n=== TEST 4: Unauthorized operator (negative test) ===")
-	fmt.Println("\n--- Step 4a: Unauthorized operator tries AdjustPermission (expect failure) ---")
+	fmt.Println("\n=== TEST 4: Unauthorized delegate (negative test) ===")
+	fmt.Println("\n--- Step 4a: Unauthorized delegate tries AdjustPermission (expect failure) ---")
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
 	futureTime := time.Now().Add(365 * 24 * time.Hour)
 	_, err = lib.AdjustPermission(
@@ -189,16 +189,16 @@ func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client)
 	if err := expectAuthorizationError("Step 4a", err); err != nil {
 		return err
 	}
-	fmt.Println("OK Step 4a: Unauthorized operator correctly rejected")
+	fmt.Println("OK Step 4a: Unauthorized delegate correctly rejected")
 
 	// =========================================================================
 	// TEST 5: Wrong authority (negative test)
 	// =========================================================================
 	fmt.Println("\n=== TEST 5: Wrong authority (negative test) ===")
-	fmt.Println("\n--- Step 5a: Correct operator but wrong authority (expect failure) ---")
-	wrongAuthority := operatorAddr // operatorAddr is not the perm authority (policyAddr is)
+	fmt.Println("\n--- Step 5a: Correct delegate but wrong authority (expect failure) ---")
+	wrongAuthority := delegateAddr // delegateAddr is not the perm authority (policyAddr is)
 	_, err = lib.AdjustPermission(
-		client, ctx, operatorAccount, wrongAuthority,
+		client, ctx, delegateAccount, wrongAuthority,
 		permID, &futureTime,
 	)
 	if err == nil {
@@ -214,14 +214,14 @@ func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client)
 		PermissionID:    setup304.PermissionID,
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey305", result)
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 305 completed successfully!")
 	fmt.Println("AdjustPermission tested: fail without auth, pass with auth, verify fields,")
-	fmt.Println("reduce effective_until, unauthorized operator rejected, wrong authority rejected.")
+	fmt.Println("reduce effective_until, unauthorized delegate rejected, wrong authority rejected.")
 	fmt.Println("========================================")
 
 	return nil

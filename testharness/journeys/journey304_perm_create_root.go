@@ -16,37 +16,37 @@ import (
 )
 
 // RunPermissionCreateRootJourney implements Journey 304: Test CreateRootPermission
-// with operator authorization. For the operation: (a) try without auth -> fail,
+// with delegate authorization. For the operation: (a) try without auth -> fail,
 // (b) grant auth, (c) try with auth -> succeed.
-// Depends on Journey 301 (setup) and Journey 302 (for group/operator info).
+// Depends on Journey 301 (setup) and Journey 302 (for group/delegate info).
 func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 304: CreateRootPermission with Operator Authorization")
+	fmt.Println("Starting Journey 304: CreateRootPermission with Delegate Authorization")
 
 	// Load results from Journey 301 and 302
 	setup301 := lib.LoadJourneyResult("journey301")
 	setup302 := lib.LoadJourneyResult("journey302")
 	policyAddr := setup302.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
-	operatorAddr := setup302.OperatorAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
+	delegateAddr := setup302.DelegateAddr
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	fmt.Printf("  Group Policy: %s\n", policyAddr)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 
 	// =========================================================================
 	// PREREQUISITE 1: Create TR with controller = group policy
-	// Journey 302's TR has controller = operatorAddr (self-delegation).
+	// Journey 302's TR has controller = delegateAddr (self-delegation).
 	// CreateRootPermission checks tr.Controller == msg.Authority, so we need
 	// a TR where controller = policyAddr.
 	// =========================================================================
 	fmt.Println("\n=== PREREQUISITE 1: Create Trust Registry (controller = group policy) ===")
 
-	// Grant TR create authorization to the operator
-	fmt.Println("\n--- Prerequisite 1a: Grant operator auth for CreateEcosystem ---")
-	err := lib.GrantOperatorAuthorizationViaGroup(
+	// Grant TR create authorization to the delegate
+	fmt.Println("\n--- Prerequisite 1a: Grant delegate auth for CreateEcosystem ---")
+	err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
 	)
 	if err != nil {
@@ -59,7 +59,7 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	fmt.Println("\n--- Prerequisite 1b: Create Trust Registry with controller = group policy ---")
 	did := lib.GenerateUniqueDID(client, ctx)
 	trIDStr, err := lib.CreateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		did,
 		"https://perm304-test.com/governance-framework.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -77,11 +77,11 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	// =========================================================================
 	fmt.Println("\n=== PREREQUISITE 2: Create Credential Schema on new TR ===")
 
-	// Grant CS create authorization to the operator
-	fmt.Println("\n--- Prerequisite 2a: Grant operator auth for CreateCredentialSchema ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	// Grant CS create authorization to the delegate
+	fmt.Println("\n--- Prerequisite 2a: Grant delegate auth for CreateCredentialSchema ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
@@ -94,7 +94,7 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	fmt.Println("\n--- Prerequisite 2b: Create Credential Schema ---")
 	schemaData := lib.GenerateSimpleSchema(trIDStr)
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, schemaData,
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
@@ -115,11 +115,11 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 
 	// 1a: Try WITHOUT authorization (expect failure)
 	// Use a far-future time since this will be rejected by authz check anyway
-	fmt.Println("\n--- Step 1a: Operator tries CreateRootPermission without auth (expect failure) ---")
+	fmt.Println("\n--- Step 1a: Delegate tries CreateRootPermission without auth (expect failure) ---")
 	ef1a := time.Now().Add(5 * time.Minute)
 	eu1a := ef1a.Add(360 * 24 * time.Hour)
 	_, err = lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, rootPermDID, &ef1a, &eu1a,
 		0, 0, 0,
 	)
@@ -129,10 +129,10 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	waitForTx("CreateRootPerm rejection")
 
 	// 1b: Grant authorization for CreateRootPermission
-	fmt.Println("\n--- Step 1b: Grant operator auth for CreateRootPermission ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1b: Grant delegate auth for CreateRootPermission ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION},
 	)
 	if err != nil {
@@ -143,11 +143,11 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 
 	// 1c: Try WITH authorization (expect success)
 	// Set effectiveFrom NOW (after all grants are done) to ensure it's in the future
-	fmt.Println("\n--- Step 1c: Operator creates root permission with auth (expect success) ---")
+	fmt.Println("\n--- Step 1c: Delegate creates root permission with auth (expect success) ---")
 	effectiveFrom := time.Now().Add(10 * time.Second)
 	effectiveUntil := effectiveFrom.Add(360 * 24 * time.Hour)
 	permID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, rootPermDID, &effectiveFrom, &effectiveUntil,
 		100, 50, 25,
 	)
@@ -189,11 +189,11 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	fmt.Printf("OK Step 1c: Verified permission fields (ECOSYSTEM, schema=%d, fees=100/50/25, deposit=0)\n", csID)
 
 	// =========================================================================
-	// TEST 2: Unauthorized operator (negative test)
+	// TEST 2: Unauthorized delegate (negative test)
 	// =========================================================================
-	fmt.Println("\n=== TEST 2: Unauthorized operator (negative test) ===")
+	fmt.Println("\n=== TEST 2: Unauthorized delegate (negative test) ===")
 
-	fmt.Println("\n--- Step 2a: Unauthorized operator tries CreateRootPermission (expect failure) ---")
+	fmt.Println("\n--- Step 2a: Unauthorized delegate tries CreateRootPermission (expect failure) ---")
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
 	_, err = lib.CreateRootPermissionWithAuthority(
 		client, ctx, cooluser, policyAddr,
@@ -203,7 +203,7 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	if err := expectAuthorizationError("Step 2a", err); err != nil {
 		return err
 	}
-	fmt.Println("OK Step 2a: Unauthorized operator correctly rejected")
+	fmt.Println("OK Step 2a: Unauthorized delegate correctly rejected")
 
 	// Save results
 	result := lib.JourneyResult{
@@ -213,13 +213,13 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 		PermissionID:    strconv.FormatUint(permID, 10),
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey304", result)
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 304 completed successfully!")
-	fmt.Println("CreateRootPermission tested: fail without auth, pass with auth, unauthorized operator rejected.")
+	fmt.Println("CreateRootPermission tested: fail without auth, pass with auth, unauthorized delegate rejected.")
 	fmt.Println("========================================")
 
 	return nil

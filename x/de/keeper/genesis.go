@@ -18,23 +18,23 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 	}
 
 	var maxOAID uint64
-	for _, oa := range genState.OperatorAuthorizations {
-		if err := k.OperatorAuthorizations.Set(ctx, oa.Id, oa); err != nil {
-			return fmt.Errorf("failed to set operator authorization: %w", err)
+	for _, da := range genState.DelegateAuthorizations {
+		if err := k.DelegateAuthorizations.Set(ctx, da.Id, da); err != nil {
+			return fmt.Errorf("failed to set delegate authorization: %w", err)
 		}
-		if err := k.OperatorAuthorizationByCorpOp.Set(ctx, collections.Join(oa.CorporationId, oa.Operator), oa.Id); err != nil {
-			return fmt.Errorf("failed to set operator authorization index: %w", err)
+		if err := k.DelegateAuthorizationByCorpDelegate.Set(ctx, collections.Join(da.CorporationId, da.Delegate), da.Id); err != nil {
+			return fmt.Errorf("failed to set delegate authorization index: %w", err)
 		}
-		if oa.Id > maxOAID {
-			maxOAID = oa.Id
+		if da.Id > maxOAID {
+			maxOAID = da.Id
 		}
 	}
-	oaSeq := genState.OperatorAuthorizationSeq
+	oaSeq := genState.DelegateAuthorizationSeq
 	if maxOAID > oaSeq {
 		oaSeq = maxOAID
 	}
-	if err := k.OperatorAuthorizationSeq.Set(ctx, oaSeq); err != nil {
-		return fmt.Errorf("failed to seed operator authorization sequence: %w", err)
+	if err := k.DelegateAuthorizationSeq.Set(ctx, oaSeq); err != nil {
+		return fmt.Errorf("failed to seed delegate authorization sequence: %w", err)
 	}
 
 	for _, fg := range genState.FeeGrants {
@@ -91,16 +91,16 @@ func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) 
 		return nil, err
 	}
 
-	// Operator authorizations (keyed by id).
-	oaList := []types.OperatorAuthorization{}
-	if err := k.OperatorAuthorizations.Walk(ctx, nil, func(_ uint64, val types.OperatorAuthorization) (bool, error) {
+	// Delegate authorizations (keyed by id).
+	oaList := []types.DelegateAuthorization{}
+	if err := k.DelegateAuthorizations.Walk(ctx, nil, func(_ uint64, val types.DelegateAuthorization) (bool, error) {
 		oaList = append(oaList, val)
 		return false, nil
 	}); err != nil {
-		return nil, fmt.Errorf("failed to export operator authorizations: %w", err)
+		return nil, fmt.Errorf("failed to export delegate authorizations: %w", err)
 	}
 	sort.Slice(oaList, func(i, j int) bool { return oaList[i].Id < oaList[j].Id })
-	genesis.OperatorAuthorizations = oaList
+	genesis.DelegateAuthorizations = oaList
 
 	// Fee grants (composite key).
 	fgList := []types.FeeGrant{}
@@ -129,7 +129,7 @@ func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) 
 	sort.Slice(vsoaList, func(i, j int) bool { return vsoaList[i].Id < vsoaList[j].Id })
 	genesis.VsOperatorAuthorizations = vsoaList
 
-	if genesis.OperatorAuthorizationSeq, err = k.OperatorAuthorizationSeq.Peek(ctx); err != nil {
+	if genesis.DelegateAuthorizationSeq, err = k.DelegateAuthorizationSeq.Peek(ctx); err != nil {
 		return nil, err
 	}
 	if genesis.VsoaSeq, err = k.VSOASeq.Peek(ctx); err != nil {

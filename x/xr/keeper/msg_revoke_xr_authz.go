@@ -28,10 +28,10 @@ func (ms msgServer) RevokeExchangeRateAuthorization(ctx context.Context, msg *ty
 		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expected, msg.Authority)
 	}
 
-	// (xr_id, operator) MUST exist.
-	key := collections.Join(msg.XrId, msg.Operator)
+	// (xr_id, feeder) MUST exist.
+	key := collections.Join(msg.XrId, msg.Feeder)
 	if _, err := ms.ExchangeRateAuthorizations.Get(ctx, key); err != nil {
-		return nil, errorsmod.Wrapf(types.ErrAuthorizationNotFound, "no authorization for xr_id %d operator %s", msg.XrId, msg.Operator)
+		return nil, errorsmod.Wrapf(types.ErrAuthorizationNotFound, "no authorization for xr_id %d feeder %s", msg.XrId, msg.Feeder)
 	}
 
 	if err := ms.ExchangeRateAuthorizations.Remove(ctx, key); err != nil {
@@ -43,7 +43,7 @@ func (ms msgServer) RevokeExchangeRateAuthorization(ctx context.Context, msg *ty
 		sdk.NewEvent(
 			types.EventTypeRevokeExchangeRateAuthz,
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.XrId)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Feeder),
 		),
 	)
 

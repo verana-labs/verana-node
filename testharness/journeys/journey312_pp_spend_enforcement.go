@@ -19,11 +19,11 @@ import (
 )
 
 // RunPermissionSpendEnforcementJourney implements Journey 312: AUTHZ-CHECK-1
-// operator spend_limit enforcement (#324). It is SELF-CONTAINED: it
+// delegate spend_limit enforcement (#324). It is SELF-CONTAINED: it
 // depends only on Journey 301 (the Corporation + funded accounts) and builds its
 // own ecosystem -> schema -> root permission. The root carries non-zero
 // validation_fees so each StartParticipantOP commits a non-zero nominal amount
-// (fees + trust deposit) that the operator's spend_limit is debited by.
+// (fees + trust deposit) that the delegate's spend_limit is debited by.
 //
 // TEST 1 (positive): grant a generous spend_limit, run one StartParticipantOP,
 // assert remaining_spend was debited below the granted limit.
@@ -31,21 +31,21 @@ import (
 // and assert the next StartParticipantOP is rejected with a spend-limit error.
 //
 // Period auto-reset of remaining_spend is covered by the DE keeper unit tests
-// (TestOperatorAuthzPeriodRenewal); a live period-reset journey is intentionally
+// (TestDelegateAuthzPeriodRenewal); a live period-reset journey is intentionally
 // out of scope here (the participant overlap rules make looping operations on one
 // root awkward and add little over the unit coverage).
 func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 312: PP Operator spend_limit enforcement (AUTHZ-CHECK-1)")
+	fmt.Println("Starting Journey 312: PP Delegate spend_limit enforcement (AUTHZ-CHECK-1)")
 
 	setup := lib.LoadJourneyResult("journey301")
 	policyAddr := setup.GroupPolicyAddr
-	operatorAddr := setup.OperatorAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
+	delegateAddr := setup.DelegateAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	fmt.Printf("  Corporation: %s\n", policyAddr)
-	fmt.Printf("  Operator:    %s\n", operatorAddr)
+	fmt.Printf("  Delegate:    %s\n", delegateAddr)
 
 	const (
 		// validation_fees on the root, in trust units. trust_unit_price is
@@ -74,10 +74,10 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	// Setup: grant prereq authz (no spend_limit), then build ecosystem -> schema
 	// -> root permission with non-zero validation_fees.
 	// =========================================================================
-	fmt.Println("\n--- Step 1: Grant operator prereq authz (no spend_limit) ---")
-	if err := lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1: Grant delegate prereq authz (no spend_limit) ---")
+	if err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr, baseMsgTypes,
+		policyAddr, delegateAddr, delegateAddr, baseMsgTypes,
 	); err != nil {
 		return fmt.Errorf("step 1 failed: grant prereq authz: %w", err)
 	}
@@ -85,7 +85,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 
 	fmt.Println("\n--- Step 2: Create Ecosystem ---")
 	trIDStr, err := lib.CreateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		lib.GenerateUniqueDID(client, ctx),
 		"https://spend-enforcement-test.com/governance-framework.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -99,7 +99,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 
 	fmt.Println("\n--- Step 3: Create Credential Schema (GRANTOR validation modes) ---")
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, lib.GenerateSimpleSchema(trIDStr),
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
@@ -114,7 +114,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	rootEffectiveFrom := time.Now().Add(2 * time.Second)
 	rootEffectiveUntil := rootEffectiveFrom.Add(360 * 24 * time.Hour)
 	rootID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, lib.GenerateUniqueDID(client, ctx),
 		&rootEffectiveFrom, &rootEffectiveUntil, rootValidationFees, 0, 0,
 	)
@@ -146,10 +146,10 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	// remaining_spend is debited below the granted limit.
 	// =========================================================================
 	fmt.Println("\n=== TEST 1: spend_limit covers the operation (expect debit) ===")
-	fmt.Printf("\n--- Step 5: Re-grant operator authz with spend_limit=%d uvna ---\n", largeSpendLimit)
-	if err := lib.GrantOperatorAuthorizationWithSpendViaGroup(
+	fmt.Printf("\n--- Step 5: Re-grant delegate authz with spend_limit=%d uvna ---\n", largeSpendLimit)
+	if err := lib.GrantDelegateAuthorizationWithSpendViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr, baseMsgTypes,
+		policyAddr, delegateAddr, delegateAddr, baseMsgTypes,
 		sdk.NewCoins(sdk.NewCoin(permtypes.BondDenom, math.NewInt(largeSpendLimit))), nil,
 	); err != nil {
 		return fmt.Errorf("step 5 failed: grant authz with spend_limit: %w", err)
@@ -158,7 +158,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 
 	fmt.Println("\n--- Step 6: StartParticipantOP (ISSUER_GRANTOR) within limit ---")
 	childIDStr, err := lib.StartPermissionVPWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		permtypes.ParticipantRole_ISSUER_GRANTOR, rootID,
 		lib.GenerateUniqueDID(client, ctx),
 	)
@@ -169,7 +169,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	waitForTx("StartParticipantOP within limit")
 
 	fmt.Println("\n--- Step 7: Assert remaining_spend was debited below the limit ---")
-	remaining, err := queryOperatorRemainingSpend(ctx, client, policyAddr, operatorAddr)
+	remaining, err := queryDelegateRemainingSpend(ctx, client, policyAddr, delegateAddr)
 	if err != nil {
 		return fmt.Errorf("step 7 failed: query remaining_spend: %w", err)
 	}
@@ -188,10 +188,10 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	// distinct overlap context from the TEST 1 child.
 	// =========================================================================
 	fmt.Println("\n=== TEST 2: spend_limit below operation cost (expect rejection) ===")
-	fmt.Printf("\n--- Step 8: Re-grant operator authz with spend_limit=%d uvna ---\n", tinySpendLimit)
-	if err := lib.GrantOperatorAuthorizationWithSpendViaGroup(
+	fmt.Printf("\n--- Step 8: Re-grant delegate authz with spend_limit=%d uvna ---\n", tinySpendLimit)
+	if err := lib.GrantDelegateAuthorizationWithSpendViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr, baseMsgTypes,
+		policyAddr, delegateAddr, delegateAddr, baseMsgTypes,
 		sdk.NewCoins(sdk.NewCoin(permtypes.BondDenom, math.NewInt(tinySpendLimit))), nil,
 	); err != nil {
 		return fmt.Errorf("step 8 failed: grant authz with tiny spend_limit: %w", err)
@@ -200,7 +200,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 
 	fmt.Println("\n--- Step 9: StartParticipantOP (VERIFIER_GRANTOR) exceeding limit (expect rejection) ---")
 	_, err = lib.StartPermissionVPWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		permtypes.ParticipantRole_VERIFIER_GRANTOR, rootID,
 		lib.GenerateUniqueDID(client, ctx),
 	)
@@ -226,9 +226,9 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	)
 
 	fmt.Println("\n--- Step 10: Prep (grant generous, build ECOSYSTEM schema+root+validated ISSUER child) ---")
-	if err := lib.GrantOperatorAuthorizationWithSpendViaGroup(
+	if err := lib.GrantDelegateAuthorizationWithSpendViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr, test3MsgTypes,
+		policyAddr, delegateAddr, delegateAddr, test3MsgTypes,
 		sdk.NewCoins(sdk.NewCoin(permtypes.BondDenom, math.NewInt(largeSpendLimit))), nil,
 	); err != nil {
 		return fmt.Errorf("step 10 failed: grant prep authz: %w", err)
@@ -236,7 +236,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	waitForTx("grant prep authz (test 3)")
 
 	cs2IDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, lib.GenerateSimpleSchema(trIDStr),
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
@@ -250,7 +250,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	root2EffectiveFrom := time.Now().Add(2 * time.Second)
 	root2EffectiveUntil := root2EffectiveFrom.Add(360 * 24 * time.Hour)
 	root2ID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		cs2ID, lib.GenerateUniqueDID(client, ctx),
 		&root2EffectiveFrom, &root2EffectiveUntil, rootValidationFees, 0, 0,
 	)
@@ -272,7 +272,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	}
 
 	repayChildIDStr, err := lib.StartPermissionVPWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		permtypes.ParticipantRole_ISSUER, root2ID, lib.GenerateUniqueDID(client, ctx),
 	)
 	if err != nil {
@@ -280,7 +280,7 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	}
 	repayChildID, _ := strconv.ParseUint(repayChildIDStr, 10, 64)
 	waitForTx("start ISSUER child")
-	if _, err := lib.SetPermissionVPToValidated(client, ctx, operatorAccount, permtypes.MsgSetParticipantOPToValidated{
+	if _, err := lib.SetPermissionVPToValidated(client, ctx, delegateAccount, permtypes.MsgSetParticipantOPToValidated{
 		Corporation: policyAddr,
 		Id:          repayChildID,
 	}); err != nil {
@@ -299,21 +299,21 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	fmt.Printf("OK Step 10: child %d deposit=%d, will slash %d (repay is always the full slashed_deposit)\n", repayChildID, childPerm.Deposit, slashAmount)
 
 	fmt.Println("\n--- Step 11: Slash the child trust deposit (slashing does not consume spend) ---")
-	if err := lib.SlashPermissionTrustDeposit(client, ctx, operatorAccount, policyAddr, repayChildID, slashAmount, "journey 312 spend test slash"); err != nil {
+	if err := lib.SlashPermissionTrustDeposit(client, ctx, delegateAccount, policyAddr, repayChildID, slashAmount, "journey 312 spend test slash"); err != nil {
 		return fmt.Errorf("step 11 failed: slash child: %w", err)
 	}
 	waitForTx("slash child")
 
 	fmt.Printf("\n--- Step 12: spend_limit=%d (below slashed_deposit=%d), repay rejected ---\n", tinySpendLimit, slashAmount)
-	if err := lib.GrantOperatorAuthorizationWithSpendViaGroup(
+	if err := lib.GrantDelegateAuthorizationWithSpendViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr, test3MsgTypes,
+		policyAddr, delegateAddr, delegateAddr, test3MsgTypes,
 		sdk.NewCoins(sdk.NewCoin(permtypes.BondDenom, math.NewInt(tinySpendLimit))), nil,
 	); err != nil {
 		return fmt.Errorf("step 12 failed: grant tiny authz: %w", err)
 	}
 	waitForTx("grant spend_limit (tiny, repay)")
-	if err := lib.RepayPermissionSlashedTrustDeposit(client, ctx, operatorAccount, policyAddr, repayChildID); err == nil {
+	if err := lib.RepayPermissionSlashedTrustDeposit(client, ctx, delegateAccount, policyAddr, repayChildID); err == nil {
 		return fmt.Errorf("step 12 failed: expected spend-limit rejection but repay succeeded")
 	} else if !strings.Contains(err.Error(), "spend limit exceeded") {
 		return fmt.Errorf("step 12 failed: expected a spend-limit error, got: %w", err)
@@ -321,19 +321,19 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	fmt.Println("OK Step 12: Correctly rejected over-limit repay")
 
 	fmt.Printf("\n--- Step 13: spend_limit=%d, repay full slashed_deposit within limit (expect debit) ---\n", largeSpendLimit)
-	if err := lib.GrantOperatorAuthorizationWithSpendViaGroup(
+	if err := lib.GrantDelegateAuthorizationWithSpendViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr, test3MsgTypes,
+		policyAddr, delegateAddr, delegateAddr, test3MsgTypes,
 		sdk.NewCoins(sdk.NewCoin(permtypes.BondDenom, math.NewInt(largeSpendLimit))), nil,
 	); err != nil {
 		return fmt.Errorf("step 13 failed: grant authz: %w", err)
 	}
 	waitForTx("grant spend_limit (repay)")
-	if err := lib.RepayPermissionSlashedTrustDeposit(client, ctx, operatorAccount, policyAddr, repayChildID); err != nil {
+	if err := lib.RepayPermissionSlashedTrustDeposit(client, ctx, delegateAccount, policyAddr, repayChildID); err != nil {
 		return fmt.Errorf("step 13 failed: repay within limit: %w", err)
 	}
 	waitForTx("repay within limit")
-	remainingAfterRepay, err := queryOperatorRemainingSpend(ctx, client, policyAddr, operatorAddr)
+	remainingAfterRepay, err := queryDelegateRemainingSpend(ctx, client, policyAddr, delegateAddr)
 	if err != nil {
 		return fmt.Errorf("step 13 failed: query remaining_spend: %w", err)
 	}
@@ -345,28 +345,28 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 312 completed successfully!")
-	fmt.Println("Operator spend_limit enforced on StartParticipantOP + RepaySlashedTrustDeposit:")
+	fmt.Println("Delegate spend_limit enforced on StartParticipantOP + RepaySlashedTrustDeposit:")
 	fmt.Println("  debited within limit, rejected over limit.")
 	fmt.Println("========================================")
 	return nil
 }
 
-// queryOperatorRemainingSpend reads the operator's OperatorAuthorization for the
+// queryDelegateRemainingSpend reads the delegate's DelegateAuthorization for the
 // given corporation policy account and returns its remaining_spend in uvna.
-func queryOperatorRemainingSpend(
-	ctx context.Context, client cosmosclient.Client, policyAddr, operatorAddr string,
+func queryDelegateRemainingSpend(
+	ctx context.Context, client cosmosclient.Client, policyAddr, delegateAddr string,
 ) (math.Int, error) {
 	qc := detypes.NewQueryClient(client.Context())
-	resp, err := qc.ListOperatorAuthorizations(ctx, &detypes.QueryListOperatorAuthorizationsRequest{
-		Operator: operatorAddr,
+	resp, err := qc.ListDelegateAuthorizations(ctx, &detypes.QueryListDelegateAuthorizationsRequest{
+		Delegate: delegateAddr,
 	})
 	if err != nil {
 		return math.Int{}, err
 	}
-	for _, oa := range resp.OperatorAuthorizations {
-		if oa.Operator == operatorAddr {
+	for _, oa := range resp.DelegateAuthorizations {
+		if oa.Delegate == delegateAddr {
 			return oa.RemainingSpend.AmountOf(permtypes.BondDenom), nil
 		}
 	}
-	return math.Int{}, fmt.Errorf("no OperatorAuthorization found for operator %s", operatorAddr)
+	return math.Int{}, fmt.Errorf("no DelegateAuthorization found for delegate %s", delegateAddr)
 }

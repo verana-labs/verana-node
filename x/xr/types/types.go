@@ -77,9 +77,9 @@ func (msg *MsgCreateExchangeRate) ValidateBasic() error {
 
 // ValidateBasic performs stateless validation on MsgUpdateExchangeRate.
 func (msg *MsgUpdateExchangeRate) ValidateBasic() error {
-	// [MOD-XR-MSG-2-1] params are operator (signer), id, rate.
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-XR-MSG-2-1] params are feeder (signer), id, rate.
+	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {
+		return fmt.Errorf("invalid feeder address: %w", err)
 	}
 
 	// id must be > 0
@@ -119,8 +119,8 @@ func (msg *MsgGrantExchangeRateAuthorization) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
 		return fmt.Errorf("invalid authority address: %w", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {
+		return fmt.Errorf("invalid feeder address: %w", err)
 	}
 	if msg.XrId == 0 {
 		return fmt.Errorf("xr_id must be greater than 0")
@@ -145,8 +145,8 @@ func (msg *MsgRevokeExchangeRateAuthorization) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
 		return fmt.Errorf("invalid authority address: %w", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {
+		return fmt.Errorf("invalid feeder address: %w", err)
 	}
 	if msg.XrId == 0 {
 		return fmt.Errorf("xr_id must be greater than 0")

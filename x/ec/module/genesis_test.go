@@ -27,7 +27,7 @@ import (
 
 type genStub struct{}
 
-func (genStub) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (genStub) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 func (genStub) ResolveByPolicyAddress(_ context.Context, _ string) (types.CorporationView, bool) {

@@ -29,7 +29,7 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, uint64(7), got.WindowEndQueue[0].ParticipantId)
 }
 
-func TestGenesis_RebuildsOperatorIndex(t *testing.T) {
+func TestGenesis_RebuildsDelegateIndex(t *testing.T) {
 	vsOp := acc("vsop_genesis________")
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),

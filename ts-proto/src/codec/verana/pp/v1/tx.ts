@@ -39,8 +39,8 @@ export interface MsgUpdateParamsResponse {
 export interface MsgStartParticipantOP {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg */
+  delegate: string;
   role: ParticipantRole;
   validatorParticipantId: number;
   /** mandatory: MUST conform to DID Syntax */
@@ -67,9 +67,9 @@ export interface MsgStartParticipantOPResponse {
 
 /** MsgRenewParticipantOP represents a message to renew a participant onboarding process */
 export interface MsgRenewParticipantOP {
-  /** [MOD-PP-MSG-2-1] spec parameters: corporation, operator, id. */
+  /** [MOD-PP-MSG-2-1] spec parameters: corporation, delegate, id. */
   corporation: string;
-  operator: string;
+  delegate: string;
   /** ID of the participant to renew */
   id: number;
 }
@@ -82,8 +82,8 @@ export interface MsgRenewParticipantOPResponse {
 export interface MsgSetParticipantOPToValidated {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg */
+  delegate: string;
   id: number;
   effectiveUntil: Date | undefined;
   validationFees: number;
@@ -106,8 +106,8 @@ export interface MsgSetParticipantOPToValidatedResponse {
 export interface MsgCancelParticipantOPLastRequest {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg */
+  delegate: string;
   /** Participant ID */
   id: number;
 }
@@ -121,7 +121,7 @@ export interface MsgCreateRootParticipant {
    * participant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3].
    */
   corporation: string;
-  operator: string;
+  delegate: string;
   schemaId: number;
   did: string;
   effectiveFrom: Date | undefined;
@@ -149,7 +149,7 @@ export interface MsgCreateRootParticipantResponse {
 
 export interface MsgSetParticipantEffectiveUntil {
   corporation: string;
-  operator: string;
+  delegate: string;
   /** Participant ID */
   id: number;
   effectiveUntil: Date | undefined;
@@ -160,7 +160,7 @@ export interface MsgSetParticipantEffectiveUntilResponse {
 
 export interface MsgRevokeParticipant {
   corporation: string;
-  operator: string;
+  delegate: string;
   /** Participant ID */
   id: number;
 }
@@ -171,8 +171,8 @@ export interface MsgRevokeParticipantResponse {
 export interface MsgCreateOrUpdateParticipantSession {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg (vs_operator) */
-  operator: string;
+  /** vs_account is the VS account of the entry that signs this Msg. */
+  vsAccount: string;
   /** UUID (mandatory) */
   id: string;
   /** optional: issuer participant id */
@@ -194,8 +194,8 @@ export interface MsgCreateOrUpdateParticipantSessionResponse {
 export interface MsgSlashParticipantTrustDeposit {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg */
+  delegate: string;
   id: number;
   amount: number;
   /**
@@ -210,7 +210,7 @@ export interface MsgSlashParticipantTrustDepositResponse {
 
 export interface MsgRepayParticipantSlashedTrustDeposit {
   corporation: string;
-  operator: string;
+  delegate: string;
   id: number;
 }
 
@@ -219,7 +219,7 @@ export interface MsgRepayParticipantSlashedTrustDepositResponse {
 
 export interface MsgSelfCreateParticipant {
   corporation: string;
-  operator: string;
+  delegate: string;
   role: ParticipantRole;
   validatorParticipantId: number;
   did: string;
@@ -248,8 +248,8 @@ export interface MsgTriggerResolver {
    * message runs.
    */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg. */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg. */
+  delegate: string;
   /** id of the Participant entry for which a trust resolution must be triggered. */
   id: number;
 }
@@ -379,7 +379,7 @@ export const MsgUpdateParamsResponse = {
 function createBaseMsgStartParticipantOP(): MsgStartParticipantOP {
   return {
     corporation: "",
-    operator: "",
+    delegate: "",
     role: 0,
     validatorParticipantId: 0,
     did: "",
@@ -400,8 +400,8 @@ export const MsgStartParticipantOP = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.role !== 0) {
       writer.uint32(24).int32(message.role);
@@ -463,7 +463,7 @@ export const MsgStartParticipantOP = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -571,7 +571,7 @@ export const MsgStartParticipantOP = {
   fromJSON(object: any): MsgStartParticipantOP {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       role: isSet(object.role) ? participantRoleFromJSON(object.role) : 0,
       validatorParticipantId: isSet(object.validatorParticipantId)
         ? globalThis.Number(object.validatorParticipantId)
@@ -604,8 +604,8 @@ export const MsgStartParticipantOP = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.role !== 0) {
       obj.role = participantRoleToJSON(message.role);
@@ -652,7 +652,7 @@ export const MsgStartParticipantOP = {
   fromPartial<I extends Exact<DeepPartial<MsgStartParticipantOP>, I>>(object: I): MsgStartParticipantOP {
     const message = createBaseMsgStartParticipantOP();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.role = object.role ?? 0;
     message.validatorParticipantId = object.validatorParticipantId ?? 0;
     message.did = object.did ?? "";
@@ -738,7 +738,7 @@ export const MsgStartParticipantOPResponse = {
 };
 
 function createBaseMsgRenewParticipantOP(): MsgRenewParticipantOP {
-  return { corporation: "", operator: "", id: 0 };
+  return { corporation: "", delegate: "", id: 0 };
 }
 
 export const MsgRenewParticipantOP = {
@@ -746,8 +746,8 @@ export const MsgRenewParticipantOP = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -774,7 +774,7 @@ export const MsgRenewParticipantOP = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -795,7 +795,7 @@ export const MsgRenewParticipantOP = {
   fromJSON(object: any): MsgRenewParticipantOP {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -805,8 +805,8 @@ export const MsgRenewParticipantOP = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -820,7 +820,7 @@ export const MsgRenewParticipantOP = {
   fromPartial<I extends Exact<DeepPartial<MsgRenewParticipantOP>, I>>(object: I): MsgRenewParticipantOP {
     const message = createBaseMsgRenewParticipantOP();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     return message;
   },
@@ -872,7 +872,7 @@ export const MsgRenewParticipantOPResponse = {
 function createBaseMsgSetParticipantOPToValidated(): MsgSetParticipantOPToValidated {
   return {
     corporation: "",
-    operator: "",
+    delegate: "",
     id: 0,
     effectiveUntil: undefined,
     validationFees: 0,
@@ -889,8 +889,8 @@ export const MsgSetParticipantOPToValidated = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -938,7 +938,7 @@ export const MsgSetParticipantOPToValidated = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1008,7 +1008,7 @@ export const MsgSetParticipantOPToValidated = {
   fromJSON(object: any): MsgSetParticipantOPToValidated {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       effectiveUntil: isSet(object.effectiveUntil) ? fromJsonTimestamp(object.effectiveUntil) : undefined,
       validationFees: isSet(object.validationFees) ? globalThis.Number(object.validationFees) : 0,
@@ -1027,8 +1027,8 @@ export const MsgSetParticipantOPToValidated = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1065,7 +1065,7 @@ export const MsgSetParticipantOPToValidated = {
   ): MsgSetParticipantOPToValidated {
     const message = createBaseMsgSetParticipantOPToValidated();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     message.effectiveUntil = object.effectiveUntil ?? undefined;
     message.validationFees = object.validationFees ?? 0;
@@ -1126,7 +1126,7 @@ export const MsgSetParticipantOPToValidatedResponse = {
 };
 
 function createBaseMsgCancelParticipantOPLastRequest(): MsgCancelParticipantOPLastRequest {
-  return { corporation: "", operator: "", id: 0 };
+  return { corporation: "", delegate: "", id: 0 };
 }
 
 export const MsgCancelParticipantOPLastRequest = {
@@ -1134,8 +1134,8 @@ export const MsgCancelParticipantOPLastRequest = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -1162,7 +1162,7 @@ export const MsgCancelParticipantOPLastRequest = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1183,7 +1183,7 @@ export const MsgCancelParticipantOPLastRequest = {
   fromJSON(object: any): MsgCancelParticipantOPLastRequest {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -1193,8 +1193,8 @@ export const MsgCancelParticipantOPLastRequest = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1212,7 +1212,7 @@ export const MsgCancelParticipantOPLastRequest = {
   ): MsgCancelParticipantOPLastRequest {
     const message = createBaseMsgCancelParticipantOPLastRequest();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     return message;
   },
@@ -1268,7 +1268,7 @@ export const MsgCancelParticipantOPLastRequestResponse = {
 function createBaseMsgCreateRootParticipant(): MsgCreateRootParticipant {
   return {
     corporation: "",
-    operator: "",
+    delegate: "",
     schemaId: 0,
     did: "",
     effectiveFrom: undefined,
@@ -1290,8 +1290,8 @@ export const MsgCreateRootParticipant = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.schemaId !== 0) {
       writer.uint32(24).uint64(message.schemaId);
@@ -1356,7 +1356,7 @@ export const MsgCreateRootParticipant = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1471,7 +1471,7 @@ export const MsgCreateRootParticipant = {
   fromJSON(object: any): MsgCreateRootParticipant {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       schemaId: isSet(object.schemaId) ? globalThis.Number(object.schemaId) : 0,
       did: isSet(object.did) ? globalThis.String(object.did) : "",
       effectiveFrom: isSet(object.effectiveFrom) ? fromJsonTimestamp(object.effectiveFrom) : undefined,
@@ -1503,8 +1503,8 @@ export const MsgCreateRootParticipant = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.schemaId !== 0) {
       obj.schemaId = Math.round(message.schemaId);
@@ -1554,7 +1554,7 @@ export const MsgCreateRootParticipant = {
   fromPartial<I extends Exact<DeepPartial<MsgCreateRootParticipant>, I>>(object: I): MsgCreateRootParticipant {
     const message = createBaseMsgCreateRootParticipant();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.schemaId = object.schemaId ?? 0;
     message.did = object.did ?? "";
     message.effectiveFrom = object.effectiveFrom ?? undefined;
@@ -1637,7 +1637,7 @@ export const MsgCreateRootParticipantResponse = {
 };
 
 function createBaseMsgSetParticipantEffectiveUntil(): MsgSetParticipantEffectiveUntil {
-  return { corporation: "", operator: "", id: 0, effectiveUntil: undefined };
+  return { corporation: "", delegate: "", id: 0, effectiveUntil: undefined };
 }
 
 export const MsgSetParticipantEffectiveUntil = {
@@ -1645,8 +1645,8 @@ export const MsgSetParticipantEffectiveUntil = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -1676,7 +1676,7 @@ export const MsgSetParticipantEffectiveUntil = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1704,7 +1704,7 @@ export const MsgSetParticipantEffectiveUntil = {
   fromJSON(object: any): MsgSetParticipantEffectiveUntil {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       effectiveUntil: isSet(object.effectiveUntil) ? fromJsonTimestamp(object.effectiveUntil) : undefined,
     };
@@ -1715,8 +1715,8 @@ export const MsgSetParticipantEffectiveUntil = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1735,7 +1735,7 @@ export const MsgSetParticipantEffectiveUntil = {
   ): MsgSetParticipantEffectiveUntil {
     const message = createBaseMsgSetParticipantEffectiveUntil();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     message.effectiveUntil = object.effectiveUntil ?? undefined;
     return message;
@@ -1790,7 +1790,7 @@ export const MsgSetParticipantEffectiveUntilResponse = {
 };
 
 function createBaseMsgRevokeParticipant(): MsgRevokeParticipant {
-  return { corporation: "", operator: "", id: 0 };
+  return { corporation: "", delegate: "", id: 0 };
 }
 
 export const MsgRevokeParticipant = {
@@ -1798,8 +1798,8 @@ export const MsgRevokeParticipant = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -1826,7 +1826,7 @@ export const MsgRevokeParticipant = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1847,7 +1847,7 @@ export const MsgRevokeParticipant = {
   fromJSON(object: any): MsgRevokeParticipant {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -1857,8 +1857,8 @@ export const MsgRevokeParticipant = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1872,7 +1872,7 @@ export const MsgRevokeParticipant = {
   fromPartial<I extends Exact<DeepPartial<MsgRevokeParticipant>, I>>(object: I): MsgRevokeParticipant {
     const message = createBaseMsgRevokeParticipant();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     return message;
   },
@@ -1924,7 +1924,7 @@ export const MsgRevokeParticipantResponse = {
 function createBaseMsgCreateOrUpdateParticipantSession(): MsgCreateOrUpdateParticipantSession {
   return {
     corporation: "",
-    operator: "",
+    vsAccount: "",
     id: "",
     issuerParticipantId: 0,
     verifierParticipantId: 0,
@@ -1939,8 +1939,8 @@ export const MsgCreateOrUpdateParticipantSession = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.vsAccount !== "") {
+      writer.uint32(18).string(message.vsAccount);
     }
     if (message.id !== "") {
       writer.uint32(26).string(message.id);
@@ -1982,7 +1982,7 @@ export const MsgCreateOrUpdateParticipantSession = {
             break;
           }
 
-          message.operator = reader.string();
+          message.vsAccount = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -2038,7 +2038,7 @@ export const MsgCreateOrUpdateParticipantSession = {
   fromJSON(object: any): MsgCreateOrUpdateParticipantSession {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      vsAccount: isSet(object.vsAccount) ? globalThis.String(object.vsAccount) : "",
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       issuerParticipantId: isSet(object.issuerParticipantId) ? globalThis.Number(object.issuerParticipantId) : 0,
       verifierParticipantId: isSet(object.verifierParticipantId) ? globalThis.Number(object.verifierParticipantId) : 0,
@@ -2055,8 +2055,8 @@ export const MsgCreateOrUpdateParticipantSession = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.vsAccount !== "") {
+      obj.vsAccount = message.vsAccount;
     }
     if (message.id !== "") {
       obj.id = message.id;
@@ -2089,7 +2089,7 @@ export const MsgCreateOrUpdateParticipantSession = {
   ): MsgCreateOrUpdateParticipantSession {
     const message = createBaseMsgCreateOrUpdateParticipantSession();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.vsAccount = object.vsAccount ?? "";
     message.id = object.id ?? "";
     message.issuerParticipantId = object.issuerParticipantId ?? 0;
     message.verifierParticipantId = object.verifierParticipantId ?? 0;
@@ -2162,7 +2162,7 @@ export const MsgCreateOrUpdateParticipantSessionResponse = {
 };
 
 function createBaseMsgSlashParticipantTrustDeposit(): MsgSlashParticipantTrustDeposit {
-  return { corporation: "", operator: "", id: 0, amount: 0, reason: "" };
+  return { corporation: "", delegate: "", id: 0, amount: 0, reason: "" };
 }
 
 export const MsgSlashParticipantTrustDeposit = {
@@ -2170,8 +2170,8 @@ export const MsgSlashParticipantTrustDeposit = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -2204,7 +2204,7 @@ export const MsgSlashParticipantTrustDeposit = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2239,7 +2239,7 @@ export const MsgSlashParticipantTrustDeposit = {
   fromJSON(object: any): MsgSlashParticipantTrustDeposit {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       reason: isSet(object.reason) ? globalThis.String(object.reason) : "",
@@ -2251,8 +2251,8 @@ export const MsgSlashParticipantTrustDeposit = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -2274,7 +2274,7 @@ export const MsgSlashParticipantTrustDeposit = {
   ): MsgSlashParticipantTrustDeposit {
     const message = createBaseMsgSlashParticipantTrustDeposit();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     message.amount = object.amount ?? 0;
     message.reason = object.reason ?? "";
@@ -2330,7 +2330,7 @@ export const MsgSlashParticipantTrustDepositResponse = {
 };
 
 function createBaseMsgRepayParticipantSlashedTrustDeposit(): MsgRepayParticipantSlashedTrustDeposit {
-  return { corporation: "", operator: "", id: 0 };
+  return { corporation: "", delegate: "", id: 0 };
 }
 
 export const MsgRepayParticipantSlashedTrustDeposit = {
@@ -2338,8 +2338,8 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -2366,7 +2366,7 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2387,7 +2387,7 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
   fromJSON(object: any): MsgRepayParticipantSlashedTrustDeposit {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -2397,8 +2397,8 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -2416,7 +2416,7 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
   ): MsgRepayParticipantSlashedTrustDeposit {
     const message = createBaseMsgRepayParticipantSlashedTrustDeposit();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     return message;
   },
@@ -2472,7 +2472,7 @@ export const MsgRepayParticipantSlashedTrustDepositResponse = {
 function createBaseMsgSelfCreateParticipant(): MsgSelfCreateParticipant {
   return {
     corporation: "",
-    operator: "",
+    delegate: "",
     role: 0,
     validatorParticipantId: 0,
     did: "",
@@ -2494,8 +2494,8 @@ export const MsgSelfCreateParticipant = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.role !== 0) {
       writer.uint32(24).int32(message.role);
@@ -2560,7 +2560,7 @@ export const MsgSelfCreateParticipant = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2675,7 +2675,7 @@ export const MsgSelfCreateParticipant = {
   fromJSON(object: any): MsgSelfCreateParticipant {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       role: isSet(object.role) ? participantRoleFromJSON(object.role) : 0,
       validatorParticipantId: isSet(object.validatorParticipantId)
         ? globalThis.Number(object.validatorParticipantId)
@@ -2709,8 +2709,8 @@ export const MsgSelfCreateParticipant = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.role !== 0) {
       obj.role = participantRoleToJSON(message.role);
@@ -2760,7 +2760,7 @@ export const MsgSelfCreateParticipant = {
   fromPartial<I extends Exact<DeepPartial<MsgSelfCreateParticipant>, I>>(object: I): MsgSelfCreateParticipant {
     const message = createBaseMsgSelfCreateParticipant();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.role = object.role ?? 0;
     message.validatorParticipantId = object.validatorParticipantId ?? 0;
     message.did = object.did ?? "";
@@ -2843,7 +2843,7 @@ export const MsgSelfCreateParticipantResponse = {
 };
 
 function createBaseMsgTriggerResolver(): MsgTriggerResolver {
-  return { corporation: "", operator: "", id: 0 };
+  return { corporation: "", delegate: "", id: 0 };
 }
 
 export const MsgTriggerResolver = {
@@ -2851,8 +2851,8 @@ export const MsgTriggerResolver = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -2879,7 +2879,7 @@ export const MsgTriggerResolver = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2900,7 +2900,7 @@ export const MsgTriggerResolver = {
   fromJSON(object: any): MsgTriggerResolver {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -2910,8 +2910,8 @@ export const MsgTriggerResolver = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -2925,7 +2925,7 @@ export const MsgTriggerResolver = {
   fromPartial<I extends Exact<DeepPartial<MsgTriggerResolver>, I>>(object: I): MsgTriggerResolver {
     const message = createBaseMsgTriggerResolver();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     return message;
   },

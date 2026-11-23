@@ -37,7 +37,7 @@ func main() {
 	address := "verana16mzeyu9l6kua2cdg9x0jk5g6e7h0kk8q6uadu4"
 	msg := &permtypes.MsgSelfCreateParticipant{
 		Corporation:      address,
-		Operator:         address,
+		Delegate:         address,
 		Role:             permtypes.ParticipantRole_VERIFIER,
 		ValidatorParticipantId:  1,
 		Did:              "did:verana:test:bench",
@@ -154,7 +154,7 @@ func buildClientSignBytes(address string, accountNumber, sequence uint64) []byte
 				"type": "/perm/v1/self-create-perm",
 				"value": map[string]any{
 					"corporation":                       address,
-					"operator":                          address,
+					"delegate":                          address,
 					"type":                              2,
 					"validator_participant_id":                 "1",
 					"did":                               "did:verana:test:bench",

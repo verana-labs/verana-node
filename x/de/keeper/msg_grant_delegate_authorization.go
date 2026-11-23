@@ -11,8 +11,8 @@ import (
 	"github.com/verana-labs/verana-node/x/de/types"
 )
 
-// GrantOperatorAuthorization implements [MOD-DE-MSG-3].
-func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types.MsgGrantOperatorAuthorization) (*types.MsgGrantOperatorAuthorizationResponse, error) {
+// GrantDelegateAuthorization implements [MOD-DE-MSG-3].
+func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types.MsgGrantDelegateAuthorization) (*types.MsgGrantDelegateAuthorizationResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
@@ -25,22 +25,21 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 		return nil, err
 	}
 
-	// [AUTHZ-CHECK-1] The operator is the signer. When it equals the corporation
-	// policy_address the corporation is acting alone (group proposal) and the
-	// check is skipped; otherwise the operator's delegation MUST cover this msg.
-	if msg.Operator != msg.Corporation {
-		if err := ms.CheckOperatorAuthorization(
+	// Group-proposal path: delegate equals corporation and AUTHZ-CHECK-5 alone
+	// applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
+	if msg.Delegate != msg.Corporation {
+		if err := ms.CheckDelegateAuthorization(
 			ctx,
 			msg.Corporation,
-			msg.Operator,
+			msg.Delegate,
 			types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION,
 			now,
 		); err != nil {
 			return nil, err
 		}
-		// [MOD-DE-MSG-3] An operator cannot grant itself new msg_types (escalation).
-		if msg.Grantee == msg.Operator {
-			return nil, fmt.Errorf("operator cannot grant authorization to itself; use a group proposal")
+		// [MOD-DE-MSG-3] A delegate cannot grant itself new msg_types (escalation).
+		if msg.Grantee == msg.Delegate {
+			return nil, fmt.Errorf("delegate cannot grant authorization to itself; use a group proposal")
 		}
 	}
 
@@ -71,27 +70,27 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 
 	// [MOD-DE-MSG-3-4] Execution.
 
-	// 1. Lookup existing OperatorAuthorization by (co.id, grantee): preserve id
+	// 1. Lookup existing DelegateAuthorization by (co.id, grantee): preserve id
 	// on in-place update, allocate a fresh one otherwise.
-	existing, found, err := ms.getOperatorAuthorizationByCorpOp(ctx, co.Id, msg.Grantee)
+	existing, found, err := ms.getDelegateAuthorizationByCorpDelegate(ctx, co.Id, msg.Grantee)
 	if err != nil {
 		return nil, err
 	}
-	var oaID uint64
+	var daID uint64
 	if found {
-		oaID = existing.Id
+		daID = existing.Id
 	} else {
-		oaID, err = ms.nextOperatorAuthorizationID(ctx)
+		daID, err = ms.nextDelegateAuthorizationID(ctx)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Seed runtime balances at grant time per [MOD-DE-MSG-3] / AUTHZ-CHECK-1.
-	oa := types.OperatorAuthorization{
-		Id:             oaID,
+	da := types.DelegateAuthorization{
+		Id:             daID,
 		CorporationId:  co.Id,
-		Operator:       msg.Grantee,
+		Delegate:       msg.Grantee,
 		MsgTypes:       msg.MsgTypes,
 		SpendLimit:     msg.AuthzSpendLimit,
 		RemainingSpend: msg.AuthzSpendLimit,
@@ -100,13 +99,13 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 	// period is ignored without a spend limit; storing it otherwise would make
 	// the authorization auto-renew its expiration forever.
 	if len(msg.AuthzSpendLimit) > 0 {
-		oa.Period = msg.AuthzSpendLimitPeriod
+		da.Period = msg.AuthzSpendLimitPeriod
 	}
-	if err := ms.OperatorAuthorizations.Set(ctx, oaID, oa); err != nil {
-		return nil, fmt.Errorf("failed to set OperatorAuthorization: %w", err)
+	if err := ms.DelegateAuthorizations.Set(ctx, daID, da); err != nil {
+		return nil, fmt.Errorf("failed to set DelegateAuthorization: %w", err)
 	}
-	if err := ms.OperatorAuthorizationByCorpOp.Set(ctx, collections.Join(co.Id, msg.Grantee), oaID); err != nil {
-		return nil, fmt.Errorf("failed to set OperatorAuthorization index: %w", err)
+	if err := ms.DelegateAuthorizationByCorpDelegate.Set(ctx, collections.Join(co.Id, msg.Grantee), daID); err != nil {
+		return nil, fmt.Errorf("failed to set DelegateAuthorization index: %w", err)
 	}
 
 	// 2. Handle fee grant.
@@ -136,8 +135,8 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 	// 3. Emit events.
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeGrantOperatorAuthorization,
-			sdk.NewAttribute(types.AttributeKeyAuthzID, strconv.FormatUint(oaID, 10)),
+			types.EventTypeGrantDelegateAuthorization,
+			sdk.NewAttribute(types.AttributeKeyAuthzID, strconv.FormatUint(daID, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(co.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyGrantee, msg.Grantee),
 			sdk.NewAttribute(types.AttributeKeyWithFeegrant, fmt.Sprintf("%t", msg.WithFeegrant)),
@@ -145,5 +144,5 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 		),
 	})
 
-	return &types.MsgGrantOperatorAuthorizationResponse{}, nil
+	return &types.MsgGrantDelegateAuthorizationResponse{}, nil
 }

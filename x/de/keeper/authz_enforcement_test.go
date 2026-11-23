@@ -12,9 +12,9 @@ import (
 	"github.com/verana-labs/verana-node/x/de/types"
 )
 
-// [AUTHZ-CHECK-1] step 2: a period-bearing operator authorization auto-renews on
+// [AUTHZ-CHECK-1] step 2: a period-bearing delegate authorization auto-renews on
 // the first check after expiry instead of returning ErrAuthzExpired (#324).
-func TestOperatorAuthzPeriodRenewal(t *testing.T) {
+func TestDelegateAuthzPeriodRenewal(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
 	corporation := acc("corp________________")
@@ -25,8 +25,9 @@ func TestOperatorAuthzPeriodRenewal(t *testing.T) {
 	exp := now.Add(time.Hour)
 	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 100))
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
 		Corporation:           corporation,
+		Delegate:              corporation,
 		Grantee:               grantee,
 		MsgTypes:              []types.MsgType{mtEcosystem},
 		AuthzSpendLimit:       spend,
@@ -35,55 +36,55 @@ func TestOperatorAuthzPeriodRenewal(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	list, err := qs.ListOperatorAuthorizations(ctx, &types.QueryListOperatorAuthorizationsRequest{Operator: grantee})
+	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
 	require.NoError(t, err)
-	require.Len(t, list.OperatorAuthorizations, 1)
-	id := list.OperatorAuthorizations[0].Id
+	require.Len(t, list.DelegateAuthorizations, 1)
+	id := list.DelegateAuthorizations[0].Id
 	// Seeded at grant time.
-	require.Equal(t, spend, list.OperatorAuthorizations[0].RemainingSpend)
+	require.Equal(t, spend, list.DelegateAuthorizations[0].RemainingSpend)
 
 	// Check well past expiry: must succeed (auto-renew), not abort.
 	checkAt := now.Add(90 * time.Minute)
-	require.NoError(t, f.keeper.CheckOperatorAuthorization(ctx, corporation, grantee, mtEcosystem, checkAt))
+	require.NoError(t, f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, mtEcosystem, checkAt))
 
-	got, err := qs.GetOperatorAuthorization(ctx, &types.QueryGetOperatorAuthorizationRequest{Id: id})
+	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: id})
 	require.NoError(t, err)
-	require.True(t, got.OperatorAuthorization.Expiration.After(checkAt), "expiration rolled forward")
-	require.Equal(t, spend, got.OperatorAuthorization.RemainingSpend, "remaining reset on renewal")
+	require.True(t, got.DelegateAuthorization.Expiration.After(checkAt), "expiration rolled forward")
+	require.Equal(t, spend, got.DelegateAuthorization.RemainingSpend, "remaining reset on renewal")
 }
 
 // A non-period authorization still aborts once expired.
-func TestOperatorAuthzExpiresWithoutPeriod(t *testing.T) {
+func TestDelegateAuthzExpiresWithoutPeriod(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 	now := ctx.BlockTime()
 	exp := now.Add(time.Hour)
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem}, Expiration: &exp,
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem}, Expiration: &exp,
 	})
 	require.NoError(t, err)
 
-	err = f.keeper.CheckOperatorAuthorization(ctx, corporation, grantee, mtEcosystem, now.Add(2*time.Hour))
+	err = f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, mtEcosystem, now.Add(2*time.Hour))
 	require.ErrorIs(t, err, types.ErrAuthzExpired)
 }
 
 // The current message type must be in msg_types; no list holds UNSPECIFIED.
-func TestOperatorAuthzMsgTypeMembership(t *testing.T) {
+func TestDelegateAuthzMsgTypeMembership(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 	now := ctx.BlockTime()
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	require.NoError(t, f.keeper.CheckOperatorAuthorization(ctx, corporation, grantee, mtEcosystem, now))
-	require.ErrorIs(t, f.keeper.CheckOperatorAuthorization(ctx, corporation, grantee, mtSchema, now), types.ErrAuthzMsgTypeNotFound)
-	require.ErrorIs(t, f.keeper.CheckOperatorAuthorization(ctx, corporation, grantee, types.MsgType_MSG_TYPE_UNSPECIFIED, now), types.ErrAuthzMsgTypeNotFound)
+	require.NoError(t, f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, mtEcosystem, now))
+	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, mtSchema, now), types.ErrAuthzMsgTypeNotFound)
+	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, types.MsgType_MSG_TYPE_UNSPECIFIED, now), types.ErrAuthzMsgTypeNotFound)
 }
 
 // [MOD-DE-MSG-1] FeeGrant seeds remaining_spend at grant.
@@ -120,50 +121,76 @@ func TestVSOARecordSeedsRemaining(t *testing.T) {
 	require.Equal(t, spend, vsoa.Records[0].RemainingSpend)
 }
 
-// [AUTHZ-CHECK-1] step 3: ConsumeOperatorSpend debits remaining_spend and rejects
-// over-limit spends; no-op for empty operator (group path).
-func TestConsumeOperatorSpend(t *testing.T) {
+// [AUTHZ-CHECK-1] step 3: ConsumeDelegateSpend debits remaining_spend and rejects
+// over-limit spends and an empty delegate.
+func TestConsumeDelegateSpend(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 	now := ctx.BlockTime()
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 		AuthzSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", 100)),
 	})
 	require.NoError(t, err)
-	list, err := qs.ListOperatorAuthorizations(ctx, &types.QueryListOperatorAuthorizationsRequest{Operator: grantee})
+	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
 	require.NoError(t, err)
-	id := list.OperatorAuthorizations[0].Id
+	id := list.DelegateAuthorizations[0].Id
 
 	// Debit 60 -> remaining 40.
-	require.NoError(t, f.keeper.ConsumeOperatorSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))))
-	got, err := qs.GetOperatorAuthorization(ctx, &types.QueryGetOperatorAuthorizationRequest{Id: id})
+	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))))
+	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: id})
 	require.NoError(t, err)
-	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uvna", 40)), got.OperatorAuthorization.RemainingSpend)
+	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uvna", 40)), got.DelegateAuthorization.RemainingSpend)
 
 	// Debit another 60 -> exceeds remaining 40.
 	require.ErrorIs(t,
-		f.keeper.ConsumeOperatorSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))),
+		f.keeper.ConsumeDelegateSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))),
 		types.ErrAuthzSpendLimitExceeded)
 
-	// Empty operator (corporation acting alone via group) -> no-op.
-	require.NoError(t, f.keeper.ConsumeOperatorSpend(ctx, corporation, "", mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))))
+	// Empty delegate is not a path.
+	require.ErrorIs(t,
+		f.keeper.ConsumeDelegateSpend(ctx, corporation, "", mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))),
+		types.ErrAuthzNotFound)
 }
 
-// No spend_limit configured -> ConsumeOperatorSpend is a no-op (unlimited).
-func TestConsumeOperatorSpend_NoLimit(t *testing.T) {
+// [AUTHZ-CHECK-1] an empty delegate is rejected, not skipped.
+func TestCheckDelegateAuthorization_EmptyDelegate(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+
+	require.ErrorIs(t,
+		f.keeper.CheckDelegateAuthorization(ctx, corporation, "", mtEcosystem, ctx.BlockTime()),
+		types.ErrAuthzNotFound)
+}
+
+// Only the messages that offer a group-proposal path accept delegate ==
+// corporation; the shared check grants no such bypass.
+func TestCheckDelegateAuthorization_CorporationAsDelegate(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+
+	require.ErrorIs(t,
+		f.keeper.CheckDelegateAuthorization(ctx, corporation, corporation, mtEcosystem, ctx.BlockTime()),
+		types.ErrAuthzNotFound)
+	require.ErrorIs(t,
+		f.keeper.ConsumeDelegateSpend(ctx, corporation, corporation, mtEcosystem, ctx.BlockTime(), sdk.NewCoins(sdk.NewInt64Coin("uvna", 1))),
+		types.ErrAuthzNotFound)
+}
+
+// No spend_limit configured -> ConsumeDelegateSpend is a no-op (unlimited).
+func TestConsumeDelegateSpend_NoLimit(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 	now := ctx.BlockTime()
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
-	require.NoError(t, f.keeper.ConsumeOperatorSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))))
+	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))))
 }
 
 // [AUTHZ-CHECK-3] step 6: ConsumeRecordSpend debits the record's remaining_spend.

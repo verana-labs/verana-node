@@ -78,14 +78,14 @@ func (k Keeper) GrantVSOperatorAuthorization(
 		return err
 	}
 
-	// Mutual exclusivity: no OperatorAuthorization may exist for
+	// Mutual exclusivity: no DelegateAuthorization may exist for
 	// (corporation_id, vs_operator).
-	hasOA, err := k.OperatorAuthorizationByCorpOp.Has(ctx, collections.Join(corporationID, vsOperator))
+	hasOA, err := k.DelegateAuthorizationByCorpDelegate.Has(ctx, collections.Join(corporationID, vsOperator))
 	if err != nil {
-		return fmt.Errorf("failed to check OperatorAuthorization index: %w", err)
+		return fmt.Errorf("failed to check DelegateAuthorization index: %w", err)
 	}
 	if hasOA {
-		return types.ErrOperatorAuthzExistsMutex
+		return types.ErrDelegateAuthzExistsMutex
 	}
 
 	// Single-corp constraint: no other VSOperatorAuthorization may exist where

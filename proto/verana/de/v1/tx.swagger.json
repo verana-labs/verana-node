@@ -16,15 +16,15 @@
     "application/json"
   ],
   "paths": {
-    "/verana.de.v1.Msg/GrantOperatorAuthorization": {
+    "/verana.de.v1.Msg/GrantDelegateAuthorization": {
       "post": {
-        "summary": "[MOD-DE-MSG-3] Grant Operator Authorization",
-        "operationId": "Msg_GrantOperatorAuthorization",
+        "summary": "[MOD-DE-MSG-3] Grant Delegate Authorization",
+        "operationId": "Msg_GrantDelegateAuthorization",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/verana.de.v1.MsgGrantOperatorAuthorizationResponse"
+              "$ref": "#/definitions/verana.de.v1.MsgGrantDelegateAuthorizationResponse"
             }
           },
           "default": {
@@ -37,11 +37,11 @@
         "parameters": [
           {
             "name": "body",
-            "description": "[MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization\nto a grantee on behalf of a corporation.\n\nSigner semantics (spec \"corporation + operator OR group proposal\"):\nThe signer is `operator` (consistent with the other delegable modules).\n- Group-proposal path: the corporation's group policy account executes the\n  message, so `operator` equals `corporation` (the policy_address) and the\n  handler skips AUTHZ-CHECK-1 (the corporation is acting alone).\n- Operator path: an individual `operator` signs; the handler resolves the\n  corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to\n  verify the operator's delegation covers this message type.",
+            "description": "[MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization\nto a grantee on behalf of a corporation.\n\nThe signer is `delegate`. On the group-proposal path the corporation's\npolicy account executes the message and `delegate` equals `corporation`;\nonly AUTHZ-CHECK-5 then applies.",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/verana.de.v1.MsgGrantOperatorAuthorization"
+              "$ref": "#/definitions/verana.de.v1.MsgGrantDelegateAuthorization"
             }
           }
         ],
@@ -50,15 +50,15 @@
         ]
       }
     },
-    "/verana.de.v1.Msg/RevokeOperatorAuthorization": {
+    "/verana.de.v1.Msg/RevokeDelegateAuthorization": {
       "post": {
-        "summary": "[MOD-DE-MSG-4] Revoke Operator Authorization",
-        "operationId": "Msg_RevokeOperatorAuthorization",
+        "summary": "[MOD-DE-MSG-4] Revoke Delegate Authorization",
+        "operationId": "Msg_RevokeDelegateAuthorization",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/verana.de.v1.MsgRevokeOperatorAuthorizationResponse"
+              "$ref": "#/definitions/verana.de.v1.MsgRevokeDelegateAuthorizationResponse"
             }
           },
           "default": {
@@ -71,11 +71,11 @@
         "parameters": [
           {
             "name": "body",
-            "description": "[MOD-DE-MSG-4] MsgRevokeOperatorAuthorization revokes an operator\nauthorization for a grantee on behalf of a corporation. Same signer\nsemantics as MsgGrantOperatorAuthorization (see above).",
+            "description": "[MOD-DE-MSG-4] MsgRevokeDelegateAuthorization revokes a delegate\nauthorization for a grantee on behalf of a corporation. Same signer\nsemantics as MsgGrantDelegateAuthorization (see above).",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/verana.de.v1.MsgRevokeOperatorAuthorization"
+              "$ref": "#/definitions/verana.de.v1.MsgRevokeDelegateAuthorization"
             }
           }
         ],
@@ -160,20 +160,20 @@
         }
       }
     },
-    "verana.de.v1.MsgGrantOperatorAuthorization": {
+    "verana.de.v1.MsgGrantDelegateAuthorization": {
       "type": "object",
       "properties": {
         "corporation": {
           "type": "string",
           "description": "corporation is the policy_address of the corporation granting the authorization."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the signer: an authorized operator, or the corporation's\npolicy_address itself on the group-proposal path."
+          "description": "delegate is the signer: an authorized delegate, or the corporation's\npolicy_address itself on the group-proposal path."
         },
         "grantee": {
           "type": "string",
-          "description": "grantee is the account that receives the authorization from authority."
+          "description": "grantee is the account that receives the authorization from corporation."
         },
         "msg_types": {
           "type": "array",
@@ -216,33 +216,33 @@
           "description": "feegrant_spend_limit_period is the optional reset period for\nfeegrant_spend_limit. Ignored if with_feegrant is false."
         }
       },
-      "description": "[MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization\nto a grantee on behalf of a corporation.\n\nSigner semantics (spec \"corporation + operator OR group proposal\"):\nThe signer is `operator` (consistent with the other delegable modules).\n- Group-proposal path: the corporation's group policy account executes the\n  message, so `operator` equals `corporation` (the policy_address) and the\n  handler skips AUTHZ-CHECK-1 (the corporation is acting alone).\n- Operator path: an individual `operator` signs; the handler resolves the\n  corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to\n  verify the operator's delegation covers this message type."
+      "description": "[MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization\nto a grantee on behalf of a corporation.\n\nThe signer is `delegate`. On the group-proposal path the corporation's\npolicy account executes the message and `delegate` equals `corporation`;\nonly AUTHZ-CHECK-5 then applies."
     },
-    "verana.de.v1.MsgGrantOperatorAuthorizationResponse": {
+    "verana.de.v1.MsgGrantDelegateAuthorizationResponse": {
       "type": "object",
-      "description": "MsgGrantOperatorAuthorizationResponse defines the response for\nMsgGrantOperatorAuthorization."
+      "description": "MsgGrantDelegateAuthorizationResponse defines the response for\nMsgGrantDelegateAuthorization."
     },
-    "verana.de.v1.MsgRevokeOperatorAuthorization": {
+    "verana.de.v1.MsgRevokeDelegateAuthorization": {
       "type": "object",
       "properties": {
         "corporation": {
           "type": "string",
           "description": "corporation is the policy_address of the corporation revoking the authorization."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the signer: an authorized operator, or the corporation's\npolicy_address itself on the group-proposal path."
+          "description": "delegate is the signer: an authorized delegate, or the corporation's\npolicy_address itself on the group-proposal path."
         },
         "grantee": {
           "type": "string",
           "description": "grantee is the account whose authorization is being revoked."
         }
       },
-      "description": "[MOD-DE-MSG-4] MsgRevokeOperatorAuthorization revokes an operator\nauthorization for a grantee on behalf of a corporation. Same signer\nsemantics as MsgGrantOperatorAuthorization (see above)."
+      "description": "[MOD-DE-MSG-4] MsgRevokeDelegateAuthorization revokes a delegate\nauthorization for a grantee on behalf of a corporation. Same signer\nsemantics as MsgGrantDelegateAuthorization (see above)."
     },
-    "verana.de.v1.MsgRevokeOperatorAuthorizationResponse": {
+    "verana.de.v1.MsgRevokeDelegateAuthorizationResponse": {
       "type": "object",
-      "description": "MsgRevokeOperatorAuthorizationResponse defines the response for\nMsgRevokeOperatorAuthorization."
+      "description": "MsgRevokeDelegateAuthorizationResponse defines the response for\nMsgRevokeDelegateAuthorization."
     },
     "verana.de.v1.MsgType": {
       "type": "string",

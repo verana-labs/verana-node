@@ -14,7 +14,7 @@ import (
 // Valid bech32 fixtures (deterministically generated from labels).
 const (
 	tSigner    = "cosmos1hfyt5r4f3rnu5gqrgfwr4446zgn00gdj0nn7dx"
-	tOperator  = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn"
+	tDelegate  = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn"
 	tCorp      = "cosmos14wcc52lpsxwuxxhqjxrhvuumhm0xr6z247un93"
 	tMember    = "cosmos1jpjwc8r9y5xqpj7q3w9c2qhda0ednjcmxvtna4"
 	tAuthority = "cosmos1z39xu0w27yfq58dmqyk7efuyqt43kvfc0jdte2"
@@ -94,7 +94,7 @@ func TestMsgCreateCorporation_ValidateBasic(t *testing.T) {
 
 func TestMsgUpdateCorporation_ValidateBasic(t *testing.T) {
 	base := func() *types.MsgUpdateCorporation {
-		return &types.MsgUpdateCorporation{Corporation: tCorp, Operator: tOperator, Did: "did:example:2"}
+		return &types.MsgUpdateCorporation{Corporation: tCorp, Delegate: tDelegate, Did: "did:example:2"}
 	}
 	require.NoError(t, base().ValidateBasic())
 
@@ -105,8 +105,8 @@ func TestMsgUpdateCorporation_ValidateBasic(t *testing.T) {
 	}{
 		{"empty corporation", func(m *types.MsgUpdateCorporation) { m.Corporation = "" }, sdkerrors.ErrInvalidAddress},
 		{"malformed bech32 corporation", func(m *types.MsgUpdateCorporation) { m.Corporation = "cosmos1corp" }, sdkerrors.ErrInvalidAddress},
-		{"empty operator", func(m *types.MsgUpdateCorporation) { m.Operator = "" }, sdkerrors.ErrInvalidAddress},
-		{"malformed bech32 operator", func(m *types.MsgUpdateCorporation) { m.Operator = "cosmos1op" }, sdkerrors.ErrInvalidAddress},
+		{"empty delegate", func(m *types.MsgUpdateCorporation) { m.Delegate = "" }, sdkerrors.ErrInvalidAddress},
+		{"malformed bech32 delegate", func(m *types.MsgUpdateCorporation) { m.Delegate = "cosmos1op" }, sdkerrors.ErrInvalidAddress},
 		{"empty did", func(m *types.MsgUpdateCorporation) { m.Did = "" }, types.ErrInvalidDID},
 		{"bad did", func(m *types.MsgUpdateCorporation) { m.Did = "not-a-did" }, types.ErrInvalidDID},
 	}

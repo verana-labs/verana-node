@@ -17,7 +17,7 @@ func TestCreateCredentialSchema_CanonicalizesJSON(t *testing.T) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	authority := sdk.AccAddress([]byte("order_authority_____")).String()
-	operator := sdk.AccAddress([]byte("order_operator______")).String()
+	delegate := sdk.AccAddress([]byte("order_delegate______")).String()
 	trID := mockTrk.CreateMockEcosystem(authority, "did:example:order")
 
 	// Properties in deliberately NON-alphabetical order.
@@ -32,7 +32,7 @@ func TestCreateCredentialSchema_CanonicalizesJSON(t *testing.T) {
     "mango": { "type": "string" }
   }
 }`
-	msg := keeper.CreateMsgWithValidityPeriods(authority, operator, trID, schema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
+	msg := keeper.CreateMsgWithValidityPeriods(authority, delegate, trID, schema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	require.NoError(t, msg.ValidateBasic())
 
 	resp, err := ms.CreateCredentialSchema(ctx, msg)

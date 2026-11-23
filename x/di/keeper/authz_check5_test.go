@@ -21,12 +21,12 @@ func TestAuthzCheck5_StoreDigest(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	authority := sdk.AccAddress([]byte("unregistered_corp___")).String()
-	operator := sdk.AccAddress([]byte("operator_address____")).String()
+	delegate := sdk.AccAddress([]byte("delegate_address____")).String()
 
 	f.corpKeeper.unregistered[authority] = true
 	_, err := ms.StoreDigest(f.ctx, &types.MsgStoreDigest{
 		Authority: authority,
-		Operator:  operator,
+		Delegate:  delegate,
 		Digest:    "sha256-abc123def456",
 	})
 	require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)

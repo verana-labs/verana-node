@@ -124,7 +124,7 @@ func (ms msgServer) executeCreateCredentialSchema(ctx sdk.Context, schemaID uint
 			sdk.NewAttribute(types.AttributeKeyId, fmt.Sprintf("%d", schemaID)),
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, fmt.Sprintf("%d", msg.EcosystemId)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyIssuerGrantorValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.IssuerGrantorValidationValidityPeriod)),
 			sdk.NewAttribute(types.AttributeKeyVerifierGrantorValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.VerifierGrantorValidationValidityPeriod)),
 			sdk.NewAttribute(types.AttributeKeyIssuerValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.IssuerValidationValidityPeriod)),

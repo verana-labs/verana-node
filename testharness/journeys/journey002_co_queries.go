@@ -17,8 +17,8 @@ func RunCorpQueriesJourney(ctx context.Context, client cosmosclient.Client) erro
 
 	setup := lib.LoadJourneyResult("journey001")
 	policyAddr := setup.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, corpAOperator)
-	operatorAddr := setup.OperatorAddr
+	delegateAccount := lib.GetAccount(client, corpADelegate)
+	delegateAddr := setup.DelegateAddr
 
 	corpIDStr := setup.EcosystemID // reused field: stores the corporation ID for J001
 	var corpID uint64
@@ -26,7 +26,7 @@ func RunCorpQueriesJourney(ctx context.Context, client cosmosclient.Client) erro
 
 	fmt.Printf("  Corp ID:     %d\n", corpID)
 	fmt.Printf("  Policy Addr: %s\n", policyAddr)
-	fmt.Printf("  Operator:    %s\n", operatorAddr)
+	fmt.Printf("  Delegate:    %s\n", delegateAddr)
 
 	// =========================================================================
 	// Step 1: GetCorporation [MOD-CO-QUERY-1]
@@ -70,8 +70,8 @@ func RunCorpQueriesJourney(ctx context.Context, client cosmosclient.Client) erro
 	// =========================================================================
 	// Step 3: UpdateCorporation fail-then-pass [MOD-CO-MSG-2]
 	// =========================================================================
-	fmt.Println("\n--- Step 3a: Operator tries UpdateCorporation without UpdateCorporation authz (expect failure) ---")
-	// Operator has all authz except UpdateCorporation (bootstrapped in J001 for other msgs).
+	fmt.Println("\n--- Step 3a: Delegate tries UpdateCorporation without UpdateCorporation authz (expect failure) ---")
+	// Delegate has all authz except UpdateCorporation (bootstrapped in J001 for other msgs).
 	// Actually J001 bootstrapped UpdateCorporation too — so here we test with a fresh account
 	// that has no authz at all.
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
@@ -87,13 +87,13 @@ func RunCorpQueriesJourney(ctx context.Context, client cosmosclient.Client) erro
 
 	// Step 3b: UpdateCorporation authz was bootstrapped in J001 — no re-grant needed.
 	fmt.Println("\n--- Step 3b: UpdateCorporation authz already granted in Journey 001 ---")
-	fmt.Println("✅ Step 3b: Skipping re-grant; operator authz set in Journey 001")
+	fmt.Println("✅ Step 3b: Skipping re-grant; delegate authz set in Journey 001")
 
-	// Step 3c: UpdateCorporation with authorized operator
-	fmt.Println("\n--- Step 3c: Authorized operator updates corporation DID ---")
+	// Step 3c: UpdateCorporation with authorized delegate
+	fmt.Println("\n--- Step 3c: Authorized delegate updates corporation DID ---")
 	updatedDID := fmt.Sprintf("%s-updated", setup.DID)
 	err = lib.UpdateCorporationWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		updatedDID,
 	)
 	if err != nil {

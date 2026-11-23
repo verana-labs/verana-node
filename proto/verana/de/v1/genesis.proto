@@ -16,8 +16,8 @@ message GenesisState {
     (amino.dont_omitempty) = true
   ];
 
-  // operator_authorizations is a list of all OperatorAuthorization objects
-  repeated OperatorAuthorization operator_authorizations = 2 [(gogoproto.nullable) = false];
+  // delegate_authorizations is a list of all DelegateAuthorization objects
+  repeated DelegateAuthorization delegate_authorizations = 2 [(gogoproto.nullable) = false];
 
   // fee_grants is a list of all FeeGrant objects
   repeated FeeGrant fee_grants = 3 [(gogoproto.nullable) = false];
@@ -26,7 +26,7 @@ message GenesisState {
   repeated VSOperatorAuthorization vs_operator_authorizations = 4 [(gogoproto.nullable) = false];
 
   // Id sequences, exported so ids are never re-issued after a delete.
-  uint64 operator_authorization_seq = 6;
+  uint64 delegate_authorization_seq = 6;
   uint64 vsoa_seq = 7;
 
   // window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5.

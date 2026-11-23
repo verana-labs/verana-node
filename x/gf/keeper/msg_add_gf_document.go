@@ -131,10 +131,13 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
+	if msg.Authority != "" {
+		return nil, ms.checkNetworkPath(msg.Authority)
+	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// AUTHZ-CHECK-1
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT, ctx.BlockTime()); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT, ctx.BlockTime()); err != nil {
 		return nil, err
 	}
 
@@ -231,7 +234,7 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddGFDocument,
 		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", msg.EcosystemId)),
 		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
 		sdk.NewAttribute(types.AttributeKeyGFDocID, fmt.Sprintf("%d", gfd.Id)),

@@ -68,7 +68,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.\n[MOD-TD-MSG-6] Any authorized operator CAN execute this on behalf of a corporation.",
+            "description": "MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.\n[MOD-TD-MSG-6] Any authorized delegate CAN execute this on behalf of a corporation.",
             "in": "body",
             "required": true,
             "schema": {
@@ -185,9 +185,9 @@
           "type": "string",
           "description": "corporation is the group address that owns the trust deposit."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the account authorized by the corporation to run this Msg."
+          "description": "delegate is the account authorized by the corporation to run this Msg."
         }
       },
       "title": "MsgReclaimTrustDepositYield defines the request type\n[MOD-TD-MSG-2] Reclaim Trust Deposit Yield"
@@ -209,9 +209,9 @@
           "type": "string",
           "description": "corporation is the group address that owns the slashed trust deposit."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the account authorized by the corporation to run this Msg."
+          "description": "delegate is the account authorized by the corporation to run this Msg."
         },
         "deposit": {
           "type": "string",
@@ -219,7 +219,7 @@
           "description": "deposit is the repayment amount (must equal outstanding slashed amount)."
         }
       },
-      "description": "MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.\n[MOD-TD-MSG-6] Any authorized operator CAN execute this on behalf of a corporation."
+      "description": "MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.\n[MOD-TD-MSG-6] Any authorized delegate CAN execute this on behalf of a corporation."
     },
     "verana.td.v1.MsgRepaySlashedTrustDepositResponse": {
       "type": "object"

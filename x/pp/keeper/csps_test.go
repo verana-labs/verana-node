@@ -612,7 +612,7 @@ func TestAgentRewardsDistribution(t *testing.T) {
 	// ==================== Execute CreateOrUpdateParticipantSession ====================
 	msg := &types.MsgCreateOrUpdateParticipantSession{
 		Corporation:              creator,
-		Operator:                 creator,
+		VsAccount:                creator,
 		Id:                       uuid.New().String(),
 		IssuerParticipantId:      issuerParticipantID,
 		VerifierParticipantId:    0,
@@ -865,7 +865,7 @@ func TestAgentRewardsWithZeroFees(t *testing.T) {
 
 	msg := &types.MsgCreateOrUpdateParticipantSession{
 		Corporation:              creator,
-		Operator:                 creator,
+		VsAccount:                creator,
 		Id:                       uuid.New().String(),
 		IssuerParticipantId:      issuerParticipantID,
 		VerifierParticipantId:    0,
@@ -983,7 +983,7 @@ func TestAgentRewardsWithDiscount(t *testing.T) {
 
 	msg := &types.MsgCreateOrUpdateParticipantSession{
 		Corporation:              creator,
-		Operator:                 creator,
+		VsAccount:                creator,
 		Id:                       uuid.New().String(),
 		IssuerParticipantId:      issuerParticipantID,
 		VerifierParticipantId:    0,
@@ -1096,7 +1096,7 @@ func TestParticipantSession_VSToVS_NoAgents(t *testing.T) {
 	sessionID := uuid.New().String()
 	msg := &types.MsgCreateOrUpdateParticipantSession{
 		Corporation:              creator,
-		Operator:                 creator,
+		VsAccount:                creator,
 		Id:                       sessionID,
 		IssuerParticipantId:      issuerParticipantID,
 		VerifierParticipantId:    0,
@@ -1194,7 +1194,7 @@ func TestParticipantSession_NonNativeCoinPricing(t *testing.T) {
 
 	resp, err := ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
 		Corporation:         creator,
-		Operator:            creator,
+		VsAccount:           creator,
 		Id:                  uuid.New().String(),
 		IssuerParticipantId: issuerParticipantID,
 	})
@@ -1258,7 +1258,7 @@ func TestParticipantSession_FiatPricing(t *testing.T) {
 
 	resp, err := ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
 		Corporation:         creator,
-		Operator:            creator,
+		VsAccount:           creator,
 		Id:                  uuid.New().String(),
 		IssuerParticipantId: issuerParticipantID,
 	})
@@ -1334,7 +1334,7 @@ func TestParticipantSession_DigestIssuanceOnly(t *testing.T) {
 
 			_, err := ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:           corp,
-				Operator:              corp,
+				VsAccount:             corp,
 				Id:                    tc.sessionID,
 				IssuerParticipantId:   tc.issuerID,
 				VerifierParticipantId: tc.verifierID,
@@ -1420,7 +1420,7 @@ func TestParticipantSession_CrossSchemaIssuer(t *testing.T) {
 	crossSchema := func(id string) *types.MsgCreateOrUpdateParticipantSession {
 		return &types.MsgCreateOrUpdateParticipantSession{
 			Corporation:           corp,
-			Operator:              corp,
+			VsAccount:             corp,
 			Id:                    id,
 			IssuerParticipantId:   issuerS1ID,
 			VerifierParticipantId: verifierS2ID,
@@ -1448,7 +1448,7 @@ func TestParticipantSession_CrossSchemaIssuer(t *testing.T) {
 		sessionID := uuid.New().String()
 		_, err := ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
 			Corporation:           corp,
-			Operator:              corp,
+			VsAccount:             corp,
 			Id:                    sessionID,
 			VerifierParticipantId: verifierS2ID,
 		})
@@ -1482,7 +1482,7 @@ func TestParticipantSession_CrossSchemaIssuer(t *testing.T) {
 
 		_, err := ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
 			Corporation:           corp,
-			Operator:              corp,
+			VsAccount:             corp,
 			Id:                    sessionID,
 			VerifierParticipantId: verifierS2ID,
 		})
@@ -1544,7 +1544,7 @@ func TestParticipantSession_SameSchemaIssuer(t *testing.T) {
 	sessionID := uuid.New().String()
 	_, err = ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
 		Corporation:           corp,
-		Operator:              corp,
+		VsAccount:             corp,
 		Id:                    sessionID,
 		IssuerParticipantId:   issuerID,
 		VerifierParticipantId: verifierID,
@@ -1570,9 +1570,9 @@ func TestParticipantSession_CrossCorporationIssuer(t *testing.T) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	verifierCorp := sdk.AccAddress([]byte("xc_verifier_corp____")).String()
-	verifierOp := sdk.AccAddress([]byte("xc_verifier_operator")).String()
+	verifierOp := sdk.AccAddress([]byte("xc_verifier_delegate")).String()
 	issuerCorp := sdk.AccAddress([]byte("xc_issuer_corp______")).String()
-	issuerOp := sdk.AccAddress([]byte("xc_issuer_operator__")).String()
+	issuerOp := sdk.AccAddress([]byte("xc_issuer_delegate__")).String()
 	ecosystem := sdk.AccAddress([]byte("xc_ecosystem________")).String()
 	bankKeeper.SetBalance(verifierCorp, sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, 100000)))
 
@@ -1611,7 +1611,7 @@ func TestParticipantSession_CrossCorporationIssuer(t *testing.T) {
 	sessionID := uuid.New().String()
 	_, err = ms.CreateOrUpdateParticipantSession(ctx, &types.MsgCreateOrUpdateParticipantSession{
 		Corporation:           verifierCorp,
-		Operator:              verifierOp,
+		VsAccount:             verifierOp,
 		Id:                    sessionID,
 		IssuerParticipantId:   issuerID,
 		VerifierParticipantId: verifierID,

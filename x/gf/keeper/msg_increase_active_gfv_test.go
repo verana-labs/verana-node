@@ -31,13 +31,13 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ctx = ctx.WithBlockTime(now)
 
 		// Setup: add a v1 GFV+GFD via MSG-1 (active_version stays 0).
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.NoError(t, err)
 
 		// Now bump active_version 0 → 1.
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 			EcosystemId: 0,
 		})
 		require.NoError(t, err)
@@ -63,7 +63,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		// No MSG-1 first — nothing to activate.
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 		})
 		require.ErrorIs(t, err, types.ErrNoActivatableVersion)
 	})
@@ -80,7 +80,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		// MSG-1 adds an "fr" doc — default language is "en".
 		_, err := ms.AddGovernanceFrameworkDocument(ctx, &types.MsgAddGovernanceFrameworkDocument{
 			Corporation:  testCorp,
-			Operator:     testOperator,
+			Delegate:     testDelegate,
 			EcosystemId:  0,
 			DocLanguage:  "fr",
 			DocUrl:       testURL,
@@ -91,7 +91,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 		})
 		require.ErrorIs(t, err, types.ErrMissingDefaultLang)
 	})
@@ -101,7 +101,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: "",
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 		})
 		require.Error(t, err)
 	})
@@ -118,7 +118,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 		})
 		require.Error(t, err)
 	})
@@ -129,7 +129,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 		})
 		require.ErrorIs(t, err, types.ErrSubjectNotFound)
 	})
@@ -147,7 +147,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 			EcosystemId: 5,
 		})
 		require.ErrorIs(t, err, types.ErrSubjectNotControlled)
@@ -165,12 +165,12 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		ctx = ctx.WithBlockTime(time.Date(2026, 5, 22, 12, 0, 0, 0, time.UTC))
 
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.NoError(t, err)
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "forced setter failure")
@@ -192,12 +192,12 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		ctx = ctx.WithBlockTime(time.Date(2026, 5, 22, 12, 0, 0, 0, time.UTC))
 
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 7, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 7, 1))
 		require.NoError(t, err)
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 			EcosystemId: 7,
 		})
 		require.Error(t, err)

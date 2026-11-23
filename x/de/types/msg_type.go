@@ -26,8 +26,8 @@ var msgTypeURLs = map[MsgType][]string{
 	MsgType_MSG_TYPE_SELF_CREATE_ACCREDITATION:                    {"/verana.pp.v1.MsgSelfCreateParticipant"},
 	MsgType_MSG_TYPE_TRIGGER_RESOLVER:                             {"/verana.pp.v1.MsgTriggerResolver"},
 	MsgType_MSG_TYPE_REPAY_SLASH:                                  {"/verana.td.v1.MsgRepaySlashedTrustDeposit", "/verana.pp.v1.MsgRepayParticipantSlashedTrustDeposit"},
-	MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION:                 {"/verana.de.v1.MsgGrantOperatorAuthorization"},
-	MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION:                {"/verana.de.v1.MsgRevokeOperatorAuthorization"},
+	MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION:                 {"/verana.de.v1.MsgGrantDelegateAuthorization"},
+	MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION:                {"/verana.de.v1.MsgRevokeDelegateAuthorization"},
 	MsgType_MSG_TYPE_STORE_DIGEST:                                 {"/verana.di.v1.MsgStoreDigest"},
 	MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION:               {"/verana.pp.v1.MsgCreateOrUpdateParticipantSession"},
 }

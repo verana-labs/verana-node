@@ -82,7 +82,7 @@ export interface MsgCreateCorporationResponse {
  */
 export interface MsgUpdateCorporation {
   corporation: string;
-  operator: string;
+  delegate: string;
   did: string;
 }
 
@@ -563,7 +563,7 @@ export const MsgCreateCorporationResponse = {
 };
 
 function createBaseMsgUpdateCorporation(): MsgUpdateCorporation {
-  return { corporation: "", operator: "", did: "" };
+  return { corporation: "", delegate: "", did: "" };
 }
 
 export const MsgUpdateCorporation = {
@@ -571,8 +571,8 @@ export const MsgUpdateCorporation = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.did !== "") {
       writer.uint32(26).string(message.did);
@@ -599,7 +599,7 @@ export const MsgUpdateCorporation = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -620,7 +620,7 @@ export const MsgUpdateCorporation = {
   fromJSON(object: any): MsgUpdateCorporation {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       did: isSet(object.did) ? globalThis.String(object.did) : "",
     };
   },
@@ -630,8 +630,8 @@ export const MsgUpdateCorporation = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.did !== "") {
       obj.did = message.did;
@@ -645,7 +645,7 @@ export const MsgUpdateCorporation = {
   fromPartial<I extends Exact<DeepPartial<MsgUpdateCorporation>, I>>(object: I): MsgUpdateCorporation {
     const message = createBaseMsgUpdateCorporation();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.did = object.did ?? "";
     return message;
   },
@@ -709,7 +709,7 @@ export interface Msg {
   CreateCorporation(request: MsgCreateCorporation): Promise<MsgCreateCorporationResponse>;
   /**
    * [MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing
-   * Corporation. Signers: corporation (policy_address) + operator.
+   * Corporation. Signer: delegate.
    */
   UpdateCorporation(request: MsgUpdateCorporation): Promise<MsgUpdateCorporationResponse>;
 }
