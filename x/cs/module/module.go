@@ -179,9 +179,8 @@ func init() {
 }
 
 // ProvideCorporationKeeperForCS supplies cstypes.CorporationKeeper from the
-// concrete x/co keeper for MOD-CS AUTHZ-CHECK-5. Required because cokeeper
-// does not satisfy the interface directly (the adapter wraps the
-// CorporationByPolicyAddr collection into the ResolveByPolicyAddress shape).
+// concrete x/co keeper for MOD-CS AUTHZ-CHECK-5. Required because the adapter
+// maps the x/co Corporation onto the MOD-CS view.
 //
 // cstypes.EcosystemKeeper is NOT wired here: x/ec keeper.GetEcosystem
 // structurally satisfies cstypes.EcosystemKeeper, so depinject auto-binds

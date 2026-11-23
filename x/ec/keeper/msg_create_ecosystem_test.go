@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	"github.com/verana-labs/verana-node/x/ec/types"
 )
@@ -98,10 +99,23 @@ func TestCreateEcosystem_AuthzDenied(t *testing.T) {
 // TestCreateEcosystem_CorporationNotRegistered pins AUTHZ-CHECK-5: signer must
 // be the policy_address of an existing Corporation.
 func TestCreateEcosystem_CorporationNotRegistered(t *testing.T) {
-	k, ctx := ecKeeper(t, &mockDelegation{}, newMockCorporation(), &mockGF{})
+	del := &mockDelegation{}
+	k, ctx := ecKeeper(t, del, newMockCorporation(), &mockGF{})
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.CreateEcosystem(ctx, validCreateMsg(t))
-	require.ErrorIs(t, err, types.ErrCorporationNotRegistered)
+	require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
+	require.Zero(t, del.calls, "AUTHZ-CHECK-5 runs before AUTHZ-CHECK-1")
+}
+
+// AUTHZ-CHECK-1 receives the corporation id AUTHZ-CHECK-5 resolved.
+func TestCreateEcosystem_AuthzCheck1GetsResolvedID(t *testing.T) {
+	del := &mockDelegation{}
+	co := newMockCorporation()
+	co.register(tkCorp, 7)
+	k, ctx := ecKeeper(t, del, co, &mockGF{})
+	_, err := keeper.NewMsgServerImpl(k).CreateEcosystem(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+	require.Equal(t, uint64(7), del.gotCorpID)
 }
 
 // TestCreateEcosystem_DIDConsistency pins MOD-ES-MSG-1-2-1: existing

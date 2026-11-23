@@ -17,7 +17,9 @@ func NewFeeGranterAnteHandler(next sdk.AnteHandler) sdk.AnteHandler {
 	}
 }
 
-func feeGranterFromContext(ctx sdk.Context) []byte {
+// FeeGranterFromContext returns the fee granter NewFeeGranterAnteHandler stored
+// for the current tx, or nil.
+func FeeGranterFromContext(ctx sdk.Context) []byte {
 	granter, _ := ctx.Value(feeGranterKey{}).([]byte)
 	return granter
 }

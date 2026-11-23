@@ -8,11 +8,11 @@ import (
 	"github.com/verana-labs/verana-node/x/cs/types"
 )
 
-func (ms msgServer) validateCreateCredentialSchemaParams(ctx sdk.Context, msg *types.MsgCreateCredentialSchema) error {
+func (ms msgServer) validateCreateCredentialSchemaParams(ctx sdk.Context, msg *types.MsgCreateCredentialSchema, corporationID uint64) error {
 	params := ms.GetParams(ctx)
 
 	// Validate ecosystem ownership - signing corporation must control the ecosystem
-	if err := ms.checkCreateSchemaOwnership(ctx, msg.EcosystemId, msg.Corporation); err != nil {
+	if err := ms.checkCreateSchemaOwnership(ctx, msg.EcosystemId, corporationID); err != nil {
 		return err
 	}
 

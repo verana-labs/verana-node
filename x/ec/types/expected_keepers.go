@@ -25,7 +25,7 @@ type BankKeeper interface {
 // DelegationKeeper backs AUTHZ-CHECK for delegable Msgs in x/ec.
 // Method signature matches x/de keeper exactly so depinject can auto-wire it.
 type DelegationKeeper interface {
-	CheckDelegateAuthorization(ctx context.Context, corporation string, delegate string, msgType detypes.MsgType, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time) error
 }
 
 // CorporationView is the read shape MOD-ES needs about a Corporation subject.
@@ -40,7 +40,7 @@ type CorporationView struct {
 // signing `corporation` policy_address to the Corporation entry, and produce
 // its uint64 id for `ecosystem.corporation_id` writes / ownership checks.
 type CorporationKeeper interface {
-	ResolveByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, bool)
+	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 	GetByID(ctx context.Context, corporationID uint64) (CorporationView, bool)
 	// ResolveDIDOwner reports the corporation whose own `did` equals `did`,
 	// for the global DID ownership invariant.

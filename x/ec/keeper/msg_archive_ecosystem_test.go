@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	"github.com/verana-labs/verana-node/x/ec/types"
 )
@@ -130,7 +131,7 @@ func TestArchiveEcosystem_CorporationNotRegistered(t *testing.T) {
 		Id:          1,
 		Archive:     true,
 	})
-	require.ErrorIs(t, err, types.ErrCorporationNotRegistered)
+	require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
 }
 
 func TestArchiveEcosystem_EcosystemNotFound(t *testing.T) {

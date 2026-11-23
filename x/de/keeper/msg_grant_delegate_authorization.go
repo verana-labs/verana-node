@@ -30,7 +30,7 @@ func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types
 	if msg.Delegate != msg.Corporation {
 		if err := ms.CheckDelegateAuthorization(
 			ctx,
-			msg.Corporation,
+			co.Id,
 			msg.Delegate,
 			types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION,
 			now,

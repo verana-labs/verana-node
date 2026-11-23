@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	"github.com/verana-labs/verana-node/x/ec/types"
 )
@@ -181,7 +182,7 @@ func TestUpdateEcosystem_CorporationNotRegistered(t *testing.T) {
 		Id:          1,
 		Did:         "did:example:any",
 	})
-	require.ErrorIs(t, err, types.ErrCorporationNotRegistered)
+	require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
 }
 
 // TestUpdateEcosystem_DIDConflictWithOtherCorp pins MOD-ES-MSG-2-2-1:

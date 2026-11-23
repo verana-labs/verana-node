@@ -48,14 +48,14 @@ type CorporationView struct {
 	PolicyAddress string
 }
 
-// CorporationKeeper backs the AUTHZ-CHECK-5 resolution for MOD-CS messages:
+// CorporationKeeper backs AUTHZ-CHECK-5 (with GF-CHECK-1) for MOD-CS messages:
 // turn the signing `corporation` policy_address into the uint64 co.id used to
 // validate ec.CorporationId ownership.
 type CorporationKeeper interface {
-	ResolveByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, bool)
+	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 }
 
 // DelegationKeeper backs AUTHZ-CHECK for delegable Msgs in x/cs.
 type DelegationKeeper interface {
-	CheckDelegateAuthorization(ctx context.Context, authority string, delegate string, msgType detypes.MsgType, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time) error
 }

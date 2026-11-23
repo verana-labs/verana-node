@@ -30,16 +30,23 @@ type resolvedSubject struct {
 	activeVersion uint32
 }
 
-// resolveSubject implements the spec's "Define subject as ..." block for
-// MOD-GF-MSG-1-2-1 and MOD-GF-MSG-2-2-1, on top of AUTHZ-CHECK-5 which
-// resolves the signing account → Corporation by policy_address → co.id.
-func (k Keeper) resolveSubject(ctx context.Context, signingCorp string, ecosystemID uint64) (resolvedSubject, error) {
-	// AUTHZ-CHECK-5 surface: resolve the signing corporation account.
-	coView, ok := k.corporationKeeper().ResolveByPolicyAddress(ctx, signingCorp)
-	if !ok {
-		return resolvedSubject{}, cerrors.Wrapf(types.ErrSubjectNotFound, "no Corporation registered for signing account %s", signingCorp)
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
+// delegate, and returns the resolved corporation.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (types.CorporationView, error) {
+	coView, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, corporation)
+	if err != nil {
+		return types.CorporationView{}, err
 	}
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, coView.Id, delegate, msgType, ctx.BlockTime()); err != nil {
+		return types.CorporationView{}, err
+	}
+	return coView, nil
+}
 
+// resolveSubject implements the spec's "Define subject as ..." block for
+// MOD-GF-MSG-1-2-1 and MOD-GF-MSG-2-2-1, for the corporation resolved by
+// AUTHZ-CHECK-5.
+func (k Keeper) resolveSubject(ctx context.Context, coView types.CorporationView, ecosystemID uint64) (resolvedSubject, error) {
 	if ecosystemID != 0 {
 		eco, ok := k.ecosystemKeeper().GetEcosystemView(ctx, ecosystemID)
 		if !ok {
@@ -136,13 +143,13 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// AUTHZ-CHECK-1
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT, ctx.BlockTime()); err != nil {
+	coView, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT)
+	if err != nil {
 		return nil, err
 	}
 
 	// Resolve subject (Ecosystem or Corporation).
-	sub, err := ms.resolveSubject(ctx, msg.Corporation, msg.EcosystemId)
+	sub, err := ms.resolveSubject(ctx, coView, msg.EcosystemId)
 	if err != nil {
 		return nil, err
 	}

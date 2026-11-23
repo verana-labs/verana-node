@@ -70,6 +70,10 @@ type MockDelegationKeeper struct {
 
 	DelegateSpendCalls []sdk.Coins
 
+	// Corporation ids received by CheckDelegateAuthorization and ConsumeDelegateSpend.
+	DelegateAuthCorpIDs  []uint64
+	DelegateSpendCorpIDs []uint64
+
 	// Per-method overrides take precedence over ErrToReturn when non-nil, so a
 	// test can fail one authorization path while another succeeds (e.g. force the
 	// delegate path to fail to exercise the vs-operator delegation path).
@@ -92,6 +96,8 @@ type GrantVSOACall struct {
 }
 
 func (m *MockDelegationKeeper) Reset() {
+	m.DelegateAuthCorpIDs = nil
+	m.DelegateSpendCorpIDs = nil
 	m.FeeGrantCheckCalls = nil
 	m.VSOACheckMsgTypes = nil
 	m.GrantVSOACalls = nil
@@ -99,7 +105,8 @@ func (m *MockDelegationKeeper) Reset() {
 	m.SyncVSOACalls = nil
 }
 
-func (m *MockDelegationKeeper) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (m *MockDelegationKeeper) CheckDelegateAuthorization(_ context.Context, corporationID uint64, _ string, _ detypes.MsgType, _ time.Time) error {
+	m.DelegateAuthCorpIDs = append(m.DelegateAuthCorpIDs, corporationID)
 	if m.DelegateAuthErr != nil {
 		return m.DelegateAuthErr
 	}
@@ -122,7 +129,8 @@ func (m *MockDelegationKeeper) CheckVSOperatorFeeGrant(_ context.Context, partic
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) ConsumeDelegateSpend(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time, amount sdk.Coins) error {
+func (m *MockDelegationKeeper) ConsumeDelegateSpend(_ context.Context, corporationID uint64, _ string, _ detypes.MsgType, _ time.Time, amount sdk.Coins) error {
+	m.DelegateSpendCorpIDs = append(m.DelegateSpendCorpIDs, corporationID)
 	m.DelegateSpendCalls = append(m.DelegateSpendCalls, amount)
 	return m.ErrToReturn
 }

@@ -58,6 +58,12 @@ type Keeper struct {
 	// participantRef backs AUTHZ-CHECK-3 step 1 and the MOD-DE-MSG-5-5 scan;
 	// wired post-construction via SetParticipantKeeper (MOD-PP depends on MOD-DE).
 	participantRef *participantKeeperRef
+
+	// gfRef backs GF-CHECK-2 (AUTHZ-CHECK-1 step 4).
+	gfRef *gfKeeperRef
+
+	// vsBudgetRef backs AUTHZ-CHECK-3 steps 5 and 6 on the VS account path.
+	vsBudgetRef *vsAccountBudgetStoreRef
 }
 
 func NewKeeper(
@@ -83,6 +89,8 @@ func NewKeeper(
 		corpRef:        &corpKeeperRef{K: StubCorporationKeeper{}},
 		feegrantRef:    &feegrantKeeperRef{},
 		participantRef: &participantKeeperRef{K: StubParticipantKeeper{}},
+		gfRef:          &gfKeeperRef{K: StubGovernanceFrameworkKeeper{}},
+		vsBudgetRef:    &vsAccountBudgetStoreRef{S: StubVsAccountBudgetStore{}},
 
 		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
 
@@ -143,6 +151,16 @@ func (k Keeper) feegrantKeeper() types.FeegrantKeeper {
 // SetParticipantKeeper wires the MOD-PP participant view after both keepers exist.
 func (k Keeper) SetParticipantKeeper(p types.ParticipantKeeper) {
 	k.participantRef.K = p
+}
+
+// SetGovernanceFrameworkKeeper wires the MOD-GF keeper that runs GF-CHECK-2.
+func (k Keeper) SetGovernanceFrameworkKeeper(g types.GovernanceFrameworkKeeper) {
+	k.gfRef.K = g
+}
+
+// SetVsAccountBudgetStore wires the VsAccountBudget store read by AUTHZ-CHECK-3.
+func (k Keeper) SetVsAccountBudgetStore(s types.VsAccountBudgetStore) {
+	k.vsBudgetRef.S = s
 }
 
 // participantKeeper returns the wired participant view (real or stub).

@@ -21,16 +21,16 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, err
 	}
 
-	// [AUTHZ-CHECK-5] Resolve the corporation first: AUTHZ-CHECK-1 consumes the
-	// co it resolves, and an unregistered corporation must surface as such.
-	if _, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority); err != nil {
+	// [AUTHZ-CHECK-5] (with GF-CHECK-1): AUTHZ-CHECK-1 consumes the co it resolves.
+	co, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority)
+	if err != nil {
 		return nil, err
 	}
 
 	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK-1] Verify delegate authorization.
 	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
-		msg.Authority,
+		co.Id,
 		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_STORE_DIGEST,
 		now,

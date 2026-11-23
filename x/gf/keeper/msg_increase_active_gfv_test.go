@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/gf/keeper"
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
@@ -123,15 +124,17 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		require.Error(t, err)
 	})
 
-	t.Run("MOD-GF-MSG-2-2-1: corporation not registered aborts (Stub case)", func(t *testing.T) {
+	t.Run("AUTHZ-CHECK-5: unregistered corporation aborts before AUTHZ-CHECK-1", func(t *testing.T) {
 		corp := &mockCorporation{found: false}
-		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, corp)
+		del := &recordingDelegation{}
+		k, ctx := keepertest.GfKeeperWithDelegation(t, del, &mockEcosystem{}, corp)
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
 			Delegate:    testDelegate,
 		})
-		require.ErrorIs(t, err, types.ErrSubjectNotFound)
+		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
+		require.Zero(t, del.calls)
 	})
 
 	t.Run("MOD-GF-MSG-2-2-1: ecosystem not controlled by signer aborts", func(t *testing.T) {

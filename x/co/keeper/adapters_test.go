@@ -30,7 +30,7 @@ import (
 // minimal stub keepers for building a real gfkeeper.Keeper instance.
 type adapterStubDel struct{}
 
-func (adapterStubDel) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (adapterStubDel) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 

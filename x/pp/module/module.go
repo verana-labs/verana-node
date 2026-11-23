@@ -185,8 +185,8 @@ func init() {
 }
 
 // ProvideCorporationKeeperForParticipant supplies participanttypes.CorporationKeeper from
-// the concrete x/co keeper for MOD-PP AUTHZ-CHECK-5. Required because
-// cokeeper does not satisfy ResolveByPolicyAddress directly.
+// the concrete x/co keeper for MOD-PP AUTHZ-CHECK-5. Required because the
+// adapter maps the x/co Corporation onto the MOD-PP view.
 //
 // participanttypes.EcosystemKeeper is NOT wired here: eckeeper.Keeper
 // structurally satisfies the interface so depinject auto-binds.
