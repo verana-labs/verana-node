@@ -39,10 +39,10 @@ type MintKeeper interface {
 }
 
 // DelegationKeeper defines the expected interface for the Delegation (DE) module.
-// Used to perform [AUTHZ-CHECK] for (authority, operator) pairs.
+// Used to perform [AUTHZ-CHECK] for (authority, delegate) pairs.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgType detypes.MsgType, now time.Time) error
-	ConsumeOperatorSpend(ctx context.Context, corporation, operator string, msgType detypes.MsgType, now time.Time, amount sdk.Coins) error
+	CheckDelegateAuthorization(ctx context.Context, authority string, delegate string, msgType detypes.MsgType, now time.Time) error
+	ConsumeDelegateSpend(ctx context.Context, corporation, delegate string, msgType detypes.MsgType, now time.Time, amount sdk.Coins) error
 }
 
 // CorporationView is the read shape MOD-TD needs about a Corporation subject

@@ -19,16 +19,16 @@ func IsOwnPolicyAddress(policyAddress, account string) bool {
 	return err == nil && addr.Equals(policy)
 }
 
-// ValidateBasic performs stateless validation on MsgGrantOperatorAuthorization.
-func (msg *MsgGrantOperatorAuthorization) ValidateBasic() error {
+// ValidateBasic performs stateless validation on MsgGrantDelegateAuthorization.
+func (msg *MsgGrantDelegateAuthorization) ValidateBasic() error {
 	// corporation is mandatory
 	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// operator is the signer; mandatory
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// delegate is the signer; mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// grantee is mandatory
@@ -55,7 +55,7 @@ func (msg *MsgGrantOperatorAuthorization) ValidateBasic() error {
 	}
 
 	// [MOD-DE-MSG-3-2] a spend period requires an expiration window
-	// (OperatorAuthorization invariant: period set => expiration set).
+	// (DelegateAuthorization invariant: period set => expiration set).
 	if len(msg.AuthzSpendLimit) > 0 && msg.AuthzSpendLimitPeriod != nil && msg.Expiration == nil {
 		return fmt.Errorf("expiration must be set when authz_spend_limit_period is set")
 	}
@@ -79,16 +79,16 @@ func (msg *MsgGrantOperatorAuthorization) ValidateBasic() error {
 	return nil
 }
 
-// ValidateBasic performs stateless validation on MsgRevokeOperatorAuthorization.
-func (msg *MsgRevokeOperatorAuthorization) ValidateBasic() error {
+// ValidateBasic performs stateless validation on MsgRevokeDelegateAuthorization.
+func (msg *MsgRevokeDelegateAuthorization) ValidateBasic() error {
 	// corporation is mandatory
 	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// operator is the signer; mandatory
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// delegate is the signer; mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// grantee is mandatory

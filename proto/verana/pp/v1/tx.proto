@@ -60,13 +60,13 @@ message MsgUpdateParamsResponse {}
 
 // MsgStartParticipantOP represents a message to start a participant onboarding process
 message MsgStartParticipantOP {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgStartParticipantOP";
 
   // corporation is the group account on whose behalf this message is executed
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   ParticipantRole role = 3;
   uint64 validator_participant_id = 4 [(amino.dont_omitempty) = true];
   string did = 5; // mandatory: MUST conform to DID Syntax
@@ -98,12 +98,12 @@ message MsgStartParticipantOPResponse {
 
 // MsgRenewParticipantOP represents a message to renew a participant onboarding process
 message MsgRenewParticipantOP {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgRenewParticipantOP";
 
-  // [MOD-PP-MSG-2-1] spec parameters: corporation, operator, id.
+  // [MOD-PP-MSG-2-1] spec parameters: corporation, delegate, id.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3; // ID of the participant to renew
 }
 
@@ -112,13 +112,13 @@ message MsgRenewParticipantOPResponse {}
 
 // MsgSetParticipantOPToValidated represents a message to set a participant onboarding process to validated state
 message MsgSetParticipantOPToValidated {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgSetPartOPValidated";
 
   // corporation is the group account on whose behalf this message is executed
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
   google.protobuf.Timestamp effective_until = 4 [
     (gogoproto.stdtime) = true,
@@ -138,26 +138,26 @@ message MsgSetParticipantOPToValidated {
 message MsgSetParticipantOPToValidatedResponse {}
 
 message MsgCancelParticipantOPLastRequest {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgCancelPartOPLastReq";
 
   // corporation is the group account on whose behalf this message is executed
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3; // Participant ID
 }
 
 message MsgCancelParticipantOPLastRequestResponse {}
 
 message MsgCreateRootParticipant {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgCreateRootParticipant";
 
   // [MOD-PP-MSG-7-1] spec parameters.
   // participant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3].
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 schema_id = 3;
   string did = 4;
   google.protobuf.Timestamp effective_from = 5 [
@@ -195,11 +195,11 @@ message MsgCreateRootParticipantResponse {
 }
 
 message MsgSetParticipantEffectiveUntil {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgSetPartEffectiveUntil";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3; // Participant ID
   google.protobuf.Timestamp effective_until = 4 [
     (gogoproto.stdtime) = true,
@@ -210,24 +210,24 @@ message MsgSetParticipantEffectiveUntil {
 message MsgSetParticipantEffectiveUntilResponse {}
 
 message MsgRevokeParticipant {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgRevokeParticipant";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3; // Participant ID
 }
 
 message MsgRevokeParticipantResponse {}
 
 message MsgCreateOrUpdateParticipantSession {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "vs_account";
   option (amino.name) = "verana/x/pp/MsgCreateOrUpdatePartSess";
 
   // corporation is the group account on whose behalf this message is executed
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg (vs_operator)
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // vs_account is the VS account of the entry that signs this Msg.
+  string vs_account = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string id = 3; // UUID (mandatory)
   uint64 issuer_participant_id = 4; // optional: issuer participant id
   uint64 verifier_participant_id = 5; // optional: verifier participant id
@@ -241,13 +241,13 @@ message MsgCreateOrUpdateParticipantSessionResponse {
 }
 
 message MsgSlashParticipantTrustDeposit {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgSlashParticipantTD";
 
   // corporation is the group account on whose behalf this message is executed
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
   uint64 amount = 4;
   // reason for the slash. Implementation-defined: MOD-PP-MSG-12-1 defines no
@@ -258,22 +258,22 @@ message MsgSlashParticipantTrustDeposit {
 message MsgSlashParticipantTrustDepositResponse {}
 
 message MsgRepayParticipantSlashedTrustDeposit {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgRepayPartSlashedTD";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
 }
 
 message MsgRepayParticipantSlashedTrustDepositResponse {}
 
 message MsgSelfCreateParticipant {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgSelfCreateParticipant";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   ParticipantRole role = 3;
   uint64 validator_participant_id = 4 [(amino.dont_omitempty) = true];
   string did = 5;
@@ -311,14 +311,14 @@ message MsgSelfCreateParticipantResponse {
 
 // [MOD-PP-MSG-15] Trigger Resolver. Event-only; does not modify VPR state.
 message MsgTriggerResolver {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/pp/MsgTriggerResolver";
 
   // corporation is the policy_address of the corporation on whose behalf this
   // message runs.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg.
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg.
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // id of the Participant entry for which a trust resolution must be triggered.
   uint64 id = 3;
 }

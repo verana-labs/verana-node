@@ -133,7 +133,7 @@ func (k Keeper) grantFeeAllowance(
 
 // RevokeFeeAllowance implements [MOD-DE-MSG-2]. It removes the FeeGrant for the
 // composite (grantor_corporation_id, grantee). This is an internal method called
-// by GrantOperatorAuthorization, RevokeOperatorAuthorization, and the MSG-5-5
+// by GrantDelegateAuthorization, RevokeDelegateAuthorization, and the MSG-5-5
 // recompute subroutine.
 func (k Keeper) RevokeFeeAllowance(goCtx context.Context, grantorCorporationID uint64, grantee string) error {
 	ctx := sdk.UnwrapSDKContext(goCtx)

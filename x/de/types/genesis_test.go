@@ -9,10 +9,10 @@ import (
 )
 
 func TestGenesisState_Validate(t *testing.T) {
-	addr := sdk.AccAddress([]byte("operator____________")).String()
+	addr := sdk.AccAddress([]byte("delegate____________")).String()
 	withOA := func(mts ...types.MsgType) *types.GenesisState {
-		return &types.GenesisState{Params: types.DefaultParams(), OperatorAuthorizations: []types.OperatorAuthorization{
-			{Id: 1, CorporationId: 1, Operator: addr, MsgTypes: mts},
+		return &types.GenesisState{Params: types.DefaultParams(), DelegateAuthorizations: []types.DelegateAuthorization{
+			{Id: 1, CorporationId: 1, Delegate: addr, MsgTypes: mts},
 		}}
 	}
 	withFG := func(mts ...types.MsgType) *types.GenesisState {
@@ -53,9 +53,9 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			valid: false,
 		},
-		{desc: "operator authorization delegable value", genState: withOA(types.MsgType_MSG_TYPE_STORE_DIGEST), valid: true},
-		{desc: "operator authorization issuance value", genState: withOA(types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE), valid: false},
-		{desc: "operator authorization without values", genState: withOA(), valid: false},
+		{desc: "delegate authorization delegable value", genState: withOA(types.MsgType_MSG_TYPE_STORE_DIGEST), valid: true},
+		{desc: "delegate authorization issuance value", genState: withOA(types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE), valid: false},
+		{desc: "delegate authorization without values", genState: withOA(), valid: false},
 		{desc: "fee grant session value", genState: withFG(types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION), valid: true},
 		{desc: "fee grant unspecified value", genState: withFG(types.MsgType_MSG_TYPE_UNSPECIFIED), valid: false},
 		{desc: "record vs value", genState: withRecord(types.MsgType_MSG_TYPE_VALIDATE_ONBOARDING), valid: true},

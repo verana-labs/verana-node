@@ -34,14 +34,14 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-1-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-1-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_START_ONBOARDING,
 		now,
 	); err != nil {
@@ -84,7 +84,7 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 		return nil, fmt.Errorf("fee validation failed: %w", err)
 	}
 
-	// [AUTHZ-CHECK-1] step 3: debit the operator's spend_limit by this operation's
+	// [AUTHZ-CHECK-1] step 3: debit the delegate's spend_limit by this operation's
 	// native fund commitment (trust deposit, always native, plus the fee only when
 	// it settles native). Non-native fees are escrowed in their own denom and not
 	// charged against the native limit. No-op unless a spend_limit is configured.
@@ -92,8 +92,8 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 	if fees > 0 && feeDenom == types.BondDenom {
 		opSpend = opSpend.Add(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(fees)))
 	}
-	if err := ms.delegationKeeper.ConsumeOperatorSpend(
-		ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_START_ONBOARDING, now, opSpend,
+	if err := ms.delegationKeeper.ConsumeDelegateSpend(
+		ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_START_ONBOARDING, now, opSpend,
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
@@ -114,7 +114,7 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(participantID, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(corporationID, 10)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyValidatorParticipantID, strconv.FormatUint(msg.ValidatorParticipantId, 10)),
 			sdk.NewAttribute(types.AttributeKeyRole, types.ParticipantRole(msg.Role).String()),
 			sdk.NewAttribute(types.AttributeKeyFees, strconv.FormatUint(fees, 10)),
@@ -132,14 +132,14 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-2-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-2-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING,
 		now,
 	); err != nil {
@@ -208,15 +208,15 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 		return nil, fmt.Errorf("fee validation failed: %w", err)
 	}
 
-	// [AUTHZ-CHECK-1] step 3: debit the operator's spend_limit by this operation's
+	// [AUTHZ-CHECK-1] step 3: debit the delegate's spend_limit by this operation's
 	// native fund commitment (trust deposit, always native, plus the fee only when
 	// it settles native). Non-native fees are escrowed in their own denom.
 	opSpend := sdk.NewCoins(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(validationDeposit)))
 	if validationFees > 0 && feeDenom == types.BondDenom {
 		opSpend = opSpend.Add(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(validationFees)))
 	}
-	if err := ms.delegationKeeper.ConsumeOperatorSpend(
-		ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING, now, opSpend,
+	if err := ms.delegationKeeper.ConsumeDelegateSpend(
+		ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING, now, opSpend,
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
@@ -231,7 +231,7 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 			types.EventTypeRenewParticipantOP,
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyValidatorParticipantID, strconv.FormatUint(applicantParticipant.ValidatorParticipantId, 10)),
 			sdk.NewAttribute(types.AttributeKeyValidationFees, strconv.FormatUint(validationFees, 10)),
 			sdk.NewAttribute(types.AttributeKeyValidationDeposit, strconv.FormatUint(validationDeposit, 10)),
@@ -317,18 +317,18 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 		return nil, fmt.Errorf("validator participant not found: %w", err)
 	}
 
-	// [MOD-PP-MSG-3-2-1] Authorization: operator [AUTHZ-CHECK-1] or a VS operator
+	// [MOD-PP-MSG-3-2-1] Authorization: delegate [AUTHZ-CHECK-1] or a VS operator
 	// delegated on the validator participant [AUTHZ-CHECK-3]; pass either, else abort.
 	corpID, err := ms.corpIDFromAccount(ctx, msg.Corporation)
 	if err != nil {
 		return nil, err
 	}
 	viaVSOperator := false
-	if opErr := ms.delegationKeeper.CheckOperatorAuthorization(
-		ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, now,
+	if opErr := ms.delegationKeeper.CheckDelegateAuthorization(
+		ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, now,
 	); opErr != nil {
 		if vsErr := ms.delegationKeeper.CheckVSOperatorAuthorizationOnParticipant(
-			ctx, corpID, msg.Operator, validatorParticipant.Id, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
+			ctx, corpID, msg.Delegate, validatorParticipant.Id, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
 		); vsErr != nil {
 			return nil, fmt.Errorf("authorization check failed: %w", opErr)
 		}
@@ -525,13 +525,13 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 	// [AUTHZ-CHECK-1 / AUTHZ-CHECK-3] debit the spend limit by the staked trust deposit.
 	opSpend := sdk.NewCoins(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(applicantParticipant.OpCurrentDeposit)))
 	if viaVSOperator {
-		if err := ms.delegationKeeper.ConsumeRecordSpend(ctx, corpID, msg.Operator, validatorParticipant.Id, opSpend); err != nil {
+		if err := ms.delegationKeeper.ConsumeRecordSpend(ctx, corpID, msg.Delegate, validatorParticipant.Id, opSpend); err != nil {
 			return nil, fmt.Errorf("spend limit exceeded: %w", err)
 		}
 		if err := ms.checkVSOperatorFeeGrant(ctx, validatorParticipant.Id, msg.Corporation); err != nil {
 			return nil, err
 		}
-	} else if err := ms.delegationKeeper.ConsumeOperatorSpend(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, now, opSpend); err != nil {
+	} else if err := ms.delegationKeeper.ConsumeDelegateSpend(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, now, opSpend); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
 
@@ -543,14 +543,14 @@ func (ms msgServer) CancelParticipantOPLastRequest(goCtx context.Context, msg *t
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-6-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-6-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_WITHDRAW_ONBOARDING_REQUEST,
 		now,
 	); err != nil {
@@ -592,7 +592,7 @@ func (ms msgServer) CancelParticipantOPLastRequest(goCtx context.Context, msg *t
 			types.EventTypeCancelParticipantOPLastRequest,
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
 		),
 	})
@@ -688,14 +688,14 @@ func (ms msgServer) CreateRootParticipant(goCtx context.Context, msg *types.MsgC
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-7-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-7-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
 		now,
 	); err != nil {
@@ -737,7 +737,7 @@ func (ms msgServer) CreateRootParticipant(goCtx context.Context, msg *types.MsgC
 			sdk.NewAttribute(types.AttributeKeySchemaID, strconv.FormatUint(msg.SchemaId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(rootCorpID, 10)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyEffectiveFrom, effectiveFromR.String()),
 			sdk.NewAttribute(types.AttributeKeyEffectiveUntil, formatTimePtr(msg.EffectiveUntil)),
 			sdk.NewAttribute(types.AttributeKeyValidationFees, strconv.FormatUint(msg.ValidationFees, 10)),
@@ -894,7 +894,7 @@ func (ms msgServer) executeCreateRootParticipant(ctx sdk.Context, msg *types.Msg
 		IssuanceFees:     msg.IssuanceFees,
 		VerificationFees: msg.VerificationFees,
 		Deposit:          0,
-		// No operator onboarding: VALIDATED immediately (op_exp stays nil).
+		// No delegate onboarding: VALIDATED immediately (op_exp stays nil).
 		OpState:           types.OnboardingState_VALIDATED,
 		OpLastStateChange: &now,
 	}
@@ -928,14 +928,14 @@ func (ms msgServer) SetParticipantEffectiveUntil(goCtx context.Context, msg *typ
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-8-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-8-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL,
 		now,
 	); err != nil {
@@ -975,7 +975,7 @@ func (ms msgServer) SetParticipantEffectiveUntil(goCtx context.Context, msg *typ
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(applicantParticipant.CorporationId, 10)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyNewEffectiveUntil, msg.EffectiveUntil.String()),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
 		),
@@ -1049,8 +1049,8 @@ func (ms msgServer) validateAdjustParticipantAdvancedChecks(ctx sdk.Context, msg
 		return nil
 	}
 
-	// 3. Operator-managed participants: the validator corporation controls
-	// adjustment, capped by the operator expiration.
+	// 3. Delegate-managed participants: the validator corporation controls
+	// adjustment, capped by the delegate expiration.
 	if applicantParticipant.OpExp != nil && msg.EffectiveUntil.After(*applicantParticipant.OpExp) {
 		return fmt.Errorf("effective_until cannot be after validation expiration")
 	}
@@ -1132,14 +1132,14 @@ func (ms msgServer) RevokeParticipant(goCtx context.Context, msg *types.MsgRevok
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-9-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-9-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_REVOKE_ACCREDITATION,
 		now,
 	); err != nil {
@@ -1177,7 +1177,7 @@ func (ms msgServer) RevokeParticipant(goCtx context.Context, msg *types.MsgRevok
 			types.EventTypeRevokeParticipant,
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyRevokedAt, now.String()),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
 		),
@@ -1318,7 +1318,7 @@ func (ms msgServer) revokeVSOperatorAuthorization(ctx sdk.Context, participant t
 // checkVSOperatorFeeGrant enforces [AUTHZ-CHECK-4] when the corporation pays the
 // transaction fee via fee grant (fee_granter == corp): the record MUST enable
 // corp-paid fees. The fee cap itself is enforced by the aggregate x/feegrant
-// allowance at fee-processing time. No-op when the operator pays its own fee.
+// allowance at fee-processing time. No-op when the delegate pays its own fee.
 func (ms msgServer) checkVSOperatorFeeGrant(ctx sdk.Context, participantID uint64, corporation string) error {
 	granter := feeGranterFromContext(ctx)
 	if len(granter) == 0 {
@@ -1361,7 +1361,7 @@ func (ms msgServer) CreateOrUpdateParticipantSession(goCtx context.Context, msg 
 		return nil, err
 	}
 	if err := ms.delegationKeeper.ConsumeRecordSpend(
-		ctx, primaryCorpID, msg.Operator, primaryParticipantID, plan.required,
+		ctx, primaryCorpID, msg.VsAccount, primaryParticipantID, plan.required,
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
@@ -1381,7 +1381,7 @@ func (ms msgServer) CreateOrUpdateParticipantSession(goCtx context.Context, msg 
 		sdk.NewEvent(
 			types.EventTypeCreateOrUpdateParticipantSession,
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyVsAccount, msg.VsAccount),
 			sdk.NewAttribute(types.AttributeKeySessionID, msg.Id),
 			sdk.NewAttribute(types.AttributeKeyIssuerParticipantID, strconv.FormatUint(msg.IssuerParticipantId, 10)),
 			sdk.NewAttribute(types.AttributeKeyVerifierParticipantID, strconv.FormatUint(msg.VerifierParticipantId, 10)),
@@ -1401,14 +1401,14 @@ func (ms msgServer) SlashParticipantTrustDeposit(goCtx context.Context, msg *typ
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-12-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-12-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT,
 		now,
 	); err != nil {
@@ -1448,7 +1448,7 @@ func (ms msgServer) SlashParticipantTrustDeposit(goCtx context.Context, msg *typ
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeySlashedAmount, strconv.FormatUint(msg.Amount, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute("reason", msg.Reason),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
 		),
@@ -1492,7 +1492,7 @@ func (ms msgServer) validateSlashParticipantBasicChecks(ctx sdk.Context, msg *ty
 // NOTE: spec calls for governance-only slashing. Migrating the test
 // surface to the governance-mediated flow is tracked as a follow-up; for now
 // we retain the validator-ancestor / TR-controller check established by prior
-// implementations so operator-signed slashing remains testable.
+// implementations so delegate-signed slashing remains testable.
 func (ms msgServer) validateSlashParticipantValidatorParticipants(ctx sdk.Context, msg *types.MsgSlashParticipantTrustDeposit, applicantParticipant types.Participant, now time.Time) error {
 	// Option #1: executed by a validator ancestor
 	if ms.checkValidatorAncestorOption(ctx, msg.Corporation, applicantParticipant, now) {
@@ -1546,11 +1546,11 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-13-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-13-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_REPAY_SLASH, now); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_REPAY_SLASH, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -1593,8 +1593,8 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 		return nil, fmt.Errorf("insufficient funds to repay slashed deposit: required %d", owed)
 	}
 
-	if err := ms.delegationKeeper.ConsumeOperatorSpend(
-		ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_REPAY_SLASH, now,
+	if err := ms.delegationKeeper.ConsumeDelegateSpend(
+		ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_REPAY_SLASH, now,
 		sdk.NewCoins(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(owed))),
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
@@ -1619,7 +1619,7 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyRepaidAmount, strconv.FormatUint(owed, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
@@ -1632,11 +1632,11 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-PP-MSG-14-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-PP-MSG-14-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_SELF_CREATE_ACCREDITATION, now); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_SELF_CREATE_ACCREDITATION, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -1773,7 +1773,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 		IssuanceFees:           0,
 		VerificationFees:       0,
 		Deposit:                0,
-		// OPEN mode: validated immediately, no operator onboarding (op_exp stays nil).
+		// OPEN mode: validated immediately, no delegate onboarding (op_exp stays nil).
 		OpState:           types.OnboardingState_VALIDATED,
 		OpLastStateChange: &now,
 	}
@@ -1814,7 +1814,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 			sdk.NewAttribute(types.AttributeKeySchemaID, strconv.FormatUint(validatorParticipant.SchemaId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(corporationId, 10)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyRole, msg.Role.String()),
 			sdk.NewAttribute(types.AttributeKeyEffectiveFrom, effectiveFrom.String()),
 			sdk.NewAttribute(types.AttributeKeyEffectiveUntil, formatTimePtr(msg.EffectiveUntil)),

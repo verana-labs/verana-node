@@ -71,7 +71,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `operator`;\nAUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the\ncontrolling Corporation entry. Seeds v1 of the Ecosystem's Governance\nFramework via MOD-GF.",
+            "description": "MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `delegate`;\nAUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the\ncontrolling Corporation entry. Seeds v1 of the Ecosystem's Governance\nFramework via MOD-GF.",
             "in": "body",
             "required": true,
             "schema": {
@@ -188,7 +188,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -210,7 +210,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "did": {
@@ -226,7 +226,7 @@
           "type": "string"
         }
       },
-      "description": "MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `operator`;\nAUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the\ncontrolling Corporation entry. Seeds v1 of the Ecosystem's Governance\nFramework via MOD-GF."
+      "description": "MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `delegate`;\nAUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the\ncontrolling Corporation entry. Seeds v1 of the Ecosystem's Governance\nFramework via MOD-GF."
     },
     "verana.ec.v1.MsgCreateEcosystemResponse": {
       "type": "object",
@@ -243,7 +243,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {

@@ -1,7 +1,7 @@
 /**
- * Journey: CS Create Credential Schema (Operator-signed)
+ * Journey: CS Create Credential Schema (Delegate-signed)
  *
- * The operator signs MsgCreateCredentialSchema on behalf of the CS authority.
+ * The delegate signs MsgCreateCredentialSchema on behalf of the CS authority.
  * First creates an Ecosystem (controller = CS authority) as a prerequisite,
  * then creates the Credential Schema under that Ecosystem.
  *
@@ -38,7 +38,7 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 13;
+const DELEGATE_INDEX = 13;
 
 function generateSimpleSchema(): string {
   return JSON.stringify({
@@ -65,7 +65,7 @@ function generateSimpleSchema(): string {
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: CS Create Credential Schema (Operator-signed)");
+  console.log("Journey: CS Create Credential Schema (Delegate-signed)");
   console.log("=".repeat(60));
   console.log();
 
@@ -77,17 +77,17 @@ async function main() {
     process.exit(1);
   }
   console.log(`  CS Authority: ${setup.authorityAddress}`);
-  console.log(`  CS Operator:  ${setup.operatorAddress}`);
+  console.log(`  CS Delegate:  ${setup.delegateAddress}`);
   console.log();
 
-  // Step 2: Create operator wallet and connect
-  console.log("Step 2: Setting up CS operator wallet...");
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Create delegate wallet and connect
+  console.log("Step 2: Setting up CS delegate wallet...");
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
-  console.log(`  Operator wallet: ${account.address}`);
+  console.log(`  Delegate wallet: ${account.address}`);
 
-  if (account.address !== setup.operatorAddress) {
-    console.log("  ❌ CS operator address mismatch!");
+  if (account.address !== setup.delegateAddress) {
+    console.log("  ❌ CS delegate address mismatch!");
     process.exit(1);
   }
 
@@ -96,7 +96,7 @@ async function main() {
   console.log();
 
   // Step 3: Check balance
-  console.log("Step 3: Checking CS operator balance...");
+  console.log("Step 3: Checking CS delegate balance...");
   const balance = await client.getBalance(account.address, config.denom);
   console.log(`  Balance: ${balance.amount} ${balance.denom}`);
   if (BigInt(balance.amount) < BigInt(1000000)) {
@@ -116,7 +116,7 @@ async function main() {
     typeUrl: typeUrls.MsgCreateEcosystem,
     value: MsgCreateEcosystem.fromPartial({
       corporation: setup.authorityAddress,
-      operator: account.address,
+      delegate: account.address,
       did: ecDid,
       language: "en",
       docUrl: "http://cs-ts-proto-test-ecosystem.com/doc-v1",
@@ -125,7 +125,7 @@ async function main() {
   };
 
   console.log(`  Authority: ${setup.authorityAddress}`);
-  console.log(`  Operator:  ${account.address}`);
+  console.log(`  Delegate:  ${account.address}`);
   console.log(`  EC DID:    ${ecDid}`);
   console.log();
 
@@ -133,13 +133,13 @@ async function main() {
   try {
     const ecFee = await calculateFeeWithSimulation(
       client, account.address, [ecMsg],
-      "Creating Ecosystem for CS tests via operator",
+      "Creating Ecosystem for CS tests via delegate",
     );
     console.log(`  Gas: ${ecFee.gas}, Fee: ${ecFee.amount[0].amount}${ecFee.amount[0].denom}`);
 
     const ecResult = await signAndBroadcastWithRetry(
       client, account.address, [ecMsg], ecFee,
-      "Creating Ecosystem for CS tests via operator",
+      "Creating Ecosystem for CS tests via delegate",
     );
 
     if (ecResult.code === 0) {
@@ -187,7 +187,7 @@ async function main() {
     typeUrl: typeUrls.MsgCreateCredentialSchema,
     value: MsgCreateCredentialSchema.fromPartial({
       corporation: setup.authorityAddress,
-      operator: account.address,
+      delegate: account.address,
       ecosystemId: ecId!,
       jsonSchema: jsonSchema,
       issuerGrantorValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 0 }),
@@ -205,20 +205,20 @@ async function main() {
   };
 
   console.log(`  Authority: ${setup.authorityAddress}`);
-  console.log(`  Operator:  ${account.address}`);
+  console.log(`  Delegate:  ${account.address}`);
   console.log(`  EC ID:     ${ecId}`);
   console.log();
 
   try {
     const csFee = await calculateFeeWithSimulation(
       client, account.address, [csMsg],
-      "Creating Credential Schema via operator",
+      "Creating Credential Schema via delegate",
     );
     console.log(`  Gas: ${csFee.gas}, Fee: ${csFee.amount[0].amount}${csFee.amount[0].denom}`);
 
     const csResult = await signAndBroadcastWithRetry(
       client, account.address, [csMsg], csFee,
-      "Creating Credential Schema via operator",
+      "Creating Credential Schema via delegate",
     );
 
     if (csResult.code === 0) {

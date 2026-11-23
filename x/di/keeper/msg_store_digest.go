@@ -27,11 +27,11 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, err
 	}
 
-	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK-1] Verify operator authorization.
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK-1] Verify delegate authorization.
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Authority,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_STORE_DIGEST,
 		now,
 	); err != nil {
@@ -55,7 +55,7 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, fmt.Errorf("failed to store digest: %w", err)
 	}
 
-	emitStoreDigestEvent(ctx, msg.Authority, msg.Operator, msg.Digest, types.AttributeValueSourceMsg, now)
+	emitStoreDigestEvent(ctx, msg.Authority, msg.Delegate, msg.Digest, types.AttributeValueSourceMsg, now)
 
 	return &types.MsgStoreDigestResponse{}, nil
 }
@@ -91,15 +91,15 @@ func (k Keeper) StoreDigestModuleCall(ctx context.Context, authority, digest str
 	return nil
 }
 
-func emitStoreDigestEvent(ctx sdk.Context, corporation, operator, digest, source string, now time.Time) {
+func emitStoreDigestEvent(ctx sdk.Context, corporation, delegate, digest, source string, now time.Time) {
 	attrs := []sdk.Attribute{
 		sdk.NewAttribute(types.AttributeKeyCorporation, corporation),
 		sdk.NewAttribute(types.AttributeKeyDigest, digest),
 		sdk.NewAttribute(types.AttributeKeySource, source),
 		sdk.NewAttribute(types.AttributeKeyTimestamp, now.UTC().Format(time.RFC3339Nano)),
 	}
-	if operator != "" {
-		attrs = append(attrs, sdk.NewAttribute(types.AttributeKeyOperator, operator))
+	if delegate != "" {
+		attrs = append(attrs, sdk.NewAttribute(types.AttributeKeyDelegate, delegate))
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(types.EventTypeStoreDigest, attrs...))
 }

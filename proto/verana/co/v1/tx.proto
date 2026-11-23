@@ -24,7 +24,7 @@ service Msg {
   rpc CreateCorporation(MsgCreateCorporation) returns (MsgCreateCorporationResponse);
 
   // [MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing
-  // Corporation. Signers: corporation (policy_address) + operator.
+  // Corporation. Signer: delegate.
   rpc UpdateCorporation(MsgUpdateCorporation) returns (MsgUpdateCorporationResponse);
 }
 
@@ -96,13 +96,12 @@ message MsgCreateCorporationResponse {
 // MsgUpdateCorporation — MOD-CO-MSG-2. Rotates the DID of an existing
 // Corporation. `language` is immutable and cannot be updated.
 message MsgUpdateCorporation {
-  // Only `operator` signs — `corporation` is the addressed subject resolved
-  // via AUTHZ-CHECK-5 (matches MOD-EC / MOD-GF convention).
-  option (cosmos.msg.v1.signer) = "operator";
+  // Only `delegate` signs; `corporation` is resolved via AUTHZ-CHECK-5.
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/co/MsgUpdateCorporation";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string did = 3;
 }
 

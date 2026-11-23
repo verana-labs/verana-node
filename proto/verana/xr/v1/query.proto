@@ -69,7 +69,7 @@ message QueryGetExchangeRateRequest {
 message QueryGetExchangeRateResponse {
   ExchangeRate exchange_rate = 1 [(gogoproto.nullable) = false];
 
-  // authorizations lists the operators authorized to update this exchange rate. [MOD-XR-QRY-1]
+  // authorizations lists the feeders authorized to update this exchange rate. [MOD-XR-QRY-1]
   repeated ExchangeRateAuthorization authorizations = 2 [(gogoproto.nullable) = false];
 }
 

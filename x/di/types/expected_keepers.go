@@ -23,9 +23,9 @@ type BankKeeper interface {
 }
 
 // DelegationKeeper defines the expected interface for the Delegation (DE) module.
-// Used to perform [AUTHZ-CHECK] for (authority, operator) pairs.
+// Used to perform [AUTHZ-CHECK] for (authority, delegate) pairs.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgType detypes.MsgType, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, authority string, delegate string, msgType detypes.MsgType, now time.Time) error
 }
 
 // CorporationView is the read shape MOD-DI needs about a Corporation subject

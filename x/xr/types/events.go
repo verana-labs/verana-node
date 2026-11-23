@@ -13,7 +13,7 @@ const (
 	AttributeKeyQuoteAssetType   = "quote_asset_type"
 	AttributeKeyQuoteAsset       = "quote_asset"
 	AttributeKeyAuthority        = "authority"
-	AttributeKeyOperator         = "operator"
+	AttributeKeyFeeder           = "feeder"
 	AttributeKeyRate             = "rate"
 	AttributeKeyState            = "state"
 	AttributeKeyRateScale        = "rate_scale"

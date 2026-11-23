@@ -14,24 +14,24 @@ import (
 )
 
 // RunPermissionCancelVPJourney implements Journey 303: Test CancelPermissionVPLastRequest
-// with operator authorization. For the operation: (a) try without auth -> fail, (b) grant auth, (c) try with auth -> succeed.
+// with delegate authorization. For the operation: (a) try without auth -> fail, (b) grant auth, (c) try with auth -> succeed.
 // Depends on Journey 302 having been run first (provides a permission in PENDING state after renewal).
 func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 303: CancelPermissionVPLastRequest with Operator Authorization")
+	fmt.Println("Starting Journey 303: CancelPermissionVPLastRequest with Delegate Authorization")
 
 	// Load results from Journey 302
 	setup302 := lib.LoadJourneyResult("journey302")
 	setup301 := lib.LoadJourneyResult("journey301")
 	policyAddr := setup302.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
-	operatorAddr := setup302.OperatorAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
+	delegateAddr := setup302.DelegateAddr
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	permID, _ := strconv.ParseUint(setup302.PermissionID, 10, 64)
 
 	fmt.Printf("  Group Policy: %s\n", policyAddr)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 	fmt.Printf("  Permission:   %d\n", permID)
 
 	// =========================================================================
@@ -46,12 +46,12 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 		return fmt.Errorf("prerequisite failed: could not query permission: %w", err)
 	}
 
-	// Grant the operator Renew authz from the Corporation so the prereq renew
-	// works regardless of what prior journeys left in the shared operator
+	// Grant the delegate Renew authz from the Corporation so the prereq renew
+	// works regardless of what prior journeys left in the shared delegate
 	// authorization (MSG-3 grants replace in place).
-	if err := lib.GrantOperatorAuthorizationViaGroup(
+	if err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING},
 	); err != nil {
 		return fmt.Errorf("prerequisite failed: could not grant renew authz: %w", err)
@@ -60,7 +60,7 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 
 	if perm.OpState == permtypes.OnboardingState_VALIDATED {
 		fmt.Println("Permission is VALIDATED, renewing to get PENDING state...")
-		err = lib.RenewPermissionVPWithAuthority(client, ctx, operatorAccount, policyAddr, permID)
+		err = lib.RenewPermissionVPWithAuthority(client, ctx, delegateAccount, policyAddr, permID)
 		if err != nil {
 			return fmt.Errorf("prerequisite failed: could not renew permission: %w", err)
 		}
@@ -83,9 +83,9 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 	fmt.Println("\n=== TEST 1: CancelPermissionVPLastRequest ===")
 
 	// 1a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries CancelPermissionVPLastRequest without auth (expect failure) ---")
+	fmt.Println("\n--- Step 1a: Delegate tries CancelPermissionVPLastRequest without auth (expect failure) ---")
 	err = lib.CancelPermissionVPLastRequestWithAuthority(
-		client, ctx, operatorAccount, policyAddr, permID,
+		client, ctx, delegateAccount, policyAddr, permID,
 	)
 	if err := expectAuthorizationError("Step 1a", err); err != nil {
 		return err
@@ -93,10 +93,10 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 	waitForTx("CancelPermVP rejection")
 
 	// 1b: Grant authorization for CancelPermissionVPLastRequest
-	fmt.Println("\n--- Step 1b: Grant operator auth for CancelPermissionVPLastRequest ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1b: Grant delegate auth for CancelPermissionVPLastRequest ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_WITHDRAW_ONBOARDING_REQUEST},
 	)
 	if err != nil {
@@ -106,9 +106,9 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 	waitForTx("grant CancelPermVP auth")
 
 	// 1c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 1c: Operator cancels permission VP with auth (expect success) ---")
+	fmt.Println("\n--- Step 1c: Delegate cancels permission VP with auth (expect success) ---")
 	err = lib.CancelPermissionVPLastRequestWithAuthority(
-		client, ctx, operatorAccount, policyAddr, permID,
+		client, ctx, delegateAccount, policyAddr, permID,
 	)
 	if err != nil {
 		return fmt.Errorf("step 1c failed: %w", err)
@@ -138,13 +138,13 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 	fmt.Println("OK Step 1c: Verified op_current_fees=0, op_current_deposit=0 (fees refunded)")
 
 	// =========================================================================
-	// TEST 2: Unauthorized operator (negative test)
+	// TEST 2: Unauthorized delegate (negative test)
 	// =========================================================================
-	fmt.Println("\n=== TEST 2: Unauthorized operator (negative test) ===")
+	fmt.Println("\n=== TEST 2: Unauthorized delegate (negative test) ===")
 
-	// Permission is now TERMINATED (no op_exp). The unauthorized operator test
+	// Permission is now TERMINATED (no op_exp). The unauthorized delegate test
 	// will still work because the AUTHZ-CHECK rejects before the state check.
-	fmt.Println("\n--- Step 2a: Unauthorized operator tries CancelPermissionVPLastRequest (expect failure) ---")
+	fmt.Println("\n--- Step 2a: Unauthorized delegate tries CancelPermissionVPLastRequest (expect failure) ---")
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
 	err = lib.CancelPermissionVPLastRequestWithAuthority(
 		client, ctx, cooluser, policyAddr, permID,
@@ -152,7 +152,7 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 	if err := expectAuthorizationError("Step 2a", err); err != nil {
 		return err
 	}
-	fmt.Println("OK Step 2a: Unauthorized operator correctly rejected")
+	fmt.Println("OK Step 2a: Unauthorized delegate correctly rejected")
 
 	// Save results
 	result := lib.JourneyResult{
@@ -162,13 +162,13 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 		PermissionID:    setup302.PermissionID,
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey303", result)
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 303 completed successfully!")
-	fmt.Println("CancelPermissionVPLastRequest tested: fail without auth, pass with auth, unauthorized operator rejected.")
+	fmt.Println("CancelPermissionVPLastRequest tested: fail without auth, pass with auth, unauthorized delegate rejected.")
 	fmt.Println("========================================")
 
 	return nil

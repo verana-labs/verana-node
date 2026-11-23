@@ -40,38 +40,38 @@ func setupTriggerResolver(t testing.TB) (
 func TestTriggerResolver_Path1(t *testing.T) {
 	k, ms, ctx, trk, del := setupTriggerResolver(t)
 	corporation := sdk.AccAddress([]byte("corp_trigger________")).String()
-	operator := sdk.AccAddress([]byte("op_trigger__________")).String()
+	delegate := sdk.AccAddress([]byte("op_trigger__________")).String()
 	corpID := trk.RegisterCorp(corporation)
 	past := ctx.BlockTime().Add(-time.Hour)
 
-	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, operator, "did:example:holder", 0, past))
+	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, delegate, "did:example:holder", 0, past))
 	require.NoError(t, err)
 
 	del.ErrToReturn = nil // CHECK-3 passes
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Operator: operator, Id: pid,
+		Corporation: corporation, Delegate: delegate, Id: pid,
 	})
 	require.NoError(t, err)
 }
 
-// TestTriggerResolver_Path2 — ancestor validator's corp operator (AUTHZ-CHECK-1).
+// TestTriggerResolver_Path2 — ancestor validator's corp delegate (AUTHZ-CHECK-1).
 func TestTriggerResolver_Path2(t *testing.T) {
 	k, ms, ctx, trk, del := setupTriggerResolver(t)
 	corporation := sdk.AccAddress([]byte("corp_trigger________")).String()
-	operator := sdk.AccAddress([]byte("op_trigger__________")).String()
+	delegate := sdk.AccAddress([]byte("op_trigger__________")).String()
 	corpID := trk.RegisterCorp(corporation)
 	past := ctx.BlockTime().Add(-time.Hour)
 
 	// Active ancestor in the same corporation.
 	ancestorID, err := k.CreateParticipant(ctx, activeParticipant(corpID, "other_vsop", "did:example:anc", 0, past))
 	require.NoError(t, err)
-	// Target: operator is NOT its vs_operator (Path 1 fails), validator points to ancestor.
+	// Target: delegate is NOT its vs_operator (Path 1 fails), validator points to ancestor.
 	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, "someone_else", "did:example:holder", ancestorID, past))
 	require.NoError(t, err)
 
-	del.ErrToReturn = nil // CHECK-1 passes for the ancestor's corp operator
+	del.ErrToReturn = nil // CHECK-1 passes for the ancestor's corp delegate
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Operator: operator, Id: pid,
+		Corporation: corporation, Delegate: delegate, Id: pid,
 	})
 	require.NoError(t, err)
 }
@@ -80,17 +80,17 @@ func TestTriggerResolver_Path2(t *testing.T) {
 func TestTriggerResolver_Unauthorized(t *testing.T) {
 	k, ms, ctx, trk, del := setupTriggerResolver(t)
 	corporation := sdk.AccAddress([]byte("corp_trigger________")).String()
-	operator := sdk.AccAddress([]byte("op_trigger__________")).String()
+	delegate := sdk.AccAddress([]byte("op_trigger__________")).String()
 	corpID := trk.RegisterCorp(corporation)
 	past := ctx.BlockTime().Add(-time.Hour)
 
-	// operator is not the vs_operator and there is no ancestor.
+	// delegate is not the vs_operator and there is no ancestor.
 	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, "someone_else", "did:example:holder", 0, past))
 	require.NoError(t, err)
 
 	del.ErrToReturn = fmt.Errorf("denied")
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Operator: operator, Id: pid,
+		Corporation: corporation, Delegate: delegate, Id: pid,
 	})
 	require.ErrorContains(t, err, "authorization check failed")
 }
@@ -100,16 +100,16 @@ func TestTriggerResolver_Unauthorized(t *testing.T) {
 func TestTriggerResolver_EmptyDidAllowed(t *testing.T) {
 	k, ms, ctx, trk, del := setupTriggerResolver(t)
 	corporation := sdk.AccAddress([]byte("corp_trigger________")).String()
-	operator := sdk.AccAddress([]byte("op_trigger__________")).String()
+	delegate := sdk.AccAddress([]byte("op_trigger__________")).String()
 	corpID := trk.RegisterCorp(corporation)
 	past := ctx.BlockTime().Add(-time.Hour)
 
-	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, operator, "", 0, past))
+	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, delegate, "", 0, past))
 	require.NoError(t, err)
 
-	del.ErrToReturn = nil // Path 1 (operator == vs_operator) passes
+	del.ErrToReturn = nil // Path 1 (delegate == vs_operator) passes
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Operator: operator, Id: pid,
+		Corporation: corporation, Delegate: delegate, Id: pid,
 	})
 	require.NoError(t, err)
 }
@@ -118,17 +118,17 @@ func TestTriggerResolver_EmptyDidAllowed(t *testing.T) {
 func TestTriggerResolver_RejectInactive(t *testing.T) {
 	k, ms, ctx, trk, del := setupTriggerResolver(t)
 	corporation := sdk.AccAddress([]byte("corp_trigger________")).String()
-	operator := sdk.AccAddress([]byte("op_trigger__________")).String()
+	delegate := sdk.AccAddress([]byte("op_trigger__________")).String()
 	corpID := trk.RegisterCorp(corporation)
 	future := ctx.BlockTime().Add(time.Hour)
 
 	// effective_from in the future => not active.
-	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, operator, "did:example:holder", 0, future))
+	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, delegate, "did:example:holder", 0, future))
 	require.NoError(t, err)
 
 	del.ErrToReturn = nil
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Operator: operator, Id: pid,
+		Corporation: corporation, Delegate: delegate, Id: pid,
 	})
 	require.ErrorContains(t, err, "not active")
 }
@@ -137,12 +137,12 @@ func TestTriggerResolver_RejectInactive(t *testing.T) {
 func TestTriggerResolver_RejectNotFound(t *testing.T) {
 	_, ms, ctx, trk, del := setupTriggerResolver(t)
 	corporation := sdk.AccAddress([]byte("corp_trigger________")).String()
-	operator := sdk.AccAddress([]byte("op_trigger__________")).String()
+	delegate := sdk.AccAddress([]byte("op_trigger__________")).String()
 	trk.RegisterCorp(corporation)
 
 	del.ErrToReturn = nil
 	_, err := ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Operator: operator, Id: 999,
+		Corporation: corporation, Delegate: delegate, Id: 999,
 	})
 	require.ErrorContains(t, err, "not found")
 }

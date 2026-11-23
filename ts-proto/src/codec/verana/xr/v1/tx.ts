@@ -30,14 +30,14 @@ export interface ExchangeRate {
 }
 
 /**
- * ExchangeRateAuthorization designates which operator account is authorized to
+ * ExchangeRateAuthorization designates which feeder account is authorized to
  * push fresh values for a given ExchangeRate, with optional anti-spam
  * (min_interval) and circuit-breaker (max_deviation_bps) bounds. Keyed by
- * (xr_id, operator). Zero min_interval / max_deviation_bps means "unset".
+ * (xr_id, feeder). Zero min_interval / max_deviation_bps means "unset".
  */
 export interface ExchangeRateAuthorization {
   xrId: number;
-  operator: string;
+  feeder: string;
   expiration: Date | undefined;
   minInterval: Duration | undefined;
   maxDeviationBps: number;
@@ -64,8 +64,8 @@ export interface MsgCreateExchangeRateResponse {
 
 /** MsgUpdateExchangeRate is the Msg/UpdateExchangeRate request type. [MOD-XR-MSG-2] */
 export interface MsgUpdateExchangeRate {
-  /** operator is the authorized operator executing this message. */
-  operator: string;
+  /** feeder is the authorized feeder executing this message. */
+  feeder: string;
   /** id is the exchange rate entry to update. */
   id: number;
   /** rate is the new exchange rate value. */
@@ -106,10 +106,10 @@ export interface MsgSetExchangeRateStateResponse {
 export interface MsgGrantExchangeRateAuthorization {
   /** authority is the gov module account. */
   authority: string;
-  /** xr_id is the exchange rate the operator is authorized to update. */
+  /** xr_id is the exchange rate the feeder is authorized to update. */
   xrId: number;
-  /** operator is the account authorized to update the exchange rate. */
-  operator: string;
+  /** feeder is the account authorized to update the exchange rate. */
+  feeder: string;
   /** expiration is when the authorization expires (must be in the future). */
   expiration:
     | Date
@@ -132,8 +132,8 @@ export interface MsgRevokeExchangeRateAuthorization {
   authority: string;
   /** xr_id is the exchange rate the authorization is for. */
   xrId: number;
-  /** operator is the account whose authorization is revoked. */
-  operator: string;
+  /** feeder is the account whose authorization is revoked. */
+  feeder: string;
 }
 
 /** MsgRevokeExchangeRateAuthorizationResponse defines the response for MsgRevokeExchangeRateAuthorization. */
@@ -371,7 +371,7 @@ export const ExchangeRate = {
 };
 
 function createBaseExchangeRateAuthorization(): ExchangeRateAuthorization {
-  return { xrId: 0, operator: "", expiration: undefined, minInterval: undefined, maxDeviationBps: 0 };
+  return { xrId: 0, feeder: "", expiration: undefined, minInterval: undefined, maxDeviationBps: 0 };
 }
 
 export const ExchangeRateAuthorization = {
@@ -379,8 +379,8 @@ export const ExchangeRateAuthorization = {
     if (message.xrId !== 0) {
       writer.uint32(8).uint64(message.xrId);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.feeder !== "") {
+      writer.uint32(18).string(message.feeder);
     }
     if (message.expiration !== undefined) {
       Timestamp.encode(toTimestamp(message.expiration), writer.uint32(26).fork()).ldelim();
@@ -413,7 +413,7 @@ export const ExchangeRateAuthorization = {
             break;
           }
 
-          message.operator = reader.string();
+          message.feeder = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -448,7 +448,7 @@ export const ExchangeRateAuthorization = {
   fromJSON(object: any): ExchangeRateAuthorization {
     return {
       xrId: isSet(object.xrId) ? globalThis.Number(object.xrId) : 0,
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      feeder: isSet(object.feeder) ? globalThis.String(object.feeder) : "",
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
       minInterval: isSet(object.minInterval) ? Duration.fromJSON(object.minInterval) : undefined,
       maxDeviationBps: isSet(object.maxDeviationBps) ? globalThis.Number(object.maxDeviationBps) : 0,
@@ -460,8 +460,8 @@ export const ExchangeRateAuthorization = {
     if (message.xrId !== 0) {
       obj.xrId = Math.round(message.xrId);
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.feeder !== "") {
+      obj.feeder = message.feeder;
     }
     if (message.expiration !== undefined) {
       obj.expiration = message.expiration.toISOString();
@@ -481,7 +481,7 @@ export const ExchangeRateAuthorization = {
   fromPartial<I extends Exact<DeepPartial<ExchangeRateAuthorization>, I>>(object: I): ExchangeRateAuthorization {
     const message = createBaseExchangeRateAuthorization();
     message.xrId = object.xrId ?? 0;
-    message.operator = object.operator ?? "";
+    message.feeder = object.feeder ?? "";
     message.expiration = object.expiration ?? undefined;
     message.minInterval = (object.minInterval !== undefined && object.minInterval !== null)
       ? Duration.fromPartial(object.minInterval)
@@ -742,13 +742,13 @@ export const MsgCreateExchangeRateResponse = {
 };
 
 function createBaseMsgUpdateExchangeRate(): MsgUpdateExchangeRate {
-  return { operator: "", id: 0, rate: "" };
+  return { feeder: "", id: 0, rate: "" };
 }
 
 export const MsgUpdateExchangeRate = {
   encode(message: MsgUpdateExchangeRate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.operator !== "") {
-      writer.uint32(10).string(message.operator);
+    if (message.feeder !== "") {
+      writer.uint32(10).string(message.feeder);
     }
     if (message.id !== 0) {
       writer.uint32(16).uint64(message.id);
@@ -771,7 +771,7 @@ export const MsgUpdateExchangeRate = {
             break;
           }
 
-          message.operator = reader.string();
+          message.feeder = reader.string();
           continue;
         case 2:
           if (tag !== 16) {
@@ -798,7 +798,7 @@ export const MsgUpdateExchangeRate = {
 
   fromJSON(object: any): MsgUpdateExchangeRate {
     return {
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      feeder: isSet(object.feeder) ? globalThis.String(object.feeder) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       rate: isSet(object.rate) ? globalThis.String(object.rate) : "",
     };
@@ -806,8 +806,8 @@ export const MsgUpdateExchangeRate = {
 
   toJSON(message: MsgUpdateExchangeRate): unknown {
     const obj: any = {};
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.feeder !== "") {
+      obj.feeder = message.feeder;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -823,7 +823,7 @@ export const MsgUpdateExchangeRate = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateExchangeRate>, I>>(object: I): MsgUpdateExchangeRate {
     const message = createBaseMsgUpdateExchangeRate();
-    message.operator = object.operator ?? "";
+    message.feeder = object.feeder ?? "";
     message.id = object.id ?? 0;
     message.rate = object.rate ?? "";
     return message;
@@ -1082,7 +1082,7 @@ export const MsgSetExchangeRateStateResponse = {
 };
 
 function createBaseMsgGrantExchangeRateAuthorization(): MsgGrantExchangeRateAuthorization {
-  return { authority: "", xrId: 0, operator: "", expiration: undefined, minInterval: undefined, maxDeviationBps: 0 };
+  return { authority: "", xrId: 0, feeder: "", expiration: undefined, minInterval: undefined, maxDeviationBps: 0 };
 }
 
 export const MsgGrantExchangeRateAuthorization = {
@@ -1093,8 +1093,8 @@ export const MsgGrantExchangeRateAuthorization = {
     if (message.xrId !== 0) {
       writer.uint32(16).uint64(message.xrId);
     }
-    if (message.operator !== "") {
-      writer.uint32(26).string(message.operator);
+    if (message.feeder !== "") {
+      writer.uint32(26).string(message.feeder);
     }
     if (message.expiration !== undefined) {
       Timestamp.encode(toTimestamp(message.expiration), writer.uint32(34).fork()).ldelim();
@@ -1134,7 +1134,7 @@ export const MsgGrantExchangeRateAuthorization = {
             break;
           }
 
-          message.operator = reader.string();
+          message.feeder = reader.string();
           continue;
         case 4:
           if (tag !== 34) {
@@ -1170,7 +1170,7 @@ export const MsgGrantExchangeRateAuthorization = {
     return {
       authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
       xrId: isSet(object.xrId) ? globalThis.Number(object.xrId) : 0,
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      feeder: isSet(object.feeder) ? globalThis.String(object.feeder) : "",
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
       minInterval: isSet(object.minInterval) ? Duration.fromJSON(object.minInterval) : undefined,
       maxDeviationBps: isSet(object.maxDeviationBps) ? globalThis.Number(object.maxDeviationBps) : 0,
@@ -1185,8 +1185,8 @@ export const MsgGrantExchangeRateAuthorization = {
     if (message.xrId !== 0) {
       obj.xrId = Math.round(message.xrId);
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.feeder !== "") {
+      obj.feeder = message.feeder;
     }
     if (message.expiration !== undefined) {
       obj.expiration = message.expiration.toISOString();
@@ -1211,7 +1211,7 @@ export const MsgGrantExchangeRateAuthorization = {
     const message = createBaseMsgGrantExchangeRateAuthorization();
     message.authority = object.authority ?? "";
     message.xrId = object.xrId ?? 0;
-    message.operator = object.operator ?? "";
+    message.feeder = object.feeder ?? "";
     message.expiration = object.expiration ?? undefined;
     message.minInterval = (object.minInterval !== undefined && object.minInterval !== null)
       ? Duration.fromPartial(object.minInterval)
@@ -1269,7 +1269,7 @@ export const MsgGrantExchangeRateAuthorizationResponse = {
 };
 
 function createBaseMsgRevokeExchangeRateAuthorization(): MsgRevokeExchangeRateAuthorization {
-  return { authority: "", xrId: 0, operator: "" };
+  return { authority: "", xrId: 0, feeder: "" };
 }
 
 export const MsgRevokeExchangeRateAuthorization = {
@@ -1280,8 +1280,8 @@ export const MsgRevokeExchangeRateAuthorization = {
     if (message.xrId !== 0) {
       writer.uint32(16).uint64(message.xrId);
     }
-    if (message.operator !== "") {
-      writer.uint32(26).string(message.operator);
+    if (message.feeder !== "") {
+      writer.uint32(26).string(message.feeder);
     }
     return writer;
   },
@@ -1312,7 +1312,7 @@ export const MsgRevokeExchangeRateAuthorization = {
             break;
           }
 
-          message.operator = reader.string();
+          message.feeder = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1327,7 +1327,7 @@ export const MsgRevokeExchangeRateAuthorization = {
     return {
       authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
       xrId: isSet(object.xrId) ? globalThis.Number(object.xrId) : 0,
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      feeder: isSet(object.feeder) ? globalThis.String(object.feeder) : "",
     };
   },
 
@@ -1339,8 +1339,8 @@ export const MsgRevokeExchangeRateAuthorization = {
     if (message.xrId !== 0) {
       obj.xrId = Math.round(message.xrId);
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.feeder !== "") {
+      obj.feeder = message.feeder;
     }
     return obj;
   },
@@ -1356,7 +1356,7 @@ export const MsgRevokeExchangeRateAuthorization = {
     const message = createBaseMsgRevokeExchangeRateAuthorization();
     message.authority = object.authority ?? "";
     message.xrId = object.xrId ?? 0;
-    message.operator = object.operator ?? "";
+    message.feeder = object.feeder ?? "";
     return message;
   },
 };
@@ -1460,20 +1460,20 @@ export interface Msg {
   UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse>;
   /** CreateExchangeRate defines a governance operation for creating an exchange rate. */
   CreateExchangeRate(request: MsgCreateExchangeRate): Promise<MsgCreateExchangeRateResponse>;
-  /** UpdateExchangeRate defines an operator operation for updating an exchange rate. */
+  /** UpdateExchangeRate defines a feeder operation for updating an exchange rate. */
   UpdateExchangeRate(request: MsgUpdateExchangeRate): Promise<MsgUpdateExchangeRateResponse>;
   /** SetExchangeRateState defines a governance operation for enabling or disabling an exchange rate. */
   SetExchangeRateState(request: MsgSetExchangeRateState): Promise<MsgSetExchangeRateStateResponse>;
   /**
    * GrantExchangeRateAuthorization defines a governance operation authorizing an
-   * operator to update a given exchange rate. [MOD-XR-MSG-4]
+   * feeder to update a given exchange rate. [MOD-XR-MSG-4]
    */
   GrantExchangeRateAuthorization(
     request: MsgGrantExchangeRateAuthorization,
   ): Promise<MsgGrantExchangeRateAuthorizationResponse>;
   /**
    * RevokeExchangeRateAuthorization defines a governance operation revoking an
-   * operator's authorization for a given exchange rate. [MOD-XR-MSG-5]
+   * feeder's authorization for a given exchange rate. [MOD-XR-MSG-5]
    */
   RevokeExchangeRateAuthorization(
     request: MsgRevokeExchangeRateAuthorization,

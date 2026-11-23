@@ -41,8 +41,8 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 
 	setup := lib.LoadJourneyResult("journey302")
 	policyAddr := setup.GroupPolicyAddr
-	operatorAddr := setup.OperatorAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
+	delegateAddr := setup.DelegateAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 	trID, _ := strconv.ParseUint(setup.EcosystemID, 10, 64)
@@ -51,7 +51,7 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 	vsOperatorAddr, _ := vsOperatorAccount.Address("verana")
 
 	fmt.Printf("  Corporation: %s\n", policyAddr)
-	fmt.Printf("  Operator:    %s\n", operatorAddr)
+	fmt.Printf("  Delegate:    %s\n", delegateAddr)
 	fmt.Printf("  VS operator: %s\n", vsOperatorAddr)
 
 	const (
@@ -69,16 +69,16 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, policyAddr, math.NewInt(300_000_000))
 	waitForTx("policy top-up")
 
-	fmt.Println("\n--- Step 1: Grant operator prereq authz (CS, root, startop, validate) ---")
+	fmt.Println("\n--- Step 1: Grant delegate prereq authz (CS, root, startop, validate) ---")
 	baseMsgTypes := []detypes.MsgType{
 		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
 		detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
 		detypes.MsgType_MSG_TYPE_START_ONBOARDING,
 		detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
 	}
-	if err := lib.GrantOperatorAuthorizationViaGroup(
+	if err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr, baseMsgTypes,
+		policyAddr, delegateAddr, delegateAddr, baseMsgTypes,
 	); err != nil {
 		return fmt.Errorf("step 1 failed: grant prereq authz: %w", err)
 	}
@@ -86,7 +86,7 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 
 	// Build the shared agent participant (its own schema, to avoid overlap).
 	agentPermID, err := buildValidatedIssuer(
-		client, ctx, operatorAccount, policyAddr, trID, rootIssuanceFees,
+		client, ctx, delegateAccount, policyAddr, trID, rootIssuanceFees,
 		"", nil, false, nil, // no vs_operator on the agent
 	)
 	if err != nil {
@@ -97,7 +97,7 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 	// Issuer-X: large spend_limit (never blocks) + finite fee_spend_limit +
 	// with_feegrant. Exercises CHECK-3 positive (here) and CHECK-4 (CLI).
 	issuerX, err := buildValidatedIssuer(
-		client, ctx, operatorAccount, policyAddr, trID, rootIssuanceFees,
+		client, ctx, delegateAccount, policyAddr, trID, rootIssuanceFees,
 		vsOperatorAddr, []detypes.MsgType{cspsMsg}, true,
 		&recordLimits{spend: bigSpendLimit, feeSpend: feeSpendLimit},
 	)
@@ -109,7 +109,7 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 
 	// Issuer-Y: tiny spend_limit so the very first CSPS is rejected on CHECK-3.
 	issuerY, err := buildValidatedIssuer(
-		client, ctx, operatorAccount, policyAddr, trID, rootIssuanceFees,
+		client, ctx, delegateAccount, policyAddr, trID, rootIssuanceFees,
 		vsOperatorAddr, []detypes.MsgType{cspsMsg}, false,
 		&recordLimits{spend: tinySpendLimit},
 	)
@@ -184,7 +184,7 @@ type recordLimits struct {
 func buildValidatedIssuer(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	policyAddr string,
 	trID uint64,
 	issuanceFees uint64,
@@ -194,7 +194,7 @@ func buildValidatedIssuer(
 	limits *recordLimits,
 ) (uint64, error) {
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, lib.GenerateSimpleSchema(strconv.FormatUint(trID, 10)),
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
@@ -208,7 +208,7 @@ func buildValidatedIssuer(
 	effFrom := time.Now().Add(3 * time.Second)
 	effUntil := effFrom.Add(360 * 24 * time.Hour)
 	rootID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, lib.GenerateUniqueDID(client, ctx), &effFrom, &effUntil,
 		0, issuanceFees, 0,
 	)
@@ -239,7 +239,7 @@ func buildValidatedIssuer(
 			}
 		}
 	}
-	issuerIDStr, err := lib.StartPermissionVP(client, ctx, operatorAccount, msg)
+	issuerIDStr, err := lib.StartPermissionVP(client, ctx, delegateAccount, msg)
 	if err != nil {
 		return 0, fmt.Errorf("start issuer VP: %w", err)
 	}
@@ -247,7 +247,7 @@ func buildValidatedIssuer(
 	waitForTx("start issuer")
 
 	valEffUntil := time.Now().Add(365 * 24 * time.Hour)
-	if _, err := lib.SetPermissionVPToValidated(client, ctx, operatorAccount, permtypes.MsgSetParticipantOPToValidated{
+	if _, err := lib.SetPermissionVPToValidated(client, ctx, delegateAccount, permtypes.MsgSetParticipantOPToValidated{
 		Corporation:    policyAddr,
 		Id:             issuerID,
 		EffectiveUntil: &valEffUntil,

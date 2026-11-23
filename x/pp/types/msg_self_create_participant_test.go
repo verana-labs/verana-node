@@ -22,7 +22,7 @@ func TestMsgSelfCreateParticipant_ValidateBasic(t *testing.T) {
 	valid := func() *types.MsgSelfCreateParticipant {
 		return &types.MsgSelfCreateParticipant{
 			Corporation:            validAddr,
-			Operator:               validAddr,
+			Delegate:               validAddr,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: 1,
 			Did:                    validDid,

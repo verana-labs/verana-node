@@ -32,9 +32,9 @@ func (msg *MsgStoreDigest) ValidateBasic() error {
 		return fmt.Errorf("invalid authority address: %w", err)
 	}
 
-	// operator is mandatory
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// delegate is mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	return ValidateDigestString(msg.Digest)

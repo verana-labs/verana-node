@@ -14,7 +14,7 @@ import (
 
 type stubDelegationKeeper struct{}
 
-func (stubDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (stubDelegationKeeper) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 

@@ -14,41 +14,41 @@ import (
 )
 
 // RunDiStoreDigestJourney implements Journey 501: DI Store Digest
-// Tests MsgStoreDigest with operator authorization (fail without auth, grant, succeed with auth).
-// Depends on Journey 301 (group setup with operator).
+// Tests MsgStoreDigest with delegate authorization (fail without auth, grant, succeed with auth).
+// Depends on Journey 301 (group setup with delegate).
 func RunDiStoreDigestJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 501: DI Store Digest with Operator Authorization")
+	fmt.Println("Starting Journey 501: DI Store Digest with Delegate Authorization")
 
 	// =========================================================================
-	// Step 1: Load journey 301 results (group, operator, authority)
+	// Step 1: Load journey 301 results (group, delegate, authority)
 	// =========================================================================
 	fmt.Println("\n--- Step 1: Load journey 301 results ---")
 
 	setup301 := lib.LoadJourneyResult("journey301")
 	policyAddr := setup301.GroupPolicyAddr
-	operatorAddr := setup301.OperatorAddr
+	delegateAddr := setup301.DelegateAddr
 
-	operatorAccount := lib.GetAccount(client, permOperatorName)
+	delegateAccount := lib.GetAccount(client, permDelegateName)
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	fmt.Printf("  Group Policy:  %s\n", policyAddr)
-	fmt.Printf("  Operator:      %s\n", operatorAddr)
+	fmt.Printf("  Delegate:      %s\n", delegateAddr)
 	fmt.Println("✅ Step 1: Loaded journey 301 results")
 
 	// =========================================================================
 	// Step 2: Test StoreDigest WITHOUT authorization (expect failure)
 	// =========================================================================
-	fmt.Println("\n--- Step 2: Operator tries StoreDigest without auth (expect failure) ---")
+	fmt.Println("\n--- Step 2: Delegate tries StoreDigest without auth (expect failure) ---")
 
 	testDigest := fmt.Sprintf("sha256-testdigest%d", time.Now().UnixNano())
 	storeMsg := &ditypes.MsgStoreDigest{
 		Authority: policyAddr,
-		Operator:  operatorAddr,
+		Delegate:  delegateAddr,
 		Digest:    testDigest,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, storeMsg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, storeMsg)
 	if err == nil && txResp.TxResponse.Code != 0 {
 		err = fmt.Errorf("transaction failed with code %d: %s", txResp.TxResponse.Code, txResp.TxResponse.RawLog)
 	}
@@ -59,13 +59,13 @@ func RunDiStoreDigestJourney(ctx context.Context, client cosmosclient.Client) er
 	waitForTx("store digest rejection")
 
 	// =========================================================================
-	// Step 3: Grant operator authorization for MsgStoreDigest via group proposal
+	// Step 3: Grant delegate authorization for MsgStoreDigest via group proposal
 	// =========================================================================
-	fmt.Println("\n--- Step 3: Grant operator auth for MsgStoreDigest ---")
+	fmt.Println("\n--- Step 3: Grant delegate auth for MsgStoreDigest ---")
 
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_STORE_DIGEST},
 	)
 	if err != nil {
@@ -77,15 +77,15 @@ func RunDiStoreDigestJourney(ctx context.Context, client cosmosclient.Client) er
 	// =========================================================================
 	// Step 4: Test StoreDigest WITH authorization (expect success)
 	// =========================================================================
-	fmt.Println("\n--- Step 4: Operator stores digest with auth ---")
+	fmt.Println("\n--- Step 4: Delegate stores digest with auth ---")
 
 	storeMsg = &ditypes.MsgStoreDigest{
 		Authority: policyAddr,
-		Operator:  operatorAddr,
+		Delegate:  delegateAddr,
 		Digest:    testDigest,
 	}
 
-	txResp, err = client.BroadcastTx(ctx, operatorAccount, storeMsg)
+	txResp, err = client.BroadcastTx(ctx, delegateAccount, storeMsg)
 	if err != nil {
 		return fmt.Errorf("step 4 failed: %w", err)
 	}
@@ -126,7 +126,7 @@ func RunDiStoreDigestJourney(ctx context.Context, client cosmosclient.Client) er
 	result := lib.JourneyResult{
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey501", result)
 

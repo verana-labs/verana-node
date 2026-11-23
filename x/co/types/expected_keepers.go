@@ -11,11 +11,11 @@ import (
 )
 
 // DelegationKeeper is the minimum surface MOD-CO needs from x/de for
-// AUTHZ-CHECK-1 (operator authorization on MSG-2). Signature matches
-// x/de/keeper.Keeper.CheckOperatorAuthorization exactly so the DE keeper
+// AUTHZ-CHECK-1 (delegate authorization on MSG-2). Signature matches
+// x/de/keeper.Keeper.CheckDelegateAuthorization exactly so the DE keeper
 // concrete type satisfies this interface and depinject can auto-wire it.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, corporation string, operator string, msgType detypes.MsgType, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, corporation string, delegate string, msgType detypes.MsgType, now time.Time) error
 }
 
 // GroupKeeper is the minimum surface MOD-CO needs from x/group for MSG-1.

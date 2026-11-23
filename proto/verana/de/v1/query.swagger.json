@@ -18,13 +18,13 @@
   "paths": {
     "/de/v1/authz/get/{id}": {
       "get": {
-        "summary": "[MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.",
-        "operationId": "Query_GetOperatorAuthorization",
+        "summary": "[MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id.",
+        "operationId": "Query_GetDelegateAuthorization",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/verana.de.v1.QueryGetOperatorAuthorizationResponse"
+              "$ref": "#/definitions/verana.de.v1.QueryGetDelegateAuthorizationResponse"
             }
           },
           "default": {
@@ -37,7 +37,7 @@
         "parameters": [
           {
             "name": "id",
-            "description": "id is the OperatorAuthorization id to fetch.",
+            "description": "id is the DelegateAuthorization id to fetch.",
             "in": "path",
             "required": true,
             "type": "string",
@@ -51,13 +51,13 @@
     },
     "/de/v1/authz/list": {
       "get": {
-        "summary": "ListOperatorAuthorizations returns operator authorizations matching optional filters.",
-        "operationId": "Query_ListOperatorAuthorizations",
+        "summary": "[MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters.",
+        "operationId": "Query_ListDelegateAuthorizations",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/verana.de.v1.QueryListOperatorAuthorizationsResponse"
+              "$ref": "#/definitions/verana.de.v1.QueryListDelegateAuthorizationsResponse"
             }
           },
           "default": {
@@ -77,8 +77,8 @@
             "format": "uint64"
           },
           {
-            "name": "operator",
-            "description": "operator filters by the operator account that received the authorization.",
+            "name": "delegate",
+            "description": "delegate filters by the delegate account that received the authorization.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -243,6 +243,58 @@
         }
       }
     },
+    "verana.de.v1.DelegateAuthorization": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "id is the own uint64 key of this DelegateAuthorization."
+        },
+        "corporation_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "corporation_id is the id of the corporation granting the authorization. The\n(corporation_id, delegate) tuple MUST be unique."
+        },
+        "delegate": {
+          "type": "string",
+          "description": "delegate is the account receiving the authorization."
+        },
+        "msg_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/verana.de.v1.MsgType"
+          },
+          "description": "msg_types is the list of message types this authorization applies to."
+        },
+        "spend_limit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "spend_limit is the maximum amount of funds the grantee is allowed to spend."
+        },
+        "remaining_spend": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "remaining_spend is the runtime balance for spend_limit. Present iff\nspend_limit is set."
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time",
+          "description": "expiration is the timestamp after which the authorization is no longer\nvalid."
+        },
+        "period": {
+          "type": "string",
+          "description": "period is the reset period for spend_limit. If set, expiration MUST also be set."
+        }
+      },
+      "description": "DelegateAuthorization is the delegate authorization record. It is keyed by\nits own uint64 id; (corporation_id, delegate) is a unique secondary index."
+    },
     "verana.de.v1.MsgType": {
       "type": "string",
       "enum": [
@@ -282,58 +334,6 @@
       ],
       "default": "MSG_TYPE_UNSPECIFIED",
       "description": "MsgType enumerates the delegable messages of the VPR. Numbers are stable and\nonly ever appended to."
-    },
-    "verana.de.v1.OperatorAuthorization": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64",
-          "description": "id is the own uint64 key of this OperatorAuthorization."
-        },
-        "corporation_id": {
-          "type": "string",
-          "format": "uint64",
-          "description": "corporation_id is the id of the corporation granting the authorization. The\n(corporation_id, operator) tuple MUST be unique."
-        },
-        "operator": {
-          "type": "string",
-          "description": "operator is the account receiving the authorization."
-        },
-        "msg_types": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/verana.de.v1.MsgType"
-          },
-          "description": "msg_types is the list of message types this authorization applies to."
-        },
-        "spend_limit": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
-          },
-          "description": "spend_limit is the maximum amount of funds the grantee is allowed to spend."
-        },
-        "remaining_spend": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
-          },
-          "description": "remaining_spend is the runtime balance for spend_limit. Present iff\nspend_limit is set."
-        },
-        "expiration": {
-          "type": "string",
-          "format": "date-time",
-          "description": "expiration is the timestamp after which the authorization is no longer\nvalid."
-        },
-        "period": {
-          "type": "string",
-          "description": "period is the reset period for spend_limit. If set, expiration MUST also be set."
-        }
-      },
-      "description": "OperatorAuthorization is the operator-delegation record. Per spec it is\nkeyed by its own uint64 id; (corporation_id, operator) is a unique secondary\nindex."
     },
     "verana.de.v1.Params": {
       "type": "object",
@@ -400,14 +400,14 @@
       },
       "description": "ParticipantAuthorizationRecord is a per-participant VS-operator authorization\nnested inside a VSOperatorAuthorization. Keyed by participant_id, which is\nglobally unique across all records of all VSOperatorAuthorizations."
     },
-    "verana.de.v1.QueryGetOperatorAuthorizationResponse": {
+    "verana.de.v1.QueryGetDelegateAuthorizationResponse": {
       "type": "object",
       "properties": {
-        "operator_authorization": {
-          "$ref": "#/definitions/verana.de.v1.OperatorAuthorization"
+        "delegate_authorization": {
+          "$ref": "#/definitions/verana.de.v1.DelegateAuthorization"
         }
       },
-      "description": "QueryGetOperatorAuthorizationResponse is the response type for the\nQuery/GetOperatorAuthorization RPC method."
+      "description": "QueryGetDelegateAuthorizationResponse is the response type for the\nQuery/GetDelegateAuthorization RPC method."
     },
     "verana.de.v1.QueryGetVSOperatorAuthorizationResponse": {
       "type": "object",
@@ -418,18 +418,18 @@
       },
       "description": "QueryGetVSOperatorAuthorizationResponse is the response type for the\nQuery/GetVSOperatorAuthorization RPC method."
     },
-    "verana.de.v1.QueryListOperatorAuthorizationsResponse": {
+    "verana.de.v1.QueryListDelegateAuthorizationsResponse": {
       "type": "object",
       "properties": {
-        "operator_authorizations": {
+        "delegate_authorizations": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/verana.de.v1.OperatorAuthorization"
+            "$ref": "#/definitions/verana.de.v1.DelegateAuthorization"
           }
         }
       },
-      "description": "QueryListOperatorAuthorizationsResponse is the response type for the\nQuery/ListOperatorAuthorizations RPC method."
+      "description": "QueryListDelegateAuthorizationsResponse is the response type for the\nQuery/ListDelegateAuthorizations RPC method."
     },
     "verana.de.v1.QueryListVSOperatorAuthorizationsResponse": {
       "type": "object",

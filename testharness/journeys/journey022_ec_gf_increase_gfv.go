@@ -19,7 +19,7 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 	setup020 := lib.LoadJourneyResult("journey020")
 
 	policyAddr := setup001.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, corpAOperator)
+	delegateAccount := lib.GetAccount(client, corpADelegate)
 
 	var ecID uint64
 	fmt.Sscanf(setup020.EcosystemID, "%d", &ecID)
@@ -31,7 +31,7 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 	// =========================================================================
 	fmt.Println("\n--- Step 1: IncreaseActiveGFVersion v1 → v2 ---")
 	err := lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr, ecID,
+		client, ctx, delegateAccount, policyAddr, ecID,
 	)
 	if err != nil {
 		return fmt.Errorf("step 1 failed: %w", err)
@@ -51,7 +51,7 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 	// =========================================================================
 	fmt.Println("\n--- Step 2: IncreaseActiveGFVersion v2 → v3 ---")
 	err = lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr, ecID,
+		client, ctx, delegateAccount, policyAddr, ecID,
 	)
 	if err != nil {
 		return fmt.Errorf("step 2 failed: %w", err)
@@ -70,7 +70,7 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 	// =========================================================================
 	fmt.Println("\n--- Step 3: IncreaseGFV with no v4 doc (expect failure) ---")
 	err = lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr, ecID,
+		client, ctx, delegateAccount, policyAddr, ecID,
 	)
 	if err == nil {
 		return fmt.Errorf("step 3 failed: expected rejection when no next-version doc exists")
@@ -82,7 +82,7 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 	// =========================================================================
 	fmt.Println("\n--- Step 4a: AddGFD v4 English (default language, required for IncreaseGFV) ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, "en",
 		"https://example.com/ec-alpha-gf-v4-en.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -96,7 +96,7 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 
 	fmt.Println("\n--- Step 4a-ii: AddGFD v4 French (additional translation) ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, "fr",
 		"https://example.com/ec-alpha-gf-v4-fr.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -110,7 +110,7 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 
 	fmt.Println("\n--- Step 4b: IncreaseGFV v3 → v4 ---")
 	err = lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr, ecID,
+		client, ctx, delegateAccount, policyAddr, ecID,
 	)
 	if err != nil {
 		return fmt.Errorf("step 4b IncreaseGFV v4 failed: %w", err)

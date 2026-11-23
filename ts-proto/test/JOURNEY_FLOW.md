@@ -11,9 +11,9 @@ This document defines the transaction sequences, prerequisites, and account stra
 
 **Account Derivation Indices**:
 - Index 10: Authority (shared across TR, CS, PERM)
-- Index 11: TR Operator
-- Index 13: CS Operator
-- Index 15: PERM Operator
+- Index 11: TR Delegate
+- Index 13: CS Delegate
+- Index 15: PERM Delegate
 
 **State Sharing**: Journeys share state via `journey_results/*.json` files. Earlier journeys save IDs (trust registry, schema, etc.) that later journeys load.
 
@@ -21,32 +21,32 @@ This document defines the transaction sequences, prerequisites, and account stra
 
 ### Delegation Engine (DE) Module
 
-#### DE: Grant TR Operator Authorization
+#### DE: Grant TR Delegate Authorization
 - **Script**: `test:de-grant-auth`
-- **File**: `deGrantOperatorAuthorization.ts`
+- **File**: `deGrantDelegateAuthorization.ts`
 - **Prerequisites**: None
 - **Transactions**:
-  1. Grant operator authorization for Trust Registry messages
-- **Outputs**: Operator authorization saved to journey results
+  1. Grant delegate authorization for Trust Registry messages
+- **Outputs**: Delegate authorization saved to journey results
 
-#### DE: Grant CS Operator Authorization
+#### DE: Grant CS Delegate Authorization
 - **Script**: `test:de-grant-cs-auth`
-- **File**: `deGrantCsOperatorAuthorization.ts`
+- **File**: `deGrantCsDelegateAuthorization.ts`
 - **Prerequisites**: None
 - **Transactions**:
-  1. Grant operator authorization for Credential Schema messages
-- **Outputs**: Operator authorization saved to journey results
+  1. Grant delegate authorization for Credential Schema messages
+- **Outputs**: Delegate authorization saved to journey results
 
 ---
 
 ### Trust Registry (TR) Module
 
-All TR journeys use operator-signed transactions via the delegation engine.
+All TR journeys use delegate-signed transactions via the delegation engine.
 
 #### TR: Create Trust Registry
 - **Script**: `test:tr-create`
 - **File**: `trCreateTrustRegistry.ts`
-- **Prerequisites**: DE authorization (from DE Grant TR Operator Authorization)
+- **Prerequisites**: DE authorization (from DE Grant TR Delegate Authorization)
 - **Transactions**:
   1. Create Trust Registry (MOD-TR-MSG-1)
 - **Outputs**: `trustRegistryId`, `did` (saved to journey results)
@@ -83,7 +83,7 @@ All TR journeys use operator-signed transactions via the delegation engine.
 
 ### Credential Schema (CS) Module
 
-All CS journeys use operator-signed transactions via the delegation engine.
+All CS journeys use delegate-signed transactions via the delegation engine.
 
 #### CS: Create Credential Schema
 - **Script**: `test:cs-create`
@@ -111,13 +111,13 @@ All CS journeys use operator-signed transactions via the delegation engine.
 
 ### Permission (PERM) Module
 
-All PERM journeys use operator-signed transactions (authority=index 10, operator=index 15).
+All PERM journeys use delegate-signed transactions (authority=index 10, delegate=index 15).
 
-#### DE: Grant PERM Operator Authorization
+#### DE: Grant PERM Delegate Authorization
 - **Script**: `test:de-grant-perm-auth`
-- **File**: `deGrantPermOperatorAuthorization.ts`
-- **Prerequisites**: DE TR authorization (from DE Grant TR Operator Authorization)
-- **Transactions**: Grant operator auth for all PERM + TR + CS message types
+- **File**: `deGrantPermDelegateAuthorization.ts`
+- **Prerequisites**: DE TR authorization (from DE Grant TR Delegate Authorization)
+- **Transactions**: Grant delegate auth for all PERM + TR + CS message types
 
 #### PERM: Create Root Permission
 - **Script**: `test:perm-create-root`
@@ -189,17 +189,17 @@ All PERM journeys use operator-signed transactions (authority=index 10, operator
 
 The `runAll.ts` script runs all 21 tests sequentially:
 
-1. DE: Grant TR Operator Authorization
+1. DE: Grant TR Delegate Authorization
 2. TR: Create Trust Registry
 3. TR: Add GF Document
 4. TR: Increase Active GF Version
 5. TR: Update Trust Registry
 6. TR: Archive Trust Registry
-7. DE: Grant CS Operator Authorization
+7. DE: Grant CS Delegate Authorization
 8. CS: Create Credential Schema
 9. CS: Update Credential Schema
 10. CS: Archive Credential Schema
-11. DE: Grant PERM Operator Authorization
+11. DE: Grant PERM Delegate Authorization
 12. PERM: Create Root Permission
 13. PERM: Create Permission (Self-Create)
 14. PERM: Adjust Permission

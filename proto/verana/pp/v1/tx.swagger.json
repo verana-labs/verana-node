@@ -526,9 +526,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "id": {
           "type": "string",
@@ -547,9 +547,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "vs_account": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg (vs_operator)"
+          "description": "vs_account is the VS account of the entry that signs this Msg."
         },
         "id": {
           "type": "string",
@@ -596,7 +596,7 @@
           "type": "string",
           "description": "[MOD-PP-MSG-7-1] spec parameters.\nparticipant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3]."
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "schema_id": {
@@ -674,9 +674,9 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "[MOD-PP-MSG-2-1] spec parameters: corporation, operator, id."
+          "description": "[MOD-PP-MSG-2-1] spec parameters: corporation, delegate, id."
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -697,7 +697,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -715,7 +715,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -734,7 +734,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "role": {
@@ -811,7 +811,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -835,9 +835,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "id": {
           "type": "string",
@@ -887,9 +887,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "id": {
           "type": "string",
@@ -915,9 +915,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "role": {
           "$ref": "#/definitions/verana.pp.v1.ParticipantRole"
@@ -990,9 +990,9 @@
           "type": "string",
           "description": "corporation is the policy_address of the corporation on whose behalf this\nmessage runs."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the account authorized by the corporation to run this Msg."
+          "description": "delegate is the account authorized by the corporation to run this Msg."
         },
         "id": {
           "type": "string",

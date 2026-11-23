@@ -11,8 +11,8 @@ import (
 	"github.com/verana-labs/verana-node/x/de/types"
 )
 
-// RevokeOperatorAuthorization implements [MOD-DE-MSG-4].
-func (ms msgServer) RevokeOperatorAuthorization(goCtx context.Context, msg *types.MsgRevokeOperatorAuthorization) (*types.MsgRevokeOperatorAuthorizationResponse, error) {
+// RevokeDelegateAuthorization implements [MOD-DE-MSG-4].
+func (ms msgServer) RevokeDelegateAuthorization(goCtx context.Context, msg *types.MsgRevokeDelegateAuthorization) (*types.MsgRevokeDelegateAuthorizationResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
@@ -25,14 +25,13 @@ func (ms msgServer) RevokeOperatorAuthorization(goCtx context.Context, msg *type
 		return nil, err
 	}
 
-	// [AUTHZ-CHECK-1] The operator is the signer. When it equals the corporation
-	// policy_address the corporation is acting alone (group proposal) and the
-	// check is skipped; otherwise the operator's delegation MUST cover this msg.
-	if msg.Operator != msg.Corporation {
-		if err := ms.CheckOperatorAuthorization(
+	// Group-proposal path: delegate equals corporation and AUTHZ-CHECK-5 alone
+	// applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
+	if msg.Delegate != msg.Corporation {
+		if err := ms.CheckDelegateAuthorization(
 			ctx,
 			msg.Corporation,
-			msg.Operator,
+			msg.Delegate,
 			types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION,
 			now,
 		); err != nil {
@@ -40,23 +39,23 @@ func (ms msgServer) RevokeOperatorAuthorization(goCtx context.Context, msg *type
 		}
 	}
 
-	// An OperatorAuthorization MUST exist for (co.id, grantee).
-	existing, found, err := ms.getOperatorAuthorizationByCorpOp(ctx, co.Id, msg.Grantee)
+	// A DelegateAuthorization MUST exist for (co.id, grantee).
+	existing, found, err := ms.getDelegateAuthorizationByCorpDelegate(ctx, co.Id, msg.Grantee)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
-		return nil, types.ErrOperatorAuthzNotFound
+		return nil, types.ErrDelegateAuthzNotFound
 	}
 
 	// [MOD-DE-MSG-4-4] Execution.
 
-	// 1. Delete the OperatorAuthorization and its secondary index.
-	if err := ms.OperatorAuthorizations.Remove(ctx, existing.Id); err != nil {
-		return nil, fmt.Errorf("failed to remove OperatorAuthorization: %w", err)
+	// 1. Delete the DelegateAuthorization and its secondary index.
+	if err := ms.DelegateAuthorizations.Remove(ctx, existing.Id); err != nil {
+		return nil, fmt.Errorf("failed to remove DelegateAuthorization: %w", err)
 	}
-	if err := ms.OperatorAuthorizationByCorpOp.Remove(ctx, collections.Join(co.Id, msg.Grantee)); err != nil {
-		return nil, fmt.Errorf("failed to remove OperatorAuthorization index: %w", err)
+	if err := ms.DelegateAuthorizationByCorpDelegate.Remove(ctx, collections.Join(co.Id, msg.Grantee)); err != nil {
+		return nil, fmt.Errorf("failed to remove DelegateAuthorization index: %w", err)
 	}
 
 	// 2. Revoke Fee Allowance for (co.id, grantee).
@@ -67,7 +66,7 @@ func (ms msgServer) RevokeOperatorAuthorization(goCtx context.Context, msg *type
 	// 3. Emit events.
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			types.EventTypeRevokeOperatorAuthorization,
+			types.EventTypeRevokeDelegateAuthorization,
 			sdk.NewAttribute(types.AttributeKeyAuthzID, strconv.FormatUint(existing.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(co.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyGrantee, msg.Grantee),
@@ -75,5 +74,5 @@ func (ms msgServer) RevokeOperatorAuthorization(goCtx context.Context, msg *type
 		),
 	)
 
-	return &types.MsgRevokeOperatorAuthorizationResponse{}, nil
+	return &types.MsgRevokeDelegateAuthorizationResponse{}, nil
 }

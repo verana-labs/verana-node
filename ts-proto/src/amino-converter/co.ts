@@ -159,15 +159,15 @@ export const MsgCreateCorporationAminoConverter: AminoConverter = {
 
 export const MsgUpdateCorporationAminoConverter: AminoConverter = {
   aminoType: "verana/x/co/MsgUpdateCorporation",
-  toAmino: ({ corporation, operator, did }: MsgUpdateCorporation) => clean({
+  toAmino: ({ corporation, delegate, did }: MsgUpdateCorporation) => clean({
     corporation: corporation || undefined,
-    operator: operator || undefined,
+    delegate: delegate || undefined,
     did: did || undefined,
   }),
   fromAmino: (value: any) =>
     MsgUpdateCorporation.fromPartial({
       corporation: value.corporation ?? "",
-      operator: value.operator ?? "",
+      delegate: value.delegate ?? "",
       did: value.did ?? "",
     }),
 };

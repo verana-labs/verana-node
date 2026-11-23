@@ -1,8 +1,8 @@
 /**
- * Journey: PP Operator spend_limit enforcement (AUTHZ-CHECK-1, #324)
+ * Journey: PP Delegate spend_limit enforcement (AUTHZ-CHECK-1, #324)
  *
  * Self-contained: creates fresh prerequisites (EC + CS + fee-bearing root), then:
- *   TEST 1 (positive): re-grant the operator a generous authz_spend_limit, run one
+ *   TEST 1 (positive): re-grant the delegate a generous authz_spend_limit, run one
  *     MsgStartParticipantOP, and assert remaining_spend was debited below the limit.
  *   TEST 2 (negative): re-grant a 1uvna authz_spend_limit (below one operation's
  *     cost) and assert the next MsgStartParticipantOP is rejected with a spend error.
@@ -11,7 +11,7 @@
  * x/group policy (MsgSubmitProposal + MsgVote EXEC_TRY), signed in
  * SIGN_MODE_LEGACY_AMINO_JSON. Mirrors the Go harness journey 312.
  *
- * Requires: test:de-grant-perm-auth first (provides the corporation + operator).
+ * Requires: test:de-grant-perm-auth first (provides the corporation + delegate).
  *
  * Usage:
  *   npm run test:perm-spend-enforcement
@@ -35,10 +35,10 @@ import { typeUrls } from "../helpers/registry";
 import { IssuerOnboardingMode } from "../../../src/codec/verana/cs/v1/types";
 import { ParticipantRole, OptionalUInt64 } from "../../../src/codec/verana/pp/v1/types";
 import { MsgStartParticipantOP } from "../../../src/codec/verana/pp/v1/tx";
-import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/tx";
+import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
 import { QueryClientImpl } from "../../../src/codec/verana/de/v1/query";
 import { getPermAuthzSetup } from "../helpers/journeyResults";
-import { createPermPrerequisites, createRootPermWithOperator, createCSWithOperator } from "../helpers/permissionHelpers";
+import { createPermPrerequisites, createRootPermWithDelegate, createCSWithDelegate } from "../helpers/permissionHelpers";
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
@@ -49,7 +49,7 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 15;
+const DELEGATE_INDEX = 15;
 const SIGNER_INDEX = 10; // corp group member (proposer/voter)
 
 const LARGE_SPEND_LIMIT = "100000000"; // 100 VNA, comfortably above one operation
@@ -64,7 +64,7 @@ const GRANT_MSG_TYPES = [
 ];
 
 /**
- * Re-grants the operator authorization via the corporation's x/group policy, with
+ * Re-grants the delegate authorization via the corporation's x/group policy, with
  * the given authz_spend_limit. Submits MsgSubmitProposal then votes YES + EXEC_TRY
  * so the policy (threshold=1, weight=1) executes the inner grant. Grants are
  * in-place upserts, so this resets remaining_spend to the new limit.
@@ -76,10 +76,10 @@ async function reGrantWithSpendLimit(
   grantee: string,
   spendLimitAmount: string,
 ): Promise<void> {
-  const innerMsgValue = MsgGrantOperatorAuthorization.encode(
-    MsgGrantOperatorAuthorization.fromPartial({
+  const innerMsgValue = MsgGrantDelegateAuthorization.encode(
+    MsgGrantDelegateAuthorization.fromPartial({
       corporation,
-      operator: corporation,
+      delegate: corporation,
       grantee,
       msgTypes: GRANT_MSG_TYPES,
       withFeegrant: false,
@@ -92,10 +92,10 @@ async function reGrantWithSpendLimit(
     value: MsgSubmitProposal.fromPartial({
       groupPolicyAddress: corporation,
       proposers: [signerAddress],
-      metadata: "Grant operator authz with spend_limit",
-      title: "Grant operator authz with spend_limit",
-      summary: `Grant operator authz with authz_spend_limit=${spendLimitAmount}${config.denom}`,
-      messages: [{ typeUrl: typeUrls.MsgGrantOperatorAuthorization, value: innerMsgValue }],
+      metadata: "Grant delegate authz with spend_limit",
+      title: "Grant delegate authz with spend_limit",
+      summary: `Grant delegate authz with authz_spend_limit=${spendLimitAmount}${config.denom}`,
+      messages: [{ typeUrl: typeUrls.MsgGrantDelegateAuthorization, value: innerMsgValue }],
       exec: Exec.EXEC_UNSPECIFIED,
     }),
   };
@@ -146,21 +146,21 @@ async function reGrantWithSpendLimit(
   qc2.disconnect();
 }
 
-/** Reads the operator's remaining_spend (in config.denom) from the DE module. */
-async function queryRemainingSpend(operator: string): Promise<bigint> {
+/** Reads the delegate's remaining_spend (in config.denom) from the DE module. */
+async function queryRemainingSpend(delegate: string): Promise<bigint> {
   const cometClient = await connectRpc();
   try {
     const queryClient = new QueryClient(cometClient as any);
     const rpc = createProtobufRpcClient(queryClient);
     const de = new QueryClientImpl(rpc);
-    const resp = await de.ListOperatorAuthorizations({ corporationId: 0, operator, responseMaxSize: 64 });
-    for (const oa of resp.operatorAuthorizations) {
-      if (oa.operator === operator) {
+    const resp = await de.ListDelegateAuthorizations({ corporationId: 0, delegate, responseMaxSize: 64 });
+    for (const oa of resp.delegateAuthorizations) {
+      if (oa.delegate === delegate) {
         const coin = oa.remainingSpend.find((c) => c.denom === config.denom);
         return coin ? BigInt(coin.amount) : 0n;
       }
     }
-    throw new Error(`No OperatorAuthorization found for operator ${operator}`);
+    throw new Error(`No DelegateAuthorization found for delegate ${delegate}`);
   } finally {
     cometClient.disconnect();
   }
@@ -171,7 +171,7 @@ async function startParticipantOp(
   client: SigningStargateClient,
   signer: string,
   corporation: string,
-  operator: string,
+  delegate: string,
   role: ParticipantRole,
   rootPermId: number,
 ): Promise<void> {
@@ -179,7 +179,7 @@ async function startParticipantOp(
     typeUrl: typeUrls.MsgStartParticipantOP,
     value: MsgStartParticipantOP.fromPartial({
       corporation,
-      operator,
+      delegate,
       role,
       validatorParticipantId: rootPermId,
       did: generateUniqueDID(),
@@ -198,7 +198,7 @@ async function startParticipantOp(
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: PP Operator spend_limit enforcement (AUTHZ-CHECK-1)");
+  console.log("Journey: PP Delegate spend_limit enforcement (AUTHZ-CHECK-1)");
   console.log("=".repeat(60));
   console.log();
 
@@ -209,18 +209,18 @@ async function main() {
     process.exit(1);
   }
   console.log(`  Authority: ${setup.authorityAddress}`);
-  console.log(`  Operator:  ${setup.operatorAddress}`);
+  console.log(`  Delegate:  ${setup.delegateAddress}`);
   console.log();
 
   console.log("Step 2: Setting up wallets (legacy amino)...");
-  const operatorWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
-  const operatorAccount = await getAccountInfo(operatorWallet);
-  const operatorClient = await createSigningClient(operatorWallet);
+  const delegateWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
+  const delegateAccount = await getAccountInfo(delegateWallet);
+  const delegateClient = await createSigningClient(delegateWallet);
 
   const signerWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, SIGNER_INDEX);
   const signerAccount = await getAccountInfo(signerWallet);
   const signerClient = await createSigningClient(signerWallet);
-  console.log(`  Operator: ${operatorAccount.address}, Group signer: ${signerAccount.address}`);
+  console.log(`  Delegate: ${delegateAccount.address}, Group signer: ${signerAccount.address}`);
   console.log();
 
   try {
@@ -243,16 +243,16 @@ async function main() {
     console.log("Step 3: Creating fresh prerequisites (EC + 2x CS + 2x fee-bearing Root)...");
     const ECOSYSTEM_MODE = IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS;
     const { ecId, schemaId: schema1Id, rootPermId: root1Id } = await createPermPrerequisites(
-      operatorClient,
+      delegateClient,
       setup.authorityAddress,
-      setup.operatorAddress,
+      setup.delegateAddress,
       ECOSYSTEM_MODE,
     );
-    const schema2Id = await createCSWithOperator(operatorClient, setup.authorityAddress, setup.operatorAddress, ecId, ECOSYSTEM_MODE);
-    const { rootPermId: root2Id, effectiveFrom: effectiveFrom2 } = await createRootPermWithOperator(
-      operatorClient,
+    const schema2Id = await createCSWithDelegate(delegateClient, setup.authorityAddress, setup.delegateAddress, ecId, ECOSYSTEM_MODE);
+    const { rootPermId: root2Id, effectiveFrom: effectiveFrom2 } = await createRootPermWithDelegate(
+      delegateClient,
       setup.authorityAddress,
-      setup.operatorAddress,
+      setup.delegateAddress,
       schema2Id,
       generateUniqueDID(),
     );
@@ -273,15 +273,15 @@ async function main() {
     // TEST 1: generous spend_limit -> operation succeeds, remaining debited.
     // =====================================================================
     console.log("=== TEST 1: spend_limit covers the operation (expect debit) ===");
-    console.log(`Step 5: Re-grant operator authz with spend_limit=${LARGE_SPEND_LIMIT}${config.denom}...`);
-    await reGrantWithSpendLimit(signerClient, signerAccount.address, setup.authorityAddress, setup.operatorAddress, LARGE_SPEND_LIMIT);
+    console.log(`Step 5: Re-grant delegate authz with spend_limit=${LARGE_SPEND_LIMIT}${config.denom}...`);
+    await reGrantWithSpendLimit(signerClient, signerAccount.address, setup.authorityAddress, setup.delegateAddress, LARGE_SPEND_LIMIT);
 
     console.log("Step 6: StartParticipantOP (ISSUER under root1) within limit...");
-    await startParticipantOp(operatorClient, operatorAccount.address, setup.authorityAddress, setup.operatorAddress, ParticipantRole.ISSUER, root1Id);
+    await startParticipantOp(delegateClient, delegateAccount.address, setup.authorityAddress, setup.delegateAddress, ParticipantRole.ISSUER, root1Id);
     console.log("  StartParticipantOP succeeded");
 
     console.log("Step 7: Asserting remaining_spend was debited below the limit...");
-    const remaining = await queryRemainingSpend(setup.operatorAddress);
+    const remaining = await queryRemainingSpend(setup.delegateAddress);
     if (remaining <= 0n) throw new Error(`expected positive remaining_spend, got ${remaining}`);
     if (remaining >= BigInt(LARGE_SPEND_LIMIT)) {
       throw new Error(`remaining_spend ${remaining} was not debited below limit ${LARGE_SPEND_LIMIT}`);
@@ -294,13 +294,13 @@ async function main() {
     // in a distinct overlap context from the TEST 1 child.
     // =====================================================================
     console.log("=== TEST 2: spend_limit below operation cost (expect rejection) ===");
-    console.log(`Step 8: Re-grant operator authz with spend_limit=${TINY_SPEND_LIMIT}${config.denom}...`);
-    await reGrantWithSpendLimit(signerClient, signerAccount.address, setup.authorityAddress, setup.operatorAddress, TINY_SPEND_LIMIT);
+    console.log(`Step 8: Re-grant delegate authz with spend_limit=${TINY_SPEND_LIMIT}${config.denom}...`);
+    await reGrantWithSpendLimit(signerClient, signerAccount.address, setup.authorityAddress, setup.delegateAddress, TINY_SPEND_LIMIT);
 
     console.log("Step 9: StartParticipantOP (ISSUER under root2) exceeding limit (expect rejection)...");
     let rejected = false;
     try {
-      await startParticipantOp(operatorClient, operatorAccount.address, setup.authorityAddress, setup.operatorAddress, ParticipantRole.ISSUER, root2Id);
+      await startParticipantOp(delegateClient, delegateAccount.address, setup.authorityAddress, setup.delegateAddress, ParticipantRole.ISSUER, root2Id);
     } catch (err: any) {
       const m = err?.message || String(err);
       if (!m.includes("spend limit exceeded")) throw new Error(`expected a spend-limit error, got: ${m}`);
@@ -311,14 +311,14 @@ async function main() {
     console.log();
 
     console.log("=".repeat(60));
-    console.log("SUCCESS! Operator spend_limit enforced: debited within limit, rejected over limit.");
+    console.log("SUCCESS! Delegate spend_limit enforced: debited within limit, rejected over limit.");
     console.log("=".repeat(60));
   } catch (error: any) {
     console.log("ERROR!");
     console.error(error?.message || error);
     process.exit(1);
   } finally {
-    operatorClient.disconnect();
+    delegateClient.disconnect();
     signerClient.disconnect();
   }
 }

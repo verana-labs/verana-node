@@ -12,9 +12,9 @@ import (
 	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
-// stdOperator is the operator address reused across update tests.
-func stdOperator() string {
-	return sdk.AccAddress([]byte("operator_address____")).String()
+// stdFeeder is the feeder address reused across update tests.
+func stdFeeder() string {
+	return sdk.AccAddress([]byte("feeder_address______")).String()
 }
 
 // createActiveExchangeRate is a test helper that creates an exchange rate and sets state=true.
@@ -45,9 +45,9 @@ func createActiveExchangeRate(t *testing.T, f *fixture, ms types.MsgServer) uint
 	return resp.Id
 }
 
-// grantXRAuthz grants an ExchangeRateAuthorization for (id, operator). A zero
+// grantXRAuthz grants an ExchangeRateAuthorization for (id, feeder). A zero
 // minInterval / maxDevBps means "unset" (no anti-spam / circuit breaker).
-func grantXRAuthz(t *testing.T, f *fixture, ms types.MsgServer, id uint64, operator string, minInterval time.Duration, maxDevBps uint32) {
+func grantXRAuthz(t *testing.T, f *fixture, ms types.MsgServer, id uint64, feeder string, minInterval time.Duration, maxDevBps uint32) {
 	t.Helper()
 
 	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
@@ -57,7 +57,7 @@ func grantXRAuthz(t *testing.T, f *fixture, ms types.MsgServer, id uint64, opera
 	msg := &types.MsgGrantExchangeRateAuthorization{
 		Authority:       authorityStr,
 		XrId:            id,
-		Operator:        operator,
+		Feeder:          feeder,
 		Expiration:      &exp,
 		MaxDeviationBps: maxDevBps,
 	}
@@ -73,16 +73,16 @@ func TestUpdateExchangeRate_HappyPath(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	id := createActiveExchangeRate(t, f, ms)
-	operatorAddr := stdOperator()
-	grantXRAuthz(t, f, ms, id, operatorAddr, 0, 0)
+	feederAddr := stdFeeder()
+	grantXRAuthz(t, f, ms, id, feederAddr, 0, 0)
 
 	sdkCtx := sdk.UnwrapSDKContext(f.ctx)
 	blockTime := sdkCtx.BlockTime()
 
 	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Operator: operatorAddr,
-		Id:       id,
-		Rate:     "200",
+		Feeder: feederAddr,
+		Id:     id,
+		Rate:   "200",
 	})
 	require.NoError(t, err)
 
@@ -100,9 +100,9 @@ func TestUpdateExchangeRate_NotFound(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Operator: stdOperator(),
-		Id:       999,
-		Rate:     "200",
+		Feeder: stdFeeder(),
+		Id:     999,
+		Rate:   "200",
 	})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not found")
@@ -114,11 +114,11 @@ func TestUpdateExchangeRate_NotAuthorized(t *testing.T) {
 
 	id := createActiveExchangeRate(t, f, ms)
 
-	// No authorization granted for the operator.
+	// No authorization granted for the feeder.
 	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Operator: stdOperator(),
-		Id:       id,
-		Rate:     "200",
+		Feeder: stdFeeder(),
+		Id:     id,
+		Rate:   "200",
 	})
 	require.ErrorIs(t, err, types.ErrAuthorizationNotFound)
 
@@ -148,8 +148,8 @@ func TestUpdateExchangeRate_NotActive(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	operatorAddr := stdOperator()
-	grantXRAuthz(t, f, ms, resp.Id, operatorAddr, 0, 0)
+	feederAddr := stdFeeder()
+	grantXRAuthz(t, f, ms, resp.Id, feederAddr, 0, 0)
 
 	// Disable the exchange rate so it is not active
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
@@ -160,9 +160,9 @@ func TestUpdateExchangeRate_NotActive(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Operator: operatorAddr,
-		Id:       resp.Id,
-		Rate:     "200",
+		Feeder: feederAddr,
+		Id:     resp.Id,
+		Rate:   "200",
 	})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not active")
@@ -172,7 +172,7 @@ func TestUpdateExchangeRate_InvalidRate(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
-	operatorAddr := stdOperator()
+	feederAddr := stdFeeder()
 
 	tests := []struct {
 		name   string
@@ -188,9 +188,9 @@ func TestUpdateExchangeRate_InvalidRate(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-				Operator: operatorAddr,
-				Id:       1,
-				Rate:     tc.rate,
+				Feeder: feederAddr,
+				Id:     1,
+				Rate:   tc.rate,
 			})
 			require.Error(t, err)
 			require.Contains(t, err.Error(), tc.errMsg)
@@ -198,15 +198,15 @@ func TestUpdateExchangeRate_InvalidRate(t *testing.T) {
 	}
 }
 
-// [MOD-XR-MSG-2] an expired exchange rate is still updatable by its operator
+// [MOD-XR-MSG-2] an expired exchange rate is still updatable by its feeder
 // (only xr.state==true gates the update).
 func TestUpdateExchangeRate_ExpiredStillUpdatable(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	id := createActiveExchangeRate(t, f, ms)
-	operatorAddr := stdOperator()
-	grantXRAuthz(t, f, ms, id, operatorAddr, 0, 0)
+	feederAddr := stdFeeder()
+	grantXRAuthz(t, f, ms, id, feederAddr, 0, 0)
 
 	// Force the rate to be already expired.
 	xr, err := f.keeper.ExchangeRates.Get(f.ctx, id)
@@ -215,7 +215,7 @@ func TestUpdateExchangeRate_ExpiredStillUpdatable(t *testing.T) {
 	require.NoError(t, f.keeper.ExchangeRates.Set(f.ctx, id, xr))
 
 	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Operator: operatorAddr, Id: id, Rate: "200",
+		Feeder: feederAddr, Id: id, Rate: "200",
 	})
 	require.NoError(t, err)
 

@@ -4668,7 +4668,7 @@ type QueryGetExchangeRateResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	ExchangeRate *ExchangeRate `protobuf:"bytes,1,opt,name=exchange_rate,json=exchangeRate,proto3" json:"exchange_rate,omitempty"`
-	// authorizations lists the operators authorized to update this exchange rate. [MOD-XR-QRY-1]
+	// authorizations lists the feeders authorized to update this exchange rate. [MOD-XR-QRY-1]
 	Authorizations []*ExchangeRateAuthorization `protobuf:"bytes,2,rep,name=authorizations,proto3" json:"authorizations,omitempty"`
 }
 

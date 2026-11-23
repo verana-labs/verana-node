@@ -32,8 +32,8 @@ export interface MsgUpdateParamsResponse {
 export interface MsgAddGovernanceFrameworkDocument {
   /** corporation is the signing corporation (group_policy_address). */
   corporation: string;
-  /** operator is the account authorized by corporation to run this Msg. */
-  operator: string;
+  /** delegate is the account authorized by corporation to run this Msg. */
+  delegate: string;
   /**
    * ecosystem_id is optional. If set, the GF target is an Ecosystem owned by
    * `corporation`. If zero, the GF target is the signing Corporation's own CGF.
@@ -47,6 +47,8 @@ export interface MsgAddGovernanceFrameworkDocument {
   docDigestSri: string;
   /** version is the target governance framework version. */
   version: number;
+  /** authority is the council account, set on the network path only. */
+  authority: string;
 }
 
 export interface MsgAddGovernanceFrameworkDocumentResponse {
@@ -59,13 +61,15 @@ export interface MsgAddGovernanceFrameworkDocumentResponse {
 export interface MsgIncreaseActiveGovernanceFrameworkVersion {
   /** corporation is the signing corporation (group_policy_address). */
   corporation: string;
-  /** operator is the account authorized by corporation to run this Msg. */
-  operator: string;
+  /** delegate is the account authorized by corporation to run this Msg. */
+  delegate: string;
   /**
    * ecosystem_id is optional. If set, target is the Ecosystem; otherwise the
    * signing Corporation's own CGF.
    */
   ecosystemId: number;
+  /** authority is the council account, set on the network path only. */
+  authority: string;
 }
 
 export interface MsgIncreaseActiveGovernanceFrameworkVersionResponse {
@@ -191,7 +195,16 @@ export const MsgUpdateParamsResponse = {
 };
 
 function createBaseMsgAddGovernanceFrameworkDocument(): MsgAddGovernanceFrameworkDocument {
-  return { corporation: "", operator: "", ecosystemId: 0, docLanguage: "", docUrl: "", docDigestSri: "", version: 0 };
+  return {
+    corporation: "",
+    delegate: "",
+    ecosystemId: 0,
+    docLanguage: "",
+    docUrl: "",
+    docDigestSri: "",
+    version: 0,
+    authority: "",
+  };
 }
 
 export const MsgAddGovernanceFrameworkDocument = {
@@ -199,8 +212,8 @@ export const MsgAddGovernanceFrameworkDocument = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.ecosystemId !== 0) {
       writer.uint32(24).uint64(message.ecosystemId);
@@ -216,6 +229,9 @@ export const MsgAddGovernanceFrameworkDocument = {
     }
     if (message.version !== 0) {
       writer.uint32(56).uint32(message.version);
+    }
+    if (message.authority !== "") {
+      writer.uint32(66).string(message.authority);
     }
     return writer;
   },
@@ -239,7 +255,7 @@ export const MsgAddGovernanceFrameworkDocument = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -276,6 +292,13 @@ export const MsgAddGovernanceFrameworkDocument = {
 
           message.version = reader.uint32();
           continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.authority = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -288,12 +311,13 @@ export const MsgAddGovernanceFrameworkDocument = {
   fromJSON(object: any): MsgAddGovernanceFrameworkDocument {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       ecosystemId: isSet(object.ecosystemId) ? globalThis.Number(object.ecosystemId) : 0,
       docLanguage: isSet(object.docLanguage) ? globalThis.String(object.docLanguage) : "",
       docUrl: isSet(object.docUrl) ? globalThis.String(object.docUrl) : "",
       docDigestSri: isSet(object.docDigestSri) ? globalThis.String(object.docDigestSri) : "",
       version: isSet(object.version) ? globalThis.Number(object.version) : 0,
+      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
     };
   },
 
@@ -302,8 +326,8 @@ export const MsgAddGovernanceFrameworkDocument = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.ecosystemId !== 0) {
       obj.ecosystemId = Math.round(message.ecosystemId);
@@ -320,6 +344,9 @@ export const MsgAddGovernanceFrameworkDocument = {
     if (message.version !== 0) {
       obj.version = Math.round(message.version);
     }
+    if (message.authority !== "") {
+      obj.authority = message.authority;
+    }
     return obj;
   },
 
@@ -333,12 +360,13 @@ export const MsgAddGovernanceFrameworkDocument = {
   ): MsgAddGovernanceFrameworkDocument {
     const message = createBaseMsgAddGovernanceFrameworkDocument();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.ecosystemId = object.ecosystemId ?? 0;
     message.docLanguage = object.docLanguage ?? "";
     message.docUrl = object.docUrl ?? "";
     message.docDigestSri = object.docDigestSri ?? "";
     message.version = object.version ?? 0;
+    message.authority = object.authority ?? "";
     return message;
   },
 };
@@ -391,7 +419,7 @@ export const MsgAddGovernanceFrameworkDocumentResponse = {
 };
 
 function createBaseMsgIncreaseActiveGovernanceFrameworkVersion(): MsgIncreaseActiveGovernanceFrameworkVersion {
-  return { corporation: "", operator: "", ecosystemId: 0 };
+  return { corporation: "", delegate: "", ecosystemId: 0, authority: "" };
 }
 
 export const MsgIncreaseActiveGovernanceFrameworkVersion = {
@@ -399,11 +427,14 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.ecosystemId !== 0) {
       writer.uint32(24).uint64(message.ecosystemId);
+    }
+    if (message.authority !== "") {
+      writer.uint32(34).string(message.authority);
     }
     return writer;
   },
@@ -427,7 +458,7 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -435,6 +466,13 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
           }
 
           message.ecosystemId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.authority = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -448,8 +486,9 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
   fromJSON(object: any): MsgIncreaseActiveGovernanceFrameworkVersion {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       ecosystemId: isSet(object.ecosystemId) ? globalThis.Number(object.ecosystemId) : 0,
+      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
     };
   },
 
@@ -458,11 +497,14 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.ecosystemId !== 0) {
       obj.ecosystemId = Math.round(message.ecosystemId);
+    }
+    if (message.authority !== "") {
+      obj.authority = message.authority;
     }
     return obj;
   },
@@ -477,8 +519,9 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
   ): MsgIncreaseActiveGovernanceFrameworkVersion {
     const message = createBaseMsgIncreaseActiveGovernanceFrameworkVersion();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.ecosystemId = object.ecosystemId ?? 0;
+    message.authority = object.authority ?? "";
     return message;
   },
 };

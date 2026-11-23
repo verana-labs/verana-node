@@ -16,25 +16,25 @@ import (
 )
 
 // RunPermissionRevokeJourney implements Journey 306: Test RevokePermission
-// with operator authorization. For the operation: (a) try without auth -> fail,
+// with delegate authorization. For the operation: (a) try without auth -> fail,
 // (b) grant auth, (c) try with auth -> succeed, (d) verify revoked fields,
-// (e) unauthorized operator rejected.
-// Depends on Journey 301 (setup), 302 (group/operator), and 304 (root permission).
+// (e) unauthorized delegate rejected.
+// Depends on Journey 301 (setup), 302 (group/delegate), and 304 (root permission).
 func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 306: RevokePermission with Operator Authorization")
+	fmt.Println("Starting Journey 306: RevokePermission with Delegate Authorization")
 
 	// Load results from prior journeys
 	setup301 := lib.LoadJourneyResult("journey301")
 	setup302 := lib.LoadJourneyResult("journey302")
 	setup304 := lib.LoadJourneyResult("journey304")
 	policyAddr := setup302.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
-	operatorAddr := setup302.OperatorAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
+	delegateAddr := setup302.DelegateAddr
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	fmt.Printf("  Group Policy: %s\n", policyAddr)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 
 	// =========================================================================
 	// PREREQUISITE: Create a new CS and ECOSYSTEM root permission to revoke.
@@ -47,9 +47,9 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 
 	// Re-grant CreateCredentialSchema auth (may have been overwritten)
 	fmt.Println("\n--- Prerequisite 1: Re-grant CreateCredentialSchema auth ---")
-	err := lib.GrantOperatorAuthorizationViaGroup(
+	err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
@@ -62,7 +62,7 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	fmt.Println("\n--- Prerequisite 2: Create new Credential Schema ---")
 	schemaData := lib.GenerateSimpleSchema(setup304.EcosystemID)
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, schemaData,
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
@@ -76,9 +76,9 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 
 	// Re-grant CreateRootPermission auth (may have been overwritten by journey 305's AdjustPermission grant)
 	fmt.Println("\n--- Prerequisite 3: Re-grant CreateRootPermission auth ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION},
 	)
 	if err != nil {
@@ -92,7 +92,7 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	effectiveFrom := time.Now().Add(10 * time.Second)
 	effectiveUntil := effectiveFrom.Add(360 * 24 * time.Hour)
 	permID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, rootPermDID, &effectiveFrom, &effectiveUntil,
 		100, 50, 25,
 	)
@@ -122,8 +122,8 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	fmt.Println("\n=== TEST 1: RevokePermission ===")
 
 	// 1a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries RevokePermission without auth (expect failure) ---")
-	_, err = lib.RevokePermission(client, ctx, operatorAccount, policyAddr, permID)
+	fmt.Println("\n--- Step 1a: Delegate tries RevokePermission without auth (expect failure) ---")
+	_, err = lib.RevokePermission(client, ctx, delegateAccount, policyAddr, permID)
 	if err := expectAuthorizationError("Step 1a", err); err != nil {
 		return err
 	}
@@ -131,10 +131,10 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	waitForTx("RevokePermission rejection")
 
 	// 1b: Grant authorization for RevokePermission
-	fmt.Println("\n--- Step 1b: Grant operator auth for RevokePermission ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1b: Grant delegate auth for RevokePermission ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_REVOKE_ACCREDITATION},
 	)
 	if err != nil {
@@ -144,8 +144,8 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	waitForTx("grant RevokePermission auth")
 
 	// 1c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 1c: Operator revokes permission with auth (expect success) ---")
-	_, err = lib.RevokePermission(client, ctx, operatorAccount, policyAddr, permID)
+	fmt.Println("\n--- Step 1c: Delegate revokes permission with auth (expect success) ---")
+	_, err = lib.RevokePermission(client, ctx, delegateAccount, policyAddr, permID)
 	if err != nil {
 		return fmt.Errorf("step 1c failed: %w", err)
 	}
@@ -187,19 +187,19 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	fmt.Printf("OK Step 2: Verified revoked fields (revoked_by=%s, revoked is set)\n", policyAddr)
 
 	// =========================================================================
-	// TEST 3: Unauthorized operator (negative test)
+	// TEST 3: Unauthorized delegate (negative test)
 	// Use the same permID — AUTHZ check happens before basic checks,
-	// so "already revoked" doesn't matter; the unauthorized operator is rejected first.
+	// so "already revoked" doesn't matter; the unauthorized delegate is rejected first.
 	// =========================================================================
-	fmt.Println("\n=== TEST 3: Unauthorized operator (negative test) ===")
+	fmt.Println("\n=== TEST 3: Unauthorized delegate (negative test) ===")
 
-	fmt.Println("\n--- Step 3a: Unauthorized operator tries RevokePermission (expect failure) ---")
+	fmt.Println("\n--- Step 3a: Unauthorized delegate tries RevokePermission (expect failure) ---")
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
 	_, err = lib.RevokePermission(client, ctx, cooluser, policyAddr, permID)
 	if err := expectAuthorizationError("Step 3a", err); err != nil {
 		return err
 	}
-	fmt.Println("OK Step 3a: Unauthorized operator correctly rejected")
+	fmt.Println("OK Step 3a: Unauthorized delegate correctly rejected")
 
 	// Save results
 	result := lib.JourneyResult{
@@ -209,14 +209,14 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 		PermissionID:    strconv.FormatUint(permID, 10),
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey306", result)
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 306 completed successfully!")
 	fmt.Println("RevokePermission tested: fail without auth, pass with auth, verify fields,")
-	fmt.Println("unauthorized operator rejected.")
+	fmt.Println("unauthorized delegate rejected.")
 	fmt.Println("========================================")
 
 	return nil

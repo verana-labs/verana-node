@@ -13,11 +13,11 @@ import (
 	"github.com/verana-labs/verana-node/testharness/lib"
 )
 
-// RunXrUpdateExchangeRateJourney implements Journey 602: XR Update Exchange Rate (operator)
-// Tests MsgUpdateExchangeRate with operator authorization (fail without auth, grant, succeed with auth).
-// Depends on Journey 601 (exchange rate ID) and Journey 301 (group, operator).
+// RunXrUpdateExchangeRateJourney implements Journey 602: XR Update Exchange Rate (feeder)
+// Tests MsgUpdateExchangeRate with feeder authorization (fail without auth, grant, succeed with auth).
+// Depends on Journey 601 (exchange rate ID) and Journey 301 (group, feeder).
 func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 602: XR Update Exchange Rate with Operator Authorization")
+	fmt.Println("Starting Journey 602: XR Update Exchange Rate with Feeder Authorization")
 
 	// =========================================================================
 	// Step 1: Load journey 601 and 301 results
@@ -33,29 +33,29 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	}
 
 	policyAddr := setup301.GroupPolicyAddr
-	operatorAddr := setup301.OperatorAddr
+	feederAddr := setup301.DelegateAddr
 
-	operatorAccount := lib.GetAccount(client, permOperatorName)
+	feederAccount := lib.GetAccount(client, permDelegateName)
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	fmt.Printf("  Exchange Rate ID: %d\n", exchangeRateID)
 	fmt.Printf("  Group Policy:     %s\n", policyAddr)
-	fmt.Printf("  Operator:         %s\n", operatorAddr)
+	fmt.Printf("  Feeder:         %s\n", feederAddr)
 	fmt.Println("✅ Step 1: Loaded journey results")
 
 	// =========================================================================
 	// Step 2: Test UpdateExchangeRate WITHOUT authorization (expect failure)
 	// =========================================================================
-	fmt.Println("\n--- Step 2: Operator tries UpdateExchangeRate without auth (expect failure) ---")
+	fmt.Println("\n--- Step 2: Feeder tries UpdateExchangeRate without auth (expect failure) ---")
 
 	updateMsg := &xrtypes.MsgUpdateExchangeRate{
-		Operator: operatorAddr,
-		Id:        exchangeRateID,
-		Rate:      "2000000",
+		Feeder: feederAddr,
+		Id:     exchangeRateID,
+		Rate:   "2000000",
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, updateMsg)
+	txResp, err := client.BroadcastTx(ctx, feederAccount, updateMsg)
 	if err == nil && txResp.TxResponse.Code != 0 {
 		err = fmt.Errorf("transaction failed with code %d: %s", txResp.TxResponse.Code, txResp.TxResponse.RawLog)
 	}
@@ -66,13 +66,13 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	waitForTx("update exchange rate rejection")
 
 	// =========================================================================
-	// Step 3: Grant operator authorization for MsgUpdateExchangeRate via group proposal
+	// Step 3: Grant delegate authorization for MsgUpdateExchangeRate via group proposal
 	// =========================================================================
-	fmt.Println("\n--- Step 3: Grant operator auth for MsgUpdateExchangeRate ---")
+	fmt.Println("\n--- Step 3: Grant delegate auth for MsgUpdateExchangeRate ---")
 
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, feederAddr, feederAddr,
 		nil, // XR messages have no MsgType
 	)
 	if err != nil {
@@ -84,16 +84,16 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	// =========================================================================
 	// Step 4: Test UpdateExchangeRate WITH authorization (expect success)
 	// =========================================================================
-	fmt.Println("\n--- Step 4: Operator updates exchange rate with auth ---")
+	fmt.Println("\n--- Step 4: Feeder updates exchange rate with auth ---")
 
 	newRate := "2000000"
 	updateMsg = &xrtypes.MsgUpdateExchangeRate{
-		Operator: operatorAddr,
-		Id:        exchangeRateID,
-		Rate:      newRate,
+		Feeder: feederAddr,
+		Id:     exchangeRateID,
+		Rate:   newRate,
 	}
 
-	txResp, err = client.BroadcastTx(ctx, operatorAccount, updateMsg)
+	txResp, err = client.BroadcastTx(ctx, feederAccount, updateMsg)
 	if err != nil {
 		return fmt.Errorf("step 4 failed: %w", err)
 	}
@@ -132,13 +132,13 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 		ExchangeRateID:  setup601.ExchangeRateID,
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    feederAddr,
 	}
 	lib.SaveJourneyResult("journey602", result)
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 602 completed successfully!")
-	fmt.Println("XR UpdateExchangeRate with Operator Authorization tested:")
+	fmt.Println("XR UpdateExchangeRate with Feeder Authorization tested:")
 	fmt.Println("  - UpdateExchangeRate: unauthorized rejected")
 	fmt.Println("  - UpdateExchangeRate: authorized succeeded")
 	fmt.Println("  - Exchange rate updated and verified")

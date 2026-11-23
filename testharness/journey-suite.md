@@ -66,11 +66,11 @@ language         string   // BCP-47, max 17 chars
 active_version   uint32   // starts at 1
 ```
 
-### OperatorAuthorization (x/de)
+### DelegateAuthorization (x/de)
 ```
 id               uint64
 corporation_id   uint64
-operator         string   // grantee account
+delegate         string   // grantee account
 msg_types        []string
 expiration       Timestamp (optional)
 spend_limit      []Coin (optional)
@@ -91,7 +91,7 @@ Prefix: `verana` (address encoder).
 | Group admin | `co_admin` | Creates the corporation, submits group proposals |
 | Group member 1 | `co_member1` | Votes on group proposals |
 | Group member 2 | `co_member2` | Votes on group proposals |
-| Operator | `co_operator` | Executes delegable messages on behalf of Corp A |
+| Delegate | `co_delegate` | Executes delegable messages on behalf of Corp A |
 
 Decision policy: ThresholdDecisionPolicy, threshold = 2 of 3 members (weight 1 each), voting_period = 30s.
 
@@ -101,15 +101,15 @@ Decision policy: ThresholdDecisionPolicy, threshold = 2 of 3 members (weight 1 e
 | Group admin | `ec_admin` | Creates Corp B |
 | Group member 1 | `ec_member1` | Votes |
 | Group member 2 | `ec_member2` | Votes |
-| Operator | `ec_operator` | Executes delegable messages on behalf of Corp B |
+| Delegate | `ec_delegate` | Executes delegable messages on behalf of Corp B |
 
 ### Corp C — adversary (used for cross-corp negative tests)
 | Role | Name in harness |
 |------|----------------|
 | Group admin | `corp_c_admin` |
-| Operator | `corp_c_operator` |
+| Delegate | `corp_c_delegate` |
 
-Corp C is created at the start of J003 (the first journey that needs a DID conflict test). Corp C creation uses `MsgCreateCorporation` signed by `corp_c_admin` with did="did:verana:co:corp-c". Corp C does NOT need a bootstrap operator authz for the purposes of the journeys below (it is used only as an adversary whose DID or ecosystem id is referenced in negative tests).
+Corp C is created at the start of J003 (the first journey that needs a DID conflict test). Corp C creation uses `MsgCreateCorporation` signed by `corp_c_admin` with did="did:verana:co:corp-c". Corp C does NOT need a bootstrap delegate authz for the purposes of the journeys below (it is used only as an adversary whose DID or ecosystem id is referenced in negative tests).
 
 ### System accounts
 | Name | Address | Role |
@@ -122,10 +122,10 @@ Corp C is created at the start of J003 (the first journey that needs a DID confl
 
 All funded accounts must hold **at least 50 VNA (50_000_000 uvna)** before any journey starts.
 
-Per-transaction fee: ~750_000 uvna (gas auto, 1.5x adjustment). Each account must have enough for all transactions it signs in a journey. Accounts using feegrant need 0 uvna for message fees but still need the base tx fee from their own balance if feegrant does not cover it — default setup grants feegrant so alice_operator pays 0.
+Per-transaction fee: ~750_000 uvna (gas auto, 1.5x adjustment). Each account must have enough for all transactions it signs in a journey. Accounts using feegrant need 0 uvna for message fees but still need the base tx fee from their own balance if feegrant does not cover it — default setup grants feegrant so alice_delegate pays 0.
 
 Corp policy addresses must hold **≥ 5 VNA** to:
-- Cover feegrant spend for the operator
+- Cover feegrant spend for the delegate
 - Survive multi-step journeys without draining
 
 ---
@@ -139,7 +139,7 @@ Corp policy addresses must hold **≥ 5 VNA** to:
   J001: CreateCorporation (Corp A)
        │
        ▼
-  J002: Bootstrap OperatorAuthorization (Corp A → co_operator)
+  J002: Bootstrap DelegateAuthorization (Corp A → co_delegate)
        │
        ├──▶ J003: UpdateCorporation
        │
@@ -161,7 +161,7 @@ Corp policy addresses must hold **≥ 5 VNA** to:
        │         │
        │         └──▶ J025: EC Queries (GetEcosystem, ListEcosystems)
        │
-       └──▶ J007: RevokeOperatorAuthorization (cleanup)
+       └──▶ J007: RevokeDelegateAuthorization (cleanup)
 
 [Corp B accounts funded]
        │
@@ -193,7 +193,7 @@ Planned (not implementing now):
 
 **Spec**: MOD-CO-MSG-1  
 **Signer**: co_admin (any funded account — no corporation required)  
-**Prerequisites**: co_admin, co_member1, co_member2, co_operator accounts funded (≥ 50 VNA each)  
+**Prerequisites**: co_admin, co_member1, co_member2, co_delegate accounts funded (≥ 50 VNA each)  
 **No AUTHZ-CHECK** (MOD-CO-MSG-1 is explicitly exempt per AUTHZ-CHECK-5)
 
 #### Inputs
@@ -218,35 +218,35 @@ Planned (not implementing now):
 - Confirm `create_corporation` event emitted with correct attributes
 
 #### Saves to J001.json
-`corp_a_id, corp_a_policy_addr, corp_a_group_id, co_admin_addr, co_member1_addr, co_member2_addr, co_operator_addr`
+`corp_a_id, corp_a_policy_addr, corp_a_group_id, co_admin_addr, co_member1_addr, co_member2_addr, co_delegate_addr`
 
 ---
 
-### J002 — Bootstrap OperatorAuthorization (Corp A → co_operator)
+### J002 — Bootstrap DelegateAuthorization (Corp A → co_delegate)
 
 **Spec**: MOD-DE-MSG-3  
 **Mechanism**: Group proposal (co_admin submits, co_admin + co_member1 vote YES, MsgExec runs with group policy as signer)  
-**Prerequisites**: J001 complete; co_operator funded (≥ 5 VNA); corp_a_policy_addr funded (≥ 5 VNA for feegrant)
+**Prerequisites**: J001 complete; co_delegate funded (≥ 5 VNA); corp_a_policy_addr funded (≥ 5 VNA for feegrant)
 
 #### Why group proposal
-On first authorization, no OperatorAuthorization exists yet. The corporation executes GrantOperatorAuthorization via x/group MsgExec. When x/group runs a proposal, the inner message signers are replaced by the group_policy_address (the executor). The implementation must allow the group_policy_address to pass AUTHZ-CHECK when it acts as its own operator — this is the bootstrap path used in existing journeys (lib.GrantOperatorAuthorizationViaGroup). Verify at implementation time by reading x/de/keeper/msg_grant_operator_authorization.go to confirm the self-authorization check.
+On first authorization, no DelegateAuthorization exists yet. The corporation executes GrantDelegateAuthorization via x/group MsgExec. When x/group runs a proposal, the inner message signers are replaced by the group_policy_address (the executor). The implementation must allow the group_policy_address to pass AUTHZ-CHECK when it acts as its own delegate — this is the bootstrap path used in existing journeys (lib.GrantDelegateAuthorizationViaGroup). Verify at implementation time by reading x/de/keeper/msg_grant_delegate_authorization.go to confirm the self-authorization check.
 
 #### Inputs
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr (from J001) |
-| operator | corp_a_policy_addr (self — bootstrap) |
-| grantee | co_operator_addr |
-| msg_types | [MsgUpdateCorporation, MsgAddGFD, MsgIncreaseActiveGFV, MsgCreateEcosystem, MsgUpdateEcosystem, MsgArchiveEcosystem, MsgGrantOperatorAuthorization, MsgRevokeOperatorAuthorization] |
+| delegate | corp_a_policy_addr (self — bootstrap) |
+| grantee | co_delegate_addr |
+| msg_types | [MsgUpdateCorporation, MsgAddGFD, MsgIncreaseActiveGFV, MsgCreateEcosystem, MsgUpdateEcosystem, MsgArchiveEcosystem, MsgGrantDelegateAuthorization, MsgRevokeDelegateAuthorization] |
 | with_feegrant | true |
 | expiration | (unset — no expiry) |
 
 #### Expected chain state
-- OperatorAuthorization: `authz.corporation_id = corp_a_id, authz.operator = co_operator_addr, authz.msg_types = above`
-- FeeGrant: `fg.grantor_corporation_id = corp_a_id, fg.grantee = co_operator_addr`
+- DelegateAuthorization: `authz.corporation_id = corp_a_id, authz.delegate = co_delegate_addr, authz.msg_types = above`
+- FeeGrant: `fg.grantor_corporation_id = corp_a_id, fg.grantee = co_delegate_addr`
 
 #### Verification
-- Query ListOperatorAuthorizations(corporation_id=corp_a_id) → find co_operator entry
+- Query ListDelegateAuthorizations(corporation_id=corp_a_id) → find co_delegate entry
 - Confirm feegrant by querying x/feegrant
 
 #### Saves to J002.json
@@ -257,9 +257,9 @@ On first authorization, no OperatorAuthorization exists yet. The corporation exe
 ### J003 — UpdateCorporation
 
 **Spec**: MOD-CO-MSG-2  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgUpdateCorporation)
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgUpdateCorporation)
 
 #### Test steps
 
@@ -267,7 +267,7 @@ On first authorization, no OperatorAuthorization exists yet. The corporation exe
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
+| delegate | co_delegate_addr |
 | did | "did:verana:co:corp-a-rotated" |
 
 Expected: co.did updated, co.modified bumped, `update_corporation` event emitted.
@@ -278,11 +278,11 @@ Expected: succeeds (no error). Spec MOD-CO-MSG-2-2-1 allows rotating to the curr
 
 **Step 3 — DID conflict: another corp already owns the target DID**
 Precondition: Corp C exists with did = "did:verana:co:corp-c".  
-Send UpdateCorporation(corp_a, co_operator, did="did:verana:co:corp-c").  
+Send UpdateCorporation(corp_a, co_delegate, did="did:verana:co:corp-c").  
 Expected: abort with ErrDIDOwnershipConflict.
 
-**Step 4 — Wrong operator (unauthorized)**
-Send UpdateCorporation(corp_a, corp_c_operator_addr, ...).  
+**Step 4 — Wrong delegate (unauthorized)**
+Send UpdateCorporation(corp_a, corp_c_delegate_addr, ...).  
 Expected: abort with authorization error (AUTHZ-CHECK-1 fails).
 
 #### Verification
@@ -294,9 +294,9 @@ Expected: abort with authorization error (AUTHZ-CHECK-1 fails).
 ### J004 — Corp CGF: AddGovernanceFrameworkDocument (version 2, corporation subject)
 
 **Spec**: MOD-GF-MSG-1 (ecosystem_id = null → subject is Corporation)  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgAddGFD)
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgAddGFD)
 
 #### Key spec rule
 `version` MUST be greater than `subject.active_version` (currently 1). Must be exactly `max_existing_version + 1` or refer to an already-existing GFV. First call: version = 2.
@@ -307,7 +307,7 @@ Expected: abort with authorization error (AUTHZ-CHECK-1 fails).
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
+| delegate | co_delegate_addr |
 | ecosystem_id | (not set) |
 | doc_language | "en" |
 | doc_url | "https://corp-a.example.com/cgf-v2.pdf" |
@@ -347,9 +347,9 @@ Expected: abort with authorization error.
 ### J005 — Corp CGF: IncreaseActiveGovernanceFrameworkVersion (v1 → v2)
 
 **Spec**: MOD-GF-MSG-2 (ecosystem_id = null → subject is Corporation)  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002, J004 (GFV v2 with at least one GFD in subject.language must exist)  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgIncreaseActiveGFV)
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgIncreaseActiveGFV)
 
 #### Key spec rules
 - GFV at `active_version + 1` must exist.
@@ -361,7 +361,7 @@ Expected: abort with authorization error.
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
+| delegate | co_delegate_addr |
 | ecosystem_id | (not set) |
 
 Expected: corp.active_version bumped 1→2; corp.modified updated; gfv(v2).active_since set to block_time; `increase_active_gfv` event emitted.
@@ -410,37 +410,37 @@ Expected: abort — no GFD for gfv(v3) with language = "en" exists.
 
 ---
 
-### J007 — RevokeOperatorAuthorization
+### J007 — RevokeDelegateAuthorization
 
 **Spec**: MOD-DE-MSG-4  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgRevokeOperatorAuthorization)  
-**Note**: Run LAST in Corp A sequence — revocation removes co_operator's ability to act.
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgRevokeDelegateAuthorization)  
+**Note**: Run LAST in Corp A sequence — revocation removes co_delegate's ability to act.
 
 #### Inputs
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
-| grantee | co_operator_addr |
+| delegate | co_delegate_addr |
+| grantee | co_delegate_addr |
 
 #### Expected chain state
-- OperatorAuthorization for (corp_a_id, co_operator_addr) deleted
-- FeeGrant for (corp_a_id, co_operator_addr) revoked
+- DelegateAuthorization for (corp_a_id, co_delegate_addr) deleted
+- FeeGrant for (corp_a_id, co_delegate_addr) revoked
 
 #### Verification
-- ListOperatorAuthorizations(corporation_id=corp_a_id) → no entry for co_operator
-- Subsequent delegable message from co_operator → AUTHZ-CHECK-1 fails
+- ListDelegateAuthorizations(corporation_id=corp_a_id) → no entry for co_delegate
+- Subsequent delegable message from co_delegate → AUTHZ-CHECK-1 fails
 
 ---
 
 ### J020 — CreateEcosystem
 
 **Spec**: MOD-EC-MSG-1  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgCreateEcosystem)
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgCreateEcosystem)
 
 #### Test steps
 
@@ -448,7 +448,7 @@ Expected: abort — no GFD for gfv(v3) with language = "en" exists.
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
+| delegate | co_delegate_addr |
 | did | "did:verana:ec:alpha" |
 | language | "en" |
 | doc_url | "https://corp-a.example.com/ec-gf-v1.pdf" |
@@ -480,9 +480,9 @@ Expected: abort (ValidateBasic fails).
 ### J021 — Ecosystem GF: AddGovernanceFrameworkDocument (version 2, ecosystem subject)
 
 **Spec**: MOD-GF-MSG-1 (ecosystem_id set → subject is Ecosystem)  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002, J020  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgAddGFD)
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgAddGFD)
 
 #### Key spec rules (same as J004 but subject is ecosystem)
 - `ecosystem_id` must be set and owned by corp_a
@@ -495,7 +495,7 @@ Expected: abort (ValidateBasic fails).
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
+| delegate | co_delegate_addr |
 | ecosystem_id | ec_alpha_id (from J020) |
 | doc_language | "en" |
 | doc_url | "https://corp-a.example.com/ec-gf-v2.pdf" |
@@ -524,9 +524,9 @@ Expected: abort — spec: version must equal existing GFV version OR exactly max
 ### J022 — Ecosystem GF: IncreaseActiveGovernanceFrameworkVersion (v1 → v2)
 
 **Spec**: MOD-GF-MSG-2 (ecosystem_id set → subject is Ecosystem)  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002, J020, J021  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgIncreaseActiveGFV)
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgIncreaseActiveGFV)
 
 #### Test steps
 
@@ -534,7 +534,7 @@ Expected: abort — spec: version must equal existing GFV version OR exactly max
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
+| delegate | co_delegate_addr |
 | ecosystem_id | ec_alpha_id |
 
 Expected: ec.active_version bumped 1→2; ec.modified updated; gfv(v2).active_since set.
@@ -557,9 +557,9 @@ Expected: abort — spec MOD-GF-MSG-2-2-1: "Find a GovernanceFrameworkDocument g
 ### J023 — UpdateEcosystem (DID rotation)
 
 **Spec**: MOD-EC-MSG-2  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002, J020  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgUpdateEcosystem)
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgUpdateEcosystem)
 
 #### Test steps
 
@@ -567,7 +567,7 @@ Expected: abort — spec MOD-GF-MSG-2-2-1: "Find a GovernanceFrameworkDocument g
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
+| delegate | co_delegate_addr |
 | id | ec_alpha_id |
 | did | "did:verana:ec:alpha-v2" |
 
@@ -579,15 +579,15 @@ Expected: succeeds, ec.modified NOT bumped, no update event emitted.
 
 **Step 3 — DID conflict with different corp**
 Precondition: Corp B owns Ecosystem B with did="did:verana:ec:beta".  
-Send UpdateEcosystem(corp_a, co_operator, id=ec_alpha_id, did="did:verana:ec:beta").  
+Send UpdateEcosystem(corp_a, co_delegate, id=ec_alpha_id, did="did:verana:ec:beta").  
 Expected: abort ErrDIDOwnershipConflict.
 
 **Step 4 — Ecosystem not owned by this corp**
 Send with id = <ecosystem owned by Corp B>.  
-Expected: abort ErrUnauthorizedOperator (ec.corporation_id ≠ co.id).
+Expected: abort ErrUnauthorizedDelegate (ec.corporation_id ≠ co.id).
 
-**Step 5 — Wrong operator**
-Send with operator = corp_c_operator.  
+**Step 5 — Wrong delegate**
+Send with delegate = corp_c_delegate.  
 Expected: abort (AUTHZ-CHECK-1 fails).
 
 ---
@@ -595,9 +595,9 @@ Expected: abort (AUTHZ-CHECK-1 fails).
 ### J024 — ArchiveEcosystem and Unarchive
 
 **Spec**: MOD-EC-MSG-3  
-**Signer**: corporation = corp_a_policy_addr, operator = co_operator  
+**Signer**: corporation = corp_a_policy_addr, delegate = co_delegate  
 **Prerequisites**: J001, J002, J020  
-**AUTHZ-CHECK**: Must pass for (corp_a, co_operator, MsgArchiveEcosystem)
+**AUTHZ-CHECK**: Must pass for (corp_a, co_delegate, MsgArchiveEcosystem)
 
 #### Test steps
 
@@ -605,7 +605,7 @@ Expected: abort (AUTHZ-CHECK-1 fails).
 | Field | Value |
 |-------|-------|
 | corporation | corp_a_policy_addr |
-| operator | co_operator_addr |
+| delegate | co_delegate_addr |
 | id | ec_alpha_id |
 | archive | true |
 
@@ -625,7 +625,7 @@ Expected: abort ErrAlreadyInTargetArchiveState.
 
 **Step 5 — Wrong corporation**
 Send with corporation = corp_b_policy_addr.  
-Expected: abort ErrUnauthorizedOperator.
+Expected: abort ErrUnauthorizedDelegate.
 
 ---
 
@@ -652,7 +652,7 @@ Expected: abort ErrUnauthorizedOperator.
 
 **Status**: Exists, BROKEN — imports reference old TR types.  
 **Spec**: MOD-CO-MSG-1, MOD-DE-MSG-3 (bootstrap)  
-**Accounts**: ec_admin, ec_member1, ec_member2, ec_operator (Corp B)
+**Accounts**: ec_admin, ec_member1, ec_member2, ec_delegate (Corp B)
 
 This journey is the same structure as J001+J002 but uses Corp B accounts. After rewriting:
 - All `trtypes.*` imports → `ectypes.*`
@@ -663,12 +663,12 @@ This journey is the same structure as J001+J002 but uses Corp B accounts. After 
 - lib helper calls: any `CreateTrustRegistry` → `CreateEcosystem`
 
 **Steps** (same as before, new type names):
-1. Create/recover ec_admin, ec_member1, ec_member2, ec_operator from mnemonics
+1. Create/recover ec_admin, ec_member1, ec_member2, ec_delegate from mnemonics
 2. Fund all accounts (50 VNA each) from cooluser
 3. CreateCorporation (Corp B) via co_admin using new `cotypes.MsgCreateCorporation`
 4. Fund Corp B policy_address (5 VNA)
-5. Bootstrap OperatorAuthorization via group proposal for ec_operator
-6. Save: corp_b_id, corp_b_policy_addr, corp_b_group_id, ec_operator_addr
+5. Bootstrap DelegateAuthorization via group proposal for ec_delegate
+6. Save: corp_b_id, corp_b_policy_addr, corp_b_group_id, ec_delegate_addr
 
 ---
 
@@ -734,7 +734,7 @@ Spec: MOD-XR-MSG-1/2/3 + queries. Uses x/gov governance proposals.
 - Add: `UpdateCorporationWithAuthority()` — wraps MsgUpdateCorporation
 - Add: `AddGFDWithAuthority()` for corporation subject (ecosystem_id = null)
 - Add: `IncreaseActiveGFVWithAuthority()` for corporation subject
-- Add: `RevokeOperatorAuthorizationViaGroup()` — for J007
+- Add: `RevokeDelegateAuthorizationViaGroup()` — for J007
 - Update: `VerifyEcosystem()` — confirm uses `ectypes`
 
 ### lib/queries.go
@@ -759,7 +759,7 @@ testharness/
 ├── journey-suite.md                     (this file)
 ├── journeys/
 │   ├── journey001_co_create_corp.go     (new)
-│   ├── journey002_co_operator_authz.go  (new)
+│   ├── journey002_co_delegate_authz.go  (new)
 │   ├── journey003_co_update_corp.go     (new)
 │   ├── journey004_gf_corp_add_gfd.go    (new)
 │   ├── journey005_gf_corp_increase_gfv.go (new)
@@ -794,7 +794,7 @@ testharness/
 4. Rewrite `journey101_ec_authz_setup.go`
 5. Rewrite `journey102_ec_authz_operations.go`
 6. Add `journey001_co_create_corp.go`
-7. Add `journey002_co_operator_authz.go`
+7. Add `journey002_co_delegate_authz.go`
 8. Add `journey003_co_update_corp.go`
 9. Add `journey004_gf_corp_add_gfd.go`
 10. Add `journey005_gf_corp_increase_gfv.go`
