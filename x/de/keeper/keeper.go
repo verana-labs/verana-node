@@ -20,7 +20,7 @@ type Keeper struct {
 	cdc          codec.Codec
 	addressCodec address.Codec
 	// Address capable of executing a MsgUpdateParams message.
-	// Typically, this should be the x/gov module account.
+	// Typically, this should be the council account.
 	authority []byte
 
 	Schema collections.Schema

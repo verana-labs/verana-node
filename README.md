@@ -262,18 +262,21 @@ docker buildx build --platform linux/amd64 -f docker/veranad.Dockerfile -t veran
 # Initialize chain
 veranad init mymoniker --chain-id vna-local-1
 
-# Add validator key
-veranad keys add validator --keyring-backend test
+# Add three member keys with genesis accounts
+for k in alice bob carol; do
+  veranad keys add $k --keyring-backend test
+  veranad genesis add-genesis-account $k 1000000000000uvna --keyring-backend test
+done
 
-# Add genesis account
-veranad genesis add-genesis-account validator 1000000000000000000000uvna --keyring-backend test
-
-# Create genesis transaction
-veranad genesis add-council validator --keyring-backend test
-veranad genesis gentx validator 1000000uvna --chain-id vna-local-1 --keyring-backend test
-
-# Collect genesis transactions
-veranad genesis collect-gentxs
+# Seat the council: one corporation per key; alice's runs this node's validator (no gentx)
+cat > council.json <<EOF
+{"corporations":[
+ {"did":"did:example:a","language":"en","members":["alice"],"funds":"10000000uvna",
+  "validator":{"moniker":"mymoniker","pubkey":$(veranad comet show-validator)}},
+ {"did":"did:example:b","language":"en","members":["bob"],"funds":"10000000uvna"},
+ {"did":"did:example:c","language":"en","members":["carol"],"funds":"10000000uvna"}]}
+EOF
+veranad genesis add-council council.json --keyring-backend test
 
 # Start the chain
 veranad start

@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	"github.com/stretchr/testify/require"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
@@ -359,8 +359,8 @@ func TestSelfFeeGrant_ValidatedEntry(t *testing.T) {
 	})
 	require.NoError(t, err)
 	fund := sdk.NewCoins(sdk.NewInt64Coin("uvna", 1_000_000))
-	require.NoError(t, a.BankKeeper.MintCoins(ctx, minttypes.ModuleName, fund))
-	require.NoError(t, a.BankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, e.pX, fund))
+	require.NoError(t, a.BankKeeper.MintCoins(ctx, ibctransfertypes.ModuleName, fund))
+	require.NoError(t, a.BankKeeper.SendCoinsFromModuleToAccount(ctx, ibctransfertypes.ModuleName, e.pX, fund))
 
 	_, err = e.des.GrantOperatorAuthorization(ctx, &detypes.MsgGrantOperatorAuthorization{
 		Corporation: e.pX.String(), Operator: e.pX.String(), Grantee: e.opX.String(),

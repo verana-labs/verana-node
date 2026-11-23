@@ -18,16 +18,16 @@ type Keeper struct {
 	authority    string
 	addressCodec address.Codec
 	staking      types.StakingKeeper
-	bank         types.BankKeeper
+	corporations types.CorporationKeeper
 	groups       types.GroupKeeper
 	router       types.MessageRouter
 }
 
-func NewKeeper(authority string, addressCodec address.Codec, sk types.StakingKeeper, bk types.BankKeeper, gk types.GroupKeeper, router types.MessageRouter) Keeper {
+func NewKeeper(authority string, addressCodec address.Codec, sk types.StakingKeeper, ck types.CorporationKeeper, gk types.GroupKeeper, router types.MessageRouter) Keeper {
 	if _, err := addressCodec.StringToBytes(authority); err != nil {
 		panic(fmt.Sprintf("invalid poa authority %q: %v", authority, err))
 	}
-	return Keeper{authority: authority, addressCodec: addressCodec, staking: sk, bank: bk, groups: gk, router: router}
+	return Keeper{authority: authority, addressCodec: addressCodec, staking: sk, corporations: ck, groups: gk, router: router}
 }
 
 func (k Keeper) GetAuthority() string { return k.authority }

@@ -61,16 +61,12 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/consensus" // import for side-effects
 	consensuskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
-	_ "github.com/cosmos/cosmos-sdk/x/distribution" // import for side-effects
-	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/evidence" // import for side-effects
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/feegrant/module" // import for side-effects
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	_ "github.com/cosmos/cosmos-sdk/x/mint" // import for side-effects
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/params" // import for side-effects
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -133,11 +129,9 @@ type App struct {
 	AccountKeeper         authkeeper.AccountKeeper
 	BankKeeper            bankkeeper.Keeper
 	StakingKeeper         *stakingkeeper.Keeper
-	DistrKeeper           distrkeeper.Keeper
 	ConsensusParamsKeeper consensuskeeper.Keeper
 
 	SlashingKeeper       slashingkeeper.Keeper
-	MintKeeper           mintkeeper.Keeper
 	CrisisKeeper         *crisiskeeper.Keeper
 	UpgradeKeeper        *upgradekeeper.Keeper
 	ParamsKeeper         paramskeeper.Keeper
@@ -165,7 +159,6 @@ type App struct {
 	DiKeeper               dimodulekeeper.Keeper
 	XrKeeper               xrmodulekeeper.Keeper
 	PoaKeeper              poamodulekeeper.Keeper
-	inGenesis              bool
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// simulation manager
@@ -263,10 +256,8 @@ func New(
 		&app.AccountKeeper,
 		&app.BankKeeper,
 		&app.StakingKeeper,
-		&app.DistrKeeper,
 		&app.ConsensusParamsKeeper,
 		&app.SlashingKeeper,
-		&app.MintKeeper,
 		&app.CrisisKeeper,
 		&app.UpgradeKeeper,
 		&app.ParamsKeeper,
@@ -341,8 +332,6 @@ func New(
 		if err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap()); err != nil {
 			return nil, err
 		}
-		app.inGenesis = true
-		defer func() { app.inGenesis = false }()
 		res, err := app.App.InitChainer(ctx, req)
 		if err != nil {
 			return nil, err

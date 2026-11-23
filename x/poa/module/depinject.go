@@ -6,10 +6,10 @@ import (
 	"cosmossdk.io/depinject"
 	"cosmossdk.io/depinject/appconfig"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	groupkeeper "github.com/verana-labs/cosmos-group/keeper"
 
+	cokeeper "github.com/verana-labs/verana-node/x/co/keeper"
 	"github.com/verana-labs/verana-node/x/poa/keeper"
 	"github.com/verana-labs/verana-node/x/poa/types"
 )
@@ -29,7 +29,7 @@ type ModuleInputs struct {
 	Config        *types.Module
 	AddressCodec  address.Codec
 	StakingKeeper *stakingkeeper.Keeper
-	BankKeeper    bankkeeper.Keeper
+	CoKeeper      cokeeper.Keeper
 	GroupKeeper   groupkeeper.Keeper
 	Router        *baseapp.MsgServiceRouter
 }
@@ -45,6 +45,6 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 	if in.Config.Authority == "" {
 		panic("x/poa requires an explicit authority")
 	}
-	k := keeper.NewKeeper(in.Config.Authority, in.AddressCodec, in.StakingKeeper, in.BankKeeper, in.GroupKeeper, in.Router)
+	k := keeper.NewKeeper(in.Config.Authority, in.AddressCodec, in.StakingKeeper, in.CoKeeper, in.GroupKeeper, in.Router)
 	return ModuleOutputs{PoaKeeper: k, Module: NewAppModule(k)}
 }

@@ -52,7 +52,6 @@ done
 #    "verana16jh6jcpxnz5l49p3fdmru8rf6ex3farztc2mqa"
 #)
 
-PASSPHRASE="testpass123"
 
 # Function to print colored output
 print_status() {
@@ -313,16 +312,18 @@ for i in {1..5}; do
 done
 
 # =============================================================================
-# PHASE 2: GENESIS ON VALIDATOR 1 — accounts, council, gentx from every validator
+# PHASE 2: GENESIS ON VALIDATOR 1 — accounts and the council of corporations
 # =============================================================================
 print_status "Building genesis on validator1..."
 
 # Replace stake with uvna in genesis file
 sed -i.bak 's/stake/uvna/g' validator1/config/genesis.json
 
-# Every wallet is a genesis account and a council member
-COUNCIL_MEMBERS=""
+# Every wallet is a genesis account and the member of one council corporation, which runs that validator
+COUNCIL_FILE=validator1/config/council.json
+echo '{"corporations":[' > "$COUNCIL_FILE"
 for i in {1..5}; do
+    validator="validator$i"
     wallet="wallet$i"
     mnemonic="${VALIDATOR_MNEMONICS[$((i-1))]}"
     echo "$mnemonic" | docker run --rm -i \
@@ -330,30 +331,15 @@ for i in {1..5}; do
         $DOCKER_IMAGE \
         keys add "$wallet" --recover --keyring-backend test >/dev/null 2>&1 || true
     docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE add-genesis-account "$wallet" 10000000000000000000uvna --keyring-backend test
-    COUNCIL_MEMBERS="${COUNCIL_MEMBERS:+$COUNCIL_MEMBERS,}$wallet"
+    pubkey=$(docker run --rm -v "$(pwd)/$validator:/root/.verana" $DOCKER_IMAGE comet show-validator)
+    [ "$i" -ne 1 ] && echo ',' >> "$COUNCIL_FILE"
+    echo "{\"did\":\"did:example:council-$i\",\"language\":\"en\",\"members\":[\"$wallet\"],\"funds\":\"10000000uvna\",\"validator\":{\"moniker\":\"$validator\",\"pubkey\":$pubkey}}" >> "$COUNCIL_FILE"
 done
+echo ']}' >> "$COUNCIL_FILE"
 
-# Seat the council: 5 weight-1 members, 2/3 policy (4 of 5), short windows for local testing
-docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE genesis add-council "$COUNCIL_MEMBERS" \
+# Seat the council: 5 corporations, 2/3 policy (4 of 5), short windows for local testing; no gentx
+docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE genesis add-council /root/.verana/config/council.json \
     --voting-period 60s --min-execution-period 0s --unbonding-time 60s --keyring-backend test
-
-# Every validator signs its own gentx against the shared genesis; bond is the fixed council bond
-for i in {1..5}; do
-    validator="validator$i"
-    wallet="wallet$i"
-    if [ "$i" -ne 1 ]; then
-        cp validator1/config/genesis.json "$validator/config/genesis.json"
-    fi
-    printf "$PASSPHRASE" \
-    | docker run --rm -i -v "$(pwd)/$validator:/root/.verana" $DOCKER_IMAGE gentx "$wallet" 1000000uvna \
-        --chain-id $CHAIN_ID --moniker "$validator" --keyring-backend test
-    if [ "$i" -ne 1 ]; then
-        cp "$validator"/config/gentx/*.json validator1/config/gentx/
-    fi
-done
-
-# Collect genesis transactions and validate
-docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE collect-gentxs
 docker run --rm -v $(pwd)/validator1:/root/.verana $DOCKER_IMAGE validate-genesis
 
 # =============================================================================

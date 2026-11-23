@@ -22,7 +22,7 @@ type (
 		logger       log.Logger
 
 		// the address capable of executing a MsgUpdateParams message. Typically, this
-		// should be the x/gov module account.
+		// should be the council account.
 		authority string
 		// state — keyed by corporation_id (uint64)
 		TrustDeposit collections.Map[uint64, types.TrustDeposit]

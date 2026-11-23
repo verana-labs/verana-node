@@ -3,7 +3,7 @@ package types
 import "cosmossdk.io/errors"
 
 var (
-	ErrInvalidSigner = errors.Register(ModuleName, 1100, "expected gov account as only signer")
+	ErrInvalidSigner = errors.Register(ModuleName, 1100, "expected council account as only signer")
 
 	ErrInvalidSubject       = errors.Register(ModuleName, 1101, "invalid GF subject: must be either ecosystem_id or corporation")
 	ErrSubjectNotFound      = errors.Register(ModuleName, 1102, "GF subject not found")

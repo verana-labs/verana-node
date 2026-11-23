@@ -20,6 +20,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/verana-labs/cosmos-group"
 
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/poa/keeper"
 	"github.com/verana-labs/verana-node/x/poa/types"
 )
@@ -36,11 +37,10 @@ const denom = "uvna"
 var authority = types.CouncilAuthorityBech32("verana")
 
 type mockStaking struct {
-	params     stakingtypes.Params
-	validators map[string]stakingtypes.Validator
-	delegs     []stakingtypes.Delegation
-	removed    math.Int
-	unbonded   math.LegacyDec
+	params      stakingtypes.Params
+	validators  map[string]stakingtypes.Validator
+	delegs      []stakingtypes.Delegation
+	undelegated math.LegacyDec
 }
 
 func newMockStaking() *mockStaking {
@@ -68,40 +68,28 @@ func (m *mockStaking) GetAllValidators(context.Context) ([]stakingtypes.Validato
 func (m *mockStaking) GetAllDelegatorDelegations(context.Context, sdk.AccAddress) ([]stakingtypes.Delegation, error) {
 	return m.delegs, nil
 }
-func (m *mockStaking) RemoveValidatorTokens(_ context.Context, v stakingtypes.Validator, tokens math.Int) (stakingtypes.Validator, error) {
-	m.removed = tokens
-	v = v.RemoveTokens(tokens)
-	m.validators[v.OperatorAddress] = v
-	return v, nil
+func (m *mockStaking) GetDelegation(_ context.Context, del sdk.AccAddress, val sdk.ValAddress) (stakingtypes.Delegation, error) {
+	v, ok := m.validators[val.String()]
+	if !ok || !v.DelegatorShares.IsPositive() {
+		return stakingtypes.Delegation{}, stakingtypes.ErrNoDelegation
+	}
+	return stakingtypes.Delegation{DelegatorAddress: del.String(), ValidatorAddress: val.String(), Shares: v.DelegatorShares}, nil
 }
-func (m *mockStaking) Unbond(_ context.Context, _ sdk.AccAddress, _ sdk.ValAddress, shares math.LegacyDec) (math.Int, error) {
-	m.unbonded = shares
-	return math.ZeroInt(), nil
+func (m *mockStaking) Undelegate(_ context.Context, _ sdk.AccAddress, _ sdk.ValAddress, shares math.LegacyDec) (time.Time, math.Int, error) {
+	m.undelegated = shares
+	return time.Time{}, shares.TruncateInt(), nil
 }
-func (m *mockStaking) Hooks() stakingtypes.StakingHooks { return stakingtypes.NewMultiStakingHooks() }
 func (m *mockStaking) ValidatorAddressCodec() address.Codec {
 	return addresscodec.NewBech32Codec("veranavaloper")
 }
 
-type bankCall struct {
-	op     string
-	module string
-	amt    sdk.Coins
-}
+type mockCorporations struct{ policies map[string]bool }
 
-type mockBank struct{ calls []bankCall }
-
-func (b *mockBank) MintCoins(_ context.Context, module string, amt sdk.Coins) error {
-	b.calls = append(b.calls, bankCall{"mint", module, amt})
-	return nil
-}
-func (b *mockBank) BurnCoins(_ context.Context, module string, amt sdk.Coins) error {
-	b.calls = append(b.calls, bankCall{"burn", module, amt})
-	return nil
-}
-func (b *mockBank) SendCoinsFromModuleToAccount(_ context.Context, module string, _ sdk.AccAddress, amt sdk.Coins) error {
-	b.calls = append(b.calls, bankCall{"send", module, amt})
-	return nil
+func (c *mockCorporations) ResolveCorporationByPolicyAddress(_ context.Context, addr string) (cotypes.Corporation, error) {
+	if !c.policies[addr] {
+		return cotypes.Corporation{}, cotypes.ErrCorporationNotRegistered
+	}
+	return cotypes.Corporation{Id: 1, PolicyAddress: addr}, nil
 }
 
 type mockGroups struct {
@@ -143,7 +131,7 @@ type fixture struct {
 	k       keeper.Keeper
 	msg     types.MsgServer
 	staking *mockStaking
-	bank    *mockBank
+	corps   *mockCorporations
 	groups  *mockGroups
 	router  *mockRouter
 	member  sdk.AccAddress
@@ -152,20 +140,19 @@ type fixture struct {
 
 func newFixture(t *testing.T) *fixture {
 	t.Helper()
-	pk := ed25519.GenPrivKey().PubKey()
-	anyPk, err := codectypes.NewAnyWithValue(pk)
+	anyPk, err := codectypes.NewAnyWithValue(ed25519.GenPrivKey().PubKey())
 	require.NoError(t, err)
-	member := sdk.AccAddress(pk.Address())
+	member := types.GroupPolicyAddress(2)
 	f := &fixture{
 		ctx:     sdk.NewContext(nil, cmtproto.Header{}, false, log.NewNopLogger()),
 		staking: newMockStaking(),
-		bank:    &mockBank{},
+		corps:   &mockCorporations{policies: map[string]bool{member.String(): true}},
 		groups:  &mockGroups{groupID: 1, members: []string{member.String()}, windows: group.DecisionPolicyWindows{VotingPeriod: 30 * time.Second, MinExecutionPeriod: 10 * time.Second}},
 		router:  &mockRouter{},
 		member:  member,
 		pubkey:  anyPk,
 	}
-	f.k = keeper.NewKeeper(authority, addresscodec.NewBech32Codec("verana"), f.staking, f.bank, f.groups, f.router)
+	f.k = keeper.NewKeeper(authority, addresscodec.NewBech32Codec("verana"), f.staking, f.corps, f.groups, f.router)
 	f.msg = keeper.NewMsgServerImpl(f.k)
 	return f
 }
@@ -232,31 +219,28 @@ func TestAddValidator_RejectsDelegations(t *testing.T) {
 	require.ErrorIs(t, err, types.ErrAddressHasDelegations)
 }
 
-func TestAddValidator_RejectsMissingPubkeyBeforeMinting(t *testing.T) {
+func TestAddValidator_RejectsMissingPubkey(t *testing.T) {
 	f := newFixture(t)
 	msg := addMsg(f)
 	msg.Pubkey = nil
 	_, err := f.msg.AddValidator(f.ctx, msg)
 	require.Error(t, err)
-	require.Empty(t, f.bank.calls)
+	require.Empty(t, f.router.msgs)
 }
 
-func TestAddValidator_RejectsEmptyDescriptionBeforeMinting(t *testing.T) {
+func TestAddValidator_RejectsEmptyDescription(t *testing.T) {
 	f := newFixture(t)
 	msg := addMsg(f)
 	msg.Description = types.Description{}
 	_, err := f.msg.AddValidator(f.ctx, msg)
 	require.Error(t, err)
-	require.Empty(t, f.bank.calls)
+	require.Empty(t, f.router.msgs)
 }
 
-func TestAddValidator_MintsFixedBondAndRoutesCreate(t *testing.T) {
+func TestAddValidator_StakesFixedBondFromOperator(t *testing.T) {
 	f := newFixture(t)
 	_, err := f.msg.AddValidator(f.ctx, addMsg(f))
 	require.NoError(t, err)
-
-	bond := sdk.NewCoins(types.ValidatorBond(denom))
-	require.Equal(t, []bankCall{{"mint", types.ModuleName, bond}, {"send", types.ModuleName, bond}}, f.bank.calls)
 
 	require.Len(t, f.router.msgs, 1)
 	create, ok := f.router.msgs[0].(*stakingtypes.MsgCreateValidator)
@@ -275,6 +259,16 @@ func TestRemoveValidator_RejectsUnknown(t *testing.T) {
 	require.ErrorIs(t, err, types.ErrNotAValidator)
 }
 
+func TestRemoveValidator_RejectsAlreadyRemoved(t *testing.T) {
+	f := newFixture(t)
+	f.seat(t, stakingtypes.Unbonding)
+	valAddr := sdk.ValAddress(f.member).String()
+	f.staking.validators[valAddr] = stakingtypes.Validator{OperatorAddress: valAddr, Status: stakingtypes.Unbonding, Tokens: math.ZeroInt(), DelegatorShares: math.LegacyZeroDec()}
+	_, err := f.msg.RemoveValidator(f.ctx, &types.MsgRemoveValidator{Authority: authority, ValidatorAddress: f.member.String()})
+	require.ErrorIs(t, err, types.ErrNotAValidator)
+	require.True(t, f.staking.undelegated.IsNil())
+}
+
 func TestRemoveValidator_RejectsNonAuthority(t *testing.T) {
 	f := newFixture(t)
 	f.seat(t, stakingtypes.Bonded)
@@ -282,24 +276,20 @@ func TestRemoveValidator_RejectsNonAuthority(t *testing.T) {
 	require.ErrorIs(t, err, types.ErrInvalidSigner)
 }
 
-func TestRemoveValidator_BurnsFromBondedPool(t *testing.T) {
+func TestRemoveValidator_UndelegatesSelfBond(t *testing.T) {
 	f := newFixture(t)
 	f.seat(t, stakingtypes.Bonded)
 	_, err := f.msg.RemoveValidator(f.ctx, &types.MsgRemoveValidator{Authority: authority, ValidatorAddress: f.member.String()})
 	require.NoError(t, err)
-
-	bond := sdk.NewCoins(types.ValidatorBond(denom))
-	require.Equal(t, []bankCall{{"burn", stakingtypes.BondedPoolName, bond}}, f.bank.calls)
-	require.True(t, f.staking.removed.Equal(sdk.DefaultPowerReduction))
-	require.True(t, f.staking.unbonded.Equal(math.LegacyNewDecFromInt(sdk.DefaultPowerReduction)))
+	require.True(t, f.staking.undelegated.Equal(math.LegacyNewDecFromInt(sdk.DefaultPowerReduction)))
 }
 
-func TestRemoveValidator_BurnsFromNotBondedPoolWhenJailed(t *testing.T) {
+func TestRemoveValidator_UndelegatesWhenJailed(t *testing.T) {
 	f := newFixture(t)
 	f.seat(t, stakingtypes.Unbonding)
 	_, err := f.msg.RemoveValidator(f.ctx, &types.MsgRemoveValidator{Authority: authority, ValidatorAddress: f.member.String()})
 	require.NoError(t, err)
-	require.Equal(t, stakingtypes.NotBondedPoolName, f.bank.calls[0].module)
+	require.True(t, f.staking.undelegated.Equal(math.LegacyNewDecFromInt(sdk.DefaultPowerReduction)))
 }
 
 func TestSelfRemoveValidator_UsesSignerAddress(t *testing.T) {
@@ -307,7 +297,7 @@ func TestSelfRemoveValidator_UsesSignerAddress(t *testing.T) {
 	f.seat(t, stakingtypes.Bonded)
 	_, err := f.msg.SelfRemoveValidator(f.ctx, &types.MsgSelfRemoveValidator{ValidatorAddress: f.member.String()})
 	require.NoError(t, err)
-	require.True(t, f.staking.removed.Equal(sdk.DefaultPowerReduction))
+	require.True(t, f.staking.undelegated.Equal(math.LegacyNewDecFromInt(sdk.DefaultPowerReduction)))
 }
 
 func TestCouncilQuery_ListsMembersWithoutBondedValidator(t *testing.T) {

@@ -19,7 +19,7 @@ func (ms msgServer) GrantExchangeRateAuthorization(ctx context.Context, msg *typ
 		return nil, err
 	}
 
-	// [MOD-XR-MSG-4-2-1] authority MUST equal the gov module account.
+	// [MOD-XR-MSG-4-2-1] authority MUST equal the council account.
 	authority, err := ms.addressCodec.StringToBytes(msg.Authority)
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "invalid authority address")

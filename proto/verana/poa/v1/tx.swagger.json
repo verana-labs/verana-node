@@ -18,7 +18,7 @@
   "paths": {
     "/verana.poa.v1.Msg/AddValidator": {
       "post": {
-        "summary": "AddValidator seats a council member as a validator with the fixed bond.",
+        "summary": "AddValidator seats a council member as a validator, bonding the fixed bond from its balance.",
         "operationId": "Msg_AddValidator",
         "responses": {
           "200": {
@@ -51,7 +51,7 @@
     },
     "/verana.poa.v1.Msg/RemoveValidator": {
       "post": {
-        "summary": "RemoveValidator unseats a validator and burns its bond.",
+        "summary": "RemoveValidator unseats a validator; its bond returns after the unbonding time.",
         "operationId": "Msg_RemoveValidator",
         "responses": {
           "200": {

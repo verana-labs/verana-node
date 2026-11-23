@@ -15,8 +15,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
@@ -196,7 +194,6 @@ type ModuleInputs struct {
 
 	AccountKeeper     types.AccountKeeper
 	BankKeeper        types.BankKeeper
-	MintKeeper        mintkeeper.Keeper
 	DelegationKeeper  types.DelegationKeeper
 	CorporationKeeper types.CorporationKeeper
 }
@@ -208,28 +205,16 @@ type ModuleOutputs struct {
 	Module             appmodule.AppModule
 }
 
-// mintKeeperAdapter adapts the Cosmos SDK mint keeper to our MintKeeper interface
-type mintKeeperAdapter struct {
-	mintKeeper mintkeeper.Keeper
-}
+// noBlockReward reports zero blocks per year: there is no x/mint, so the yield stays off.
+type noBlockReward struct{}
 
-func (a *mintKeeperAdapter) GetBlocksPerYear(ctx context.Context) (uint64, error) {
-	params, err := a.mintKeeper.Params.Get(ctx)
-	if err != nil {
-		return 0, err
-	}
-	return params.BlocksPerYear, nil
-}
+func (noBlockReward) GetBlocksPerYear(context.Context) (uint64, error) { return 0, nil }
 
 func ProvideModule(in ModuleInputs) ModuleOutputs {
-	// default to governance authority if not provided
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	if in.Config.Authority != "" {
-		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
+	if in.Config.Authority == "" {
+		panic("x/td requires an explicit authority")
 	}
-
-	// Create adapter for mint keeper
-	mintAdapter := &mintKeeperAdapter{mintKeeper: in.MintKeeper}
+	authority := authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
 
 	k := keeper.NewKeeper(
 		in.Cdc,
@@ -237,7 +222,7 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.Logger,
 		authority.String(),
 		in.BankKeeper,
-		mintAdapter,
+		noBlockReward{},
 		in.DelegationKeeper,
 		in.CorporationKeeper,
 	)

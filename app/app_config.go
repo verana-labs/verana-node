@@ -9,11 +9,9 @@ import (
 	authzmodulev1 "cosmossdk.io/api/cosmos/authz/module/v1"
 	bankmodulev1 "cosmossdk.io/api/cosmos/bank/module/v1"
 	consensusmodulev1 "cosmossdk.io/api/cosmos/consensus/module/v1"
-	distrmodulev1 "cosmossdk.io/api/cosmos/distribution/module/v1"
 	evidencemodulev1 "cosmossdk.io/api/cosmos/evidence/module/v1"
 	feegrantmodulev1 "cosmossdk.io/api/cosmos/feegrant/module/v1"
 	genutilmodulev1 "cosmossdk.io/api/cosmos/genutil/module/v1"
-	mintmodulev1 "cosmossdk.io/api/cosmos/mint/module/v1"
 	paramsmodulev1 "cosmossdk.io/api/cosmos/params/module/v1"
 	slashingmodulev1 "cosmossdk.io/api/cosmos/slashing/module/v1"
 	stakingmodulev1 "cosmossdk.io/api/cosmos/staking/module/v1"
@@ -33,11 +31,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -84,10 +80,8 @@ var (
 		// cosmos-sdk/ibc modules
 		authtypes.ModuleName,
 		banktypes.ModuleName,
-		distrtypes.ModuleName,
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
-		minttypes.ModuleName,
 		crisistypes.ModuleName,
 		ibcexported.ModuleName,
 		group.ModuleName,
@@ -118,14 +112,9 @@ var (
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	}
 
-	// During begin block slashing happens after distr.BeginBlocker so that
-	// there is nothing left over in the validator fee pool, so as to keep the
-	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	beginBlockers = []string{
 		// cosmos sdk modules
-		minttypes.ModuleName,
-		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
 		stakingtypes.ModuleName,
@@ -184,8 +173,6 @@ var (
 	// module account permissions
 	moduleAccPerms = []*authmodulev1.ModuleAccountPermission{
 		{Account: authtypes.FeeCollectorName},
-		{Account: distrtypes.ModuleName},
-		{Account: minttypes.ModuleName, Permissions: []string{authtypes.Minter}},
 		{Account: stakingtypes.BondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: stakingtypes.NotBondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: nft.ModuleName},
@@ -197,15 +184,12 @@ var (
 		{Account: protocolpooltypes.ModuleName},
 		{Account: protocolpooltypes.ProtocolPoolEscrowAccount},
 		{Account: trustdepositmoduletypes.YieldIntermediatePool},
-		{Account: poamoduletypes.ModuleName, Permissions: []string{authtypes.Minter}},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 
 	// blocked account addresses
 	blockAccAddrs = []string{
 		authtypes.FeeCollectorName,
-		distrtypes.ModuleName,
-		minttypes.ModuleName,
 		stakingtypes.BondedPoolName,
 		stakingtypes.NotBondedPoolName,
 		nft.ModuleName,
@@ -240,7 +224,7 @@ var (
 				Config: appconfig.WrapAny(&authmodulev1.Module{
 					Bech32Prefix:             AccountAddressPrefix,
 					ModuleAccountPermissions: moduleAccPerms,
-					Authority:                FrozenAuthority,
+					Authority:                CouncilAuthority,
 				}),
 			},
 			{
@@ -255,7 +239,7 @@ var (
 				Name: banktypes.ModuleName,
 				Config: appconfig.WrapAny(&bankmodulev1.Module{
 					BlockedModuleAccountsOverride: blockAccAddrs,
-					Authority:                     FrozenAuthority,
+					Authority:                     CouncilAuthority,
 				}),
 			},
 			{
@@ -265,12 +249,12 @@ var (
 					// If not specfied, the auth Bech32Prefix appended with "valoper" and "valcons" is used by default
 					Bech32PrefixValidator: AccountAddressPrefix + "valoper",
 					Bech32PrefixConsensus: AccountAddressPrefix + "valcons",
-					Authority:             FrozenAuthority,
+					Authority:             CouncilAuthority,
 				}),
 			},
 			{
 				Name:   slashingtypes.ModuleName,
-				Config: appconfig.WrapAny(&slashingmodulev1.Module{Authority: FrozenAuthority}),
+				Config: appconfig.WrapAny(&slashingmodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   paramstypes.ModuleName,
@@ -293,16 +277,8 @@ var (
 				Config: appconfig.WrapAny(&upgrademodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
-				Name:   distrtypes.ModuleName,
-				Config: appconfig.WrapAny(&distrmodulev1.Module{Authority: FrozenAuthority}),
-			},
-			{
 				Name:   evidencetypes.ModuleName,
 				Config: appconfig.WrapAny(&evidencemodulev1.Module{}),
-			},
-			{
-				Name:   minttypes.ModuleName,
-				Config: appconfig.WrapAny(&mintmodulev1.Module{Authority: FrozenAuthority}),
 			},
 			{
 				Name: group.ModuleName,
@@ -317,7 +293,7 @@ var (
 			},
 			{
 				Name:   crisistypes.ModuleName,
-				Config: appconfig.WrapAny(&crisismodulev1.Module{Authority: FrozenAuthority}),
+				Config: appconfig.WrapAny(&crisismodulev1.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   consensustypes.ModuleName,

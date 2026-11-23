@@ -41,7 +41,7 @@ func (app *App) registerIBCModules(_ servertypes.AppOptions) error {
 		return err
 	}
 
-	authority := FrozenAuthority
+	authority := CouncilAuthority
 
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		app.appCodec,
