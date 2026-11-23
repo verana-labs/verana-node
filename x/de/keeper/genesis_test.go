@@ -12,7 +12,6 @@ import (
 func TestGenesis(t *testing.T) {
 	until := time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)
 	genesisState := types.GenesisState{
-		Params:         types.DefaultParams(),
 		WindowEndQueue: []types.WindowEndQueueEntry{{WindowEnd: until, ParticipantId: 7}},
 	}
 
@@ -23,7 +22,6 @@ func TestGenesis(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, got)
 
-	require.EqualExportedValues(t, genesisState.Params, got.Params)
 	require.Len(t, got.WindowEndQueue, 1)
 	require.True(t, got.WindowEndQueue[0].WindowEnd.Equal(until))
 	require.Equal(t, uint64(7), got.WindowEndQueue[0].ParticipantId)
@@ -32,7 +30,6 @@ func TestGenesis(t *testing.T) {
 func TestGenesis_RebuildsOperatorIndex(t *testing.T) {
 	vsOp := acc("vsop_genesis________")
 	genesisState := types.GenesisState{
-		Params: types.DefaultParams(),
 		VsOperatorAuthorizations: []types.VSOperatorAuthorization{{
 			Id: 1, CorporationId: 4, VsOperator: vsOp,
 			Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 9, MsgTypes: []string{mtValidated}}},

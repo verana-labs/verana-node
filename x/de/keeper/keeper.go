@@ -19,12 +19,10 @@ type Keeper struct {
 	storeService corestore.KVStoreService
 	cdc          codec.Codec
 	addressCodec address.Codec
-	// Address capable of executing a MsgUpdateParams message.
-	// Typically, this should be the council account.
+	// authority is the council account.
 	authority []byte
 
 	Schema collections.Schema
-	Params collections.Item[types.Params]
 
 	// OperatorAuthorization: keyed by its own uint64 id; (corporation_id,
 	// operator) is a unique secondary index. Runtime spend balances live
@@ -58,6 +56,9 @@ type Keeper struct {
 	// participantRef backs AUTHZ-CHECK-3 step 1 and the MOD-DE-MSG-5-5 scan;
 	// wired post-construction via SetParticipantKeeper (MOD-PP depends on MOD-DE).
 	participantRef *participantKeeperRef
+
+	// vsRef serves vs_account_fee_period; wired via SetVerifiableServiceKeeper.
+	vsRef *vsKeeperRef
 }
 
 func NewKeeper(
@@ -83,8 +84,7 @@ func NewKeeper(
 		corpRef:        &corpKeeperRef{K: StubCorporationKeeper{}},
 		feegrantRef:    &feegrantKeeperRef{},
 		participantRef: &participantKeeperRef{K: StubParticipantKeeper{}},
-
-		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		vsRef:          &vsKeeperRef{K: StubVerifiableServiceKeeper{}},
 
 		OperatorAuthorizations: collections.NewMap(sb, types.OperatorAuthorizationKey, "operator_authorization",
 			collections.Uint64Key, codec.CollValue[types.OperatorAuthorization](cdc)),
@@ -143,6 +143,11 @@ func (k Keeper) feegrantKeeper() types.FeegrantKeeper {
 // SetParticipantKeeper wires the MOD-PP participant view after both keepers exist.
 func (k Keeper) SetParticipantKeeper(p types.ParticipantKeeper) {
 	k.participantRef.K = p
+}
+
+// SetVerifiableServiceKeeper wires the MOD-VS keeper after both keepers exist.
+func (k Keeper) SetVerifiableServiceKeeper(v types.VerifiableServiceKeeper) {
+	k.vsRef.K = v
 }
 
 // participantKeeper returns the wired participant view (real or stub).

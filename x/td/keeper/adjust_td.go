@@ -33,9 +33,7 @@ func (k Keeper) AdjustTrustDeposit(ctx sdk.Context, account string, augend int64
 		return err
 	}
 
-	// Get global share value parameter
-	params := k.GetParams(ctx)
-	shareValue := params.TrustDepositShareValue
+	shareValue := k.GetTrustDepositShareValue(ctx)
 
 	// Load existing trust deposit if it exists
 	td, err := k.TrustDeposit.Get(ctx, corpID)
@@ -239,7 +237,7 @@ func (k Keeper) AdjustTrustDepositOnBehalf(ctx sdk.Context, account string, fund
 		td = types.TrustDeposit{CorporationId: corpID, Share: math.LegacyZeroDec()}
 	}
 
-	shareValue := k.GetParams(ctx).TrustDepositShareValue
+	shareValue := k.GetTrustDepositShareValue(ctx)
 
 	// Reuse refunded credit first; the funder only funds the remaining shortfall.
 	reused := uint64(amount)

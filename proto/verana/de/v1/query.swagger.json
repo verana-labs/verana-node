@@ -97,29 +97,6 @@
         ]
       }
     },
-    "/de/v1/params": {
-      "get": {
-        "summary": "Parameters queries the parameters of the module.",
-        "operationId": "Query_Params",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.de.v1.QueryParamsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "tags": [
-          "Query"
-        ]
-      }
-    },
     "/de/v1/vs-authz/get/{id}": {
       "get": {
         "summary": "[MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.",
@@ -295,16 +272,6 @@
       },
       "description": "OperatorAuthorization is the operator-delegation record. Per spec it is\nkeyed by its own uint64 id; (corporation_id, operator) is a unique secondary\nindex."
     },
-    "verana.de.v1.Params": {
-      "type": "object",
-      "properties": {
-        "vs_operator_fee_period": {
-          "type": "string",
-          "description": "vs_operator_fee_period is the network-wide cycle of the aggregate VS\noperator fee allowance; each record's fee_spend_limit is a budget per period."
-        }
-      },
-      "description": "Params defines the parameters for the module."
-    },
     "verana.de.v1.ParticipantAuthorizationRecord": {
       "type": "object",
       "properties": {
@@ -403,16 +370,6 @@
         }
       },
       "description": "QueryListVSOperatorAuthorizationsResponse is the response type for the\nQuery/ListVSOperatorAuthorizations RPC method."
-    },
-    "verana.de.v1.QueryParamsResponse": {
-      "type": "object",
-      "properties": {
-        "params": {
-          "$ref": "#/definitions/verana.de.v1.Params",
-          "description": "params holds all the parameters of this module."
-        }
-      },
-      "description": "QueryParamsResponse is response type for the Query/Params RPC method."
     },
     "verana.de.v1.VSOperatorAuthorization": {
       "type": "object",

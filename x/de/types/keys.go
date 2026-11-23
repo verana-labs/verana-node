@@ -11,9 +11,6 @@ const (
 )
 
 var (
-	// ParamsKey is the prefix to retrieve all Params
-	ParamsKey = collections.NewPrefix("p_de")
-
 	// OperatorAuthorizationKey is the prefix for OperatorAuthorization storage,
 	// keyed by its own uint64 id.
 	OperatorAuthorizationKey = collections.NewPrefix("oa_de")

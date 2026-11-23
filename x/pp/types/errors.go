@@ -15,4 +15,5 @@ var (
 	// violating the per-Participant (did, corporation_id) consistency invariant
 	// (spec MOD-PP-MSG-1-2-1 / 7-2-1 / 14-2-1).
 	ErrDIDOwnershipConflict = sdkerrors.Register(ModuleName, 1102, "did is controlled by a different corporation")
+	ErrInvalidParams        = sdkerrors.Register(ModuleName, 1103, "invalid parameters")
 )

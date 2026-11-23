@@ -69,3 +69,9 @@ type ParticipantView struct {
 type ParticipantKeeper interface {
 	ViewParticipant(ctx context.Context, id uint64) (ParticipantView, bool)
 }
+
+// VerifiableServiceKeeper serves GlobalVariables.vs_account_fee_period, owned by
+// MOD-VS. Wired post-construction via Keeper.SetVerifiableServiceKeeper.
+type VerifiableServiceKeeper interface {
+	VsAccountFeePeriod(ctx context.Context) (time.Duration, error)
+}

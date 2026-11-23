@@ -18,4 +18,5 @@ var (
 	ErrInvalidDigestSRI            = sdkerrors.Register(ModuleName, 1109, "invalid digest_sri")
 	ErrInvalidSubject              = sdkerrors.Register(ModuleName, 1110, "invalid subject id")
 	ErrInvalidTimestamp            = sdkerrors.Register(ModuleName, 1111, "invalid ecosystem timestamp")
+	ErrNoParams                    = sdkerrors.Register(ModuleName, 1112, "the module owns no parameter")
 )

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -25,11 +26,12 @@ type (
 		// should be the council account.
 		authority string
 		// state — keyed by corporation_id (uint64)
-		TrustDeposit collections.Map[uint64, types.TrustDeposit]
-		Dust         collections.Item[string] // Accumulated fractional yield (stored as string)
+		TrustDeposit       collections.Map[uint64, types.TrustDeposit]
+		Dust               collections.Item[string] // Accumulated fractional yield (stored as string)
+		PendingTuDecayRate collections.Item[math.LegacyDec]
+		ShareValue         collections.Item[math.LegacyDec]
 		// external keeper
 		bankKeeper       types.BankKeeper
-		mintKeeper       types.MintKeeper
 		delegationKeeper types.DelegationKeeper
 		coKeeper         types.CorporationKeeper
 	}
@@ -41,7 +43,6 @@ func NewKeeper(
 	logger log.Logger,
 	authority string,
 	bankKeeper types.BankKeeper,
-	mintKeeper types.MintKeeper,
 	delegationKeeper types.DelegationKeeper,
 	coKeeper types.CorporationKeeper,
 ) Keeper {
@@ -52,16 +53,17 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		cdc:              cdc,
-		storeService:     storeService,
-		authority:        authority,
-		logger:           logger,
-		TrustDeposit:     collections.NewMap(sb, types.TrustDepositKey, "trust_deposit", collections.Uint64Key, codec.CollValue[types.TrustDeposit](cdc)),
-		Dust:             collections.NewItem(sb, types.DustKey, "dust", collections.StringValue),
-		bankKeeper:       bankKeeper,
-		mintKeeper:       mintKeeper,
-		delegationKeeper: delegationKeeper,
-		coKeeper:         coKeeper,
+		cdc:                cdc,
+		storeService:       storeService,
+		authority:          authority,
+		logger:             logger,
+		TrustDeposit:       collections.NewMap(sb, types.TrustDepositKey, "trust_deposit", collections.Uint64Key, codec.CollValue[types.TrustDeposit](cdc)),
+		Dust:               collections.NewItem(sb, types.DustKey, "dust", collections.StringValue),
+		PendingTuDecayRate: collections.NewItem(sb, types.PendingTuDecayRateKey, "pending_tu_decay_rate", sdk.LegacyDecValue),
+		ShareValue:         collections.NewItem(sb, types.ShareValueKey, "share_value", sdk.LegacyDecValue),
+		bankKeeper:         bankKeeper,
+		delegationKeeper:   delegationKeeper,
+		coKeeper:           coKeeper,
 	}
 }
 
@@ -110,17 +112,26 @@ func (k Keeper) GetTrustDepositRate(ctx sdk.Context) math.LegacyDec {
 	return params.TrustDepositRate
 }
 
+// GetUserAgentRewardRate serves the v4 session fees, which v5 prices with vua_reward_rate.
 func (k Keeper) GetUserAgentRewardRate(ctx sdk.Context) math.LegacyDec {
-	params := k.GetParams(ctx)
-	return params.UserAgentRewardRate
+	return k.GetParams(ctx).VuaRewardRate
 }
 
+// GetWalletUserAgentRewardRate serves the v4 session fees, which v5 prices with vua_reward_rate.
 func (k Keeper) GetWalletUserAgentRewardRate(ctx sdk.Context) math.LegacyDec {
-	params := k.GetParams(ctx)
-	return params.WalletUserAgentRewardRate
+	return k.GetParams(ctx).VuaRewardRate
 }
 
-func (k Keeper) GetTrustDepositShareValue(ctx sdk.Context) math.LegacyDec {
-	params := k.GetParams(ctx)
-	return params.TrustDepositShareValue
+// GetTrustDepositShareValue returns the v4 share value, 1 unless set.
+func (k Keeper) GetTrustDepositShareValue(ctx context.Context) math.LegacyDec {
+	v, err := k.ShareValue.Get(ctx)
+	if err != nil {
+		return math.LegacyOneDec()
+	}
+	return v
+}
+
+// SetTrustDepositShareValue sets the v4 share value.
+func (k Keeper) SetTrustDepositShareValue(ctx context.Context, v math.LegacyDec) error {
+	return k.ShareValue.Set(ctx, v)
 }

@@ -1,0 +1,27 @@
+syntax = "proto3";
+package verana.vs.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/vs/types";
+
+// Params holds the Verifiable Service and Delegation groups of GlobalVariables.
+message Params {
+  option (amino.name) = "verana/x/vs/Params";
+  option (gogoproto.equal) = true;
+
+  // in minor units of the main fiat currency
+  uint64 vs_registration_deposit = 1;
+  // in minor units of the main fiat currency
+  uint64 ecosystem_creation_deposit = 2;
+  google.protobuf.Duration vid_rotation_max_transition = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
+  google.protobuf.Duration vs_account_fee_period = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
+}

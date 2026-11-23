@@ -21,6 +21,9 @@ message GenesisState {
 
   // dust is the accumulated fractional yield carried forward
   string dust = 3;
+
+  // pending_tu_decay_rate is the tu_decay_rate applied at the next epoch boundary; null when none.
+  string pending_tu_decay_rate = 4 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec"];
 }
 
 // TrustDepositRecord defines a trust deposit entry for genesis state

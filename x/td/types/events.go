@@ -8,6 +8,7 @@ const (
 	EventTypeBurnEcosystemSlashedTrustDeposit = "burn_ecosystem_slashed_trust_deposit"
 	EventTypeYieldDistribution                = "yield_distribution"
 	EventTypeYieldTransfer                    = "yield_transfer"
+	EventTypeUpdateParams                     = "update_params"
 )
 
 const (
@@ -36,4 +37,6 @@ const (
 	AttributeKeyOldShareValue         = "old_share_value"
 	AttributeKeyNewShareValue         = "new_share_value"
 	AttributeKeyReason                = "reason"
+	AttributeKeyAuthority             = "authority"
+	AttributeKeyPendingTuDecayRate    = "pending_tu_decay_rate"
 )

@@ -995,6 +995,12 @@
     },
     "verana.pp.v1.Params": {
       "type": "object",
+      "properties": {
+        "accreditation_max_entries_per_participation": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
       "description": "Params defines the parameters for the module."
     },
     "verana.pp.v1.ParticipantRole": {

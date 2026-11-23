@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/verana-labs/verana-node/x/de/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 // [MOD-DE-MSG-5-5] The aggregate allowance is re-granted on every recompute;
@@ -57,12 +58,24 @@ func TestRecomputeFeeAllowance_RealizesPeriodicAllowance(t *testing.T) {
 	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 10)))
 
 	pa := periodic(t, f, ctx, 1, vsOp)
-	require.Equal(t, types.DefaultVsOperatorFeePeriod, pa.Period)
+	require.Equal(t, vstypes.DefaultVsAccountFeePeriod, pa.Period)
 	require.Equal(t, uvna(10), pa.PeriodSpendLimit)
 	require.Equal(t, uvna(10), pa.PeriodCanSpend)
-	require.True(t, pa.PeriodReset.Equal(now.Add(types.DefaultVsOperatorFeePeriod)))
+	require.True(t, pa.PeriodReset.Equal(now.Add(vstypes.DefaultVsAccountFeePeriod)))
 	require.Nil(t, pa.Basic.SpendLimit)
 	require.Nil(t, pa.Basic.Expiration)
+}
+
+// The period is read from vs_account_fee_period when the allowance is adjusted.
+func TestRecomputeFeeAllowance_UsesVsAccountFeePeriod(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	vsOp := acc("vsop________________")
+	f.vs.period = 6 * time.Hour
+	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 10)))
+
+	pa := periodic(t, f, ctx, 1, vsOp)
+	require.Equal(t, 6*time.Hour, pa.Period)
+	require.True(t, pa.PeriodReset.Equal(ctx.BlockTime().Add(6*time.Hour)))
 }
 
 // A sync mid-period keeps the spent amount and the reset time.
@@ -71,7 +84,7 @@ func TestRecomputeFeeAllowance_CarriesSpentBudget(t *testing.T) {
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	now := ctx.BlockTime()
-	reset := now.Add(types.DefaultVsOperatorFeePeriod)
+	reset := now.Add(vstypes.DefaultVsAccountFeePeriod)
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 10)))
 
 	spendFee(t, f, ctx, 1, vsOp, uvna(7))
@@ -140,7 +153,7 @@ func TestRecomputeFeeAllowance_FreshBudgetAfterPeriod(t *testing.T) {
 
 	pa := periodic(t, f, ctx, 1, vsOp)
 	require.Equal(t, uvna(10), pa.PeriodCanSpend)
-	require.True(t, pa.PeriodReset.Equal(now.Add(25*time.Hour).Add(types.DefaultVsOperatorFeePeriod)))
+	require.True(t, pa.PeriodReset.Equal(now.Add(25*time.Hour).Add(vstypes.DefaultVsAccountFeePeriod)))
 }
 
 // A stale window-end pop (the window was extended) must not refill the budget.
@@ -160,7 +173,7 @@ func TestEndBlock_StalePopKeepsBudget(t *testing.T) {
 
 	pa := periodic(t, f, ctx, 1, vsOp)
 	require.Equal(t, uvna(3), pa.PeriodCanSpend)
-	require.True(t, pa.PeriodReset.Equal(now.Add(types.DefaultVsOperatorFeePeriod)))
+	require.True(t, pa.PeriodReset.Equal(now.Add(vstypes.DefaultVsAccountFeePeriod)))
 }
 
 // [MOD-DE-MSG-1-4] The operator path is untouched: an explicit re-grant seeds

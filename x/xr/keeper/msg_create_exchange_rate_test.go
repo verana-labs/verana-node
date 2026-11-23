@@ -47,6 +47,26 @@ func TestCreateExchangeRate_HappyPath(t *testing.T) {
 	require.False(t, xr.State)
 }
 
+func TestCreateExchangeRate_NoUpperValidityBound(t *testing.T) {
+	f := initFixture(t)
+	ms := keeper.NewMsgServerImpl(f.keeper)
+
+	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
+	require.NoError(t, err)
+
+	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
+		Authority:        authorityStr,
+		BaseAssetType:    cstypes.PricingAssetType_COIN,
+		BaseAsset:        "uverana",
+		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
+		QuoteAsset:       "USD",
+		Rate:             "100",
+		RateScale:        2,
+		ValidityDuration: 2 * 365 * 24 * time.Hour,
+	})
+	require.NoError(t, err)
+}
+
 func TestCreateExchangeRate_InvalidAuthority(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)

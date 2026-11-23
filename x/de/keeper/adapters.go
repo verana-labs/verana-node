@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/verana-labs/verana-node/x/de/types"
 )
@@ -47,4 +48,16 @@ type StubParticipantKeeper struct{}
 
 func (StubParticipantKeeper) ViewParticipant(_ context.Context, _ uint64) (types.ParticipantView, bool) {
 	return types.ParticipantView{}, false
+}
+
+// vsKeeperRef holds the VerifiableServiceKeeper behind a shared pointer.
+type vsKeeperRef struct {
+	K types.VerifiableServiceKeeper
+}
+
+// StubVerifiableServiceKeeper is the pre-wiring default: the fee period is unknown.
+type StubVerifiableServiceKeeper struct{}
+
+func (StubVerifiableServiceKeeper) VsAccountFeePeriod(context.Context) (time.Duration, error) {
+	return 0, fmt.Errorf("verifiable service keeper not wired: vs_account_fee_period unknown")
 }

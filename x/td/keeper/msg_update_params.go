@@ -9,21 +9,44 @@ import (
 	"github.com/verana-labs/verana-node/x/td/types"
 )
 
+// [MOD-TD-MSG-4] Update Module Parameters
 func (ms msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if ms.GetAuthority() != req.Authority {
 		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.GetAuthority(), req.Authority)
 	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	// trust_deposit_share_value is protocol state the BeginBlocker mutates each
-	// block, not a governable parameter — preserve the live value so a params
-	// update cannot reset it and corrupt every holder's yield.
-	req.Params.TrustDepositShareValue = ms.GetParams(ctx).TrustDepositShareValue
-
-	if err := ms.SetParams(ctx, req.Params); err != nil {
+	if err := req.Params.Validate(); err != nil {
 		return nil, err
 	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	current := ms.GetParams(ctx)
+	if err := req.Params.CheckImmutable(current); err != nil {
+		return nil, err
+	}
+
+	// [MOD-TD-MSG-4-3] a new tu_decay_rate waits for the next epoch boundary.
+	next := req.Params
+	next.TuDecayRate = current.TuDecayRate
+	if req.Params.TuDecayRate.Equal(current.TuDecayRate) {
+		if err := ms.PendingTuDecayRate.Remove(ctx); err != nil {
+			return nil, err
+		}
+	} else if err := ms.PendingTuDecayRate.Set(ctx, req.Params.TuDecayRate); err != nil {
+		return nil, err
+	}
+	if err := ms.SetParams(ctx, next); err != nil {
+		return nil, err
+	}
+
+	pending := ""
+	if rate, found, err := ms.GetPendingTuDecayRate(ctx); err != nil {
+		return nil, err
+	} else if found {
+		pending = rate.String()
+	}
+	attrs := append([]sdk.Attribute{sdk.NewAttribute(types.AttributeKeyAuthority, req.Authority)}, next.EventAttributes()...)
+	attrs = append(attrs, sdk.NewAttribute(types.AttributeKeyPendingTuDecayRate, pending))
+	ctx.EventManager().EmitEvent(sdk.NewEvent(types.EventTypeUpdateParams, attrs...))
 
 	return &types.MsgUpdateParamsResponse{}, nil
 }

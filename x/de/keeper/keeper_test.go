@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"cosmossdk.io/core/address"
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
@@ -19,6 +20,7 @@ import (
 	"github.com/verana-labs/verana-node/x/de/keeper"
 	module "github.com/verana-labs/verana-node/x/de/module"
 	"github.com/verana-labs/verana-node/x/de/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 // mockCorpKeeper backs AUTHZ-CHECK-5 in MOD-DE tests. It resolves any signing
@@ -117,6 +119,7 @@ type fixture struct {
 	corpKeeper   *mockCorpKeeper
 	participants *mockParticipantKeeper
 	feegrants    *memFeegrantKeeper
+	vs           *mockVsKeeper
 }
 
 func initFixture(t *testing.T) *fixture {
@@ -146,11 +149,8 @@ func initFixture(t *testing.T) *fixture {
 	k.SetParticipantKeeper(participants)
 	feegrants := newMemFeegrantKeeper()
 	k.SetFeegrantKeeper(feegrants)
-
-	// Initialize params
-	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
-		t.Fatalf("failed to set params: %v", err)
-	}
+	vs := &mockVsKeeper{period: vstypes.DefaultVsAccountFeePeriod}
+	k.SetVerifiableServiceKeeper(vs)
 
 	return &fixture{
 		ctx:          ctx,
@@ -159,5 +159,12 @@ func initFixture(t *testing.T) *fixture {
 		corpKeeper:   corpKeeper,
 		participants: participants,
 		feegrants:    feegrants,
+		vs:           vs,
 	}
+}
+
+type mockVsKeeper struct{ period time.Duration }
+
+func (m *mockVsKeeper) VsAccountFeePeriod(context.Context) (time.Duration, error) {
+	return m.period, nil
 }

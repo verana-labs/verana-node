@@ -145,3 +145,18 @@ func TestImportExportGenesisWithTrustDeposits(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, td2, storedTd2)
 }
+
+func TestGenesisRoundtripPendingTuDecayRate(t *testing.T) {
+	k, ctx := keepertest.TrustdepositKeeper(t)
+	trustdeposit.InitGenesis(ctx, k, *types.DefaultGenesis())
+	require.Nil(t, trustdeposit.ExportGenesis(ctx, k).PendingTuDecayRate)
+
+	pending := math.LegacyMustNewDecFromStr("0.002")
+	gs := *types.DefaultGenesis()
+	gs.PendingTuDecayRate = &pending
+	k2, ctx2 := keepertest.TrustdepositKeeper(t)
+	trustdeposit.InitGenesis(ctx2, k2, gs)
+	got := trustdeposit.ExportGenesis(ctx2, k2)
+	require.NotNil(t, got.PendingTuDecayRate)
+	require.Equal(t, pending, *got.PendingTuDecayRate)
+}

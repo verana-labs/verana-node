@@ -56,6 +56,8 @@ import (
 	demoduletypes "github.com/verana-labs/verana-node/x/de/types"
 	_ "github.com/verana-labs/verana-node/x/di/module"
 	dimoduletypes "github.com/verana-labs/verana-node/x/di/types"
+	_ "github.com/verana-labs/verana-node/x/ds/module"
+	dsmoduletypes "github.com/verana-labs/verana-node/x/ds/types"
 	ecosystemmoduletypes "github.com/verana-labs/verana-node/x/ec/types"
 	_ "github.com/verana-labs/verana-node/x/gf/module"
 	gfmoduletypes "github.com/verana-labs/verana-node/x/gf/types"
@@ -63,6 +65,8 @@ import (
 	poamoduletypes "github.com/verana-labs/verana-node/x/poa/types"
 	participantmoduletypes "github.com/verana-labs/verana-node/x/pp/types"
 	trustdepositmoduletypes "github.com/verana-labs/verana-node/x/td/types"
+	_ "github.com/verana-labs/verana-node/x/vs/module"
+	vsmoduletypes "github.com/verana-labs/verana-node/x/vs/types"
 	_ "github.com/verana-labs/verana-node/x/xr/module"
 	xrmoduletypes "github.com/verana-labs/verana-node/x/xr/types"
 
@@ -108,6 +112,8 @@ var (
 		demoduletypes.ModuleName,
 		dimoduletypes.ModuleName,
 		xrmoduletypes.ModuleName,
+		vsmoduletypes.ModuleName,
+		dsmoduletypes.ModuleName,
 		poamoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	}
@@ -342,6 +348,14 @@ var (
 			{
 				Name:   xrmoduletypes.ModuleName,
 				Config: appconfig.WrapAny(&xrmoduletypes.Module{Authority: CouncilAuthority}),
+			},
+			{
+				Name:   vsmoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&vsmoduletypes.Module{Authority: CouncilAuthority}),
+			},
+			{
+				Name:   dsmoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&dsmoduletypes.Module{Authority: CouncilAuthority}),
 			},
 			{
 				Name:   poamoduletypes.ModuleName,

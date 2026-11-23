@@ -3,18 +3,12 @@ package verana.de.v1;
 
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
-import "verana/de/v1/params.proto";
 import "verana/de/v1/types.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/de/types";
 
 // GenesisState defines the de module's genesis state.
 message GenesisState {
-  // params defines all the parameters of the module.
-  Params params = 1 [
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 
   // operator_authorizations is a list of all OperatorAuthorization objects
   repeated OperatorAuthorization operator_authorizations = 2 [(gogoproto.nullable) = false];

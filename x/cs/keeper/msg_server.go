@@ -143,27 +143,27 @@ func ValidateValidityPeriods(
 	msg *types.MsgUpdateCredentialSchema,
 ) error {
 	val := msg.GetIssuerGrantorValidationValidityPeriod().GetValue()
-	if val > 0 && val > params.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays {
+	if val > 0 && val > params.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays {
 		return errors.New("issuer grantor validation validity period exceeds maximum allowed days")
 	}
 
 	val = msg.GetVerifierGrantorValidationValidityPeriod().GetValue()
-	if val > 0 && val > params.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays {
+	if val > 0 && val > params.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays {
 		return errors.New("verifier grantor validation validity period exceeds maximum allowed days")
 	}
 
 	val = msg.GetIssuerValidationValidityPeriod().GetValue()
-	if val > 0 && val > params.CredentialSchemaIssuerValidationValidityPeriodMaxDays {
+	if val > 0 && val > params.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays {
 		return errors.New("issuer validation validity period exceeds maximum allowed days")
 	}
 
 	val = msg.GetVerifierValidationValidityPeriod().GetValue()
-	if val > 0 && val > params.CredentialSchemaVerifierValidationValidityPeriodMaxDays {
+	if val > 0 && val > params.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays {
 		return errors.New("verifier validation validity period exceeds maximum allowed days")
 	}
 
 	val = msg.GetHolderValidationValidityPeriod().GetValue()
-	if val > 0 && val > params.CredentialSchemaHolderValidationValidityPeriodMaxDays {
+	if val > 0 && val > params.CredentialSchemaHolderAccreditationValidityPeriodMaxDays {
 		return errors.New("holder validation validity period exceeds maximum allowed days")
 	}
 

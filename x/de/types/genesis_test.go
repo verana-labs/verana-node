@@ -19,19 +19,13 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
-			genState: &types.GenesisState{Params: types.DefaultParams()},
-			valid:    true,
-		},
-		{
-			desc:     "zero fee period is invalid",
+			desc:     "empty genesis state",
 			genState: &types.GenesisState{},
-			valid:    false,
+			valid:    true,
 		},
 		{
 			desc: "queue entry without participant is invalid",
 			genState: &types.GenesisState{
-				Params:         types.DefaultParams(),
 				WindowEndQueue: []types.WindowEndQueueEntry{{ParticipantId: 0}},
 			},
 			valid: false,

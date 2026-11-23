@@ -14,11 +14,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			EnhanceCustomCommand: true,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
-					RpcMethod: "Params",
-					Use:       "params",
-					Short:     "Shows the parameters of the module",
-				},
-				{
 					// Skip autocli for this RPC -- custom command provided in cli_query.go
 					// to work around gogo/pulsar proto codec mismatch in autocli JSON rendering.
 					RpcMethod: "ListOperatorAuthorizations",
@@ -36,10 +31,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			Service:              types.Msg_serviceDesc.ServiceName,
 			EnhanceCustomCommand: true, // only required if you want to use the custom command
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
-				{
-					RpcMethod: "UpdateParams",
-					Skip:      true, // skipped because authority gated
-				},
 				{
 					RpcMethod: "GrantOperatorAuthorization",
 					Use:       "grant-operator-authz [grantee]",

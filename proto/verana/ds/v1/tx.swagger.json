@@ -1,0 +1,136 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "verana/ds/v1/tx.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Msg"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/verana.ds.v1.Msg/UpdateParams": {
+      "post": {
+        "summary": "[MOD-DS-MSG-1] Update Module Parameters, executed through a council proposal.",
+        "operationId": "Msg_UpdateParams",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.ds.v1.MsgUpdateParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgUpdateParams is the Msg/UpdateParams request type.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/verana.ds.v1.MsgUpdateParams"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "verana.ds.v1.MsgUpdateParams": {
+      "type": "object",
+      "properties": {
+        "authority": {
+          "type": "string",
+          "description": "authority is the council account."
+        },
+        "params": {
+          "$ref": "#/definitions/verana.ds.v1.Params",
+          "description": "NOTE: All parameters must be supplied."
+        }
+      },
+      "description": "MsgUpdateParams is the Msg/UpdateParams request type."
+    },
+    "verana.ds.v1.MsgUpdateParamsResponse": {
+      "type": "object",
+      "description": "MsgUpdateParamsResponse defines the response structure for executing a\nMsgUpdateParams message."
+    },
+    "verana.ds.v1.Params": {
+      "type": "object",
+      "properties": {
+        "validator_node_budget": {
+          "type": "string"
+        },
+        "validator_target_uptime": {
+          "type": "string"
+        },
+        "validator_min_uptime": {
+          "type": "string"
+        },
+        "council_budget": {
+          "type": "string"
+        },
+        "foundation_budget": {
+          "type": "string"
+        },
+        "foundation_account": {
+          "type": "string"
+        },
+        "vna_holder_max_yield_rate": {
+          "type": "string",
+          "title": "yearly cap, as a fraction of the bonded amount"
+        },
+        "unbonding_period": {
+          "type": "string"
+        },
+        "bonding_enabled": {
+          "type": "boolean"
+        }
+      },
+      "description": "Params holds the Distribution group of GlobalVariables. Budgets are per\nepoch, in minor units of the main fiat currency."
+    }
+  }
+}

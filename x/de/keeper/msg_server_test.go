@@ -13,6 +13,7 @@ import (
 
 	"github.com/verana-labs/verana-node/x/de/keeper"
 	"github.com/verana-labs/verana-node/x/de/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 func setupMsgServer(t *testing.T) (*fixture, types.MsgServer, sdk.Context) {
@@ -463,9 +464,9 @@ func TestRecomputeFeeAllowance_Sum(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, fee(10), fg.SpendLimit)
 	require.NotNil(t, fg.Period)
-	require.Equal(t, types.DefaultVsOperatorFeePeriod, *fg.Period)
+	require.Equal(t, vstypes.DefaultVsAccountFeePeriod, *fg.Period)
 	require.NotNil(t, fg.Expiration)
-	require.True(t, fg.Expiration.Equal(now.Add(types.DefaultVsOperatorFeePeriod)))
+	require.True(t, fg.Expiration.Equal(now.Add(vstypes.DefaultVsAccountFeePeriod)))
 	require.ElementsMatch(t, []string{mtCSPS, mtValidated}, fg.MsgTypes)
 
 	// Pending entries contribute nothing: with only 12 left, the allowance goes.

@@ -14,4 +14,5 @@ var (
 	ErrInvalidDigestSRI     = errors.Register(ModuleName, 1107, "invalid digest_sri")
 	ErrNoActivatableVersion = errors.Register(ModuleName, 1108, "no governance framework version available to activate")
 	ErrMissingDefaultLang   = errors.Register(ModuleName, 1109, "no document found for the default language of this version")
+	ErrInvalidParams        = errors.Register(ModuleName, 1111, "invalid parameters")
 )

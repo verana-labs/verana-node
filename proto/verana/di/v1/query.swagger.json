@@ -47,29 +47,6 @@
           "Query"
         ]
       }
-    },
-    "/di/v1/params": {
-      "get": {
-        "summary": "Parameters queries the parameters of the module.",
-        "operationId": "Query_Params",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.di.v1.QueryParamsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "tags": [
-          "Query"
-        ]
-      }
     }
   },
   "definitions": {
@@ -116,10 +93,6 @@
       },
       "description": "DigestInfo is the stored digest record returned by queries."
     },
-    "verana.di.v1.Params": {
-      "type": "object",
-      "description": "Params defines the parameters for the module."
-    },
     "verana.di.v1.QueryGetDigestResponse": {
       "type": "object",
       "properties": {
@@ -129,16 +102,6 @@
         }
       },
       "description": "QueryGetDigestResponse is the response type for the Query/GetDigest RPC method."
-    },
-    "verana.di.v1.QueryParamsResponse": {
-      "type": "object",
-      "properties": {
-        "params": {
-          "$ref": "#/definitions/verana.di.v1.Params",
-          "description": "params holds all the parameters of this module."
-        }
-      },
-      "description": "QueryParamsResponse is response type for the Query/Params RPC method."
     }
   }
 }

@@ -6,7 +6,6 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
-import { Params } from "./params";
 import { FeeGrant, OperatorAuthorization, VSOperatorAuthorization, WindowEndQueueEntry } from "./types";
 import Long = require("long");
 
@@ -14,10 +13,6 @@ export const protobufPackage = "verana.de.v1";
 
 /** GenesisState defines the de module's genesis state. */
 export interface GenesisState {
-  /** params defines all the parameters of the module. */
-  params:
-    | Params
-    | undefined;
   /** operator_authorizations is a list of all OperatorAuthorization objects */
   operatorAuthorizations: OperatorAuthorization[];
   /** fee_grants is a list of all FeeGrant objects */
@@ -33,7 +28,6 @@ export interface GenesisState {
 
 function createBaseGenesisState(): GenesisState {
   return {
-    params: undefined,
     operatorAuthorizations: [],
     feeGrants: [],
     vsOperatorAuthorizations: [],
@@ -45,9 +39,6 @@ function createBaseGenesisState(): GenesisState {
 
 export const GenesisState = {
   encode(message: GenesisState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.params !== undefined) {
-      Params.encode(message.params, writer.uint32(10).fork()).ldelim();
-    }
     for (const v of message.operatorAuthorizations) {
       OperatorAuthorization.encode(v!, writer.uint32(18).fork()).ldelim();
     }
@@ -76,13 +67,6 @@ export const GenesisState = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.params = Params.decode(reader, reader.uint32());
-          continue;
         case 2:
           if (tag !== 18) {
             break;
@@ -136,7 +120,6 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     return {
-      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
       operatorAuthorizations: globalThis.Array.isArray(object?.operatorAuthorizations)
         ? object.operatorAuthorizations.map((e: any) => OperatorAuthorization.fromJSON(e))
         : [],
@@ -158,9 +141,6 @@ export const GenesisState = {
 
   toJSON(message: GenesisState): unknown {
     const obj: any = {};
-    if (message.params !== undefined) {
-      obj.params = Params.toJSON(message.params);
-    }
     if (message.operatorAuthorizations?.length) {
       obj.operatorAuthorizations = message.operatorAuthorizations.map((e) => OperatorAuthorization.toJSON(e));
     }
@@ -187,9 +167,6 @@ export const GenesisState = {
   },
   fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(object: I): GenesisState {
     const message = createBaseGenesisState();
-    message.params = (object.params !== undefined && object.params !== null)
-      ? Params.fromPartial(object.params)
-      : undefined;
     message.operatorAuthorizations = object.operatorAuthorizations?.map((e) => OperatorAuthorization.fromPartial(e)) ||
       [];
     message.feeGrants = object.feeGrants?.map((e) => FeeGrant.fromPartial(e)) || [];

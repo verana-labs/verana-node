@@ -25,6 +25,7 @@ import (
 	ppkeeper "github.com/verana-labs/verana-node/x/pp/keeper"
 	pptypes "github.com/verana-labs/verana-node/x/pp/types"
 	tdtypes "github.com/verana-labs/verana-node/x/td/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 func feegrantTestApp(t *testing.T) (*App, sdk.Context) {
@@ -35,7 +36,7 @@ func feegrantTestApp(t *testing.T) (*App, sdk.Context) {
 	a, err := New(log.NewNopLogger(), dbm.NewMemDB(), true, appOptions)
 	require.NoError(t, err)
 	ctx := a.NewContextLegacy(true, cmtproto.Header{Height: 10, Time: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)}).WithIsCheckTx(false)
-	require.NoError(t, a.DeKeeper.Params.Set(ctx, detypes.DefaultParams()))
+	require.NoError(t, a.VsKeeper.Params.Set(ctx, vstypes.DefaultParams()))
 	return a, ctx
 }
 

@@ -13,10 +13,6 @@ import (
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) error {
-	if err := k.Params.Set(ctx, genState.Params); err != nil {
-		return err
-	}
-
 	var maxOAID uint64
 	for _, oa := range genState.OperatorAuthorizations {
 		if err := k.OperatorAuthorizations.Set(ctx, oa.Id, oa); err != nil {
@@ -84,12 +80,7 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 // ExportGenesis returns the module's exported genesis.
 func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) {
 	var err error
-
 	genesis := types.DefaultGenesis()
-	genesis.Params, err = k.Params.Get(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	// Operator authorizations (keyed by id).
 	oaList := []types.OperatorAuthorization{}

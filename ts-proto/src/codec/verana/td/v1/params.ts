@@ -6,51 +6,81 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import { Duration } from "../../../google/protobuf/duration";
+import Long = require("long");
 
 export const protobufPackage = "verana.td.v1";
 
-/** Params defines the parameters for the module. */
+/**
+ * Params holds the Trust Deposit and Trust Unit Index, Native denom and
+ * Network fees groups of GlobalVariables.
+ */
 export interface Params {
-  trustDepositShareValue: string;
   trustDepositRate: string;
-  walletUserAgentRewardRate: string;
-  userAgentRewardRate: string;
-  /** trust_deposit_max_yield_rate is the maximum annualized yield rate (e.g. 0.15 for 15%) */
-  trustDepositMaxYieldRate: string;
-  /** trust_deposit_block_reward_share is the fraction of block rewards allocated to trust deposit yield (e.g. "0.2" for 20%) */
-  trustDepositBlockRewardShare: string;
+  /** immutable */
+  mainFiatCurrency: string;
+  /** immutable */
+  tuPegValueGenesis: string;
+  /** the rate in force; an update is stored as pending until the next epoch boundary */
+  tuDecayRate: string;
+  /** immutable */
+  epochLength: Duration | undefined;
+  vuaRewardRate: string;
+  /** immutable */
+  vnaTotalSupply: number;
+  networkGasPrice: string;
+  /** one entry per protobuf type URL */
+  maxGasPerMsgType: MaxGasEntry[];
+}
+
+/** MaxGasEntry is one entry of the max_gas_per_msg_type map. */
+export interface MaxGasEntry {
+  msgTypeUrl: string;
+  maxGas: number;
 }
 
 function createBaseParams(): Params {
   return {
-    trustDepositShareValue: "",
     trustDepositRate: "",
-    walletUserAgentRewardRate: "",
-    userAgentRewardRate: "",
-    trustDepositMaxYieldRate: "",
-    trustDepositBlockRewardShare: "",
+    mainFiatCurrency: "",
+    tuPegValueGenesis: "",
+    tuDecayRate: "",
+    epochLength: undefined,
+    vuaRewardRate: "",
+    vnaTotalSupply: 0,
+    networkGasPrice: "",
+    maxGasPerMsgType: [],
   };
 }
 
 export const Params = {
   encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.trustDepositShareValue !== "") {
-      writer.uint32(10).string(message.trustDepositShareValue);
-    }
     if (message.trustDepositRate !== "") {
-      writer.uint32(18).string(message.trustDepositRate);
+      writer.uint32(10).string(message.trustDepositRate);
     }
-    if (message.walletUserAgentRewardRate !== "") {
-      writer.uint32(26).string(message.walletUserAgentRewardRate);
+    if (message.mainFiatCurrency !== "") {
+      writer.uint32(18).string(message.mainFiatCurrency);
     }
-    if (message.userAgentRewardRate !== "") {
-      writer.uint32(34).string(message.userAgentRewardRate);
+    if (message.tuPegValueGenesis !== "") {
+      writer.uint32(26).string(message.tuPegValueGenesis);
     }
-    if (message.trustDepositMaxYieldRate !== "") {
-      writer.uint32(42).string(message.trustDepositMaxYieldRate);
+    if (message.tuDecayRate !== "") {
+      writer.uint32(34).string(message.tuDecayRate);
     }
-    if (message.trustDepositBlockRewardShare !== "") {
-      writer.uint32(50).string(message.trustDepositBlockRewardShare);
+    if (message.epochLength !== undefined) {
+      Duration.encode(message.epochLength, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.vuaRewardRate !== "") {
+      writer.uint32(50).string(message.vuaRewardRate);
+    }
+    if (message.vnaTotalSupply !== 0) {
+      writer.uint32(56).uint64(message.vnaTotalSupply);
+    }
+    if (message.networkGasPrice !== "") {
+      writer.uint32(66).string(message.networkGasPrice);
+    }
+    for (const v of message.maxGasPerMsgType) {
+      MaxGasEntry.encode(v!, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -67,42 +97,63 @@ export const Params = {
             break;
           }
 
-          message.trustDepositShareValue = reader.string();
+          message.trustDepositRate = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.trustDepositRate = reader.string();
+          message.mainFiatCurrency = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
-          message.walletUserAgentRewardRate = reader.string();
+          message.tuPegValueGenesis = reader.string();
           continue;
         case 4:
           if (tag !== 34) {
             break;
           }
 
-          message.userAgentRewardRate = reader.string();
+          message.tuDecayRate = reader.string();
           continue;
         case 5:
           if (tag !== 42) {
             break;
           }
 
-          message.trustDepositMaxYieldRate = reader.string();
+          message.epochLength = Duration.decode(reader, reader.uint32());
           continue;
         case 6:
           if (tag !== 50) {
             break;
           }
 
-          message.trustDepositBlockRewardShare = reader.string();
+          message.vuaRewardRate = reader.string();
+          continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.vnaTotalSupply = longToNumber(reader.uint64() as Long);
+          continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.networkGasPrice = reader.string();
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.maxGasPerMsgType.push(MaxGasEntry.decode(reader, reader.uint32()));
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -115,42 +166,48 @@ export const Params = {
 
   fromJSON(object: any): Params {
     return {
-      trustDepositShareValue: isSet(object.trustDepositShareValue)
-        ? globalThis.String(object.trustDepositShareValue)
-        : "",
       trustDepositRate: isSet(object.trustDepositRate) ? globalThis.String(object.trustDepositRate) : "",
-      walletUserAgentRewardRate: isSet(object.walletUserAgentRewardRate)
-        ? globalThis.String(object.walletUserAgentRewardRate)
-        : "",
-      userAgentRewardRate: isSet(object.userAgentRewardRate) ? globalThis.String(object.userAgentRewardRate) : "",
-      trustDepositMaxYieldRate: isSet(object.trustDepositMaxYieldRate)
-        ? globalThis.String(object.trustDepositMaxYieldRate)
-        : "",
-      trustDepositBlockRewardShare: isSet(object.trustDepositBlockRewardShare)
-        ? globalThis.String(object.trustDepositBlockRewardShare)
-        : "",
+      mainFiatCurrency: isSet(object.mainFiatCurrency) ? globalThis.String(object.mainFiatCurrency) : "",
+      tuPegValueGenesis: isSet(object.tuPegValueGenesis) ? globalThis.String(object.tuPegValueGenesis) : "",
+      tuDecayRate: isSet(object.tuDecayRate) ? globalThis.String(object.tuDecayRate) : "",
+      epochLength: isSet(object.epochLength) ? Duration.fromJSON(object.epochLength) : undefined,
+      vuaRewardRate: isSet(object.vuaRewardRate) ? globalThis.String(object.vuaRewardRate) : "",
+      vnaTotalSupply: isSet(object.vnaTotalSupply) ? globalThis.Number(object.vnaTotalSupply) : 0,
+      networkGasPrice: isSet(object.networkGasPrice) ? globalThis.String(object.networkGasPrice) : "",
+      maxGasPerMsgType: globalThis.Array.isArray(object?.maxGasPerMsgType)
+        ? object.maxGasPerMsgType.map((e: any) => MaxGasEntry.fromJSON(e))
+        : [],
     };
   },
 
   toJSON(message: Params): unknown {
     const obj: any = {};
-    if (message.trustDepositShareValue !== "") {
-      obj.trustDepositShareValue = message.trustDepositShareValue;
-    }
     if (message.trustDepositRate !== "") {
       obj.trustDepositRate = message.trustDepositRate;
     }
-    if (message.walletUserAgentRewardRate !== "") {
-      obj.walletUserAgentRewardRate = message.walletUserAgentRewardRate;
+    if (message.mainFiatCurrency !== "") {
+      obj.mainFiatCurrency = message.mainFiatCurrency;
     }
-    if (message.userAgentRewardRate !== "") {
-      obj.userAgentRewardRate = message.userAgentRewardRate;
+    if (message.tuPegValueGenesis !== "") {
+      obj.tuPegValueGenesis = message.tuPegValueGenesis;
     }
-    if (message.trustDepositMaxYieldRate !== "") {
-      obj.trustDepositMaxYieldRate = message.trustDepositMaxYieldRate;
+    if (message.tuDecayRate !== "") {
+      obj.tuDecayRate = message.tuDecayRate;
     }
-    if (message.trustDepositBlockRewardShare !== "") {
-      obj.trustDepositBlockRewardShare = message.trustDepositBlockRewardShare;
+    if (message.epochLength !== undefined) {
+      obj.epochLength = Duration.toJSON(message.epochLength);
+    }
+    if (message.vuaRewardRate !== "") {
+      obj.vuaRewardRate = message.vuaRewardRate;
+    }
+    if (message.vnaTotalSupply !== 0) {
+      obj.vnaTotalSupply = Math.round(message.vnaTotalSupply);
+    }
+    if (message.networkGasPrice !== "") {
+      obj.networkGasPrice = message.networkGasPrice;
+    }
+    if (message.maxGasPerMsgType?.length) {
+      obj.maxGasPerMsgType = message.maxGasPerMsgType.map((e) => MaxGasEntry.toJSON(e));
     }
     return obj;
   },
@@ -160,12 +217,91 @@ export const Params = {
   },
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
     const message = createBaseParams();
-    message.trustDepositShareValue = object.trustDepositShareValue ?? "";
     message.trustDepositRate = object.trustDepositRate ?? "";
-    message.walletUserAgentRewardRate = object.walletUserAgentRewardRate ?? "";
-    message.userAgentRewardRate = object.userAgentRewardRate ?? "";
-    message.trustDepositMaxYieldRate = object.trustDepositMaxYieldRate ?? "";
-    message.trustDepositBlockRewardShare = object.trustDepositBlockRewardShare ?? "";
+    message.mainFiatCurrency = object.mainFiatCurrency ?? "";
+    message.tuPegValueGenesis = object.tuPegValueGenesis ?? "";
+    message.tuDecayRate = object.tuDecayRate ?? "";
+    message.epochLength = (object.epochLength !== undefined && object.epochLength !== null)
+      ? Duration.fromPartial(object.epochLength)
+      : undefined;
+    message.vuaRewardRate = object.vuaRewardRate ?? "";
+    message.vnaTotalSupply = object.vnaTotalSupply ?? 0;
+    message.networkGasPrice = object.networkGasPrice ?? "";
+    message.maxGasPerMsgType = object.maxGasPerMsgType?.map((e) => MaxGasEntry.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseMaxGasEntry(): MaxGasEntry {
+  return { msgTypeUrl: "", maxGas: 0 };
+}
+
+export const MaxGasEntry = {
+  encode(message: MaxGasEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.msgTypeUrl !== "") {
+      writer.uint32(10).string(message.msgTypeUrl);
+    }
+    if (message.maxGas !== 0) {
+      writer.uint32(16).uint64(message.maxGas);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MaxGasEntry {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMaxGasEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.msgTypeUrl = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.maxGas = longToNumber(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MaxGasEntry {
+    return {
+      msgTypeUrl: isSet(object.msgTypeUrl) ? globalThis.String(object.msgTypeUrl) : "",
+      maxGas: isSet(object.maxGas) ? globalThis.Number(object.maxGas) : 0,
+    };
+  },
+
+  toJSON(message: MaxGasEntry): unknown {
+    const obj: any = {};
+    if (message.msgTypeUrl !== "") {
+      obj.msgTypeUrl = message.msgTypeUrl;
+    }
+    if (message.maxGas !== 0) {
+      obj.maxGas = Math.round(message.maxGas);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MaxGasEntry>, I>>(base?: I): MaxGasEntry {
+    return MaxGasEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MaxGasEntry>, I>>(object: I): MaxGasEntry {
+    const message = createBaseMaxGasEntry();
+    message.msgTypeUrl = object.msgTypeUrl ?? "";
+    message.maxGas = object.maxGas ?? 0;
     return message;
   },
 };
@@ -181,6 +317,21 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (long.lt(globalThis.Number.MIN_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

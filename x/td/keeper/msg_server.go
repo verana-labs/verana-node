@@ -60,8 +60,8 @@ func (ms msgServer) ReclaimTrustDepositYield(goCtx context.Context, msg *types.M
 	}
 
 	// [MOD-TD-MSG-2-2-1] claimable_yield = share*value - deposit; abort if <= 0.
-	params := ms.Keeper.GetParams(ctx)
-	claimableYield := td.Share.Mul(params.TrustDepositShareValue).Sub(math.LegacyNewDecFromInt(math.NewIntFromUint64(td.Deposit)))
+	shareValue := ms.Keeper.GetTrustDepositShareValue(ctx)
+	claimableYield := td.Share.Mul(shareValue).Sub(math.LegacyNewDecFromInt(math.NewIntFromUint64(td.Deposit)))
 	if !claimableYield.IsPositive() {
 		return nil, fmt.Errorf("no claimable yield")
 	}
@@ -76,7 +76,7 @@ func (ms msgServer) ReclaimTrustDepositYield(goCtx context.Context, msg *types.M
 	}
 
 	// [MOD-TD-MSG-2-3] share -= claimable_yield / share_value
-	sharesToReduce := ms.Keeper.AmountToShare(claimed, params.TrustDepositShareValue)
+	sharesToReduce := ms.Keeper.AmountToShare(claimed, shareValue)
 	td.Share = td.Share.Sub(sharesToReduce)
 
 	// Validate corporation address
@@ -168,9 +168,7 @@ func (ms msgServer) SlashTrustDeposit(goCtx context.Context, msg *types.MsgSlash
 	// [MOD-TD-MSG-5-3] Execute the slash
 	now := ctx.BlockTime()
 
-	// Get global variables for share calculation
-	params := ms.Keeper.GetParams(ctx)
-	shareValue := params.TrustDepositShareValue
+	shareValue := ms.Keeper.GetTrustDepositShareValue(ctx)
 	if !shareValue.IsPositive() {
 		return nil, fmt.Errorf("trust_deposit_share_value must be positive")
 	}
@@ -272,14 +270,13 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	}
 
 	// [MOD-TD-MSG-6-3] Execution
-	params := ms.Keeper.GetParams(ctx)
 	now := ctx.BlockTime()
 
 	// Update trust deposit fields
 	td.Deposit += msg.Deposit
 
 	// td.share = td.share + deposit / GlobalVariables.trust_deposit_share_value
-	shareIncrease := ms.Keeper.AmountToShare(msg.Deposit, params.TrustDepositShareValue)
+	shareIncrease := ms.Keeper.AmountToShare(msg.Deposit, ms.Keeper.GetTrustDepositShareValue(ctx))
 	td.Share = td.Share.Add(shareIncrease)
 
 	// [MOD-TD-MSG-6-3] slashed_deposit stays cumulative (only MOD-TD-MSG-5 increments it);

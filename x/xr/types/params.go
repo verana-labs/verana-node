@@ -1,25 +1,34 @@
 package types
 
-import "time"
+import (
+	"time"
 
-const DefaultMaxValidityDuration = 365 * 24 * time.Hour
+	errorsmod "cosmossdk.io/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+// DefaultTwapWindow is a placeholder; the governance framework defines twap_window.
+const DefaultTwapWindow = time.Hour
 
 // NewParams creates a new Params instance.
-func NewParams() Params {
-	return Params{
-		MaxValidityDuration: DefaultMaxValidityDuration,
-	}
+func NewParams(twapWindow time.Duration) Params {
+	return Params{TwapWindow: twapWindow}
 }
 
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
-	return NewParams()
+	return NewParams(DefaultTwapWindow)
 }
 
-// Validate validates the set of params.
+// Validate checks [MOD-XR-MSG-6-2-1].
 func (p Params) Validate() error {
-	if p.MaxValidityDuration <= 0 {
-		return ErrInvalidRequest.Wrap("max_validity_duration must be positive")
+	if p.TwapWindow <= 0 {
+		return errorsmod.Wrap(ErrInvalidParams, "twap_window must be positive")
 	}
 	return nil
+}
+
+// EventAttributes lists every parameter value for the update event.
+func (p Params) EventAttributes() []sdk.Attribute {
+	return []sdk.Attribute{sdk.NewAttribute("twap_window", p.TwapWindow.String())}
 }

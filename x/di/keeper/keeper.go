@@ -15,8 +15,7 @@ type Keeper struct {
 	storeService corestore.KVStoreService
 	cdc          codec.Codec
 	addressCodec address.Codec
-	// Address capable of executing a MsgUpdateParams message.
-	// Typically, this should be the council account.
+	// authority is the council account.
 	authority []byte
 
 	// module references
@@ -24,7 +23,6 @@ type Keeper struct {
 	coKeeper         types.CorporationKeeper
 
 	Schema  collections.Schema
-	Params  collections.Item[types.Params]
 	Digests collections.Map[string, types.Digest]
 }
 
@@ -56,7 +54,6 @@ func NewKeeper(
 		delegationKeeper: delegationKeeper,
 		coKeeper:         coKeeper,
 
-		Params:  collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
 		Digests: collections.NewMap(sb, types.DigestsKey, "digests", collections.StringKey, codec.CollValue[types.Digest](cdc)),
 	}
 

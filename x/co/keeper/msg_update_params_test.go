@@ -13,14 +13,14 @@ import (
 )
 
 func TestMsgUpdateParams_AuthorityGating(t *testing.T) {
-	t.Run("happy path: gov authority", func(t *testing.T) {
+	t.Run("aborts for the authority: the module owns no parameter", func(t *testing.T) {
 		k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, &mockGroup{}, &mockGF{})
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.UpdateParams(ctx, &types.MsgUpdateParams{
 			Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 			Params:    types.DefaultParams(),
 		})
-		require.NoError(t, err)
+		require.ErrorIs(t, err, types.ErrNoParams)
 	})
 
 	t.Run("rejects non-gov authority", func(t *testing.T) {
