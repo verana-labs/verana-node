@@ -35,6 +35,7 @@ import { ParticipantRole, OptionalUInt64 } from "../../../src/codec/verana/pp/v1
 import { IssuerOnboardingMode, VerifierOnboardingMode } from "../../../src/codec/verana/cs/v1/types";
 import { getPermAuthzSetup } from "../helpers/journeyResults";
 import { createPermPrerequisites, extractIdFromEvents } from "../helpers/permissionHelpers";
+import { MsgType } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
@@ -112,7 +113,7 @@ async function main() {
         vsOperator: vsOperatorAccount.address,
         // Spec v4-rc2: presence of msg_types (not a boolean flag) triggers the
         // VSOA record; the vs_operator is authorized to run CSPS on behalf.
-        vsOperatorAuthzMsgTypes: [typeUrls.MsgCreateOrUpdateParticipantSession],
+        vsOperatorAuthzMsgTypes: [MsgType.MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE],
       }),
     };
 

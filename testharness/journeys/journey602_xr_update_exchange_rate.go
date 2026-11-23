@@ -73,7 +73,7 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.xr.v1.MsgUpdateExchangeRate"},
+		nil, // XR messages have no MsgType
 	)
 	if err != nil {
 		return fmt.Errorf("step 3 failed: %w", err)

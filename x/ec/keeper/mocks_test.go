@@ -5,8 +5,9 @@ import (
 	"errors"
 	"time"
 
-	gftypes "github.com/verana-labs/verana-node/x/gf/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/ec/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // mockDelegation: configurable AUTHZ-CHECK result. Default returns nil (auth granted).
@@ -15,7 +16,7 @@ type mockDelegation struct {
 	calls int
 }
 
-func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	m.calls++
 	return m.err
 }
@@ -68,7 +69,7 @@ type mockGF struct {
 	createErr   error
 	createCalls int
 	createArgs  struct {
-		ecID                            uint64
+		ecID                           uint64
 		language, docURL, docDigestSRI string
 	}
 

@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	ectypes "github.com/verana-labs/verana-node/x/ec/types"
 )
 
@@ -56,5 +57,5 @@ type CorporationKeeper interface {
 
 // DelegationKeeper backs AUTHZ-CHECK for delegable Msgs in x/cs.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time) error
+	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgType detypes.MsgType, now time.Time) error
 }

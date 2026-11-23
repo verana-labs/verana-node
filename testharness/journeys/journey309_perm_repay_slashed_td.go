@@ -8,6 +8,7 @@ import (
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionRepaySlashedTDJourney implements Journey 309: Test RepayPermissionSlashedTrustDeposit
@@ -67,7 +68,7 @@ func RunPermissionRepaySlashedTDJourney(ctx context.Context, client cosmosclient
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgRepayParticipantSlashedTrustDeposit"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_REPAY_SLASH},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)

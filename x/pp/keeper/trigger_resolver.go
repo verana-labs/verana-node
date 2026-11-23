@@ -8,6 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -65,7 +66,7 @@ func (ms msgServer) TriggerResolver(goCtx context.Context, msg *types.MsgTrigger
 func (ms msgServer) authorizeTriggerResolver(
 	ctx sdk.Context, corpAccount string, corpID uint64, operator string, perm types.Participant, now time.Time,
 ) error {
-	const msgType = types.MsgTriggerResolverTypeURL
+	const msgType = detypes.MsgType_MSG_TYPE_TRIGGER_RESOLVER
 
 	// Path 1 — vs_operator of the target participant (AUTHZ-CHECK-3).
 	if corpID == perm.CorporationId && operator == perm.VsOperator {

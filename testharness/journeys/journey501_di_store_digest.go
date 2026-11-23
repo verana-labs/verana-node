@@ -10,6 +10,7 @@ import (
 	ditypes "github.com/verana-labs/verana-node/x/di/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunDiStoreDigestJourney implements Journey 501: DI Store Digest
@@ -65,7 +66,7 @@ func RunDiStoreDigestJourney(ctx context.Context, client cosmosclient.Client) er
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.di.v1.MsgStoreDigest"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_STORE_DIGEST},
 	)
 	if err != nil {
 		return fmt.Errorf("step 3 failed: %w", err)

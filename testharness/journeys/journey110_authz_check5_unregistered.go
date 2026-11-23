@@ -50,7 +50,7 @@ func RunAuthzCheck5UnregisteredJourney(ctx context.Context, client cosmosclient.
 		Corporation: addr,
 		Operator:    addr, // self-grant (operator == corporation): AUTHZ-CHECK-1 is skipped, AUTHZ-CHECK-5 is the gate
 		Grantee:     addr,
-		MsgTypes:    []string{"/verana.di.v1.MsgStoreDigest"},
+		MsgTypes:    []detypes.MsgType{detypes.MsgType_MSG_TYPE_STORE_DIGEST},
 	}
 
 	txResp, err := client.BroadcastTx(ctx, unregistered, msg)

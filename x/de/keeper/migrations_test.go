@@ -17,7 +17,7 @@ func TestMigrate1to2_FillsOperatorIndex(t *testing.T) {
 	vsOp := acc("vsop_migrate________")
 	require.NoError(t, k.VSOperatorAuthorizations.Set(f.ctx, 1, types.VSOperatorAuthorization{
 		Id: 1, CorporationId: 4, VsOperator: vsOp,
-		Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 9, MsgTypes: []string{mtValidated}}},
+		Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 9, MsgTypes: []types.MsgType{mtValidated}}},
 	}))
 
 	require.NoError(t, keeper.NewMigrator(k).Migrate1to2(sdk.UnwrapSDKContext(f.ctx)))

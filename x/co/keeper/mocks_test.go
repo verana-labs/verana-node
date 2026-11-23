@@ -8,6 +8,7 @@ import (
 	"github.com/verana-labs/cosmos-group"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
@@ -18,7 +19,7 @@ type mockDelegation struct {
 	calls int
 }
 
-func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	m.calls++
 	return m.err
 }

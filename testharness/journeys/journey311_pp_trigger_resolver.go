@@ -13,6 +13,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionTriggerResolverJourney implements Journey 311: PP Trigger Resolver
@@ -39,13 +40,13 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 	// up front. Grants are in-place replacements.
 	// =========================================================================
 	fmt.Println("\n--- Step 1: Grant operator authz (incl. MsgTriggerResolver) ---")
-	msgTypes := []string{
-		"/verana.ec.v1.MsgCreateEcosystem",
-		"/verana.cs.v1.MsgCreateCredentialSchema",
-		"/verana.pp.v1.MsgCreateRootParticipant",
-		"/verana.pp.v1.MsgStartParticipantOP",
-		"/verana.pp.v1.MsgSetParticipantOPToValidated",
-		"/verana.pp.v1.MsgTriggerResolver",
+	msgTypes := []detypes.MsgType{
+		detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM,
+		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+		detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+		detypes.MsgType_MSG_TYPE_START_ONBOARDING,
+		detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
+		detypes.MsgType_MSG_TYPE_TRIGGER_RESOLVER,
 	}
 	if err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,

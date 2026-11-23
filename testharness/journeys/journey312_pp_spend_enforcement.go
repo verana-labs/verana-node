@@ -62,12 +62,12 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, policyAddr, math.NewInt(200_000_000))
 	waitForTx("policy top-up")
 
-	baseMsgTypes := []string{
-		"/verana.ec.v1.MsgCreateEcosystem",
-		"/verana.cs.v1.MsgCreateCredentialSchema",
-		"/verana.pp.v1.MsgCreateRootParticipant",
-		"/verana.pp.v1.MsgStartParticipantOP",
-		"/verana.pp.v1.MsgSetParticipantOPToValidated",
+	baseMsgTypes := []detypes.MsgType{
+		detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM,
+		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+		detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+		detypes.MsgType_MSG_TYPE_START_ONBOARDING,
+		detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
 	}
 
 	// =========================================================================
@@ -220,9 +220,9 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	// tiny limit (negative).
 	// =========================================================================
 	fmt.Println("\n=== TEST 3: RepayParticipantSlashedTrustDeposit debits spend_limit ===")
-	test3MsgTypes := append(append([]string{}, baseMsgTypes...),
-		"/verana.pp.v1.MsgSlashParticipantTrustDeposit",
-		"/verana.pp.v1.MsgRepayParticipantSlashedTrustDeposit",
+	test3MsgTypes := append(append([]detypes.MsgType{}, baseMsgTypes...),
+		detypes.MsgType_MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT,
+		detypes.MsgType_MSG_TYPE_REPAY_SLASH,
 	)
 
 	fmt.Println("\n--- Step 10: Prep (grant generous, build ECOSYSTEM schema+root+validated ISSUER child) ---")

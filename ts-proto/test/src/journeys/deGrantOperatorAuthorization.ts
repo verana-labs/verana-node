@@ -36,6 +36,7 @@ import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/t
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
 import { saveEcAuthzSetup, getActiveCorporation } from "../helpers/journeyResults";
+import { MsgType, msgTypeToJSON } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
@@ -112,16 +113,16 @@ async function main() {
   console.log("Step 4: Building MsgGrantOperatorAuthorization...");
 
   const allMsgTypes = [
-    typeUrls.MsgCreateEcosystem,
-    typeUrls.MsgUpdateEcosystem,
-    typeUrls.MsgArchiveEcosystem,
-    typeUrls.MsgAddGovernanceFrameworkDocument,
-    typeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
+    MsgType.MSG_TYPE_CREATE_ECOSYSTEM,
+    MsgType.MSG_TYPE_UPDATE_ECOSYSTEM,
+    MsgType.MSG_TYPE_ARCHIVE_ECOSYSTEM,
+    MsgType.MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT,
+    MsgType.MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION,
   ];
 
   console.log("  Message types being authorized:");
   for (const msgType of allMsgTypes) {
-    console.log(`    - ${msgType}`);
+    console.log(`    - ${msgTypeToJSON(msgType)}`);
   }
   console.log();
 

@@ -19,7 +19,7 @@ func (k Keeper) GrantFeeAllowance(
 	goCtx context.Context,
 	grantorCorporationID uint64,
 	grantee string,
-	msgTypes []string,
+	msgTypes []types.MsgType,
 	expiration *time.Time,
 	spendLimit sdk.Coins,
 	period *time.Duration,
@@ -32,7 +32,7 @@ func (k Keeper) grantFeeAllowance(
 	goCtx context.Context,
 	grantorCorporationID uint64,
 	grantee string,
-	msgTypes []string,
+	msgTypes []types.MsgType,
 	expiration *time.Time,
 	spendLimit sdk.Coins,
 	period *time.Duration,
@@ -43,14 +43,9 @@ func (k Keeper) grantFeeAllowance(
 
 	// [MOD-DE-MSG-1-2] Basic checks.
 
-	// msg_types MUST be a list of VPR delegable messages only.
-	if len(msgTypes) == 0 {
-		return fmt.Errorf("msg_types must not be empty")
-	}
-	for _, mt := range msgTypes {
-		if !types.VPRDelegableMsgTypes[mt] {
-			return fmt.Errorf("%w: %s", types.ErrInvalidMsgType, mt)
-		}
+	// msg_types MUST be delegable values, plus AcceptCorporationGovernanceFramework.
+	if err := types.ValidateMsgTypes(msgTypes, types.FeeGrantMsgTypes); err != nil {
+		return err
 	}
 
 	// expiration if specified MUST be in the future.
@@ -106,7 +101,11 @@ func (k Keeper) grantFeeAllowance(
 		} else {
 			inner = &feegrant.BasicAllowance{SpendLimit: spendLimit, Expiration: expiration}
 		}
-		allowed, err := feegrant.NewAllowedMsgAllowance(inner, msgTypes)
+		urls, err := types.MsgTypeURLs(msgTypes)
+		if err != nil {
+			return err
+		}
+		allowed, err := feegrant.NewAllowedMsgAllowance(inner, urls)
 		if err != nil {
 			return fmt.Errorf("build fee allowance: %w", err)
 		}

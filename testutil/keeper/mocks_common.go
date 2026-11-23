@@ -78,6 +78,7 @@ type MockDelegationKeeper struct {
 	FeeGrantErr       error
 
 	FeeGrantCheckCalls []uint64 // participant ids
+	VSOACheckMsgTypes  []detypes.MsgType
 
 	GrantVSOACalls  []GrantVSOACall
 	RevokeVSOACalls []uint64 // participant ids
@@ -92,19 +93,21 @@ type GrantVSOACall struct {
 
 func (m *MockDelegationKeeper) Reset() {
 	m.FeeGrantCheckCalls = nil
+	m.VSOACheckMsgTypes = nil
 	m.GrantVSOACalls = nil
 	m.RevokeVSOACalls = nil
 	m.SyncVSOACalls = nil
 }
 
-func (m *MockDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (m *MockDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	if m.OperatorAuthErr != nil {
 		return m.OperatorAuthErr
 	}
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) CheckVSOperatorAuthorizationOnParticipant(_ context.Context, _ uint64, _ string, _ uint64, _ string) error {
+func (m *MockDelegationKeeper) CheckVSOperatorAuthorizationOnParticipant(_ context.Context, _ uint64, _ string, _ uint64, msgType detypes.MsgType) error {
+	m.VSOACheckMsgTypes = append(m.VSOACheckMsgTypes, msgType)
 	if m.VSOperatorAuthErr != nil {
 		return m.VSOperatorAuthErr
 	}
@@ -119,7 +122,7 @@ func (m *MockDelegationKeeper) CheckVSOperatorFeeGrant(_ context.Context, partic
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) ConsumeOperatorSpend(_ context.Context, _, _, _ string, _ time.Time, amount sdk.Coins) error {
+func (m *MockDelegationKeeper) ConsumeOperatorSpend(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time, amount sdk.Coins) error {
 	m.OperatorSpendCalls = append(m.OperatorSpendCalls, amount)
 	return m.ErrToReturn
 }

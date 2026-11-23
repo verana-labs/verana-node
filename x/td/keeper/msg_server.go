@@ -8,6 +8,7 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/td/types"
 )
 
@@ -35,7 +36,8 @@ func (ms msgServer) ReclaimTrustDepositYield(goCtx context.Context, msg *types.M
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.td.v1.MsgReclaimTrustDepositYield",
+		// voided in v5: no MsgType, so no authorization covers it
+		detypes.MsgType_MSG_TYPE_UNSPECIFIED,
 		ctx.BlockTime(),
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -236,7 +238,7 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.td.v1.MsgRepaySlashedTrustDeposit",
+		detypes.MsgType_MSG_TYPE_REPAY_SLASH,
 		ctx.BlockTime(),
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -304,7 +306,7 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	// AUTHZ-CHECK-1 step 3: debit the operator's spend limit for the committed funds.
 	if err := ms.Keeper.delegationKeeper.ConsumeOperatorSpend(
 		ctx, msg.Corporation, msg.Operator,
-		"/verana.td.v1.MsgRepaySlashedTrustDeposit", now, transferCoins,
+		detypes.MsgType_MSG_TYPE_REPAY_SLASH, now, transferCoins,
 	); err != nil {
 		return nil, fmt.Errorf("failed to consume operator spend: %w", err)
 	}

@@ -33,7 +33,7 @@ func (ms msgServer) GrantOperatorAuthorization(goCtx context.Context, msg *types
 			ctx,
 			msg.Corporation,
 			msg.Operator,
-			"/verana.de.v1.MsgGrantOperatorAuthorization",
+			types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION,
 			now,
 		); err != nil {
 			return nil, err

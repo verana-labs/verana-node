@@ -10,6 +10,7 @@ import (
 	cschema "github.com/verana-labs/verana-node/x/cs/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunCredentialSchemaAuthzOperationsJourney implements Journey 202: Test all CS operations with operator authorization.
@@ -40,7 +41,7 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgCreateEcosystem"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 1 failed: %w", err)
@@ -96,7 +97,7 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgCreateCredentialSchema"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)
@@ -146,7 +147,7 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgUpdateCredentialSchema"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("step 2b failed: %w", err)
@@ -199,7 +200,7 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgArchiveCredentialSchema"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("step 3b failed: %w", err)

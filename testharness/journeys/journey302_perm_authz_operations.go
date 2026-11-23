@@ -12,6 +12,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionAuthzOperationsJourney implements Journey 302: Test StartPermissionVP and RenewPermissionVP
@@ -45,12 +46,12 @@ func RunPermissionAuthzOperationsJourney(ctx context.Context, client cosmosclien
 	// Corporation (policyAddr); authz is granted by the corp's group, not via
 	// self-delegation (a plain account is not a registered Corporation). Grants
 	// are in-place replacements, so each later test grant re-includes this set.
-	prereqMsgTypes := []string{
-		"/verana.ec.v1.MsgCreateEcosystem",
-		"/verana.cs.v1.MsgCreateCredentialSchema",
-		"/verana.pp.v1.MsgSetParticipantOPToValidated",
-		"/verana.pp.v1.MsgCreateRootParticipant",
-		"/verana.pp.v1.MsgSetParticipantEffectiveUntil",
+	prereqMsgTypes := []detypes.MsgType{
+		detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM,
+		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+		detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
+		detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+		detypes.MsgType_MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL,
 	}
 	fmt.Println("\n--- Prerequisite 1: Grant operator authz via the Corporation group ---")
 	err := lib.GrantOperatorAuthorizationViaGroup(
@@ -150,7 +151,7 @@ func RunPermissionAuthzOperationsJourney(ctx context.Context, client cosmosclien
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		append(append([]string{}, prereqMsgTypes...), "/verana.pp.v1.MsgStartParticipantOP"),
+		append(append([]detypes.MsgType{}, prereqMsgTypes...), detypes.MsgType_MSG_TYPE_START_ONBOARDING),
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)
@@ -232,7 +233,7 @@ func RunPermissionAuthzOperationsJourney(ctx context.Context, client cosmosclien
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		append(append([]string{}, prereqMsgTypes...), "/verana.pp.v1.MsgStartParticipantOP", "/verana.pp.v1.MsgRenewParticipantOP"),
+		append(append([]detypes.MsgType{}, prereqMsgTypes...), detypes.MsgType_MSG_TYPE_START_ONBOARDING, detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING),
 	)
 	if err != nil {
 		return fmt.Errorf("step 2b failed: %w", err)

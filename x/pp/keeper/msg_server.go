@@ -42,7 +42,7 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.pp.v1.MsgStartParticipantOP",
+		detypes.MsgType_MSG_TYPE_START_ONBOARDING,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -93,7 +93,7 @@ func (ms msgServer) StartParticipantOP(goCtx context.Context, msg *types.MsgStar
 		opSpend = opSpend.Add(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(fees)))
 	}
 	if err := ms.delegationKeeper.ConsumeOperatorSpend(
-		ctx, msg.Corporation, msg.Operator, "/verana.pp.v1.MsgStartParticipantOP", now, opSpend,
+		ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_START_ONBOARDING, now, opSpend,
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
@@ -140,7 +140,7 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.pp.v1.MsgRenewParticipantOP",
+		detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -216,7 +216,7 @@ func (ms msgServer) RenewParticipantOP(goCtx context.Context, msg *types.MsgRene
 		opSpend = opSpend.Add(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(validationFees)))
 	}
 	if err := ms.delegationKeeper.ConsumeOperatorSpend(
-		ctx, msg.Corporation, msg.Operator, "/verana.pp.v1.MsgRenewParticipantOP", now, opSpend,
+		ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING, now, opSpend,
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
@@ -325,10 +325,10 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 	}
 	viaVSOperator := false
 	if opErr := ms.delegationKeeper.CheckOperatorAuthorization(
-		ctx, msg.Corporation, msg.Operator, types.MsgSetParticipantOPToValidatedTypeURL, now,
+		ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, now,
 	); opErr != nil {
 		if vsErr := ms.delegationKeeper.CheckVSOperatorAuthorizationOnParticipant(
-			ctx, corpID, msg.Operator, validatorParticipant.Id, types.MsgSetParticipantOPToValidatedTypeURL,
+			ctx, corpID, msg.Operator, validatorParticipant.Id, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
 		); vsErr != nil {
 			return nil, fmt.Errorf("authorization check failed: %w", opErr)
 		}
@@ -531,7 +531,7 @@ func (ms msgServer) SetParticipantOPToValidated(goCtx context.Context, msg *type
 		if err := ms.checkVSOperatorFeeGrant(ctx, validatorParticipant.Id, msg.Corporation); err != nil {
 			return nil, err
 		}
-	} else if err := ms.delegationKeeper.ConsumeOperatorSpend(ctx, msg.Corporation, msg.Operator, types.MsgSetParticipantOPToValidatedTypeURL, now, opSpend); err != nil {
+	} else if err := ms.delegationKeeper.ConsumeOperatorSpend(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, now, opSpend); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
 	}
 
@@ -551,7 +551,7 @@ func (ms msgServer) CancelParticipantOPLastRequest(goCtx context.Context, msg *t
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.pp.v1.MsgCancelParticipantOPLastRequest",
+		detypes.MsgType_MSG_TYPE_WITHDRAW_ONBOARDING_REQUEST,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -696,7 +696,7 @@ func (ms msgServer) CreateRootParticipant(goCtx context.Context, msg *types.MsgC
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.pp.v1.MsgCreateRootParticipant",
+		detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -936,7 +936,7 @@ func (ms msgServer) SetParticipantEffectiveUntil(goCtx context.Context, msg *typ
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.pp.v1.MsgSetParticipantEffectiveUntil",
+		detypes.MsgType_MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -1140,7 +1140,7 @@ func (ms msgServer) RevokeParticipant(goCtx context.Context, msg *types.MsgRevok
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.pp.v1.MsgRevokeParticipant",
+		detypes.MsgType_MSG_TYPE_REVOKE_ACCREDITATION,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -1409,7 +1409,7 @@ func (ms msgServer) SlashParticipantTrustDeposit(goCtx context.Context, msg *typ
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.pp.v1.MsgSlashParticipantTrustDeposit",
+		detypes.MsgType_MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -1550,7 +1550,7 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 	if ms.delegationKeeper == nil {
 		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, "/verana.pp.v1.MsgRepayParticipantSlashedTrustDeposit", now); err != nil {
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_REPAY_SLASH, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -1594,7 +1594,7 @@ func (ms msgServer) RepayParticipantSlashedTrustDeposit(goCtx context.Context, m
 	}
 
 	if err := ms.delegationKeeper.ConsumeOperatorSpend(
-		ctx, msg.Corporation, msg.Operator, "/verana.pp.v1.MsgRepayParticipantSlashedTrustDeposit", now,
+		ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_REPAY_SLASH, now,
 		sdk.NewCoins(sdk.NewCoin(types.BondDenom, math.NewIntFromUint64(owed))),
 	); err != nil {
 		return nil, fmt.Errorf("spend limit exceeded: %w", err)
@@ -1636,7 +1636,7 @@ func (ms msgServer) SelfCreateParticipant(goCtx context.Context, msg *types.MsgS
 	if ms.delegationKeeper == nil {
 		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, "/verana.pp.v1.MsgSelfCreateParticipant", now); err != nil {
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_SELF_CREATE_ACCREDITATION, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 

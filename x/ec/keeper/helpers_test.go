@@ -18,6 +18,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	"github.com/verana-labs/verana-node/x/ec/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
@@ -28,7 +29,7 @@ import (
 // x/ec Keeper without depending on the live x/de, x/co and x/gf modules.
 type stubDelegationKeeper struct{}
 
-func (stubDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (stubDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 

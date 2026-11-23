@@ -43,6 +43,7 @@ import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/t
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
 import type { SigningStargateClient } from "@cosmjs/stargate";
+import { MsgType } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
@@ -55,11 +56,11 @@ const LARGE_SPEND_LIMIT = "100000000"; // 100 VNA, comfortably above one operati
 const TINY_SPEND_LIMIT = "1"; // 1 uvna, below one operation's cost
 
 const GRANT_MSG_TYPES = [
-  typeUrls.MsgCreateEcosystem,
-  typeUrls.MsgCreateCredentialSchema,
-  typeUrls.MsgCreateRootParticipant,
-  typeUrls.MsgStartParticipantOP,
-  typeUrls.MsgSetParticipantOPToValidated,
+  MsgType.MSG_TYPE_CREATE_ECOSYSTEM,
+  MsgType.MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+  MsgType.MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+  MsgType.MSG_TYPE_START_ONBOARDING,
+  MsgType.MSG_TYPE_VALIDATE_ONBOARDING,
 ];
 
 /**

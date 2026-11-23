@@ -73,14 +73,9 @@ func (k Keeper) GrantVSOperatorAuthorization(
 		return types.ErrParticipantRecordExists
 	}
 
-	// record.msg_types non-empty and only VPR delegable types.
-	if len(record.MsgTypes) == 0 {
-		return fmt.Errorf("record msg_types must not be empty")
-	}
-	for _, mt := range record.MsgTypes {
-		if !types.VPRDelegableMsgTypes[mt] {
-			return fmt.Errorf("%w: %s", types.ErrInvalidMsgType, mt)
-		}
+	// record.msg_types non-empty and only VS account values.
+	if err := types.ValidateMsgTypes(record.MsgTypes, types.VerifiableServiceMsgTypes); err != nil {
+		return err
 	}
 
 	// Mutual exclusivity: no OperatorAuthorization may exist for
@@ -289,8 +284,8 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 	}
 
 	total := sdk.NewCoins()
-	seen := make(map[string]bool)
-	feegrantMsgTypes := make([]string, 0)
+	seen := make(map[types.MsgType]bool)
+	feegrantMsgTypes := make([]types.MsgType, 0)
 	for _, r := range vsoa.Records {
 		if !r.WithFeegrant {
 			continue

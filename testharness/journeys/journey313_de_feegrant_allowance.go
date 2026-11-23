@@ -10,6 +10,7 @@ import (
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunDeFeegrantAllowanceJourney implements Journey 313: AUTHZ-CHECK-2 fee grant.
@@ -40,7 +41,7 @@ func RunDeFeegrantAllowanceJourney(ctx context.Context, client cosmosclient.Clie
 	exp := time.Now().Add(24 * time.Hour)
 	if err := lib.GrantOperatorAuthorizationWithFeegrantViaGroup(
 		client, ctx, adminAccount, member1Account, policyAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgStartParticipantOP"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_START_ONBOARDING},
 		sdk.NewCoins(sdk.NewInt64Coin("uvna", 100000000)), nil, &exp,
 	); err != nil {
 		return fmt.Errorf("step 1 failed: grant with feegrant: %w", err)
@@ -59,7 +60,7 @@ func RunDeFeegrantAllowanceJourney(ctx context.Context, client cosmosclient.Clie
 	fmt.Println("\n--- Step 3: Re-grant with_feegrant=false (revokes the allowance) ---")
 	if err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account, policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgStartParticipantOP"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_START_ONBOARDING},
 	); err != nil {
 		return fmt.Errorf("step 3 failed: re-grant without feegrant: %w", err)
 	}

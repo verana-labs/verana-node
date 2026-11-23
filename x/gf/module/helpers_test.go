@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
@@ -13,7 +14,7 @@ import (
 
 type stubDelegationKeeper struct{}
 
-func (stubDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (stubDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 

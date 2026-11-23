@@ -150,7 +150,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						},
 						"vs_operator_authz_msg_types": {
 							Name:  "vs-operator-authz-msg-types",
-							Usage: "Delegable msg types granted to vs_operator (presence triggers a VSOA record)",
+							Usage: "MsgType values granted to vs_operator, one per flag, e.g. record-credential-issuance (presence triggers a VSOA record)",
 						},
 						"vs_operator_authz_with_feegrant": {
 							Name:         "vs-operator-authz-with-feegrant",

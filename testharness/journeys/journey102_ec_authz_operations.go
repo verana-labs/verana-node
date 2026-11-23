@@ -9,6 +9,7 @@ import (
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // expectAuthorizationError checks that an error contains an authorization-related message.
@@ -69,7 +70,7 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgCreateEcosystem"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)
@@ -124,7 +125,7 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.gf.v1.MsgAddGovernanceFrameworkDocument"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT},
 	)
 	if err != nil {
 		return fmt.Errorf("step 2b failed: %w", err)
@@ -167,7 +168,7 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.gf.v1.MsgIncreaseActiveGovernanceFrameworkVersion"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION},
 	)
 	if err != nil {
 		return fmt.Errorf("step 3b failed: %w", err)
@@ -215,7 +216,7 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgUpdateEcosystem"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("step 4b failed: %w", err)
@@ -262,7 +263,7 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgArchiveEcosystem"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("step 5b failed: %w", err)

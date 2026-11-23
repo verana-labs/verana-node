@@ -27,6 +27,7 @@ import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/t
 import { getEcAuthzSetup, savePermAuthzSetup } from "../helpers/journeyResults";
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
+import { MsgType } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
@@ -109,31 +110,31 @@ async function main() {
 
   const allMsgTypes = [
     // EC messages (for creating prerequisite Ecosystems)
-    typeUrls.MsgCreateEcosystem,
-    typeUrls.MsgUpdateEcosystem,
-    typeUrls.MsgArchiveEcosystem,
+    MsgType.MSG_TYPE_CREATE_ECOSYSTEM,
+    MsgType.MSG_TYPE_UPDATE_ECOSYSTEM,
+    MsgType.MSG_TYPE_ARCHIVE_ECOSYSTEM,
     // GF messages (moved from verana.tr.v1 to verana.gf.v1 in v4-rc2)
-    typeUrls.MsgAddGovernanceFrameworkDocument,
-    typeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
+    MsgType.MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT,
+    MsgType.MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION,
     // CS messages (for creating prerequisite CSs)
-    typeUrls.MsgCreateCredentialSchema,
-    typeUrls.MsgUpdateCredentialSchema,
-    typeUrls.MsgArchiveCredentialSchema,
+    MsgType.MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+    MsgType.MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA,
+    MsgType.MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA,
     // PERM messages
-    typeUrls.MsgCreateRootParticipant,
-    typeUrls.MsgSelfCreateParticipant,
-    typeUrls.MsgSetParticipantEffectiveUntil,
-    typeUrls.MsgRevokeParticipant,
-    typeUrls.MsgStartParticipantOP,
-    typeUrls.MsgRenewParticipantOP,
-    typeUrls.MsgSetParticipantOPToValidated,
-    typeUrls.MsgCancelParticipantOPLastRequest,
+    MsgType.MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+    MsgType.MSG_TYPE_SELF_CREATE_ACCREDITATION,
+    MsgType.MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL,
+    MsgType.MSG_TYPE_REVOKE_ACCREDITATION,
+    MsgType.MSG_TYPE_START_ONBOARDING,
+    MsgType.MSG_TYPE_RENEW_ONBOARDING,
+    MsgType.MSG_TYPE_VALIDATE_ONBOARDING,
+    MsgType.MSG_TYPE_WITHDRAW_ONBOARDING_REQUEST,
     // Note: MsgCreateOrUpdateParticipantSession is NOT DE-delegable
     // It uses VS operator authorization (AUTHZ-CHECK-3) instead
-    typeUrls.MsgSlashParticipantTrustDeposit,
-    typeUrls.MsgRepayParticipantSlashedTrustDeposit,
+    MsgType.MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT,
+    MsgType.MSG_TYPE_REPAY_SLASH,
     // [MOD-PP-MSG-15] Trigger Resolver
-    typeUrls.MsgTriggerResolver,
+    MsgType.MSG_TYPE_TRIGGER_RESOLVER,
   ];
 
   // The corporation policy_address cannot sign directly; the corp's sole group

@@ -9,6 +9,7 @@ import * as _m0 from "protobufjs/minimal";
 import { Coin } from "../../../cosmos/base/v1beta1/coin";
 import { Duration } from "../../../google/protobuf/duration";
 import { Timestamp } from "../../../google/protobuf/timestamp";
+import { MsgType, msgTypeFromJSON, msgTypeToJSON } from "./msg_type";
 import { Params } from "./params";
 
 export const protobufPackage = "verana.de.v1";
@@ -59,7 +60,7 @@ export interface MsgGrantOperatorAuthorization {
    * msg_types is the list of VPR delegable message types for which
    * authorization is granted.
    */
-  msgTypes: string[];
+  msgTypes: MsgType[];
   /** expiration is the optional timestamp after which the authorization expires. */
   expiration:
     | Date
@@ -263,9 +264,11 @@ export const MsgGrantOperatorAuthorization = {
     if (message.grantee !== "") {
       writer.uint32(26).string(message.grantee);
     }
+    writer.uint32(34).fork();
     for (const v of message.msgTypes) {
-      writer.uint32(34).string(v!);
+      writer.int32(v);
     }
+    writer.ldelim();
     if (message.expiration !== undefined) {
       Timestamp.encode(toTimestamp(message.expiration), writer.uint32(42).fork()).ldelim();
     }
@@ -316,12 +319,22 @@ export const MsgGrantOperatorAuthorization = {
           message.grantee = reader.string();
           continue;
         case 4:
-          if (tag !== 34) {
-            break;
+          if (tag === 32) {
+            message.msgTypes.push(reader.int32() as any);
+
+            continue;
           }
 
-          message.msgTypes.push(reader.string());
-          continue;
+          if (tag === 34) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.msgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
         case 5:
           if (tag !== 42) {
             break;
@@ -378,7 +391,7 @@ export const MsgGrantOperatorAuthorization = {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
       operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
       grantee: isSet(object.grantee) ? globalThis.String(object.grantee) : "",
-      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => globalThis.String(e)) : [],
+      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
       authzSpendLimit: globalThis.Array.isArray(object?.authzSpendLimit)
         ? object.authzSpendLimit.map((e: any) => Coin.fromJSON(e))
@@ -408,7 +421,7 @@ export const MsgGrantOperatorAuthorization = {
       obj.grantee = message.grantee;
     }
     if (message.msgTypes?.length) {
-      obj.msgTypes = message.msgTypes;
+      obj.msgTypes = message.msgTypes.map((e) => msgTypeToJSON(e));
     }
     if (message.expiration !== undefined) {
       obj.expiration = message.expiration.toISOString();

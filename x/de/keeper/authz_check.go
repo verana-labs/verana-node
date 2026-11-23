@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 	"time"
 
@@ -34,10 +35,10 @@ func (k Keeper) CheckOperatorAuthorization(
 	ctx context.Context,
 	corporation string,
 	operator string,
-	msgTypeURL string,
+	msgType types.MsgType,
 	now time.Time,
 ) error {
-	_, err := k.checkOperatorAuthorizationCore(ctx, corporation, operator, msgTypeURL, now)
+	_, err := k.checkOperatorAuthorizationCore(ctx, corporation, operator, msgType, now)
 	return err
 }
 
@@ -53,14 +54,14 @@ func (k Keeper) ConsumeOperatorSpend(
 	ctx context.Context,
 	corporation string,
 	operator string,
-	msgTypeURL string,
+	msgType types.MsgType,
 	now time.Time,
 	amount sdk.Coins,
 ) error {
 	if operator == "" || amount.IsZero() {
 		return nil
 	}
-	oa, err := k.checkOperatorAuthorizationCore(ctx, corporation, operator, msgTypeURL, now)
+	oa, err := k.checkOperatorAuthorizationCore(ctx, corporation, operator, msgType, now)
 	if err != nil {
 		return err
 	}
@@ -85,7 +86,7 @@ func (k Keeper) checkOperatorAuthorizationCore(
 	ctx context.Context,
 	corporation string,
 	operator string,
-	msgTypeURL string,
+	msgType types.MsgType,
 	now time.Time,
 ) (types.OperatorAuthorization, error) {
 	// If operator is empty, the corporation is acting alone (group proposal) — skip.
@@ -128,15 +129,8 @@ func (k Keeper) checkOperatorAuthorizationCore(
 	}
 
 	// 3. Check that the requested msg type is authorized.
-	found = false
-	for _, mt := range oa.MsgTypes {
-		if mt == msgTypeURL {
-			found = true
-			break
-		}
-	}
-	if !found {
-		return types.OperatorAuthorization{}, fmt.Errorf("%w: %s", types.ErrAuthzMsgTypeNotFound, msgTypeURL)
+	if !slices.Contains(oa.MsgTypes, msgType) {
+		return types.OperatorAuthorization{}, fmt.Errorf("%w: %s", types.ErrAuthzMsgTypeNotFound, msgType)
 	}
 
 	return oa, nil

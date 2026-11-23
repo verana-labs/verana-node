@@ -12,6 +12,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionRevokeJourney implements Journey 306: Test RevokePermission
@@ -49,7 +50,7 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgCreateCredentialSchema"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 1 failed: could not grant CS auth: %w", err)
@@ -78,7 +79,7 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgCreateRootParticipant"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 3 failed: could not grant CreateRootPermission auth: %w", err)
@@ -134,7 +135,7 @@ func RunPermissionRevokeJourney(ctx context.Context, client cosmosclient.Client)
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgRevokeParticipant"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_REVOKE_ACCREDITATION},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)

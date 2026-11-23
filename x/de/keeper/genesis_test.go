@@ -35,7 +35,7 @@ func TestGenesis_RebuildsOperatorIndex(t *testing.T) {
 		Params: types.DefaultParams(),
 		VsOperatorAuthorizations: []types.VSOperatorAuthorization{{
 			Id: 1, CorporationId: 4, VsOperator: vsOp,
-			Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 9, MsgTypes: []string{mtValidated}}},
+			Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 9, MsgTypes: []types.MsgType{mtValidated}}},
 		}},
 		VsoaSeq: 1,
 	}

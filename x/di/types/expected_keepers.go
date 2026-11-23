@@ -6,6 +6,7 @@ import (
 
 	"cosmossdk.io/core/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // AuthKeeper defines the expected interface for the Auth module.
@@ -24,7 +25,7 @@ type BankKeeper interface {
 // DelegationKeeper defines the expected interface for the Delegation (DE) module.
 // Used to perform [AUTHZ-CHECK] for (authority, operator) pairs.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time) error
+	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgType detypes.MsgType, now time.Time) error
 }
 
 // CorporationView is the read shape MOD-DI needs about a Corporation subject

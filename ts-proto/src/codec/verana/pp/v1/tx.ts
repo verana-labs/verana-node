@@ -9,6 +9,7 @@ import * as _m0 from "protobufjs/minimal";
 import { Coin } from "../../../cosmos/base/v1beta1/coin";
 import { Duration } from "../../../google/protobuf/duration";
 import { Timestamp } from "../../../google/protobuf/timestamp";
+import { MsgType, msgTypeFromJSON, msgTypeToJSON } from "../../de/v1/msg_type";
 import { Params } from "./params";
 import { OptionalUInt64, ParticipantRole, participantRoleFromJSON, participantRoleToJSON } from "./types";
 import Long = require("long");
@@ -52,7 +53,7 @@ export interface MsgStartParticipantOP {
   /** vs_operator: the account of the Verifiable Service (optional) */
   vsOperator: string;
   /** vs_operator_authz_msg_types: presence triggers VSOA record creation. */
-  vsOperatorAuthzMsgTypes: string[];
+  vsOperatorAuthzMsgTypes: MsgType[];
   vsOperatorAuthzSpendLimit: Coin[];
   vsOperatorAuthzWithFeegrant: boolean;
   vsOperatorAuthzFeeSpendLimit: Coin[];
@@ -132,9 +133,9 @@ export interface MsgCreateRootParticipant {
   vsOperator: string;
   /**
    * vs_operator_authz_msg_types: presence triggers VSOA record creation; MUST be a
-   * subset of [SetParticipantOPToValidated] for root participants.
+   * subset of [MSG_TYPE_VALIDATE_ONBOARDING] for root participants.
    */
-  vsOperatorAuthzMsgTypes: string[];
+  vsOperatorAuthzMsgTypes: MsgType[];
   vsOperatorAuthzSpendLimit: Coin[];
   vsOperatorAuthzWithFeegrant: boolean;
   vsOperatorAuthzFeeSpendLimit: Coin[];
@@ -229,7 +230,7 @@ export interface MsgSelfCreateParticipant {
   /** vs_operator: the account of the Verifiable Service (optional) */
   vsOperator: string;
   /** vs_operator_authz_msg_types: presence triggers VSOA record creation. */
-  vsOperatorAuthzMsgTypes: string[];
+  vsOperatorAuthzMsgTypes: MsgType[];
   vsOperatorAuthzSpendLimit: Coin[];
   vsOperatorAuthzWithFeegrant: boolean;
   vsOperatorAuthzFeeSpendLimit: Coin[];
@@ -423,9 +424,11 @@ export const MsgStartParticipantOP = {
     if (message.vsOperator !== "") {
       writer.uint32(74).string(message.vsOperator);
     }
+    writer.uint32(122).fork();
     for (const v of message.vsOperatorAuthzMsgTypes) {
-      writer.uint32(122).string(v!);
+      writer.int32(v);
     }
+    writer.ldelim();
     for (const v of message.vsOperatorAuthzSpendLimit) {
       Coin.encode(v!, writer.uint32(90).fork()).ldelim();
     }
@@ -512,12 +515,22 @@ export const MsgStartParticipantOP = {
           message.vsOperator = reader.string();
           continue;
         case 15:
-          if (tag !== 122) {
-            break;
+          if (tag === 120) {
+            message.vsOperatorAuthzMsgTypes.push(reader.int32() as any);
+
+            continue;
           }
 
-          message.vsOperatorAuthzMsgTypes.push(reader.string());
-          continue;
+          if (tag === 122) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.vsOperatorAuthzMsgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
         case 11:
           if (tag !== 90) {
             break;
@@ -569,7 +582,7 @@ export const MsgStartParticipantOP = {
       verificationFees: isSet(object.verificationFees) ? OptionalUInt64.fromJSON(object.verificationFees) : undefined,
       vsOperator: isSet(object.vsOperator) ? globalThis.String(object.vsOperator) : "",
       vsOperatorAuthzMsgTypes: globalThis.Array.isArray(object?.vsOperatorAuthzMsgTypes)
-        ? object.vsOperatorAuthzMsgTypes.map((e: any) => globalThis.String(e))
+        ? object.vsOperatorAuthzMsgTypes.map((e: any) => msgTypeFromJSON(e))
         : [],
       vsOperatorAuthzSpendLimit: globalThis.Array.isArray(object?.vsOperatorAuthzSpendLimit)
         ? object.vsOperatorAuthzSpendLimit.map((e: any) => Coin.fromJSON(e))
@@ -616,7 +629,7 @@ export const MsgStartParticipantOP = {
       obj.vsOperator = message.vsOperator;
     }
     if (message.vsOperatorAuthzMsgTypes?.length) {
-      obj.vsOperatorAuthzMsgTypes = message.vsOperatorAuthzMsgTypes;
+      obj.vsOperatorAuthzMsgTypes = message.vsOperatorAuthzMsgTypes.map((e) => msgTypeToJSON(e));
     }
     if (message.vsOperatorAuthzSpendLimit?.length) {
       obj.vsOperatorAuthzSpendLimit = message.vsOperatorAuthzSpendLimit.map((e) => Coin.toJSON(e));
@@ -1304,9 +1317,11 @@ export const MsgCreateRootParticipant = {
     if (message.vsOperator !== "") {
       writer.uint32(82).string(message.vsOperator);
     }
+    writer.uint32(90).fork();
     for (const v of message.vsOperatorAuthzMsgTypes) {
-      writer.uint32(90).string(v!);
+      writer.int32(v);
     }
+    writer.ldelim();
     for (const v of message.vsOperatorAuthzSpendLimit) {
       Coin.encode(v!, writer.uint32(98).fork()).ldelim();
     }
@@ -1400,12 +1415,22 @@ export const MsgCreateRootParticipant = {
           message.vsOperator = reader.string();
           continue;
         case 11:
-          if (tag !== 90) {
-            break;
+          if (tag === 88) {
+            message.vsOperatorAuthzMsgTypes.push(reader.int32() as any);
+
+            continue;
           }
 
-          message.vsOperatorAuthzMsgTypes.push(reader.string());
-          continue;
+          if (tag === 90) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.vsOperatorAuthzMsgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
         case 12:
           if (tag !== 98) {
             break;
@@ -1456,7 +1481,7 @@ export const MsgCreateRootParticipant = {
       verificationFees: isSet(object.verificationFees) ? globalThis.Number(object.verificationFees) : 0,
       vsOperator: isSet(object.vsOperator) ? globalThis.String(object.vsOperator) : "",
       vsOperatorAuthzMsgTypes: globalThis.Array.isArray(object?.vsOperatorAuthzMsgTypes)
-        ? object.vsOperatorAuthzMsgTypes.map((e: any) => globalThis.String(e))
+        ? object.vsOperatorAuthzMsgTypes.map((e: any) => msgTypeFromJSON(e))
         : [],
       vsOperatorAuthzSpendLimit: globalThis.Array.isArray(object?.vsOperatorAuthzSpendLimit)
         ? object.vsOperatorAuthzSpendLimit.map((e: any) => Coin.fromJSON(e))
@@ -1506,7 +1531,7 @@ export const MsgCreateRootParticipant = {
       obj.vsOperator = message.vsOperator;
     }
     if (message.vsOperatorAuthzMsgTypes?.length) {
-      obj.vsOperatorAuthzMsgTypes = message.vsOperatorAuthzMsgTypes;
+      obj.vsOperatorAuthzMsgTypes = message.vsOperatorAuthzMsgTypes.map((e) => msgTypeToJSON(e));
     }
     if (message.vsOperatorAuthzSpendLimit?.length) {
       obj.vsOperatorAuthzSpendLimit = message.vsOperatorAuthzSpendLimit.map((e) => Coin.toJSON(e));
@@ -2496,9 +2521,11 @@ export const MsgSelfCreateParticipant = {
     if (message.vsOperator !== "") {
       writer.uint32(82).string(message.vsOperator);
     }
+    writer.uint32(130).fork();
     for (const v of message.vsOperatorAuthzMsgTypes) {
-      writer.uint32(130).string(v!);
+      writer.int32(v);
     }
+    writer.ldelim();
     for (const v of message.vsOperatorAuthzSpendLimit) {
       Coin.encode(v!, writer.uint32(98).fork()).ldelim();
     }
@@ -2592,12 +2619,22 @@ export const MsgSelfCreateParticipant = {
           message.vsOperator = reader.string();
           continue;
         case 16:
-          if (tag !== 130) {
-            break;
+          if (tag === 128) {
+            message.vsOperatorAuthzMsgTypes.push(reader.int32() as any);
+
+            continue;
           }
 
-          message.vsOperatorAuthzMsgTypes.push(reader.string());
-          continue;
+          if (tag === 130) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.vsOperatorAuthzMsgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
         case 12:
           if (tag !== 98) {
             break;
@@ -2650,7 +2687,7 @@ export const MsgSelfCreateParticipant = {
       validationFees: isSet(object.validationFees) ? globalThis.Number(object.validationFees) : 0,
       vsOperator: isSet(object.vsOperator) ? globalThis.String(object.vsOperator) : "",
       vsOperatorAuthzMsgTypes: globalThis.Array.isArray(object?.vsOperatorAuthzMsgTypes)
-        ? object.vsOperatorAuthzMsgTypes.map((e: any) => globalThis.String(e))
+        ? object.vsOperatorAuthzMsgTypes.map((e: any) => msgTypeFromJSON(e))
         : [],
       vsOperatorAuthzSpendLimit: globalThis.Array.isArray(object?.vsOperatorAuthzSpendLimit)
         ? object.vsOperatorAuthzSpendLimit.map((e: any) => Coin.fromJSON(e))
@@ -2700,7 +2737,7 @@ export const MsgSelfCreateParticipant = {
       obj.vsOperator = message.vsOperator;
     }
     if (message.vsOperatorAuthzMsgTypes?.length) {
-      obj.vsOperatorAuthzMsgTypes = message.vsOperatorAuthzMsgTypes;
+      obj.vsOperatorAuthzMsgTypes = message.vsOperatorAuthzMsgTypes.map((e) => msgTypeToJSON(e));
     }
     if (message.vsOperatorAuthzSpendLimit?.length) {
       obj.vsOperatorAuthzSpendLimit = message.vsOperatorAuthzSpendLimit.map((e) => Coin.toJSON(e));

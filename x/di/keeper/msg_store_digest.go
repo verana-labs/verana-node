@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/di/types"
 )
 
@@ -31,7 +32,7 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		ctx,
 		msg.Authority,
 		msg.Operator,
-		"/verana.di.v1.MsgStoreDigest",
+		detypes.MsgType_MSG_TYPE_STORE_DIGEST,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)

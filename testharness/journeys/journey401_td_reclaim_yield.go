@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
-	"strings"
 
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	tdtypes "github.com/verana-labs/verana-node/x/td/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // queryTrustDepositByAddr queries the trust deposit for an arbitrary address
@@ -75,39 +75,6 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 	fmt.Println("OK Step 1a: ReclaimTrustDepositYield correctly rejected without authorization")
 	waitForTx("reclaim yield rejection")
 
-	// 1b: Grant authorization for ReclaimTrustDepositYield
-	fmt.Println("\n--- Step 1b: Grant operator auth for ReclaimTrustDepositYield ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
-		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.td.v1.MsgReclaimTrustDepositYield"},
-	)
-	if err != nil {
-		return fmt.Errorf("step 1b failed: %w", err)
-	}
-	fmt.Println("OK Step 1b: Granted ReclaimTrustDepositYield authorization")
-	waitForTx("grant reclaim yield auth")
-
-	// 1c: Try WITH authorization (expect success or "no claimable yield")
-	// Whether yield is available depends on shareValue growth since the TD was created.
-	// Both outcomes are valid in a test environment.
-	fmt.Println("\n--- Step 1c: Operator reclaims trust deposit yield with auth ---")
-	resp, err := lib.ReclaimTrustDepositYieldWithAuthority(client, ctx, operatorAccount, policyAddr)
-	if err != nil {
-		errMsg := err.Error()
-		if strings.Contains(errMsg, "no claimable yield") ||
-			strings.Contains(errMsg, "claimable") ||
-			strings.Contains(errMsg, "nothing to claim") ||
-			strings.Contains(errMsg, "no yield") {
-			fmt.Printf("OK Step 1c: ReclaimTrustDepositYield returned expected no-yield condition: %s\n", errMsg)
-		} else {
-			return fmt.Errorf("step 1c failed with unexpected error: %w", err)
-		}
-	} else {
-		fmt.Printf("OK Step 1c: ReclaimTrustDepositYield succeeded (response: %v)\n", resp)
-	}
-	waitForTx("reclaim yield attempt")
-
 	// 1d: Verify TD state via query
 	// The group policy address is not a keyring account, so we query via CLI.
 	fmt.Println("\n--- Step 1d: Verify TD state for group policy ---")
@@ -149,7 +116,7 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.td.v1.MsgRepaySlashedTrustDeposit"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_REPAY_SLASH},
 	)
 	if err != nil {
 		return fmt.Errorf("step 2b failed: %w", err)
