@@ -64,7 +64,8 @@ var (
 		MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION,
 		MsgType_MSG_TYPE_ACCEPT_CORPORATION_GOVERNANCE_FRAMEWORK,
 	)
-	// FeeGrantMsgTypes: the delegable values plus AcceptCorporationGovernanceFramework.
+	// FeeGrantMsgTypes: the delegable values plus AcceptCorporationGovernanceFramework,
+	// which ValidateMsgTypes accepts once its message (MOD-GF-MSG-4) exists.
 	FeeGrantMsgTypes          = allMsgTypesExcept()
 	VerifiableServiceMsgTypes = newMsgTypeSet(
 		MsgType_MSG_TYPE_VALIDATE_ONBOARDING,

@@ -6,6 +6,7 @@ import (
 	mathstd "math"
 	"strconv"
 
+	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
@@ -24,103 +25,10 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-func (ms msgServer) ReclaimTrustDepositYield(goCtx context.Context, msg *types.MsgReclaimTrustDepositYield) (*types.MsgReclaimTrustDepositYieldResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	account := msg.Corporation
-
-	// [MOD-TD-MSG-2-2] [AUTHZ-CHECK] Verify operator authorization
-	if ms.Keeper.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
-	}
-	if err := ms.Keeper.delegationKeeper.CheckOperatorAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Operator,
-		// voided in v5: no MsgType, so no authorization covers it
-		detypes.MsgType_MSG_TYPE_UNSPECIFIED,
-		ctx.BlockTime(),
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
-	// [AUTHZ-CHECK-5] Signing corporation account MUST be a registered Corporation.
-	co, err := ms.Keeper.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
-	if err != nil {
-		return nil, err
-	}
-	corpID := co.Id
-
-	// [MOD-TD-MSG-2-2-1] Load TrustDeposit entry (keyed by corporation_id)
-	td, err := ms.Keeper.TrustDeposit.Get(ctx, corpID)
-	if err != nil {
-		return nil, fmt.Errorf("trust deposit not found for account: %s", account)
-	}
-
-	// [MOD-TD-MSG-2-2-1] abort if slashed and not fully repaid (outstanding = slashed - repaid > 0).
-	if td.SlashedDeposit > 0 && td.RepaidDeposit < td.SlashedDeposit {
-		return nil, fmt.Errorf("deposit has been slashed and not repaid")
-	}
-
-	// [MOD-TD-MSG-2-2-1] claimable_yield = share*value - deposit; abort if <= 0.
-	params := ms.Keeper.GetParams(ctx)
-	claimableYield := td.Share.Mul(params.TrustDepositShareValue).Sub(math.LegacyNewDecFromInt(math.NewIntFromUint64(td.Deposit)))
-	if !claimableYield.IsPositive() {
-		return nil, fmt.Errorf("no claimable yield")
-	}
-	claimedInt := claimableYield.TruncateInt()
-	if !claimedInt.IsUint64() {
-		return nil, fmt.Errorf("claimable yield exceeds uint64: %s", claimedInt)
-	}
-	claimed := claimedInt.Uint64()
-	// Sub-unit yield truncates to zero: abort rather than emit a 0-coin transfer.
-	if claimed == 0 {
-		return nil, fmt.Errorf("no claimable yield")
-	}
-
-	// [MOD-TD-MSG-2-3] share -= claimable_yield / share_value
-	sharesToReduce := ms.Keeper.AmountToShare(claimed, params.TrustDepositShareValue)
-	td.Share = td.Share.Sub(sharesToReduce)
-
-	// Validate corporation address
-	addr, err := sdk.AccAddressFromBech32(account)
-	if err != nil {
-		return nil, fmt.Errorf("invalid corporation address: %w", err)
-	}
-
-	// Save updated trust deposit BEFORE bank transfer to ensure atomicity —
-	// if Set fails, no coins have been transferred yet.
-	if err := ms.Keeper.TrustDeposit.Set(ctx, corpID, td); err != nil {
-		return nil, fmt.Errorf("failed to update trust deposit: %w", err)
-	}
-
-	// [MOD-TD-MSG-2-3] Transfer yield from TrustDeposit module account to corporation
-	if claimed > uint64(mathstd.MaxInt64) {
-		return nil, fmt.Errorf("amount exceeds maximum coin value: %d", claimed)
-	}
-	coins := sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(claimed)))
-	if err := ms.Keeper.bankKeeper.SendCoinsFromModuleToAccount(
-		ctx,
-		types.ModuleName,
-		addr,
-		coins,
-	); err != nil {
-		return nil, fmt.Errorf("failed to transfer yield: %w", err)
-	}
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeReclaimTrustDepositYield,
-			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(corpID, 10)),
-			sdk.NewAttribute(types.AttributeKeyAccount, account),
-			sdk.NewAttribute(types.AttributeKeyClaimedYield, strconv.FormatUint(claimed, 10)),
-			sdk.NewAttribute(types.AttributeKeySharesReduced, sharesToReduce.String()),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
-		),
-	})
-
-	return &types.MsgReclaimTrustDepositYieldResponse{
-		ClaimedAmount: claimed,
-	}, nil
+// ReclaimTrustDepositYield is refused: [MOD-TD-MSG-2] is void in v5, so the
+// message has no MsgType and no authorization covers it.
+func (ms msgServer) ReclaimTrustDepositYield(_ context.Context, _ *types.MsgReclaimTrustDepositYield) (*types.MsgReclaimTrustDepositYieldResponse, error) {
+	return nil, errorsmod.Wrap(types.ErrMsgVoid, "MsgReclaimTrustDepositYield (MOD-TD-MSG-2)")
 }
 
 // ShareToAmount converts share value to amount using decimal math

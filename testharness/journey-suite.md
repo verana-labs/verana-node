@@ -711,7 +711,7 @@ Spec: MOD-PP-MSG-1 through MOD-PP-MSG-15.
 Blocked: J302-J310 currently skipped pending AUTHZ-CHECK-5 rewrite.
 
 ### J401 — TD Reclaim Yield
-Spec: MOD-TD-MSG-4 (ReclaimTrustDepositYield).
+Spec: MOD-TD-MSG-2 (ReclaimTrustDepositYield), void in v5: the message is refused. MOD-TD-MSG-6 (RepaySlashedTrustDeposit).
 
 ### J501 — DI Store Digest
 Spec: MOD-DI-MSG-1 (StoreDigest).

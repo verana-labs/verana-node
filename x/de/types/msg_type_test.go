@@ -155,6 +155,7 @@ func TestValidateMsgTypes(t *testing.T) {
 		{"sponsorship ok", msgTypes(2, 10, 11, 17, 21, 32), types.SponsorshipMsgTypes, true},
 		{"sponsorship other value", msgTypes(12), types.SponsorshipMsgTypes, false},
 		{"permitted but no message yet", msgTypes(25), types.VerifiableServiceMsgTypes, false},
+		{"cgf acceptance has no message yet", msgTypes(31), types.FeeGrantMsgTypes, false},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

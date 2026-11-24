@@ -66,13 +66,13 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 	// =========================================================================
 	fmt.Println("\n=== TEST 1: ReclaimTrustDepositYield ===")
 
-	// 1a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries ReclaimTrustDepositYield without auth (expect failure) ---")
+	// 1a: void in v5 (expect failure)
+	fmt.Println("\n--- Step 1a: Operator tries ReclaimTrustDepositYield, void in v5 (expect failure) ---")
 	_, err := lib.ReclaimTrustDepositYieldWithAuthority(client, ctx, operatorAccount, policyAddr)
 	if err := expectAuthorizationError("Step 1a", err); err != nil {
 		return err
 	}
-	fmt.Println("OK Step 1a: ReclaimTrustDepositYield correctly rejected without authorization")
+	fmt.Println("OK Step 1a: ReclaimTrustDepositYield correctly rejected (void in v5)")
 	waitForTx("reclaim yield rejection")
 
 	// 1d: Verify TD state via query
