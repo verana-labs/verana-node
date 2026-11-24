@@ -7,9 +7,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	icamodule "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/controller"
@@ -44,7 +41,7 @@ func (app *App) registerIBCModules(_ servertypes.AppOptions) error {
 		return err
 	}
 
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	authority := FrozenAuthority
 
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		app.appCodec,
@@ -52,12 +49,6 @@ func (app *App) registerIBCModules(_ servertypes.AppOptions) error {
 		app.UpgradeKeeper,
 		authority,
 	)
-
-	// Deprecated: avoid adding new handlers, use the new proposal flow
-	// by granting the governance module the right to execute the message.
-	govRouter := govv1beta1.NewRouter()
-	govRouter.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler)
-	app.GovKeeper.SetLegacyRouter(govRouter)
 
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		app.appCodec,

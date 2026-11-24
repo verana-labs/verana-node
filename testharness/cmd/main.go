@@ -190,7 +190,7 @@ func printUsage() {
 	fmt.Println("\n  Digest (DI) Journeys:")
 	fmt.Println("  501 - DI Store Digest with Operator Authorization")
 	fmt.Println("\n  Exchange Rate (XR) Journeys:")
-	fmt.Println("  601 - XR Create Exchange Rate via Governance")
+	fmt.Println("  601 - XR Create Exchange Rate via Council")
 	fmt.Println("  602 - XR Update Exchange Rate with Operator Authorization")
 	fmt.Println("  603 - XR Get Price Query")
 }

@@ -24,10 +24,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	icagenesistypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/genesis/types"
+	icatypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/types"
 	"github.com/stretchr/testify/require"
+	"github.com/verana-labs/cosmos-group"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
+	poatypes "github.com/verana-labs/verana-node/x/poa/types"
 	pptypes "github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -71,6 +75,14 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 	}
 	gen, err := simtestutil.GenesisStateWithValSet(a.AppCodec(), a.DefaultGenesis(), valSet, accs, bals...)
 	require.NoError(t, err)
+	var ica icagenesistypes.GenesisState
+	a.AppCodec().MustUnmarshalJSON(gen[icatypes.ModuleName], &ica)
+	ica.HostGenesisState.Params.AllowMessages = []string{"/cosmos.bank.v1beta1.MsgSend"}
+	gen[icatypes.ModuleName] = a.AppCodec().MustMarshalJSON(&ica)
+	council := []string{sdk.AccAddress(valSet.Validators[0].Address).String()}
+	cg, err := poatypes.CouncilGenesis(CouncilAuthority, council, "test council", poatypes.CouncilPercentage, time.Hour, 0, e.now)
+	require.NoError(t, err)
+	gen[group.ModuleName] = a.AppCodec().MustMarshalJSON(cg)
 	state, err := cmtjson.MarshalIndent(gen, "", " ")
 	require.NoError(t, err)
 
