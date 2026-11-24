@@ -42,7 +42,7 @@ func RunDeFeegrantAllowanceJourney(ctx context.Context, client cosmosclient.Clie
 	if err := lib.GrantDelegateAuthorizationWithFeegrantViaGroup(
 		client, ctx, adminAccount, member1Account, policyAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_START_ONBOARDING},
-		sdk.NewCoins(sdk.NewInt64Coin("uvna", 100000000)), nil, &exp,
+		sdk.NewCoins(sdk.NewInt64Coin("uvna", 100000000)), &exp,
 	); err != nil {
 		return fmt.Errorf("step 1 failed: grant with feegrant: %w", err)
 	}

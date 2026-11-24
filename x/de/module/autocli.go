@@ -59,7 +59,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						},
 						"expiration": {
 							Name:  "expiration",
-							Usage: "authorization expiration timestamp (RFC3339)",
+							Usage: "end of the authorization, or of its first cycle with a spend limit period (RFC3339)",
 						},
 						"authz_spend_limit": {
 							Name:  "authz-spend-limit",
@@ -67,7 +67,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						},
 						"authz_spend_limit_period": {
 							Name:  "authz-spend-limit-period",
-							Usage: "reset period for authz spend limit",
+							Usage: "reset period for the authz spend limit; requires --expiration",
 						},
 						"feegrant_spend_limit": {
 							Name:  "feegrant-spend-limit",
@@ -75,7 +75,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						},
 						"feegrant_spend_limit_period": {
 							Name:  "feegrant-spend-limit-period",
-							Usage: "reset period for fee spend limit. Ignored without --feegrant-spend-limit",
+							Usage: "reset period for the fee spend limit; requires --expiration, --authz-spend-limit and --authz-spend-limit-period",
 						},
 					},
 				},

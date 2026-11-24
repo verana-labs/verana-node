@@ -56,7 +56,11 @@ export interface MsgGrantDelegateAuthorization {
    * authorization is granted.
    */
   msgTypes: MsgType[];
-  /** expiration is the optional timestamp after which the authorization expires. */
+  /**
+   * expiration is the optional end of the authorization, or of its first cycle
+   * when authz_spend_limit and authz_spend_limit_period are set; a fee
+   * allowance receives the same value.
+   */
   expiration:
     | Date
     | undefined;
@@ -64,6 +68,7 @@ export interface MsgGrantDelegateAuthorization {
   authzSpendLimit: Coin[];
   /**
    * authz_spend_limit_period is the optional reset period for
+   * authz_spend_limit. It requires expiration and has no effect without
    * authz_spend_limit.
    */
   authzSpendLimitPeriod:
@@ -76,7 +81,8 @@ export interface MsgGrantDelegateAuthorization {
   feegrantSpendLimit: Coin[];
   /**
    * feegrant_spend_limit_period is the optional reset period for
-   * feegrant_spend_limit. Ignored if feegrant_spend_limit is not set.
+   * feegrant_spend_limit. It requires expiration, authz_spend_limit and
+   * authz_spend_limit_period, and has no effect without feegrant_spend_limit.
    */
   feegrantSpendLimitPeriod: Duration | undefined;
 }

@@ -211,21 +211,49 @@ func TestGrantDelegateAuthorization_FeeAllowance(t *testing.T) {
 }
 
 func TestGrantDelegateAuthorization_MutualExclusivity(t *testing.T) {
-	f, ms, ctx := setupMsgServer(t)
+	same := func(s string) string { return s }
+	for _, tc := range []struct {
+		name        string
+		vsoa, grant func(string) string
+	}{
+		{"same spelling", same, same},
+		{"upper-case vs operator", strings.ToUpper, same},
+		{"upper-case grantee", same, strings.ToUpper},
+		{"upper-case both", strings.ToUpper, strings.ToUpper},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f, ms, ctx := setupMsgServer(t)
+			corporation := acc("corp________________")
+			grantee := acc("grantee_____________")
+
+			// A VSOperatorAuthorization for (co.id, grantee) blocks the delegate grant.
+			require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, testCorpID, tc.vsoa(grantee),
+				types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}}))
+
+			_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+				Corporation: corporation, Delegate: corporation, Grantee: tc.grant(grantee), MsgTypes: []types.MsgType{mtEcosystem},
+			})
+			require.ErrorIs(t, err, types.ErrVSOperatorAuthzExists)
+		})
+	}
+}
+
+// [MOD-DE-MSG-3-1] / [MOD-DE-MSG-4-1] the group-proposal path is the policy
+// account in either bech32 spelling.
+func TestGrantDelegateAuthorization_GroupPathSpelling(t *testing.T) {
+	_, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 
-	// Resolve the signing corporation to its co.id (same path MSG-3 uses).
-	co, err := f.corpKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
-	require.NoError(t, err)
-	// A VSOperatorAuthorization for (co.id, grantee) blocks the delegate grant.
-	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, co.Id, grantee,
-		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}}))
-
-	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: strings.ToUpper(corporation), Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
-	require.ErrorIs(t, err, types.ErrVSOperatorAuthzExists)
+	require.NoError(t, err)
+
+	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Delegate: strings.ToUpper(corporation), Grantee: grantee,
+	})
+	require.NoError(t, err)
 }
 
 // [MOD-DE-MSG-3] The delegate path: a delegate authorized for the de grant
@@ -352,7 +380,7 @@ func TestRevokeDelegateAuthorization(t *testing.T) {
 	require.ErrorIs(t, err, types.ErrDelegateAuthzNotFound)
 }
 
-// The events carry the entry key, and the message on the group-proposal path.
+// The events carry the entry key and the message parameters.
 func TestDelegateAuthorization_Events(t *testing.T) {
 	_, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
@@ -391,7 +419,7 @@ func TestDelegateAuthorization_Events(t *testing.T) {
 	require.NoError(t, err)
 	got = attrs(c, types.EventTypeGrantDelegateAuthorization)
 	require.Equal(t, grantee, got["delegate"])
-	require.NotContains(t, got, "msg")
+	require.Contains(t, got["msg"], `"grantee":"`+grantee+`"`)
 
 	c = fresh()
 	_, err = ms.RevokeDelegateAuthorization(c, &types.MsgRevokeDelegateAuthorization{
@@ -399,7 +427,10 @@ func TestDelegateAuthorization_Events(t *testing.T) {
 	})
 	require.NoError(t, err)
 	got = attrs(c, types.EventTypeRevokeDelegateAuthorization)
-	require.Equal(t, map[string]string{"module": types.ModuleName, "corporation_id": "1", "delegate": grantee}, got)
+	require.Equal(t, types.ModuleName, got["module"])
+	require.Equal(t, "1", got["corporation_id"])
+	require.Equal(t, grantee, got["delegate"])
+	require.Contains(t, got["msg"], `"delegate":"`+delegate+`"`)
 
 	c = fresh()
 	_, err = ms.RevokeDelegateAuthorization(c, &types.MsgRevokeDelegateAuthorization{

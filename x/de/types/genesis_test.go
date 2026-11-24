@@ -86,6 +86,21 @@ func TestGenesisState_Validate(t *testing.T) {
 		{desc: "delegate authorization remaining without limit", genState: withDAs(types.DelegateAuthorization{
 			CorporationId: 1, Delegate: addr, RemainingSpend: limit,
 		}), valid: false},
+		{desc: "delegate authorization spent", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: limit,
+		}), valid: true},
+		{desc: "delegate authorization remaining above limit", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit.Add(limit...),
+		}), valid: false},
+		{desc: "delegate authorization unsorted limit", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: sdk.Coins{sdk.NewInt64Coin("uvna", 1), sdk.NewInt64Coin("uatom", 1)},
+		}), valid: false},
+		{desc: "delegate authorization period without limit", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, Expiration: &exp, Period: &day,
+		}), valid: false},
+		{desc: "delegate authorization zero period", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Expiration: &exp, Period: new(time.Duration),
+		}), valid: false},
 		{desc: "fee grant session value", genState: withFG(types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION), valid: true},
 		{desc: "fee grant unspecified value", genState: withFG(types.MsgType_MSG_TYPE_UNSPECIFIED), valid: false},
 		{desc: "record vs value", genState: withRecord(types.MsgType_MSG_TYPE_VALIDATE_ONBOARDING), valid: true},

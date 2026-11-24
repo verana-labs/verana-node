@@ -37,11 +37,11 @@ func (gs GenesisState) Validate() error {
 		if err := ValidateMsgTypes(da.MsgTypes, DelegateAuthorizationMsgTypes); err != nil {
 			return fmt.Errorf("delegate_authorizations[%d]: %w", i, err)
 		}
-		if da.Period != nil && da.Expiration == nil {
-			return fmt.Errorf("delegate_authorizations[%d]: period requires expiration", i)
+		if !da.SpendLimit.IsValid() || !da.RemainingSpend.IsValid() || !da.SpendLimit.IsAllGTE(da.RemainingSpend) {
+			return fmt.Errorf("delegate_authorizations[%d]: spend_limit and remaining_spend must be valid, remaining within the limit", i)
 		}
-		if len(da.RemainingSpend) > 0 && len(da.SpendLimit) == 0 {
-			return fmt.Errorf("delegate_authorizations[%d]: remaining_spend requires spend_limit", i)
+		if da.Period != nil && (*da.Period <= 0 || len(da.SpendLimit) == 0 || da.Expiration == nil) {
+			return fmt.Errorf("delegate_authorizations[%d]: period must be positive and requires spend_limit and expiration", i)
 		}
 		key := fmt.Sprintf("%d/%s", da.CorporationId, delegate)
 		if daKeys[key] {

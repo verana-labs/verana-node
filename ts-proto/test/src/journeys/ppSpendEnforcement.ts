@@ -37,7 +37,8 @@ import { ParticipantRole, OptionalUInt64 } from "../../../src/codec/verana/pp/v1
 import { MsgStartParticipantOP } from "../../../src/codec/verana/pp/v1/tx";
 import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
 import { QueryClientImpl } from "../../../src/codec/verana/de/v1/query";
-import { getActiveCorporation, getPermAuthzSetup } from "../helpers/journeyResults";
+import { QueryClientImpl as CoQueryClientImpl, QueryListCorporationsRequest } from "../../../src/codec/verana/co/v1/query";
+import { getPermAuthzSetup } from "../helpers/journeyResults";
 import { createPermPrerequisites, createRootPermWithDelegate, createCSWithDelegate } from "../helpers/permissionHelpers";
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
@@ -145,16 +146,19 @@ async function reGrantWithSpendLimit(
   qc2.disconnect();
 }
 
-/** Reads the delegate's remaining_spend (in config.denom) from the DE module. */
-async function queryRemainingSpend(delegate: string): Promise<bigint> {
+/** Reads the delegate's remaining_spend (in config.denom) under the corporation's policy account. */
+async function queryRemainingSpend(corporation: string, delegate: string): Promise<bigint> {
   const cometClient = await connectRpc();
   try {
     const queryClient = new QueryClient(cometClient as any);
     const rpc = createProtobufRpcClient(queryClient);
+    const { corporations } = await new CoQueryClientImpl(rpc).ListCorporations(
+      QueryListCorporationsRequest.fromPartial({ responseMaxSize: 1024 }),
+    );
+    const corp = corporations.find((c) => c.policyAddress === corporation);
+    if (!corp) throw new Error(`No corporation found for ${corporation}`);
     const de = new QueryClientImpl(rpc);
-    const corp = getActiveCorporation();
-    if (!corp) throw new Error("No active corporation; run the corporation journey first");
-    const resp = await de.GetDelegateAuthorization({ corporationId: corp.corporationId, delegate });
+    const resp = await de.GetDelegateAuthorization({ corporationId: corp.id, delegate });
     const coin = resp.delegateAuthorization?.remainingSpend.find((c) => c.denom === config.denom);
     return coin ? BigInt(coin.amount) : 0n;
   } finally {
@@ -277,7 +281,7 @@ async function main() {
     console.log("  StartParticipantOP succeeded");
 
     console.log("Step 7: Asserting remaining_spend was debited below the limit...");
-    const remaining = await queryRemainingSpend(setup.delegateAddress);
+    const remaining = await queryRemainingSpend(setup.authorityAddress, setup.delegateAddress);
     if (remaining <= 0n) throw new Error(`expected positive remaining_spend, got ${remaining}`);
     if (remaining >= BigInt(LARGE_SPEND_LIMIT)) {
       throw new Error(`remaining_spend ${remaining} was not debited below limit ${LARGE_SPEND_LIMIT}`);

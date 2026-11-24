@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strings"
 
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,10 +28,9 @@ func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types
 		return nil, err
 	}
 
-	// Group-proposal path: delegate equals corporation and AUTHZ-CHECK-5 alone
-	// applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
-	groupPath := msg.Delegate == msg.Corporation
-	if !groupPath {
+	// Group-proposal path: delegate is the corporation's policy account and
+	// AUTHZ-CHECK-5 alone applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
+	if !types.IsOwnPolicyAddress(co.PolicyAddress, msg.Delegate) {
 		if err := ms.CheckDelegateAuthorization(
 			ctx,
 			co.Id,
@@ -57,13 +57,16 @@ func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types
 		return nil, fmt.Errorf("invalid grantee address: %w", err)
 	}
 
-	// Mutual exclusivity: grantee MUST NOT be a VS account of the corporation.
-	hasVSOA, err := ms.VSOAByCorpOp.Has(ctx, collections.Join(co.Id, grantee.String()))
-	if err != nil {
-		return nil, fmt.Errorf("failed to check VSOperatorAuthorization: %w", err)
-	}
-	if hasVSOA {
-		return nil, types.ErrVSOperatorAuthzExists
+	// Mutual exclusivity: grantee MUST NOT be a VS account of the corporation,
+	// whose index keeps the account as spelled, in either bech32 case.
+	for _, spelling := range []string{grantee.String(), strings.ToUpper(grantee.String())} {
+		hasVSOA, err := ms.VSOAByCorpOp.Has(ctx, collections.Join(co.Id, spelling))
+		if err != nil {
+			return nil, fmt.Errorf("failed to check VSOperatorAuthorization: %w", err)
+		}
+		if hasVSOA {
+			return nil, types.ErrVSOperatorAuthzExists
+		}
 	}
 
 	// [MOD-DE-MSG-3-4] Execution: create, or update keeping accepted_cgf_version.
@@ -110,22 +113,21 @@ func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types
 		}
 	}
 
-	if err := ms.emitDelegateAuthorizationEvent(ctx, types.EventTypeGrantDelegateAuthorization, co.Id, grantee, groupPath, msg); err != nil {
+	if err := ms.emitDelegateAuthorizationEvent(ctx, types.EventTypeGrantDelegateAuthorization, co.Id, grantee, msg); err != nil {
 		return nil, err
 	}
 	return &types.MsgGrantDelegateAuthorizationResponse{}, nil
 }
 
-// emitDelegateAuthorizationEvent emits the event of MOD-DE-MSG-3 or MOD-DE-MSG-4,
-// with the message parameters on the group-proposal path.
-func (k Keeper) emitDelegateAuthorizationEvent(ctx sdk.Context, eventType string, corporationID uint64, delegate sdk.AccAddress, groupPath bool, msg proto.Message) error {
+// emitDelegateAuthorizationEvent emits the event of MOD-DE-MSG-3 or MOD-DE-MSG-4.
+// It always carries the message: the delegate may itself be a group policy
+// account executing through a proposal.
+func (k Keeper) emitDelegateAuthorizationEvent(ctx sdk.Context, eventType string, corporationID uint64, delegate sdk.AccAddress, msg proto.Message) error {
 	ev := events.New(types.ModuleName, eventType).
 		Uint(events.AttrCorporationID, corporationID).
 		Addr(types.AttributeKeyDelegate, delegate)
-	if groupPath {
-		if err := ev.Msg(k.cdc, msg); err != nil {
-			return err
-		}
+	if err := ev.Msg(k.cdc, msg); err != nil {
+		return err
 	}
 	ev.Emit(ctx)
 	return nil

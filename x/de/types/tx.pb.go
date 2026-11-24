@@ -150,18 +150,22 @@ type MsgGrantDelegateAuthorization struct {
 	// msg_types is the list of VPR delegable message types for which
 	// authorization is granted.
 	MsgTypes []MsgType `protobuf:"varint,4,rep,packed,name=msg_types,json=msgTypes,proto3,enum=verana.de.v1.MsgType" json:"msg_types,omitempty"`
-	// expiration is the optional timestamp after which the authorization expires.
+	// expiration is the optional end of the authorization, or of its first cycle
+	// when authz_spend_limit and authz_spend_limit_period are set; a fee
+	// allowance receives the same value.
 	Expiration *time.Time `protobuf:"bytes,5,opt,name=expiration,proto3,stdtime" json:"expiration,omitempty"`
 	// authz_spend_limit is the optional maximum spendable amount.
 	AuthzSpendLimit github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,6,rep,name=authz_spend_limit,json=authzSpendLimit,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"authz_spend_limit"`
 	// authz_spend_limit_period is the optional reset period for
+	// authz_spend_limit. It requires expiration and has no effect without
 	// authz_spend_limit.
 	AuthzSpendLimitPeriod *time.Duration `protobuf:"bytes,7,opt,name=authz_spend_limit_period,json=authzSpendLimitPeriod,proto3,stdduration" json:"authz_spend_limit_period,omitempty"`
 	// feegrant_spend_limit, when set, makes the corporation pay the grantee's
 	// network fees for msg_types up to this amount; absent means no fee allowance.
 	FeegrantSpendLimit github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,9,rep,name=feegrant_spend_limit,json=feegrantSpendLimit,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"feegrant_spend_limit"`
 	// feegrant_spend_limit_period is the optional reset period for
-	// feegrant_spend_limit. Ignored if feegrant_spend_limit is not set.
+	// feegrant_spend_limit. It requires expiration, authz_spend_limit and
+	// authz_spend_limit_period, and has no effect without feegrant_spend_limit.
 	FeegrantSpendLimitPeriod *time.Duration `protobuf:"bytes,10,opt,name=feegrant_spend_limit_period,json=feegrantSpendLimitPeriod,proto3,stdduration" json:"feegrant_spend_limit_period,omitempty"`
 }
 

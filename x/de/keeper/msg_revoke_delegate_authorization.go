@@ -24,10 +24,9 @@ func (ms msgServer) RevokeDelegateAuthorization(goCtx context.Context, msg *type
 		return nil, err
 	}
 
-	// Group-proposal path: delegate equals corporation and AUTHZ-CHECK-5 alone
-	// applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
-	groupPath := msg.Delegate == msg.Corporation
-	if !groupPath {
+	// Group-proposal path: delegate is the corporation's policy account and
+	// AUTHZ-CHECK-5 alone applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
+	if !types.IsOwnPolicyAddress(co.PolicyAddress, msg.Delegate) {
 		if err := ms.CheckDelegateAuthorization(
 			ctx,
 			co.Id,
@@ -61,7 +60,7 @@ func (ms msgServer) RevokeDelegateAuthorization(goCtx context.Context, msg *type
 		return nil, fmt.Errorf("failed to revoke fee allowance: %w", err)
 	}
 
-	if err := ms.emitDelegateAuthorizationEvent(ctx, types.EventTypeRevokeDelegateAuthorization, co.Id, grantee, groupPath, msg); err != nil {
+	if err := ms.emitDelegateAuthorizationEvent(ctx, types.EventTypeRevokeDelegateAuthorization, co.Id, grantee, msg); err != nil {
 		return nil, err
 	}
 	return &types.MsgRevokeDelegateAuthorizationResponse{}, nil
