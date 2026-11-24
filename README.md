@@ -276,6 +276,8 @@ cat > council.json <<EOF
  {"did":"did:example:b","language":"en","members":["bob"],"funds":"10000000uvna"},
  {"did":"did:example:c","language":"en","members":["carol"],"funds":"10000000uvna"}]}
 EOF
+# Each corporation may also set "threshold", "voting_period" and "min_execution_period" for its own policy
+# (defaults: 1, the council's --voting-period, 0); it can change them later by its own proposal.
 veranad genesis add-council council.json --keyring-backend test
 
 # Start the chain

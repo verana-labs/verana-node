@@ -32,12 +32,14 @@ const (
 
 type councilFile struct {
 	Corporations []struct {
-		Did       string   `json:"did"`
-		Language  string   `json:"language"`
-		Members   []string `json:"members"`
-		Threshold string   `json:"threshold"`
-		Funds     string   `json:"funds"`
-		Validator *struct {
+		Did                string   `json:"did"`
+		Language           string   `json:"language"`
+		Members            []string `json:"members"`
+		Threshold          string   `json:"threshold"`
+		VotingPeriod       string   `json:"voting_period"`
+		MinExecutionPeriod string   `json:"min_execution_period"`
+		Funds              string   `json:"funds"`
+		Validator          *struct {
 			Moniker string          `json:"moniker"`
 			PubKey  json.RawMessage `json:"pubkey"`
 		} `json:"validator"`
@@ -49,10 +51,11 @@ func AddCouncilCmd(defaultNodeHome string) *cobra.Command {
 		Use:   "add-council [council.json]",
 		Short: "Seat the council of corporations in genesis",
 		Long: `Seat the council in genesis from a JSON file listing at least three corporations:
-{"corporations":[{"did":"did:...","language":"en","members":["key-or-address"],"threshold":"1","funds":"10000000uvna",
+{"corporations":[{"did":"did:...","language":"en","members":["key-or-address"],"threshold":"1",
+"voting_period":"72h","min_execution_period":"24h","funds":"10000000uvna",
 "validator":{"moniker":"node1","pubkey":<output of 'veranad comet show-validator'>}}]}
 Each corporation gets its own group and policy, whose account is its policy_address and holds the given funds,
-and a Corporation entry.
+and a Corporation entry. Threshold defaults to 1, voting_period to the council's, min_execution_period to 0.
 A corporation with a validator operates it from its policy address, bonded from the genesis supply; no gentx is used.
 The council is a self-administered 2/3 group of the corporations' policy addresses; slashing fractions are set to 0.`,
 		Args: cobra.ExactArgs(1),
@@ -101,6 +104,12 @@ The council is a self-administered 2/3 group of the corporations' policy address
 			spec.UnbondingTime, _ = cmd.Flags().GetDuration(flagUnbondingTime)
 			for _, c := range file.Corporations {
 				gc := app.GenesisCorporation{Did: c.Did, Language: c.Language, Threshold: c.Threshold}
+				if gc.VotingPeriod, err = optionalDuration(c.VotingPeriod); err != nil {
+					return fmt.Errorf("corporation %s: voting_period: %w", c.Did, err)
+				}
+				if gc.MinExecutionPeriod, err = optionalDuration(c.MinExecutionPeriod); err != nil {
+					return fmt.Errorf("corporation %s: min_execution_period: %w", c.Did, err)
+				}
 				if c.Funds != "" {
 					if gc.Funds, err = sdk.ParseCoinsNormalized(c.Funds); err != nil {
 						return fmt.Errorf("corporation %s: funds: %w", c.Did, err)
@@ -157,4 +166,11 @@ The council is a self-administered 2/3 group of the corporations' policy address
 	cmd.Flags().Uint32(flagMaxValidators, 25, "staking max_validators")
 	cmd.Flags().Duration(flagUnbondingTime, 0, "staking unbonding_time; 0 keeps the default")
 	return cmd
+}
+
+func optionalDuration(s string) (time.Duration, error) {
+	if s == "" {
+		return 0, nil
+	}
+	return time.ParseDuration(s)
 }

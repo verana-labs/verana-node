@@ -695,6 +695,32 @@ func TestSetGenesisCouncil_FundsCorporationsWithSupply(t *testing.T) {
 	}
 }
 
+func TestSetGenesisCouncil_CorporationWindows(t *testing.T) {
+	a := newTestApp(t)
+	gs := a.DefaultGenesis()
+	spec := app.GenesisCouncil{Percentage: poatypes.CouncilPercentage, VotingPeriod: time.Hour, MinExecutionPeriod: 48 * time.Hour}
+	for i := 0; i < 3; i++ {
+		spec.Corporations = append(spec.Corporations, app.GenesisCorporation{
+			Did: fmt.Sprintf("did:example:corp%d", i), Language: "en", Members: []string{sdk.AccAddress(secp256k1.GenPrivKey().PubKey().Address()).String()},
+		})
+	}
+	spec.Corporations[0].VotingPeriod = 2 * time.Hour
+	spec.Corporations[0].MinExecutionPeriod = 30 * time.Minute
+	require.NoError(t, app.SetGenesisCouncil(a.AppCodec(), gs, spec, time.Unix(0, 0).UTC()))
+
+	var gg group.GenesisState
+	a.AppCodec().MustUnmarshalJSON(gs[group.ModuleName], &gg)
+	windows := map[string][2]time.Duration{}
+	for _, p := range gg.GroupPolicies {
+		dp, err := p.GetDecisionPolicy()
+		require.NoError(t, err)
+		windows[p.Address] = [2]time.Duration{dp.GetVotingPeriod(), dp.GetMinExecutionPeriod()}
+	}
+	require.Equal(t, [2]time.Duration{2 * time.Hour, 30 * time.Minute}, windows[poatypes.GroupPolicyAddress(2).String()])
+	require.Equal(t, [2]time.Duration{time.Hour, 0}, windows[poatypes.GroupPolicyAddress(3).String()])
+	require.Equal(t, [2]time.Duration{time.Hour, 48 * time.Hour}, windows[app.CouncilAuthority])
+}
+
 func TestSetGenesisCouncil_AddsBondToNotBondedPool(t *testing.T) {
 	a := newTestApp(t)
 	gs, corps := councilGenesis(t, a, 3)

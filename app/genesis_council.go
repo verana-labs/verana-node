@@ -36,13 +36,16 @@ type GenesisCouncil struct {
 }
 
 // GenesisCorporation gets its own group and policy; the policy account is its policy_address.
+// A zero VotingPeriod takes the council's.
 type GenesisCorporation struct {
-	Did       string
-	Language  string
-	Members   []string
-	Threshold string
-	Funds     sdk.Coins
-	Validator *GenesisValidator
+	Did                string
+	Language           string
+	Members            []string
+	Threshold          string
+	VotingPeriod       time.Duration
+	MinExecutionPeriod time.Duration
+	Funds              sdk.Coins
+	Validator          *GenesisValidator
 }
 
 // GenesisValidator is operated by the corporation's policy address and bonded from the genesis supply.
@@ -92,9 +95,13 @@ func SetGenesisCouncil(cdc codec.Codec, appState map[string]json.RawMessage, c G
 		if threshold == "" {
 			threshold = "1"
 		}
+		voting := co.VotingPeriod
+		if voting == 0 {
+			voting = c.VotingPeriod
+		}
 		if err := addGroup(gg, uint64(i+2), policies[i], co.Did, co.Members, &group.ThresholdDecisionPolicy{
 			Threshold: threshold,
-			Windows:   &group.DecisionPolicyWindows{VotingPeriod: c.VotingPeriod},
+			Windows:   &group.DecisionPolicyWindows{VotingPeriod: voting, MinExecutionPeriod: co.MinExecutionPeriod},
 		}, now); err != nil {
 			return fmt.Errorf("corporation %s: %w", co.Did, err)
 		}

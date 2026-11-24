@@ -41,6 +41,10 @@ func (k Keeper) CouncilGroupID(ctx context.Context) (uint64, error) {
 }
 
 func (k Keeper) IsCouncilMember(ctx context.Context, addr string) (bool, error) {
+	addr, err := k.canonical(addr)
+	if err != nil {
+		return false, err
+	}
 	members, err := k.CouncilMembers(ctx)
 	if err != nil {
 		return false, err

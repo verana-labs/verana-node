@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -185,6 +186,15 @@ func TestAddValidator_RejectsNonMember(t *testing.T) {
 	f.groups.members = nil
 	_, err := f.msg.AddValidator(f.ctx, addMsg(f))
 	require.ErrorIs(t, err, types.ErrNotCouncilMember)
+}
+
+func TestAddValidator_AcceptsUppercaseMember(t *testing.T) {
+	f := newFixture(t)
+	msg := addMsg(f)
+	msg.ValidatorAddress = strings.ToUpper(msg.ValidatorAddress)
+	_, err := f.msg.AddValidator(f.ctx, msg)
+	require.NoError(t, err)
+	require.Len(t, f.router.msgs, 1)
 }
 
 func TestAddValidator_RejectsWhenFull(t *testing.T) {
