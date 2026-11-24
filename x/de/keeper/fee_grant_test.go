@@ -37,7 +37,9 @@ func hasFeeGrant(t *testing.T, f *fixture, ctx sdk.Context, corpID uint64, grant
 
 func innerAllowance(t *testing.T, a feegrant.FeeAllowanceI) feegrant.FeeAllowanceI {
 	t.Helper()
-	inner, err := a.(*feegrant.AllowedMsgAllowance).GetAllowance()
+	wrapped, ok := a.(*feegrant.AllowedMsgAllowance)
+	require.True(t, ok)
+	inner, err := wrapped.GetAllowance()
 	require.NoError(t, err)
 	return inner
 }

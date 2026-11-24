@@ -188,8 +188,7 @@ func (k Keeper) getFeeGrant(ctx context.Context, key collections.Pair[uint64, st
 	return &fg, nil
 }
 
-// ownsAllowance reports whether the allowance in fg's slot is this module's:
-// fg exists and has not ended by expiry while the allowance has not expired.
+// ownsAllowance is false with no entry, or when the entry ended by expiry while the allowance has not.
 func ownsAllowance(fg *types.FeeGrant, allowance feegrant.FeeAllowanceI, now time.Time) (bool, error) {
 	if fg == nil {
 		return false, nil

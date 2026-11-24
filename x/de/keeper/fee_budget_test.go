@@ -18,17 +18,9 @@ import (
 func uvna(n int64) sdk.Coins { return sdk.NewCoins(sdk.NewInt64Coin("uvna", n)) }
 
 // periodic returns the PeriodicAllowance realized for (corp, grantee).
-func periodic(t *testing.T, f *fixture, ctx sdk.Context, corpID uint64, grantee string) *feegrant.PeriodicAllowance {
+func periodic(t *testing.T, f *fixture, corpID uint64, grantee string) *feegrant.PeriodicAllowance {
 	t.Helper()
-	granter, _ := sdk.AccAddressFromBech32(corpPolicyAddr(corpID))
-	granteeAddr, _ := sdk.AccAddressFromBech32(grantee)
-	a, err := f.feegrants.GetAllowance(ctx, granter, granteeAddr)
-	require.NoError(t, err)
-	wrapped, ok := a.(*feegrant.AllowedMsgAllowance)
-	require.True(t, ok)
-	inner, err := wrapped.GetAllowance()
-	require.NoError(t, err)
-	pa, ok := inner.(*feegrant.PeriodicAllowance)
+	pa, ok := innerAllowance(t, slot(f, corpID, grantee)).(*feegrant.PeriodicAllowance)
 	require.True(t, ok)
 	return pa
 }
@@ -37,13 +29,9 @@ func periodic(t *testing.T, f *fixture, ctx sdk.Context, corpID uint64, grantee 
 // SDK's own Accept, then the mutated allowance is written back.
 func spendFee(t *testing.T, f *fixture, ctx sdk.Context, corpID uint64, grantee string, fee sdk.Coins) {
 	t.Helper()
-	granter, _ := sdk.AccAddressFromBech32(corpPolicyAddr(corpID))
-	granteeAddr, _ := sdk.AccAddressFromBech32(grantee)
-	a, err := f.feegrants.GetAllowance(ctx, granter, granteeAddr)
-	require.NoError(t, err)
-	wrapped := a.(*feegrant.AllowedMsgAllowance)
-	inner, err := wrapped.GetAllowance()
-	require.NoError(t, err)
+	wrapped, ok := slot(f, corpID, grantee).(*feegrant.AllowedMsgAllowance)
+	require.True(t, ok)
+	inner := innerAllowance(t, wrapped)
 	remove, err := inner.Accept(ctx, fee, nil)
 	require.NoError(t, err)
 	require.False(t, remove)
@@ -56,7 +44,7 @@ func TestRecomputeFeeAllowance_RealizesPeriodicAllowance(t *testing.T) {
 	now := ctx.BlockTime()
 	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 10)))
 
-	pa := periodic(t, f, ctx, 1, vsOp)
+	pa := periodic(t, f, 1, vsOp)
 	require.Equal(t, types.DefaultVsOperatorFeePeriod, pa.Period)
 	require.Equal(t, uvna(10), pa.PeriodSpendLimit)
 	require.Equal(t, uvna(10), pa.PeriodCanSpend)
@@ -77,7 +65,7 @@ func TestRecomputeFeeAllowance_ResetsBudget(t *testing.T) {
 	require.NoError(t, k.GrantVSOperatorAuthorization(later, 1, vsOp, feegrantRecord(11, 5)))
 
 	reset := later.BlockTime().Add(types.DefaultVsOperatorFeePeriod)
-	pa := periodic(t, f, ctx, 1, vsOp)
+	pa := periodic(t, f, 1, vsOp)
 	require.Equal(t, uvna(15), pa.PeriodSpendLimit)
 	require.Equal(t, uvna(15), pa.PeriodCanSpend)
 	require.True(t, pa.PeriodReset.Equal(reset))
@@ -100,7 +88,7 @@ func TestGrantFeeAllowance_RegrantResetsBudget(t *testing.T) {
 	reset2 := ctx.BlockTime().Add(2 * period)
 	require.NoError(t, k.GrantFeeAllowance(ctx, 7, grantee, []types.MsgType{mtEcosystem}, &reset2, uvna(10), &period))
 
-	pa := periodic(t, f, ctx, 7, grantee)
+	pa := periodic(t, f, 7, grantee)
 	require.Equal(t, uvna(10), pa.PeriodCanSpend)
 	require.True(t, pa.PeriodReset.Equal(reset2))
 }

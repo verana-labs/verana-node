@@ -30,16 +30,6 @@ func queueLen(t *testing.T, f *fixture, ctx sdk.Context) int {
 	return n
 }
 
-func countEvents(ctx sdk.Context, typ string) int {
-	n := 0
-	for _, e := range ctx.EventManager().Events() {
-		if e.Type == typ {
-			n++
-		}
-	}
-	return n
-}
-
 // A due key whose entry has expired drops its contribution; the last one
 // revokes the allowance.
 func TestEndBlock_ExpiredEntryRevokesAllowance(t *testing.T) {
@@ -137,7 +127,7 @@ func TestEndBlock_RecomputesEachVSOAOnce(t *testing.T) {
 	f.participants.views[11] = types.ParticipantView{EffectiveUntil: &until}
 	require.NoError(t, k.EndBlock(due))
 
-	require.Equal(t, 1, countEvents(due, types.EventTypeGrantFeeAllowance))
+	require.Len(t, eventAttrs(due, types.EventTypeGrantFeeAllowance), 1)
 	fg, _ := k.FeeGrants.Get(ctx, collections.Join(uint64(1), vsOp))
 	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uvna", 1)), fg.SpendLimit)
 	require.Equal(t, 0, queueLen(t, f, ctx))
