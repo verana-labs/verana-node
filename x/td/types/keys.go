@@ -20,6 +20,10 @@ var (
 	ParamsKey       = []byte("p_trustdeposit")
 	TrustDepositKey = collections.NewPrefix(1)
 	DustKey         = collections.NewPrefix(2)
+	// PendingTuDecayRateKey holds the tu_decay_rate applied at the next epoch boundary.
+	PendingTuDecayRateKey = collections.NewPrefix(3)
+	// ShareValueKey holds the v4 trust deposit share value.
+	ShareValueKey = collections.NewPrefix(4)
 )
 
 const (

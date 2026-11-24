@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	"github.com/stretchr/testify/require"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
@@ -25,6 +25,7 @@ import (
 	ppkeeper "github.com/verana-labs/verana-node/x/pp/keeper"
 	pptypes "github.com/verana-labs/verana-node/x/pp/types"
 	tdtypes "github.com/verana-labs/verana-node/x/td/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 func feegrantTestApp(t *testing.T) (*App, sdk.Context) {
@@ -35,7 +36,7 @@ func feegrantTestApp(t *testing.T) (*App, sdk.Context) {
 	a, err := New(log.NewNopLogger(), dbm.NewMemDB(), true, appOptions)
 	require.NoError(t, err)
 	ctx := a.NewContextLegacy(true, cmtproto.Header{Height: 10, Time: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)}).WithIsCheckTx(false)
-	require.NoError(t, a.DeKeeper.Params.Set(ctx, detypes.DefaultParams()))
+	require.NoError(t, a.VsKeeper.Params.Set(ctx, vstypes.DefaultParams()))
 	return a, ctx
 }
 
@@ -359,8 +360,8 @@ func TestSelfFeeGrant_ValidatedEntry(t *testing.T) {
 	})
 	require.NoError(t, err)
 	fund := sdk.NewCoins(sdk.NewInt64Coin("uvna", 1_000_000))
-	require.NoError(t, a.BankKeeper.MintCoins(ctx, minttypes.ModuleName, fund))
-	require.NoError(t, a.BankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, e.pX, fund))
+	require.NoError(t, a.BankKeeper.MintCoins(ctx, ibctransfertypes.ModuleName, fund))
+	require.NoError(t, a.BankKeeper.SendCoinsFromModuleToAccount(ctx, ibctransfertypes.ModuleName, e.pX, fund))
 
 	_, err = e.des.GrantDelegateAuthorization(ctx, &detypes.MsgGrantDelegateAuthorization{
 		Corporation: e.pX.String(), Delegate: e.pX.String(), Grantee: e.opX.String(),

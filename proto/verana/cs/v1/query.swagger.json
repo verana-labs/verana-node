@@ -322,23 +322,27 @@
           "type": "string",
           "format": "uint64"
         },
-        "credential_schema_issuer_grantor_validation_validity_period_max_days": {
+        "credential_schema_issuer_grantor_accreditation_validity_period_max_days": {
           "type": "integer",
           "format": "int64"
         },
-        "credential_schema_verifier_grantor_validation_validity_period_max_days": {
+        "credential_schema_verifier_grantor_accreditation_validity_period_max_days": {
           "type": "integer",
           "format": "int64"
         },
-        "credential_schema_issuer_validation_validity_period_max_days": {
+        "credential_schema_issuer_accreditation_validity_period_max_days": {
           "type": "integer",
           "format": "int64"
         },
-        "credential_schema_verifier_validation_validity_period_max_days": {
+        "credential_schema_verifier_accreditation_validity_period_max_days": {
           "type": "integer",
           "format": "int64"
         },
-        "credential_schema_holder_validation_validity_period_max_days": {
+        "credential_schema_holder_accreditation_validity_period_max_days": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "credential_schema_presentation_validity_period_max_days": {
           "type": "integer",
           "format": "int64"
         }

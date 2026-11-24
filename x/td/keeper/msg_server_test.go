@@ -240,29 +240,17 @@ func TestUtilityFunctions(t *testing.T) {
 
 	// Test parameter getters
 	t.Run("Parameter getters", func(t *testing.T) {
-		// Set custom params for testing
-		params := types.Params{
-			TrustDepositRate:          math.LegacyMustNewDecFromStr("0.2"),
-			UserAgentRewardRate:       math.LegacyMustNewDecFromStr("0.3"),
-			WalletUserAgentRewardRate: math.LegacyMustNewDecFromStr("0.4"),
-			TrustDepositShareValue:    math.LegacyMustNewDecFromStr("1.5"),
-		}
+		params := defaultTestParams()
+		params.VuaRewardRate = math.LegacyMustNewDecFromStr("0.3")
+		require.NoError(t, k.SetParams(ctx, params))
 
-		err := k.SetParams(ctx, params)
-		require.NoError(t, err)
+		require.Equal(t, params.TrustDepositRate, k.GetTrustDepositRate(sdkCtx))
+		require.Equal(t, params.VuaRewardRate, k.GetUserAgentRewardRate(sdkCtx))
+		require.Equal(t, params.VuaRewardRate, k.GetWalletUserAgentRewardRate(sdkCtx))
 
-		// Test each getter function
-		rate := k.GetTrustDepositRate(sdkCtx)
-		require.Equal(t, params.TrustDepositRate, rate)
-
-		userRate := k.GetUserAgentRewardRate(sdkCtx)
-		require.Equal(t, params.UserAgentRewardRate, userRate)
-
-		walletRate := k.GetWalletUserAgentRewardRate(sdkCtx)
-		require.Equal(t, params.WalletUserAgentRewardRate, walletRate)
-
-		shareValue := k.GetTrustDepositShareValue(sdkCtx)
-		require.Equal(t, params.TrustDepositShareValue, shareValue)
+		require.Equal(t, math.LegacyOneDec(), k.GetTrustDepositShareValue(sdkCtx))
+		require.NoError(t, k.SetTrustDepositShareValue(sdkCtx, math.LegacyMustNewDecFromStr("1.5")))
+		require.Equal(t, math.LegacyMustNewDecFromStr("1.5"), k.GetTrustDepositShareValue(sdkCtx))
 	})
 }
 
@@ -272,12 +260,9 @@ func govAuthority() string {
 }
 
 func defaultTestParams() types.Params {
-	return types.Params{
-		TrustDepositShareValue:    math.LegacyMustNewDecFromStr("1.0"),
-		TrustDepositRate:          math.LegacyMustNewDecFromStr("0.2"),
-		WalletUserAgentRewardRate: math.LegacyMustNewDecFromStr("0.3"),
-		UserAgentRewardRate:       math.LegacyMustNewDecFromStr("0.2"),
-	}
+	p := types.DefaultParams()
+	p.TrustDepositRate = math.LegacyMustNewDecFromStr("0.2")
+	return p
 }
 
 func setupMsgServerWithDelegation(t testing.TB) (keeper.Keeper, types.MsgServer, context.Context, *keepertest.MockDelegationKeeper, *keepertest.MockTDCorporationKeeper) {
@@ -762,7 +747,7 @@ func TestBurnEcosystemSlashedTrustDeposit(t *testing.T) {
 			amount:  50,
 			setup: func() {
 				params := defaultTestParams()
-				params.TrustDepositShareValue = math.LegacyMustNewDecFromStr("0")
+				require.NoError(t, k.SetTrustDepositShareValue(ctx, math.LegacyMustNewDecFromStr("0")))
 				err := k.SetParams(ctx, params)
 				require.NoError(t, err)
 				td := types.TrustDeposit{
@@ -853,6 +838,7 @@ func TestBurnEcosystemSlashedTrustDeposit(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			require.NoError(t, k.ShareValue.Remove(sdkCtx))
 			if tc.setup != nil {
 				tc.setup()
 			}

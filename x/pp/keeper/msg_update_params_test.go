@@ -32,6 +32,32 @@ func TestMsgUpdateParams(t *testing.T) {
 			expErrMsg: "invalid authority",
 		},
 		{
+			name: "accreditation_max_entries_per_participation below 2",
+			input: &types.MsgUpdateParams{
+				Authority: k.GetAuthority(),
+				Params:    types.NewParams(1),
+			},
+			expErr:    true,
+			expErrMsg: "accreditation_max_entries_per_participation",
+		},
+		{
+			name: "accreditation_max_entries_per_participation above 64",
+			input: &types.MsgUpdateParams{
+				Authority: k.GetAuthority(),
+				Params:    types.NewParams(65),
+			},
+			expErr:    true,
+			expErrMsg: "accreditation_max_entries_per_participation",
+		},
+		{
+			name: "lower value",
+			input: &types.MsgUpdateParams{
+				Authority: k.GetAuthority(),
+				Params:    types.NewParams(2),
+			},
+			expErr: false,
+		},
+		{
 			name: "all good",
 			input: &types.MsgUpdateParams{
 				Authority: k.GetAuthority(),
@@ -54,4 +80,25 @@ func TestMsgUpdateParams(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
+	k, ms, _, _, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+
+	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: types.NewParams(16)})
+	require.NoError(t, err)
+
+	attrs := map[string]string{}
+	for _, ev := range wctx.EventManager().Events() {
+		if ev.Type == types.EventTypeUpdateParams {
+			for _, a := range ev.Attributes {
+				attrs[a.Key] = a.Value
+			}
+		}
+	}
+	require.Equal(t, map[string]string{
+		types.AttributeKeyAuthority:                   k.GetAuthority(),
+		"accreditation_max_entries_per_participation": "16",
+	}, attrs)
 }

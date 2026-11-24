@@ -6,23 +6,24 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import { Duration } from "../../../google/protobuf/duration";
 
 export const protobufPackage = "verana.gf.v1";
 
-/**
- * Params defines the parameters for the x/gf module.
- * The module has no parameters at this time; the message is kept for forward compat
- * so that gov-proposed parameter changes can land without proto migrations.
- */
+/** Params defines the parameters for the x/gf module. */
 export interface Params {
+  gfAcceptanceGraceMin: Duration | undefined;
 }
 
 function createBaseParams(): Params {
-  return {};
+  return { gfAcceptanceGraceMin: undefined };
 }
 
 export const Params = {
-  encode(_: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.gfAcceptanceGraceMin !== undefined) {
+      Duration.encode(message.gfAcceptanceGraceMin, writer.uint32(10).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -33,6 +34,13 @@ export const Params = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.gfAcceptanceGraceMin = Duration.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -42,20 +50,30 @@ export const Params = {
     return message;
   },
 
-  fromJSON(_: any): Params {
-    return {};
+  fromJSON(object: any): Params {
+    return {
+      gfAcceptanceGraceMin: isSet(object.gfAcceptanceGraceMin)
+        ? Duration.fromJSON(object.gfAcceptanceGraceMin)
+        : undefined,
+    };
   },
 
-  toJSON(_: Params): unknown {
+  toJSON(message: Params): unknown {
     const obj: any = {};
+    if (message.gfAcceptanceGraceMin !== undefined) {
+      obj.gfAcceptanceGraceMin = Duration.toJSON(message.gfAcceptanceGraceMin);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<Params>, I>>(base?: I): Params {
     return Params.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<Params>, I>>(_: I): Params {
+  fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
     const message = createBaseParams();
+    message.gfAcceptanceGraceMin = (object.gfAcceptanceGraceMin !== undefined && object.gfAcceptanceGraceMin !== null)
+      ? Duration.fromPartial(object.gfAcceptanceGraceMin)
+      : undefined;
     return message;
   },
 };
@@ -71,3 +89,7 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
+}

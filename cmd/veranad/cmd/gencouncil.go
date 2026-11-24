@@ -4,25 +4,18 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"strings"
+	"os"
 	"time"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/gogoproto/proto"
-	icagenesistypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/genesis/types"
-	icatypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/types"
 	"github.com/spf13/cobra"
-	"github.com/verana-labs/cosmos-group"
 
 	"github.com/verana-labs/verana-node/app"
 	poatypes "github.com/verana-labs/verana-node/x/poa/types"
@@ -37,25 +30,34 @@ const (
 	flagUnbondingTime = "unbonding-time"
 )
 
-// ICA packets bypass the ante, so the host allow-list must not reach staking.
-var icaHostAllowMessages = []string{
-	"/cosmos.bank.v1beta1.MsgSend",
-}
-
-func unmarshalIfSet(cdc codec.Codec, raw []byte, out proto.Message) error {
-	if len(raw) == 0 {
-		return nil
-	}
-	return cdc.UnmarshalJSON(raw, out)
+type councilFile struct {
+	Corporations []struct {
+		Did                string   `json:"did"`
+		Language           string   `json:"language"`
+		Members            []string `json:"members"`
+		Threshold          string   `json:"threshold"`
+		VotingPeriod       string   `json:"voting_period"`
+		MinExecutionPeriod string   `json:"min_execution_period"`
+		Funds              string   `json:"funds"`
+		Validator          *struct {
+			Moniker string          `json:"moniker"`
+			PubKey  json.RawMessage `json:"pubkey"`
+		} `json:"validator"`
+	} `json:"corporations"`
 }
 
 func AddCouncilCmd(defaultNodeHome string) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-council [member][,member...]",
-		Short: "Seat the Verana Council in genesis",
-		Long: `Seat the Verana Council in genesis: one weight-1 x/group member per address or key name,
-a self-administered 2/3 decision policy, slashing fractions set to 0 and staking max_validators,
-so every seated validator keeps exactly one unit of consensus power. Run before gentx.`,
+		Use:   "add-council [council.json]",
+		Short: "Seat the council of corporations in genesis",
+		Long: `Seat the council in genesis from a JSON file listing at least three corporations:
+{"corporations":[{"did":"did:...","language":"en","members":["key-or-address"],"threshold":"1",
+"voting_period":"72h","min_execution_period":"24h","funds":"10000000uvna",
+"validator":{"moniker":"node1","pubkey":<output of 'veranad comet show-validator'>}}]}
+Each corporation gets its own group and policy, whose account is its policy_address and holds the given funds,
+and a Corporation entry. Threshold defaults to 1, voting_period to the council's, min_execution_period to 0.
+A corporation with a validator operates it from its policy address, bonded from the genesis supply; no gentx is used.
+The council is a self-administered 2/3 group of the corporations' policy addresses; slashing fractions are set to 0.`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -64,87 +66,80 @@ so every seated validator keeps exactly one unit of consensus power. Run before 
 			config := serverCtx.Config
 			config.SetRoot(clientCtx.HomeDir)
 
+			raw, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			var file councilFile
+			if err := json.Unmarshal(raw, &file); err != nil {
+				return fmt.Errorf("parse %s: %w", args[0], err)
+			}
+
 			keyringBackend, _ := cmd.Flags().GetString(flags.FlagKeyringBackend)
 			kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, clientCtx.HomeDir, bufio.NewReader(cmd.InOrStdin()), cdc)
 			if err != nil {
 				return err
 			}
-			var members []string
-			seen := map[string]bool{}
-			for _, raw := range strings.Split(args[0], ",") {
-				raw = strings.TrimSpace(raw)
-				addr, err := sdk.AccAddressFromBech32(raw)
+			resolve := func(raw string) (string, error) {
+				if addr, err := sdk.AccAddressFromBech32(raw); err == nil {
+					return addr.String(), nil
+				}
+				info, err := kb.Key(raw)
 				if err != nil {
-					info, kerr := kb.Key(raw)
-					if kerr != nil {
-						return fmt.Errorf("member %q is neither an address nor a key: %w", raw, kerr)
-					}
-					if addr, err = info.GetAddress(); err != nil {
-						return err
-					}
+					return "", fmt.Errorf("member %q is neither an address nor a key: %w", raw, err)
 				}
-				if seen[addr.String()] {
-					return fmt.Errorf("duplicate member %s", addr)
+				addr, err := info.GetAddress()
+				if err != nil {
+					return "", err
 				}
-				seen[addr.String()] = true
-				members = append(members, addr.String())
+				return addr.String(), nil
 			}
 
-			percentage, _ := cmd.Flags().GetString(flagPercentage)
-			votingPeriod, _ := cmd.Flags().GetDuration(flagVotingPeriod)
-			minExec, _ := cmd.Flags().GetDuration(flagMinExecPeriod)
-			metadata, _ := cmd.Flags().GetString(flagCouncilMeta)
-			maxValidators, _ := cmd.Flags().GetUint32(flagMaxValidators)
-			unbondingTime, _ := cmd.Flags().GetDuration(flagUnbondingTime)
+			spec := app.GenesisCouncil{}
+			spec.Percentage, _ = cmd.Flags().GetString(flagPercentage)
+			spec.VotingPeriod, _ = cmd.Flags().GetDuration(flagVotingPeriod)
+			spec.MinExecutionPeriod, _ = cmd.Flags().GetDuration(flagMinExecPeriod)
+			spec.Metadata, _ = cmd.Flags().GetString(flagCouncilMeta)
+			spec.MaxValidators, _ = cmd.Flags().GetUint32(flagMaxValidators)
+			spec.UnbondingTime, _ = cmd.Flags().GetDuration(flagUnbondingTime)
+			for _, c := range file.Corporations {
+				gc := app.GenesisCorporation{Did: c.Did, Language: c.Language, Threshold: c.Threshold}
+				if gc.VotingPeriod, err = optionalDuration(c.VotingPeriod); err != nil {
+					return fmt.Errorf("corporation %s: voting_period: %w", c.Did, err)
+				}
+				if gc.MinExecutionPeriod, err = optionalDuration(c.MinExecutionPeriod); err != nil {
+					return fmt.Errorf("corporation %s: min_execution_period: %w", c.Did, err)
+				}
+				if c.Funds != "" {
+					if gc.Funds, err = sdk.ParseCoinsNormalized(c.Funds); err != nil {
+						return fmt.Errorf("corporation %s: funds: %w", c.Did, err)
+					}
+				}
+				for _, m := range c.Members {
+					addr, err := resolve(m)
+					if err != nil {
+						return err
+					}
+					gc.Members = append(gc.Members, addr)
+				}
+				if c.Validator != nil {
+					var pk cryptotypes.PubKey
+					if err := cdc.UnmarshalInterfaceJSON(c.Validator.PubKey, &pk); err != nil {
+						return fmt.Errorf("corporation %s: validator pubkey: %w", c.Did, err)
+					}
+					gc.Validator = &app.GenesisValidator{Moniker: c.Validator.Moniker, PubKey: pk}
+				}
+				spec.Corporations = append(spec.Corporations, gc)
+			}
 
 			genFile := config.GenesisFile()
 			appState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFile)
 			if err != nil {
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
-
-			var existing group.GenesisState
-			if err := unmarshalIfSet(cdc, appState[group.ModuleName], &existing); err != nil {
+			if err := app.SetGenesisCouncil(cdc, appState, spec, genDoc.GenesisTime); err != nil {
 				return err
 			}
-			if len(existing.Groups) > 0 || len(existing.GroupPolicies) > 0 {
-				return fmt.Errorf("genesis already contains groups; add-council must run on a fresh genesis")
-			}
-
-			gs, err := poatypes.CouncilGenesis(app.CouncilAuthority, members, metadata, percentage, votingPeriod, minExec, genDoc.GenesisTime)
-			if err != nil {
-				return err
-			}
-			if err := gs.Validate(); err != nil {
-				return err
-			}
-			appState[group.ModuleName] = cdc.MustMarshalJSON(gs)
-
-			staking := stakingtypes.DefaultGenesisState()
-			if err := unmarshalIfSet(cdc, appState[stakingtypes.ModuleName], staking); err != nil {
-				return err
-			}
-			staking.Params.MaxValidators = maxValidators
-			if unbondingTime > 0 {
-				staking.Params.UnbondingTime = unbondingTime
-			}
-			appState[stakingtypes.ModuleName] = cdc.MustMarshalJSON(staking)
-
-			slashing := slashingtypes.DefaultGenesisState()
-			if err := unmarshalIfSet(cdc, appState[slashingtypes.ModuleName], slashing); err != nil {
-				return err
-			}
-			slashing.Params.SlashFractionDowntime = math.LegacyZeroDec()
-			slashing.Params.SlashFractionDoubleSign = math.LegacyZeroDec()
-			appState[slashingtypes.ModuleName] = cdc.MustMarshalJSON(slashing)
-
-			ica := icagenesistypes.DefaultGenesis()
-			if err := unmarshalIfSet(cdc, appState[icatypes.ModuleName], ica); err != nil {
-				return err
-			}
-			ica.HostGenesisState.Params.AllowMessages = icaHostAllowMessages
-			appState[icatypes.ModuleName] = cdc.MustMarshalJSON(ica)
-
 			appStateJSON, err := json.Marshal(appState)
 			if err != nil {
 				return err
@@ -153,18 +148,29 @@ so every seated validator keeps exactly one unit of consensus power. Run before 
 			if err := genutil.ExportGenesisFile(genDoc, genFile); err != nil {
 				return err
 			}
-			cmd.Printf("council policy %s with %d member(s)\n", app.CouncilAuthority, len(members))
+			out := cmd.OutOrStdout()
+			fmt.Fprintf(out, "council %s\n", app.CouncilAuthority)
+			for i, c := range spec.Corporations {
+				fmt.Fprintf(out, "corporation %s %s\n", c.Did, poatypes.GroupPolicyAddress(uint64(i+2)))
+			}
 			return nil
 		},
 	}
 
 	cmd.Flags().String(flags.FlagHome, defaultNodeHome, "The application home directory")
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|kwallet|pass|test)")
-	cmd.Flags().String(flagPercentage, poatypes.CouncilPercentage, "yes-vote share of seated members required to pass")
-	cmd.Flags().Duration(flagVotingPeriod, 14*24*time.Hour, "ballot window")
-	cmd.Flags().Duration(flagMinExecPeriod, 48*time.Hour, "earliest execution after submission")
-	cmd.Flags().String(flagCouncilMeta, "Verana Council", "group and policy metadata")
+	cmd.Flags().String(flagPercentage, poatypes.CouncilPercentage, "yes-vote share of seated corporations required to pass")
+	cmd.Flags().Duration(flagVotingPeriod, 14*24*time.Hour, "ballot window of the council and of the genesis corporations")
+	cmd.Flags().Duration(flagMinExecPeriod, 48*time.Hour, "earliest council execution after submission")
+	cmd.Flags().String(flagCouncilMeta, "Verana Council", "council group and policy metadata")
 	cmd.Flags().Uint32(flagMaxValidators, 25, "staking max_validators")
 	cmd.Flags().Duration(flagUnbondingTime, 0, "staking unbonding_time; 0 keeps the default")
 	return cmd
+}
+
+func optionalDuration(s string) (time.Duration, error) {
+	if s == "" {
+		return 0, nil
+	}
+	return time.ParseDuration(s)
 }

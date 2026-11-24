@@ -278,9 +278,9 @@ func (k Keeper) SyncVSOperatorAuthorization(ctx context.Context, participantID u
 // the live feegrant records (union of msg_types, sum of fee_spend_limit), their
 // window ends queued, the spent budget carried over. None left: revoke.
 func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperatorAuthorization) error {
-	params, err := k.Params.Get(ctx)
+	period, err := k.vsRef.K.VsAccountFeePeriod(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to read params: %w", err)
+		return fmt.Errorf("failed to read vs_account_fee_period: %w", err)
 	}
 
 	total := sdk.NewCoins()
@@ -311,7 +311,6 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 	if len(feegrantMsgTypes) == 0 {
 		return k.RevokeFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator)
 	}
-	period := params.VsOperatorFeePeriod
 	reset, remaining := k.carriedFeeBudget(ctx, vsoa.CorporationId, vsoa.VsOperator, total, period)
 	return k.grantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, &reset, total, &period, remaining)
 }

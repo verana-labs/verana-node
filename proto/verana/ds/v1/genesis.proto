@@ -1,0 +1,16 @@
+syntax = "proto3";
+package verana.ds.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "verana/ds/v1/params.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/ds/types";
+
+// GenesisState defines the ds module's genesis state.
+message GenesisState {
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}

@@ -18,7 +18,7 @@ func (ms msgServer) RevokeExchangeRateAuthorization(ctx context.Context, msg *ty
 		return nil, err
 	}
 
-	// authority MUST equal the gov module account.
+	// authority MUST equal the council account.
 	authority, err := ms.addressCodec.StringToBytes(msg.Authority)
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "invalid authority address")

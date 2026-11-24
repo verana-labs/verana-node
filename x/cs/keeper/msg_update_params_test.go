@@ -32,12 +32,13 @@ func TestMsgUpdateParams(t *testing.T) {
 			expErrMsg: "invalid authority",
 		},
 		{
-			name: "send enabled param",
+			name: "zero values",
 			input: &types.MsgUpdateParams{
 				Authority: k.GetAuthority(),
 				Params:    types.Params{},
 			},
-			expErr: false,
+			expErr:    true,
+			expErrMsg: "must be positive",
 		},
 		{
 			name: "all good",
@@ -61,4 +62,28 @@ func TestMsgUpdateParams(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
+	k, ms, _, ctx := setupMsgServer(t)
+	wctx := sdk.UnwrapSDKContext(ctx)
+	params := types.DefaultParams()
+	params.CredentialSchemaPresentationValidityPeriodMaxDays = 30
+
+	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: params})
+	require.NoError(t, err)
+	require.Equal(t, params, k.GetParams(wctx))
+
+	attrs := map[string]string{}
+	for _, ev := range wctx.EventManager().Events() {
+		if ev.Type == types.EventTypeUpdateParams {
+			for _, a := range ev.Attributes {
+				attrs[a.Key] = a.Value
+			}
+		}
+	}
+	require.Equal(t, k.GetAuthority(), attrs[types.AttributeKeyAuthority])
+	require.Equal(t, "30", attrs["credential_schema_presentation_validity_period_max_days"])
+	require.Equal(t, "8192", attrs["credential_schema_schema_max_size"])
+	require.Len(t, attrs, 8)
 }

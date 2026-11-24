@@ -10,10 +10,12 @@ import (
 )
 
 func TestGenesisState_Validate(t *testing.T) {
-	// Create a custom invalid param for testing
 	invalidParams := types.DefaultParams()
-	invalidShareValue, _ := math.LegacyNewDecFromStr("0.0") // Zero is invalid
-	invalidParams.TrustDepositShareValue = invalidShareValue
+	invalidParams.TuDecayRate = math.LegacyMustNewDecFromStr("0.02")
+	pending := func(s string) *math.LegacyDec {
+		d := math.LegacyMustNewDecFromStr(s)
+		return &d
+	}
 
 	tests := []struct {
 		desc     string
@@ -51,6 +53,22 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params:        invalidParams,
 				TrustDeposits: []types.TrustDepositRecord{},
+			},
+			valid: false,
+		},
+		{
+			desc: "pending decay rate in range",
+			genState: &types.GenesisState{
+				Params:             types.DefaultParams(),
+				PendingTuDecayRate: pending("0.002"),
+			},
+			valid: true,
+		},
+		{
+			desc: "pending decay rate above 0.01",
+			genState: &types.GenesisState{
+				Params:             types.DefaultParams(),
+				PendingTuDecayRate: pending("0.02"),
 			},
 			valid: false,
 		},

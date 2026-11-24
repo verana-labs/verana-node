@@ -1,6 +1,7 @@
 package types
 
 const (
+	EventTypeUpdateParams                        = "update_params"
 	EventTypeCreateRootParticipant               = "create_root_participant"
 	AttributeKeyRootParticipantID                = "root_participant_id"
 	AttributeKeySchemaID                         = "schema_id"

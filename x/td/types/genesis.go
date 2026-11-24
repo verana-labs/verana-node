@@ -19,9 +19,13 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// Validate parameters
 	if err := gs.Params.Validate(); err != nil {
 		return err
+	}
+	if gs.PendingTuDecayRate != nil {
+		if err := ValidateTuDecayRate(*gs.PendingTuDecayRate); err != nil {
+			return err
+		}
 	}
 
 	// Check for duplicate corporation_ids in trust deposits

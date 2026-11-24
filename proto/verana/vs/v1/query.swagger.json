@@ -1,0 +1,104 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "verana/vs/v1/query.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Query"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/vs/v1/params": {
+      "get": {
+        "summary": "[MOD-VS-QRY-3] List Module Parameters.",
+        "operationId": "Query_Params",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.vs.v1.QueryParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "tags": [
+          "Query"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "verana.vs.v1.Params": {
+      "type": "object",
+      "properties": {
+        "vs_registration_deposit": {
+          "type": "string",
+          "format": "uint64",
+          "title": "in minor units of the main fiat currency"
+        },
+        "ecosystem_creation_deposit": {
+          "type": "string",
+          "format": "uint64",
+          "title": "in minor units of the main fiat currency"
+        },
+        "vid_rotation_max_transition": {
+          "type": "string"
+        },
+        "vs_account_fee_period": {
+          "type": "string"
+        }
+      },
+      "description": "Params holds the Verifiable Service and Delegation groups of GlobalVariables."
+    },
+    "verana.vs.v1.QueryParamsResponse": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "$ref": "#/definitions/verana.vs.v1.Params"
+        }
+      },
+      "description": "QueryParamsResponse is response type for the Query/Params RPC method."
+    }
+  }
+}

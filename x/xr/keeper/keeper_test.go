@@ -42,7 +42,7 @@ func initFixture(t *testing.T) *fixture {
 	storeService := runtime.NewKVStoreService(storeKey)
 	ctx := testutil.DefaultContextWithDB(t, storeKey, storetypes.NewTransientStoreKey("transient_test")).Ctx
 
-	authority := authtypes.NewModuleAddress(types.GovModuleName)
+	authority := authtypes.NewModuleAddress("council")
 
 	k := keeper.NewKeeper(
 		storeService,

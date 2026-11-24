@@ -448,9 +448,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// AddValidator seats a council member as a validator with the fixed bond.
+	// AddValidator seats a council member as a validator, bonding the fixed bond from its balance.
 	AddValidator(ctx context.Context, in *MsgAddValidator, opts ...grpc.CallOption) (*MsgAddValidatorResponse, error)
-	// RemoveValidator unseats a validator and burns its bond.
+	// RemoveValidator unseats a validator; its bond returns after the unbonding time.
 	RemoveValidator(ctx context.Context, in *MsgRemoveValidator, opts ...grpc.CallOption) (*MsgRemoveValidatorResponse, error)
 	// SelfRemoveValidator lets an operator unseat its own validator.
 	SelfRemoveValidator(ctx context.Context, in *MsgSelfRemoveValidator, opts ...grpc.CallOption) (*MsgSelfRemoveValidatorResponse, error)
@@ -493,9 +493,9 @@ func (c *msgClient) SelfRemoveValidator(ctx context.Context, in *MsgSelfRemoveVa
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// AddValidator seats a council member as a validator with the fixed bond.
+	// AddValidator seats a council member as a validator, bonding the fixed bond from its balance.
 	AddValidator(context.Context, *MsgAddValidator) (*MsgAddValidatorResponse, error)
-	// RemoveValidator unseats a validator and burns its bond.
+	// RemoveValidator unseats a validator; its bond returns after the unbonding time.
 	RemoveValidator(context.Context, *MsgRemoveValidator) (*MsgRemoveValidatorResponse, error)
 	// SelfRemoveValidator lets an operator unseat its own validator.
 	SelfRemoveValidator(context.Context, *MsgSelfRemoveValidator) (*MsgSelfRemoveValidatorResponse, error)

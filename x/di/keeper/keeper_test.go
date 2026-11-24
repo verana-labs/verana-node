@@ -55,7 +55,7 @@ func initFixture(t *testing.T) *fixture {
 	storeService := runtime.NewKVStoreService(storeKey)
 	ctx := testutil.DefaultContextWithDB(t, storeKey, storetypes.NewTransientStoreKey("transient_test")).Ctx
 
-	authority := authtypes.NewModuleAddress(types.GovModuleName)
+	authority := authtypes.NewModuleAddress("council")
 
 	corpKeeper := newMockCorpKeeper()
 	k := keeper.NewKeeper(
@@ -66,11 +66,6 @@ func initFixture(t *testing.T) *fixture {
 		&keepertest.MockDelegationKeeper{},
 		corpKeeper,
 	)
-
-	// Initialize params
-	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
-		t.Fatalf("failed to set params: %v", err)
-	}
 
 	return &fixture{
 		ctx:          ctx,

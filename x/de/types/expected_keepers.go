@@ -109,3 +109,9 @@ type VsAccountBudgetStore interface {
 	Get(ctx context.Context, vsID uint64) (VsAccountBudget, error)
 	Set(ctx context.Context, vsID uint64, budget VsAccountBudget) error
 }
+
+// VerifiableServiceKeeper serves GlobalVariables.vs_account_fee_period, owned by
+// MOD-VS. Wired post-construction via Keeper.SetVerifiableServiceKeeper.
+type VerifiableServiceKeeper interface {
+	VsAccountFeePeriod(ctx context.Context) (time.Duration, error)
+}
