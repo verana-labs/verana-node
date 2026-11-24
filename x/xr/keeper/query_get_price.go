@@ -2,13 +2,9 @@ package keeper
 
 import (
 	"context"
-	"errors"
 
-	"cosmossdk.io/collections"
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -20,97 +16,49 @@ func (q queryServer) GetPrice(ctx context.Context, req *types.QueryGetPriceReque
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
-
-	if req.Amount == "" {
-		return nil, status.Error(codes.InvalidArgument, "amount is required")
+	amount, ok := math.NewIntFromString(req.Amount)
+	if !ok {
+		return nil, status.Error(codes.InvalidArgument, "invalid amount: must be an integer")
 	}
 
-	price, err := q.k.GetPrice(ctx, req.BaseAssetType, req.BaseAsset, req.QuoteAssetType, req.QuoteAsset, req.Amount)
+	price, err := q.k.GetPrice(ctx, req.BaseAssetType, req.BaseAsset, req.QuoteAssetType, req.QuoteAsset, amount)
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.QueryGetPriceResponse{Price: price}, nil
+	return &types.QueryGetPriceResponse{Price: price.String()}, nil
 }
 
-// GetPrice computes the converted price using an exchange rate.
-// This method can be called by other modules.
-func (k Keeper) GetPrice(ctx context.Context, baseAssetType cstypes.PricingAssetType, baseAsset string, quoteAssetType cstypes.PricingAssetType, quoteAsset string, amount string) (string, error) {
-	// Parse amount
-	amountInt, ok := math.NewIntFromString(amount)
-	if !ok {
-		return "", status.Error(codes.InvalidArgument, "invalid amount: must be a valid integer")
+// GetPrice converts amount base units of the base asset into the quote asset [MOD-XR-QRY-3-3].
+func (k Keeper) GetPrice(ctx context.Context, baseAssetType cstypes.PricingAssetType, baseAsset string, quoteAssetType cstypes.PricingAssetType, quoteAsset string, amount math.Int) (math.Int, error) {
+	if amount.IsNegative() {
+		return math.Int{}, errorsmod.Wrapf(types.ErrInvalidAmount, "amount must not be negative, got %s", amount)
+	}
+	if err := types.ValidateAsset(baseAssetType, baseAsset); err != nil {
+		return math.Int{}, errorsmod.Wrap(err, "base")
+	}
+	if err := types.ValidateAsset(quoteAssetType, quoteAsset); err != nil {
+		return math.Int{}, errorsmod.Wrap(err, "quote")
+	}
+	if amount.IsZero() || (baseAssetType == quoteAssetType && baseAsset == quoteAsset) {
+		return amount, nil
 	}
 
-	if amountInt.IsNegative() {
-		return "", errorsmod.Wrapf(types.ErrInvalidAmount, "amount must not be negative, got %s", amount)
-	}
-
-	// [MOD-XR-QRY-3-1] asset_type/identifier consistency for both sides.
-	if err := types.ValidateAssetIdentifier(baseAssetType, baseAsset, "base"); err != nil {
-		return "", status.Error(codes.InvalidArgument, err.Error())
-	}
-	if err := types.ValidateAssetIdentifier(quoteAssetType, quoteAsset, "quote"); err != nil {
-		return "", status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	// [MOD-XR-QRY-3-3] zero converts to 0 without an exchange rate.
-	if amountInt.IsZero() {
-		return "0", nil
-	}
-
-	// Same asset pair: return amount directly
-	if baseAssetType == quoteAssetType && baseAsset == quoteAsset {
-		return amountInt.String(), nil
-	}
-
-	// Look up exchange rate by pair
-	pairKey := buildPairKey(baseAssetType, baseAsset, quoteAssetType, quoteAsset)
-	id, err := k.PairIndex.Get(ctx, pairKey)
+	_, xr, err := k.findExchangeRate(ctx, baseAssetType, baseAsset, quoteAssetType, quoteAsset)
 	if err != nil {
-		if errors.Is(err, collections.ErrNotFound) {
-			return "", status.Error(codes.NotFound, "exchange rate not found")
-		}
-		return "", status.Error(codes.Internal, err.Error())
+		return math.Int{}, err
+	}
+	if err := checkUsable(ctx, &xr); err != nil {
+		return math.Int{}, err
 	}
 
-	xr, err := k.ExchangeRates.Get(ctx, id)
+	product, err := amount.SafeMul(math.NewIntFromUint64(xr.Rate))
 	if err != nil {
-		return "", status.Error(codes.Internal, err.Error())
+		return math.Int{}, errorsmod.Wrap(types.ErrInvalidAmount, err.Error())
 	}
-
-	// Check rate_scale bound
-	if xr.RateScale > 18 {
-		return "", errorsmod.Wrapf(types.ErrInvalidRequest, "invalid rate_scale %d in stored record", xr.RateScale)
+	divisor := uint64(1)
+	for range xr.RateScale {
+		divisor *= 10
 	}
-
-	// Check active
-	if !xr.State {
-		return "", status.Error(codes.FailedPrecondition, "exchange rate is not active")
-	}
-
-	// Check not expired
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	blockTime := sdkCtx.BlockTime()
-	if !xr.Expires.After(blockTime) {
-		return "", status.Error(codes.FailedPrecondition, "exchange rate is expired")
-	}
-
-	// Compute price = floor(amount * rate / 10^rate_scale) using integer arithmetic
-	rate, ok := math.NewIntFromString(xr.Rate)
-	if !ok {
-		return "", status.Error(codes.Internal, "invalid stored rate")
-	}
-
-	// 10^rate_scale
-	divisor := math.NewInt(1)
-	ten := math.NewInt(10)
-	for i := uint32(0); i < xr.RateScale; i++ {
-		divisor = divisor.Mul(ten)
-	}
-
-	// price = floor(amount * rate / divisor)
-	price := amountInt.Mul(rate).Quo(divisor)
-
-	return price.String(), nil
+	return product.Quo(math.NewIntFromUint64(divisor)), nil
 }

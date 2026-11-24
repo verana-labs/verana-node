@@ -16,7 +16,7 @@ import (
 // conversion happens. Tests exercising TU/COIN/FIAT conversion set their own.
 type MockExchangeRateKeeper struct{}
 
-func (MockExchangeRateKeeper) GetPrice(_ context.Context, _ cstypes.PricingAssetType, _ string, _ cstypes.PricingAssetType, _ string, amount string) (string, error) {
+func (MockExchangeRateKeeper) GetPrice(_ context.Context, _ cstypes.PricingAssetType, _ string, _ cstypes.PricingAssetType, _ string, amount math.Int) (math.Int, error) {
 	return amount, nil
 }
 

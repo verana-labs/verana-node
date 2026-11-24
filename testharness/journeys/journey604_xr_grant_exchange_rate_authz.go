@@ -50,7 +50,7 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 	grantMsg := &xrtypes.MsgGrantExchangeRateAuthorization{
 		Authority:  council,
 		XrId:       exchangeRateID,
-		Operator:   operatorAddr,
+		Feeder:     operatorAddr,
 		Expiration: &expiration,
 	}
 
@@ -90,7 +90,7 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 
 	found := false
 	for _, a := range getResp.Authorizations {
-		if a.Operator == operatorAddr {
+		if a.Feeder == operatorAddr {
 			found = true
 			break
 		}

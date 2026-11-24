@@ -4,7 +4,6 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DefaultTwapWindow is a placeholder; the governance framework defines twap_window.
@@ -26,9 +25,4 @@ func (p Params) Validate() error {
 		return errorsmod.Wrap(ErrInvalidParams, "twap_window must be positive")
 	}
 	return nil
-}
-
-// EventAttributes lists every parameter value for the update event.
-func (p Params) EventAttributes() []sdk.Attribute {
-	return []sdk.Attribute{sdk.NewAttribute("twap_window", p.TwapWindow.String())}
 }

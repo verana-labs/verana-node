@@ -22,6 +22,11 @@ type BankKeeper interface {
 	HasSupply(context.Context, string) bool
 }
 
+// TrustDepositKeeper serves main_fiat_currency, the base asset of the genesis exchange rate.
+type TrustDepositKeeper interface {
+	MainFiatCurrency(ctx context.Context) string
+}
+
 // ParamSubspace defines the expected Subspace interface for parameters.
 type ParamSubspace interface {
 	Get(context.Context, []byte, interface{})
