@@ -65,6 +65,9 @@ func (gs GenesisState) Validate() error {
 		if co.ActiveVersion == 0 {
 			return ErrInvalidActiveVersion.Wrapf("corporation %d: active_version must be >= 1", co.Id)
 		}
+		if co.AcceptedNgfVersion == 0 {
+			return ErrInvalidAcceptedNgfVersion.Wrapf("corporation %d: accepted_ngf_version must be >= 1", co.Id)
+		}
 		if co.Id > maxID {
 			maxID = co.Id
 		}

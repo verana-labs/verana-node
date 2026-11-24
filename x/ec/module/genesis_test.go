@@ -44,7 +44,7 @@ func (genStub) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool
 func (genStub) CreateInitialGFVersionForEcosystem(_ context.Context, _ uint64, _, _, _ string) error {
 	return nil
 }
-func (genStub) ListVersionsByEcosystem(_ context.Context, _ uint64, _ uint32, _ bool, _ string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
+func (genStub) ListVersionsByEcosystem(_ context.Context, _ uint64, _ string, _ uint32, _ bool, _ string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
 	return nil, nil
 }
 

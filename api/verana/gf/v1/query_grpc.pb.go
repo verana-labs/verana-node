@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Query_Params_FullMethodName                          = "/verana.gf.v1.Query/Params"
-	Query_GetGovernanceFrameworkVersion_FullMethodName   = "/verana.gf.v1.Query/GetGovernanceFrameworkVersion"
-	Query_ListGovernanceFrameworkVersions_FullMethodName = "/verana.gf.v1.Query/ListGovernanceFrameworkVersions"
+	Query_Params_FullMethodName                        = "/verana.gf.v1.Query/Params"
+	Query_GetGovernanceFrameworkVersion_FullMethodName = "/verana.gf.v1.Query/GetGovernanceFrameworkVersion"
+	Query_GetEcosystemAcceptance_FullMethodName        = "/verana.gf.v1.Query/GetEcosystemAcceptance"
 )
 
 // QueryClient is the client API for Query service.
@@ -34,8 +34,8 @@ type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// [MOD-GF-QRY-1] Get Governance Framework Version
 	GetGovernanceFrameworkVersion(ctx context.Context, in *QueryGetGovernanceFrameworkVersionRequest, opts ...grpc.CallOption) (*QueryGetGovernanceFrameworkVersionResponse, error)
-	// [MOD-GF-QRY-2] List Governance Framework Versions
-	ListGovernanceFrameworkVersions(ctx context.Context, in *QueryListGovernanceFrameworkVersionsRequest, opts ...grpc.CallOption) (*QueryListGovernanceFrameworkVersionsResponse, error)
+	// [MOD-GF-QRY-2] Get Ecosystem Acceptance
+	GetEcosystemAcceptance(ctx context.Context, in *QueryGetEcosystemAcceptanceRequest, opts ...grpc.CallOption) (*QueryGetEcosystemAcceptanceResponse, error)
 }
 
 type queryClient struct {
@@ -66,10 +66,10 @@ func (c *queryClient) GetGovernanceFrameworkVersion(ctx context.Context, in *Que
 	return out, nil
 }
 
-func (c *queryClient) ListGovernanceFrameworkVersions(ctx context.Context, in *QueryListGovernanceFrameworkVersionsRequest, opts ...grpc.CallOption) (*QueryListGovernanceFrameworkVersionsResponse, error) {
+func (c *queryClient) GetEcosystemAcceptance(ctx context.Context, in *QueryGetEcosystemAcceptanceRequest, opts ...grpc.CallOption) (*QueryGetEcosystemAcceptanceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryListGovernanceFrameworkVersionsResponse)
-	err := c.cc.Invoke(ctx, Query_ListGovernanceFrameworkVersions_FullMethodName, in, out, cOpts...)
+	out := new(QueryGetEcosystemAcceptanceResponse)
+	err := c.cc.Invoke(ctx, Query_GetEcosystemAcceptance_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,8 +86,8 @@ type QueryServer interface {
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// [MOD-GF-QRY-1] Get Governance Framework Version
 	GetGovernanceFrameworkVersion(context.Context, *QueryGetGovernanceFrameworkVersionRequest) (*QueryGetGovernanceFrameworkVersionResponse, error)
-	// [MOD-GF-QRY-2] List Governance Framework Versions
-	ListGovernanceFrameworkVersions(context.Context, *QueryListGovernanceFrameworkVersionsRequest) (*QueryListGovernanceFrameworkVersionsResponse, error)
+	// [MOD-GF-QRY-2] Get Ecosystem Acceptance
+	GetEcosystemAcceptance(context.Context, *QueryGetEcosystemAcceptanceRequest) (*QueryGetEcosystemAcceptanceResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -104,8 +104,8 @@ func (UnimplementedQueryServer) Params(context.Context, *QueryParamsRequest) (*Q
 func (UnimplementedQueryServer) GetGovernanceFrameworkVersion(context.Context, *QueryGetGovernanceFrameworkVersionRequest) (*QueryGetGovernanceFrameworkVersionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGovernanceFrameworkVersion not implemented")
 }
-func (UnimplementedQueryServer) ListGovernanceFrameworkVersions(context.Context, *QueryListGovernanceFrameworkVersionsRequest) (*QueryListGovernanceFrameworkVersionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListGovernanceFrameworkVersions not implemented")
+func (UnimplementedQueryServer) GetEcosystemAcceptance(context.Context, *QueryGetEcosystemAcceptanceRequest) (*QueryGetEcosystemAcceptanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEcosystemAcceptance not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 func (UnimplementedQueryServer) testEmbeddedByValue()               {}
@@ -164,20 +164,20 @@ func _Query_GetGovernanceFrameworkVersion_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ListGovernanceFrameworkVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryListGovernanceFrameworkVersionsRequest)
+func _Query_GetEcosystemAcceptance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetEcosystemAcceptanceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ListGovernanceFrameworkVersions(ctx, in)
+		return srv.(QueryServer).GetEcosystemAcceptance(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Query_ListGovernanceFrameworkVersions_FullMethodName,
+		FullMethod: Query_GetEcosystemAcceptance_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListGovernanceFrameworkVersions(ctx, req.(*QueryListGovernanceFrameworkVersionsRequest))
+		return srv.(QueryServer).GetEcosystemAcceptance(ctx, req.(*QueryGetEcosystemAcceptanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -198,8 +198,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_GetGovernanceFrameworkVersion_Handler,
 		},
 		{
-			MethodName: "ListGovernanceFrameworkVersions",
-			Handler:    _Query_ListGovernanceFrameworkVersions_Handler,
+			MethodName: "GetEcosystemAcceptance",
+			Handler:    _Query_GetEcosystemAcceptance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

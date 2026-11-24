@@ -12,6 +12,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgUpdateParams{},
 		&MsgAddGovernanceFrameworkDocument{},
 		&MsgIncreaseActiveGovernanceFrameworkVersion{},
+		&MsgAcceptGovernanceFrameworkVersion{},
+		&MsgAcceptCorporationGovernanceFramework{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
@@ -20,4 +22,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateParams{}, "verana/x/gf/MsgUpdateParams", nil)
 	cdc.RegisterConcrete(&MsgAddGovernanceFrameworkDocument{}, "verana/x/gf/MsgAddGovernanceFrameworkDocument", nil)
 	cdc.RegisterConcrete(&MsgIncreaseActiveGovernanceFrameworkVersion{}, "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion", nil)
+	cdc.RegisterConcrete(&MsgAcceptGovernanceFrameworkVersion{}, "verana/x/gf/MsgAcceptGFVersion", nil)
+	cdc.RegisterConcrete(&MsgAcceptCorporationGovernanceFramework{}, "verana/x/gf/MsgAcceptCorporationGF", nil)
 }

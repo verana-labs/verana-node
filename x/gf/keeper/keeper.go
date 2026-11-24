@@ -33,7 +33,7 @@ type ecoKeeperRef struct {
 }
 
 type Keeper struct {
-	cdc          codec.BinaryCodec
+	cdc          codec.Codec
 	storeService store.KVStoreService
 	logger       log.Logger
 	authority    string
@@ -46,6 +46,10 @@ type Keeper struct {
 	GFVersionByCorporation collections.Map[collections.Pair[uint64, uint32], uint64]
 	GFDocumentByGFVLang    collections.Map[collections.Pair[uint64, string], uint64]
 	Counter                collections.Map[string, uint64]
+	NetworkGovernance      collections.Item[types.NetworkGovernance]
+	// EcosystemAcceptances stores values without their key fields; use
+	// getEcosystemAcceptance and setEcosystemAcceptance.
+	EcosystemAcceptances collections.Map[collections.Pair[uint64, uint64], types.EcosystemAcceptance]
 
 	delegationKeeper types.DelegationKeeper
 	ecoRef           *ecoKeeperRef
@@ -53,7 +57,7 @@ type Keeper struct {
 }
 
 func NewKeeper(
-	cdc codec.BinaryCodec,
+	cdc codec.Codec,
 	storeService store.KVStoreService,
 	logger log.Logger,
 	authority string,
@@ -76,6 +80,8 @@ func NewKeeper(
 		GFVersionByCorporation: collections.NewMap(sb, types.GFVersionByCorporationKey, "gf_version_by_corporation", collections.PairKeyCodec(collections.Uint64Key, collections.Uint32Key), collections.Uint64Value),
 		GFDocumentByGFVLang:    collections.NewMap(sb, types.GFDocumentByGFVLangKey, "gf_document_by_gfv_lang", collections.PairKeyCodec(collections.Uint64Key, collections.StringKey), collections.Uint64Value),
 		Counter:                collections.NewMap(sb, types.CounterKey, "counter", collections.StringKey, collections.Uint64Value),
+		NetworkGovernance:      collections.NewItem(sb, types.NetworkGovernanceKey, "network_governance", codec.CollValue[types.NetworkGovernance](cdc)),
+		EcosystemAcceptances:   collections.NewMap(sb, types.EcosystemAcceptanceKey, "ecosystem_acceptance", collections.PairKeyCodec(collections.Uint64Key, collections.Uint64Key), codec.CollValue[types.EcosystemAcceptance](cdc)),
 
 		delegationKeeper: delegationKeeper,
 		ecoRef:           &ecoKeeperRef{K: StubEcosystemKeeper{}},

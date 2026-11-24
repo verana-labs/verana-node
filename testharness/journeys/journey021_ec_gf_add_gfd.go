@@ -99,12 +99,12 @@ func RunEcGFAddGFDJourney(ctx context.Context, client cosmosclient.Client) error
 	// Step 4: ListGFVs for ec-alpha to verify
 	// =========================================================================
 	fmt.Println("\n--- Step 4: ListGFVs for ec-alpha ---")
-	listResp, err := lib.ListGFVs(client, ctx, 0, ecID, false, 100)
+	listResp, err := lib.ListGFVs(client, ctx, 0, ecID, false)
 	if err != nil {
 		return fmt.Errorf("step 4 ListGFVs failed: %w", err)
 	}
-	fmt.Printf("✅ Step 4: ListGFVs returned %d GFV(s) for ec-alpha\n", len(listResp.Versions))
-	for _, gfv := range listResp.Versions {
+	fmt.Printf("✅ Step 4: ListGFVs returned %d GFV(s) for ec-alpha\n", len(listResp))
+	for _, gfv := range listResp {
 		isActive := gfv.ActiveSince != nil
 		fmt.Printf("  GFV ID=%d version=%d active=%v\n", gfv.Id, gfv.Version, isActive)
 	}

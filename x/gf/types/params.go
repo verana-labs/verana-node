@@ -4,7 +4,6 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const DefaultGfAcceptanceGraceMin = 30 * 24 * time.Hour
@@ -24,9 +23,4 @@ func (p Params) Validate() error {
 		return errorsmod.Wrap(ErrInvalidParams, "gf_acceptance_grace_min must be positive")
 	}
 	return nil
-}
-
-// EventAttributes lists every parameter value for the update event.
-func (p Params) EventAttributes() []sdk.Attribute {
-	return []sdk.Attribute{sdk.NewAttribute("gf_acceptance_grace_min", p.GfAcceptanceGraceMin.String())}
 }

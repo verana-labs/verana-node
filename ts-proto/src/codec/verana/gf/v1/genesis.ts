@@ -7,7 +7,12 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
-import { GovernanceFrameworkDocument, GovernanceFrameworkVersion } from "./types";
+import {
+  EcosystemAcceptance,
+  GovernanceFrameworkDocument,
+  GovernanceFrameworkVersion,
+  NetworkGovernance,
+} from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.gf.v1";
@@ -19,10 +24,20 @@ export interface GenesisState {
   documents: GovernanceFrameworkDocument[];
   gfvCounter: number;
   gfdCounter: number;
+  networkGovernance: NetworkGovernance | undefined;
+  ecosystemAcceptances: EcosystemAcceptance[];
 }
 
 function createBaseGenesisState(): GenesisState {
-  return { params: undefined, versions: [], documents: [], gfvCounter: 0, gfdCounter: 0 };
+  return {
+    params: undefined,
+    versions: [],
+    documents: [],
+    gfvCounter: 0,
+    gfdCounter: 0,
+    networkGovernance: undefined,
+    ecosystemAcceptances: [],
+  };
 }
 
 export const GenesisState = {
@@ -41,6 +56,12 @@ export const GenesisState = {
     }
     if (message.gfdCounter !== 0) {
       writer.uint32(40).uint64(message.gfdCounter);
+    }
+    if (message.networkGovernance !== undefined) {
+      NetworkGovernance.encode(message.networkGovernance, writer.uint32(50).fork()).ldelim();
+    }
+    for (const v of message.ecosystemAcceptances) {
+      EcosystemAcceptance.encode(v!, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -87,6 +108,20 @@ export const GenesisState = {
 
           message.gfdCounter = longToNumber(reader.uint64() as Long);
           continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.networkGovernance = NetworkGovernance.decode(reader, reader.uint32());
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.ecosystemAcceptances.push(EcosystemAcceptance.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -107,6 +142,12 @@ export const GenesisState = {
         : [],
       gfvCounter: isSet(object.gfvCounter) ? globalThis.Number(object.gfvCounter) : 0,
       gfdCounter: isSet(object.gfdCounter) ? globalThis.Number(object.gfdCounter) : 0,
+      networkGovernance: isSet(object.networkGovernance)
+        ? NetworkGovernance.fromJSON(object.networkGovernance)
+        : undefined,
+      ecosystemAcceptances: globalThis.Array.isArray(object?.ecosystemAcceptances)
+        ? object.ecosystemAcceptances.map((e: any) => EcosystemAcceptance.fromJSON(e))
+        : [],
     };
   },
 
@@ -127,6 +168,12 @@ export const GenesisState = {
     if (message.gfdCounter !== 0) {
       obj.gfdCounter = Math.round(message.gfdCounter);
     }
+    if (message.networkGovernance !== undefined) {
+      obj.networkGovernance = NetworkGovernance.toJSON(message.networkGovernance);
+    }
+    if (message.ecosystemAcceptances?.length) {
+      obj.ecosystemAcceptances = message.ecosystemAcceptances.map((e) => EcosystemAcceptance.toJSON(e));
+    }
     return obj;
   },
 
@@ -142,6 +189,10 @@ export const GenesisState = {
     message.documents = object.documents?.map((e) => GovernanceFrameworkDocument.fromPartial(e)) || [];
     message.gfvCounter = object.gfvCounter ?? 0;
     message.gfdCounter = object.gfdCounter ?? 0;
+    message.networkGovernance = (object.networkGovernance !== undefined && object.networkGovernance !== null)
+      ? NetworkGovernance.fromPartial(object.networkGovernance)
+      : undefined;
+    message.ecosystemAcceptances = object.ecosystemAcceptances?.map((e) => EcosystemAcceptance.fromPartial(e)) || [];
     return message;
   },
 };

@@ -87,14 +87,16 @@ func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types
 	}
 
 	// Seed runtime balances at grant time per [MOD-DE-MSG-3] / AUTHZ-CHECK-1.
+	// A re-grant keeps the delegate's governance framework acceptance.
 	da := types.DelegateAuthorization{
-		Id:             daID,
-		CorporationId:  co.Id,
-		Delegate:       msg.Grantee,
-		MsgTypes:       msg.MsgTypes,
-		SpendLimit:     msg.AuthzSpendLimit,
-		RemainingSpend: msg.AuthzSpendLimit,
-		Expiration:     msg.Expiration,
+		Id:                 daID,
+		CorporationId:      co.Id,
+		Delegate:           msg.Grantee,
+		MsgTypes:           msg.MsgTypes,
+		SpendLimit:         msg.AuthzSpendLimit,
+		RemainingSpend:     msg.AuthzSpendLimit,
+		Expiration:         msg.Expiration,
+		AcceptedCgfVersion: existing.AcceptedCgfVersion,
 	}
 	// period is ignored without a spend limit; storing it otherwise would make
 	// the authorization auto-renew its expiration forever.

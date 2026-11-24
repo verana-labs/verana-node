@@ -22,9 +22,9 @@ service Query {
     option (google.api.http).get = "/gf/v1/get";
   }
 
-  // [MOD-GF-QRY-2] List Governance Framework Versions
-  rpc ListGovernanceFrameworkVersions(QueryListGovernanceFrameworkVersionsRequest) returns (QueryListGovernanceFrameworkVersionsResponse) {
-    option (google.api.http).get = "/gf/v1/list";
+  // [MOD-GF-QRY-2] Get Ecosystem Acceptance
+  rpc GetEcosystemAcceptance(QueryGetEcosystemAcceptanceRequest) returns (QueryGetEcosystemAcceptanceResponse) {
+    option (google.api.http).get = "/gf/v1/acceptance";
   }
 }
 
@@ -43,14 +43,11 @@ message QueryGetGovernanceFrameworkVersionResponse {
   GovernanceFrameworkVersionWithDocs version = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
-message QueryListGovernanceFrameworkVersionsRequest {
+message QueryGetEcosystemAcceptanceRequest {
   uint64 ecosystem_id = 1;
   uint64 corporation_id = 2;
-  bool active_only = 3;
-  string preferred_language = 4;
-  uint32 response_max_size = 5;
 }
 
-message QueryListGovernanceFrameworkVersionsResponse {
-  repeated GovernanceFrameworkVersionWithDocs versions = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+message QueryGetEcosystemAcceptanceResponse {
+  EcosystemAcceptance acceptance = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }

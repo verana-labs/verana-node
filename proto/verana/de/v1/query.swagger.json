@@ -268,6 +268,11 @@
         "period": {
           "type": "string",
           "description": "period is the reset period for spend_limit. If set, expiration MUST also be set."
+        },
+        "accepted_cgf_version": {
+          "type": "integer",
+          "format": "int64",
+          "description": "accepted_cgf_version is the last version of the corporation's governance\nframework the delegate accepted; 0 until it accepts."
         }
       },
       "description": "DelegateAuthorization is the delegate authorization record. It is keyed by\nits own uint64 id; (corporation_id, delegate) is a unique secondary index."

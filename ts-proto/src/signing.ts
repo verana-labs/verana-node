@@ -21,6 +21,8 @@ import {
   MsgUpdateEcosystem,
 } from "./codec/verana/ec/v1/tx";
 import {
+  MsgAcceptCorporationGovernanceFramework,
+  MsgAcceptGovernanceFrameworkVersion,
   MsgAddGovernanceFrameworkDocument,
   MsgIncreaseActiveGovernanceFrameworkVersion,
 } from "./codec/verana/gf/v1/tx";
@@ -70,6 +72,8 @@ import {
   MsgUpdateEcosystemAminoConverter,
 } from "./amino-converter/ec";
 import {
+  MsgAcceptCorporationGovernanceFrameworkAminoConverter,
+  MsgAcceptGovernanceFrameworkVersionAminoConverter,
   MsgAddGovernanceFrameworkDocumentAminoConverter,
   MsgIncreaseActiveGovernanceFrameworkVersionAminoConverter,
 } from "./amino-converter/gf";
@@ -108,6 +112,8 @@ export const veranaTypeUrls = {
   MsgArchiveEcosystem: "/verana.ec.v1.MsgArchiveEcosystem",
   MsgAddGovernanceFrameworkDocument: "/verana.gf.v1.MsgAddGovernanceFrameworkDocument",
   MsgIncreaseActiveGovernanceFrameworkVersion: "/verana.gf.v1.MsgIncreaseActiveGovernanceFrameworkVersion",
+  MsgAcceptGovernanceFrameworkVersion: "/verana.gf.v1.MsgAcceptGovernanceFrameworkVersion",
+  MsgAcceptCorporationGovernanceFramework: "/verana.gf.v1.MsgAcceptCorporationGovernanceFramework",
   MsgCreateCredentialSchema: "/verana.cs.v1.MsgCreateCredentialSchema",
   MsgUpdateCredentialSchema: "/verana.cs.v1.MsgUpdateCredentialSchema",
   MsgArchiveCredentialSchema: "/verana.cs.v1.MsgArchiveCredentialSchema",
@@ -146,6 +152,8 @@ export const veranaRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
   [veranaTypeUrls.MsgArchiveEcosystem, MsgArchiveEcosystem as GeneratedType],
   [veranaTypeUrls.MsgAddGovernanceFrameworkDocument, MsgAddGovernanceFrameworkDocument as GeneratedType],
   [veranaTypeUrls.MsgIncreaseActiveGovernanceFrameworkVersion, MsgIncreaseActiveGovernanceFrameworkVersion as GeneratedType],
+  [veranaTypeUrls.MsgAcceptGovernanceFrameworkVersion, MsgAcceptGovernanceFrameworkVersion as GeneratedType],
+  [veranaTypeUrls.MsgAcceptCorporationGovernanceFramework, MsgAcceptCorporationGovernanceFramework as GeneratedType],
   [veranaTypeUrls.MsgCreateCredentialSchema, MsgCreateCredentialSchema as GeneratedType],
   [veranaTypeUrls.MsgUpdateCredentialSchema, MsgUpdateCredentialSchema as GeneratedType],
   [veranaTypeUrls.MsgArchiveCredentialSchema, MsgArchiveCredentialSchema as GeneratedType],
@@ -196,6 +204,8 @@ export function createVeranaAminoTypes(): AminoTypes {
     [veranaTypeUrls.MsgArchiveEcosystem]: MsgArchiveEcosystemAminoConverter,
     [veranaTypeUrls.MsgAddGovernanceFrameworkDocument]: MsgAddGovernanceFrameworkDocumentAminoConverter,
     [veranaTypeUrls.MsgIncreaseActiveGovernanceFrameworkVersion]: MsgIncreaseActiveGovernanceFrameworkVersionAminoConverter,
+    [veranaTypeUrls.MsgAcceptGovernanceFrameworkVersion]: MsgAcceptGovernanceFrameworkVersionAminoConverter,
+    [veranaTypeUrls.MsgAcceptCorporationGovernanceFramework]: MsgAcceptCorporationGovernanceFrameworkAminoConverter,
     [veranaTypeUrls.MsgCreateCredentialSchema]: MsgCreateCredentialSchemaAminoConverter,
     [veranaTypeUrls.MsgUpdateCredentialSchema]: MsgUpdateCredentialSchemaAminoConverter,
     [veranaTypeUrls.MsgArchiveCredentialSchema]: MsgArchiveCredentialSchemaAminoConverter,

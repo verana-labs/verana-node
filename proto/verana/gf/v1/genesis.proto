@@ -15,4 +15,6 @@ message GenesisState {
   repeated GovernanceFrameworkDocument documents = 3 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
   uint64 gfv_counter = 4;
   uint64 gfd_counter = 5;
+  NetworkGovernance network_governance = 6 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  repeated EcosystemAcceptance ecosystem_acceptances = 7 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }

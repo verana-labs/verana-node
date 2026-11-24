@@ -200,6 +200,14 @@
             "type": "object",
             "$ref": "#/definitions/verana.gf.v1.GovernanceFrameworkVersionWithDocs"
           }
+        },
+        "accepted_ngf_version": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "acceptance_deadline": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "description": "CorporationWithGF is the query response shape including nested governance\nframework versions (each with its documents). Returned by MOD-CO-QRY-1\n(Get Corporation) and MOD-CO-QRY-2 (List Corporations)."

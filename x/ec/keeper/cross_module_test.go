@@ -38,7 +38,7 @@ func TestEcAsGFEcosystemKeeper_GetEcosystemView_NotFound(t *testing.T) {
 }
 
 // TestEcAsGFEcosystemKeeper_SetEcosystemActiveVersion pins the MOD-GF MSG-2
-// callback: bumps ec.ActiveVersion + ec.Modified.
+// callback: bumps ec.ActiveVersion, sets ec.AcceptanceDeadline and ec.Modified.
 func TestEcAsGFEcosystemKeeper_SetEcosystemActiveVersion(t *testing.T) {
 	co := newMockCorporation()
 	co.register(tkCorp, 1)
@@ -51,18 +51,30 @@ func TestEcAsGFEcosystemKeeper_SetEcosystemActiveVersion(t *testing.T) {
 	bumpTime := time.Date(2026, 7, 1, 0, 0, 0, 0, time.UTC)
 	ctx = ctx.WithBlockTime(bumpTime)
 	adapter := keeper.NewEcAsGFEcosystemKeeper(k)
-	require.NoError(t, adapter.SetEcosystemActiveVersion(ctx, 1, 5))
+	deadline := bumpTime.Add(30 * 24 * time.Hour)
+	require.NoError(t, adapter.SetEcosystemActiveVersion(ctx, 1, 5, deadline))
 
 	ec, err := k.Ecosystem.Get(ctx, 1)
 	require.NoError(t, err)
 	require.Equal(t, uint32(5), ec.ActiveVersion)
+	require.Equal(t, deadline, *ec.AcceptanceDeadline)
 	require.Equal(t, bumpTime, ec.Modified)
+
+	// A later activation replaces the deadline, whether later or earlier, and
+	// the view carries it.
+	for _, d := range []time.Time{deadline.Add(time.Hour), deadline.Add(-time.Hour)} {
+		require.NoError(t, adapter.SetEcosystemActiveVersion(ctx, 1, 6, d))
+		view, ok := adapter.GetEcosystemView(ctx, 1)
+		require.True(t, ok)
+		require.Equal(t, uint32(6), view.ActiveVersion)
+		require.Equal(t, d, *view.AcceptanceDeadline)
+	}
 }
 
 func TestEcAsGFEcosystemKeeper_SetEcosystemActiveVersion_NotFound(t *testing.T) {
 	k, ctx := ecKeeper(t, &mockDelegation{}, newMockCorporation(), &mockGF{})
 	adapter := keeper.NewEcAsGFEcosystemKeeper(k)
-	err := adapter.SetEcosystemActiveVersion(ctx, 999, 5)
+	err := adapter.SetEcosystemActiveVersion(ctx, 999, 5, time.Time{})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not found")
 }

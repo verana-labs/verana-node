@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { createVeranaAminoTypes, createVeranaRegistry, veranaTypeUrls } from "../../src/signing";
 import { MsgGrantDelegateAuthorization } from "../../src/codec/verana/de/v1/tx";
+import {
+  MsgAcceptCorporationGovernanceFramework,
+  MsgAcceptGovernanceFrameworkVersion,
+  MsgAddGovernanceFrameworkDocument,
+  MsgIncreaseActiveGovernanceFrameworkVersion,
+} from "../../src/codec/verana/gf/v1/tx";
 import { MsgStoreDigest } from "../../src/codec/verana/di/v1/tx";
 import { MsgSelfCreateParticipant, MsgStartParticipantOP } from "../../src/codec/verana/pp/v1/tx";
 import { ParticipantRole } from "../../src/codec/verana/pp/v1/types";
@@ -20,6 +26,8 @@ const requiredMappings = [
   "MsgCreateCorporation",
   "MsgCreateEcosystem",
   "MsgAddGovernanceFrameworkDocument",
+  "MsgAcceptGovernanceFrameworkVersion",
+  "MsgAcceptCorporationGovernanceFramework",
   "MsgCreateCredentialSchema",
   "MsgSelfCreateParticipant",
   "MsgReclaimTrustDepositYield",
@@ -83,6 +91,53 @@ assert.ok(
   !("authz_spend_limit_period" in deConverter.toAmino(MsgGrantDelegateAuthorization.fromPartial({}))),
   "an absent period must not be written",
 );
+
+// The gf messages as the chain's aminojson writes them: zero values omitted,
+// uint64 as strings, a Duration as total nanoseconds.
+const thirtyDays = { seconds: 2592000, nanos: 0 };
+const gfCases: Array<[string, string, unknown, Record<string, unknown>]> = [
+  [
+    veranaTypeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
+    "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion",
+    MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({ authority: "auth", acceptanceGrace: thirtyDays }),
+    { acceptance_grace: "2592000000000000", authority: "auth" },
+  ],
+  [
+    veranaTypeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
+    "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion",
+    MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({ corporation: "corp", delegate: "del", ecosystemId: 7, acceptanceGrace: thirtyDays }),
+    { acceptance_grace: "2592000000000000", corporation: "corp", delegate: "del", ecosystem_id: "7" },
+  ],
+  [
+    veranaTypeUrls.MsgAddGovernanceFrameworkDocument,
+    "verana/x/gf/MsgAddGovernanceFrameworkDocument",
+    MsgAddGovernanceFrameworkDocument.fromPartial({ authority: "auth", docLanguage: "en", version: 2 }),
+    { authority: "auth", doc_language: "en", version: 2 },
+  ],
+  [
+    veranaTypeUrls.MsgAcceptGovernanceFrameworkVersion,
+    "verana/x/gf/MsgAcceptGFVersion",
+    MsgAcceptGovernanceFrameworkVersion.fromPartial({ corporation: "corp", delegate: "del", network: true, version: 1 }),
+    { corporation: "corp", delegate: "del", network: true, version: 1 },
+  ],
+  [
+    veranaTypeUrls.MsgAcceptGovernanceFrameworkVersion,
+    "verana/x/gf/MsgAcceptGFVersion",
+    MsgAcceptGovernanceFrameworkVersion.fromPartial({ corporation: "corp", delegate: "del", ecosystemId: 7, version: 3 }),
+    { corporation: "corp", delegate: "del", ecosystem_id: "7", version: 3 },
+  ],
+  [
+    veranaTypeUrls.MsgAcceptCorporationGovernanceFramework,
+    "verana/x/gf/MsgAcceptCorporationGF",
+    MsgAcceptCorporationGovernanceFramework.fromPartial({ delegate: "del", corporationId: 1, version: 2 }),
+    { corporation_id: "1", delegate: "del", version: 2 },
+  ],
+];
+for (const [typeUrl, aminoType, msg, want] of gfCases) {
+  const converter = amino.register[typeUrl];
+  assert.equal(converter.aminoType, aminoType);
+  assert.deepEqual(converter.toAmino(msg), want, typeUrl);
+}
 
 const diConverter = amino.register[veranaTypeUrls.MsgStoreDigest];
 const diMsg = MsgStoreDigest.fromPartial({

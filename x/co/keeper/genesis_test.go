@@ -16,8 +16,8 @@ func TestGenesis_InitExport_RoundTrip(t *testing.T) {
 	gs := &types.GenesisState{
 		Params: types.DefaultParams(),
 		Corporations: []types.Corporation{
-			{Id: 1, PolicyAddress: "cosmos1aaa", Did: "did:example:1", Created: time.Unix(1, 0), Modified: time.Unix(1, 0), Language: "en", ActiveVersion: 1},
-			{Id: 2, PolicyAddress: "cosmos1bbb", Did: "did:example:2", Created: time.Unix(2, 0), Modified: time.Unix(2, 0), Language: "fr", ActiveVersion: 1},
+			{Id: 1, PolicyAddress: "cosmos1aaa", Did: "did:example:1", Created: time.Unix(1, 0), Modified: time.Unix(1, 0), Language: "en", ActiveVersion: 1, AcceptedNgfVersion: 1},
+			{Id: 2, PolicyAddress: "cosmos1bbb", Did: "did:example:2", Created: time.Unix(2, 0), Modified: time.Unix(2, 0), Language: "fr", ActiveVersion: 1, AcceptedNgfVersion: 1},
 		},
 	}
 	require.NoError(t, k.InitGenesis(ctx, *gs))

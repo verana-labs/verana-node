@@ -21,6 +21,8 @@ func TestRegisterInterfaces(t *testing.T) {
 		"/verana.gf.v1.MsgUpdateParams",
 		"/verana.gf.v1.MsgAddGovernanceFrameworkDocument",
 		"/verana.gf.v1.MsgIncreaseActiveGovernanceFrameworkVersion",
+		"/verana.gf.v1.MsgAcceptGovernanceFrameworkVersion",
+		"/verana.gf.v1.MsgAcceptCorporationGovernanceFramework",
 	} {
 		msg, err := registry.Resolve(name)
 		require.NoError(t, err, "expected %s registered", name)

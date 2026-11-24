@@ -31,6 +31,7 @@ import (
 
 	"github.com/verana-labs/verana-node/app"
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 	poakeeper "github.com/verana-labs/verana-node/x/poa/keeper"
 	poatypes "github.com/verana-labs/verana-node/x/poa/types"
 )
@@ -280,6 +281,34 @@ func TestInitChain_KeepsHistoricalProposals(t *testing.T) {
 		prebake(t, cg, group.PROPOSAL_STATUS_REJECTED, &stakingtypes.MsgDelegate{DelegatorAddress: app.CouncilAuthority, ValidatorAddress: "v", Amount: sdk.NewInt64Coin("stake", 1)})
 	})
 	require.NoError(t, initChain(t, a, gs))
+}
+
+// GOV-1 seats a corporation through the AUTHZ-CHECK-5 index alone: a lapsed
+// network framework acceptance stops the corporation's own acts, not its seat.
+func TestInitChain_SeatIgnoresNetworkFrameworkAcceptance(t *testing.T) {
+	a := newTestApp(t)
+	gs, corps := councilGenesis(t, a, 3)
+	at := time.Unix(0, 0).UTC()
+	mutate(t, a, gs, gftypes.ModuleName, func(g *gftypes.GenesisState) {
+		g.Versions = append(g.Versions, gftypes.GovernanceFrameworkVersion{Id: 2, Created: at, Version: 2, ActiveSince: &at})
+		g.Documents = append(g.Documents, gftypes.GovernanceFrameworkDocument{
+			Id: 2, GfvId: 2, Created: at, Language: "en", Url: gftypes.DefaultNGFDocURL, DigestSri: gftypes.DefaultNGFDocDigestSRI,
+		})
+		g.GfvCounter, g.GfdCounter = 2, 2
+		g.NetworkGovernance = gftypes.NetworkGovernance{NetworkGovernanceFrameworkVersions: []uint64{1, 2}, NgfAcceptanceDeadline: &at}
+	})
+	mutateCouncil(t, a, gs, func(cg *group.GenesisState) {
+		prebake(t, cg, group.PROPOSAL_STATUS_SUBMITTED, &group.MsgUpdateGroupMembers{
+			Admin: app.CouncilAuthority, GroupId: 1,
+			MemberUpdates: []group.MemberRequest{{Address: corps[1].policy.String(), Weight: "1"}},
+		})
+	})
+	require.NoError(t, initChain(t, a, gs))
+	(&liveChain{app: a, now: at}).block(t)
+
+	ctx := a.NewContext(true).WithBlockTime(at.Add(time.Second))
+	_, err := a.CoKeeper.ResolveCorporationByPolicyAddress(ctx, corps[1].policy.String())
+	require.ErrorIs(t, err, gftypes.ErrGFNotAccepted)
 }
 
 func TestGenesisValidator_SignsBlocks(t *testing.T) {

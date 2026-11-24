@@ -13,8 +13,8 @@ export const protobufPackage = "verana.gf.v1";
 
 /**
  * GovernanceFrameworkVersion represents a versioned governance framework owned
- * by either an Ecosystem (ecosystem_id set, corporation empty) or a Corporation
- * (corporation set, ecosystem_id zero). Exactly one of the two owner fields is set.
+ * by an Ecosystem (ecosystem_id set), a Corporation (corporation_id set), or the
+ * network when neither is set.
  */
 export interface GovernanceFrameworkVersion {
   id: number;
@@ -50,6 +50,31 @@ export interface GovernanceFrameworkVersionWithDocs {
   version: number;
   activeSince: Date | undefined;
   documents: GovernanceFrameworkDocument[];
+}
+
+/**
+ * EcosystemAcceptance is the last version of an ecosystem's governance
+ * framework a corporation accepted, keyed by (ecosystem_id, corporation_id).
+ */
+export interface EcosystemAcceptance {
+  ecosystemId: number;
+  corporationId: number;
+  version: number;
+  accepted: Date | undefined;
+}
+
+/**
+ * NetworkGovernance is the network governance group of GlobalVariables the
+ * module maintains.
+ */
+export interface NetworkGovernance {
+  /**
+   * network_governance_framework_versions lists the network framework versions
+   * in version order.
+   */
+  networkGovernanceFrameworkVersions: number[];
+  /** ngf_acceptance_deadline ends the grace period of the last activation. */
+  ngfAcceptanceDeadline: Date | undefined;
 }
 
 function createBaseGovernanceFrameworkVersion(): GovernanceFrameworkVersion {
@@ -479,6 +504,200 @@ export const GovernanceFrameworkVersionWithDocs = {
     message.version = object.version ?? 0;
     message.activeSince = object.activeSince ?? undefined;
     message.documents = object.documents?.map((e) => GovernanceFrameworkDocument.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseEcosystemAcceptance(): EcosystemAcceptance {
+  return { ecosystemId: 0, corporationId: 0, version: 0, accepted: undefined };
+}
+
+export const EcosystemAcceptance = {
+  encode(message: EcosystemAcceptance, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.ecosystemId !== 0) {
+      writer.uint32(8).uint64(message.ecosystemId);
+    }
+    if (message.corporationId !== 0) {
+      writer.uint32(16).uint64(message.corporationId);
+    }
+    if (message.version !== 0) {
+      writer.uint32(24).uint32(message.version);
+    }
+    if (message.accepted !== undefined) {
+      Timestamp.encode(toTimestamp(message.accepted), writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EcosystemAcceptance {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEcosystemAcceptance();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.ecosystemId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.corporationId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.version = reader.uint32();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.accepted = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EcosystemAcceptance {
+    return {
+      ecosystemId: isSet(object.ecosystemId) ? globalThis.Number(object.ecosystemId) : 0,
+      corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
+      version: isSet(object.version) ? globalThis.Number(object.version) : 0,
+      accepted: isSet(object.accepted) ? fromJsonTimestamp(object.accepted) : undefined,
+    };
+  },
+
+  toJSON(message: EcosystemAcceptance): unknown {
+    const obj: any = {};
+    if (message.ecosystemId !== 0) {
+      obj.ecosystemId = Math.round(message.ecosystemId);
+    }
+    if (message.corporationId !== 0) {
+      obj.corporationId = Math.round(message.corporationId);
+    }
+    if (message.version !== 0) {
+      obj.version = Math.round(message.version);
+    }
+    if (message.accepted !== undefined) {
+      obj.accepted = message.accepted.toISOString();
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<EcosystemAcceptance>, I>>(base?: I): EcosystemAcceptance {
+    return EcosystemAcceptance.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<EcosystemAcceptance>, I>>(object: I): EcosystemAcceptance {
+    const message = createBaseEcosystemAcceptance();
+    message.ecosystemId = object.ecosystemId ?? 0;
+    message.corporationId = object.corporationId ?? 0;
+    message.version = object.version ?? 0;
+    message.accepted = object.accepted ?? undefined;
+    return message;
+  },
+};
+
+function createBaseNetworkGovernance(): NetworkGovernance {
+  return { networkGovernanceFrameworkVersions: [], ngfAcceptanceDeadline: undefined };
+}
+
+export const NetworkGovernance = {
+  encode(message: NetworkGovernance, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    writer.uint32(10).fork();
+    for (const v of message.networkGovernanceFrameworkVersions) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
+    if (message.ngfAcceptanceDeadline !== undefined) {
+      Timestamp.encode(toTimestamp(message.ngfAcceptanceDeadline), writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NetworkGovernance {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNetworkGovernance();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag === 8) {
+            message.networkGovernanceFrameworkVersions.push(longToNumber(reader.uint64() as Long));
+
+            continue;
+          }
+
+          if (tag === 10) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.networkGovernanceFrameworkVersions.push(longToNumber(reader.uint64() as Long));
+            }
+
+            continue;
+          }
+
+          break;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.ngfAcceptanceDeadline = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): NetworkGovernance {
+    return {
+      networkGovernanceFrameworkVersions: globalThis.Array.isArray(object?.networkGovernanceFrameworkVersions)
+        ? object.networkGovernanceFrameworkVersions.map((e: any) => globalThis.Number(e))
+        : [],
+      ngfAcceptanceDeadline: isSet(object.ngfAcceptanceDeadline)
+        ? fromJsonTimestamp(object.ngfAcceptanceDeadline)
+        : undefined,
+    };
+  },
+
+  toJSON(message: NetworkGovernance): unknown {
+    const obj: any = {};
+    if (message.networkGovernanceFrameworkVersions?.length) {
+      obj.networkGovernanceFrameworkVersions = message.networkGovernanceFrameworkVersions.map((e) => Math.round(e));
+    }
+    if (message.ngfAcceptanceDeadline !== undefined) {
+      obj.ngfAcceptanceDeadline = message.ngfAcceptanceDeadline.toISOString();
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<NetworkGovernance>, I>>(base?: I): NetworkGovernance {
+    return NetworkGovernance.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<NetworkGovernance>, I>>(object: I): NetworkGovernance {
+    const message = createBaseNetworkGovernance();
+    message.networkGovernanceFrameworkVersions = object.networkGovernanceFrameworkVersions?.map((e) => e) || [];
+    message.ngfAcceptanceDeadline = object.ngfAcceptanceDeadline ?? undefined;
     return message;
   },
 };

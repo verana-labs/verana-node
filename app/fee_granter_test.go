@@ -94,7 +94,7 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 	e.finalize(t)
 
 	ctx := e.nextBlockCtx()
-	corp := cotypes.Corporation{Id: 4, PolicyAddress: e.corp.String(), Did: "did:example:corp"}
+	corp := cotypes.Corporation{Id: 4, PolicyAddress: e.corp.String(), Did: "did:example:corp", AcceptedNgfVersion: 1}
 	require.NoError(t, a.CoKeeper.Corporation.Set(ctx, corp.Id, corp))
 	require.NoError(t, a.CoKeeper.CorporationByPolicyAddr.Set(ctx, corp.PolicyAddress, corp.Id))
 	from := e.now.Add(-time.Hour)

@@ -22,6 +22,7 @@ import (
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 	dekeeper "github.com/verana-labs/verana-node/x/de/keeper"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 	ppkeeper "github.com/verana-labs/verana-node/x/pp/keeper"
 	pptypes "github.com/verana-labs/verana-node/x/pp/types"
 	tdtypes "github.com/verana-labs/verana-node/x/td/types"
@@ -37,6 +38,7 @@ func feegrantTestApp(t *testing.T) (*App, sdk.Context) {
 	require.NoError(t, err)
 	ctx := a.NewContextLegacy(true, cmtproto.Header{Height: 10, Time: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)}).WithIsCheckTx(false)
 	require.NoError(t, a.VsKeeper.Params.Set(ctx, vstypes.DefaultParams()))
+	require.NoError(t, a.GfKeeper.InitGenesis(ctx, *gftypes.DefaultGenesis()))
 	return a, ctx
 }
 
@@ -158,7 +160,7 @@ func newSelfGrantEnv(t *testing.T) selfGrantEnv {
 		des: dekeeper.NewMsgServerImpl(a.DeKeeper),
 	}
 	for id, addr := range map[uint64]sdk.AccAddress{1: e.pE, 2: e.pX} {
-		require.NoError(t, a.CoKeeper.Corporation.Set(ctx, id, cotypes.Corporation{Id: id, PolicyAddress: addr.String(), Did: "did:example:corp" + string(rune('a'+id))}))
+		require.NoError(t, a.CoKeeper.Corporation.Set(ctx, id, cotypes.Corporation{Id: id, PolicyAddress: addr.String(), Did: "did:example:corp" + string(rune('a'+id)), ActiveVersion: 1, AcceptedNgfVersion: 1}))
 		require.NoError(t, a.CoKeeper.CorporationByPolicyAddr.Set(ctx, addr.String(), id))
 	}
 	require.NoError(t, a.CredentialschemaKeeper.CredentialSchema.Set(ctx, 1, cstypes.CredentialSchema{
@@ -183,6 +185,8 @@ func newSelfGrantEnv(t *testing.T) selfGrantEnv {
 		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_REVOKE_ACCREDITATION},
 	})
 	require.NoError(t, err)
+	require.NoError(t, a.DeKeeper.SetDelegateAcceptedCGFVersion(ctx, 2, e.opX.String(), 1))
+	require.NoError(t, a.DeKeeper.SetDelegateAcceptedCGFVersion(ctx, 1, e.opE.String(), 1))
 	return e
 }
 

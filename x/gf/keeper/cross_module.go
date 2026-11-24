@@ -3,12 +3,12 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"sort"
 
 	"cosmossdk.io/collections"
 	cerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/verana-labs/verana-node/util/events"
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
@@ -77,14 +77,12 @@ func (k Keeper) CreateInitialGFVersionForCorporation(
 		return fmt.Errorf("persist gfd index: %w", err)
 	}
 
-	sdkCtx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddGFDocument,
-		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", corpID)),
-		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
-		sdk.NewAttribute(types.AttributeKeyGFDocID, fmt.Sprintf("%d", gfd.Id)),
-		sdk.NewAttribute(types.AttributeKeyVersion, "1"),
-		sdk.NewAttribute(types.AttributeKeyLanguage, language),
-	))
+	events.New(types.ModuleName, types.EventTypeAddGovernanceFrameworkDocument).
+		Uint(events.AttrCorporationID, corpID).
+		Uint(types.AttributeKeyGFVersionID, gfv.Id).
+		Uint(types.AttributeKeyGFDocID, gfd.Id).
+		Uint(types.AttributeKeyVersion, 1).
+		Emit(sdkCtx)
 
 	return nil
 }
@@ -154,120 +152,48 @@ func (k Keeper) CreateInitialGFVersionForEcosystem(
 		return fmt.Errorf("persist gfd index: %w", err)
 	}
 
-	sdkCtx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddGFDocument,
-		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ecID)),
-		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
-		sdk.NewAttribute(types.AttributeKeyGFDocID, fmt.Sprintf("%d", gfd.Id)),
-		sdk.NewAttribute(types.AttributeKeyVersion, "1"),
-		sdk.NewAttribute(types.AttributeKeyLanguage, language),
-	))
+	events.New(types.ModuleName, types.EventTypeAddGovernanceFrameworkDocument).
+		Uint(events.AttrEcosystemID, ecID).
+		Uint(types.AttributeKeyGFVersionID, gfv.Id).
+		Uint(types.AttributeKeyGFDocID, gfd.Id).
+		Uint(types.AttributeKeyVersion, 1).
+		Emit(sdkCtx)
 
 	return nil
 }
 
-// ListVersionsByCorporation returns the Corporation's GovernanceFrameworkVersion
-// list (each enriched with documents) for the CorporationWithGF response shape
-// in MOD-CO queries.
-//
-// `activeVersion` is the Corporation's current active_version, supplied by
-// MOD-CO (which owns that field). When `activeOnly` is true only that entry is
-// returned. `preferredLang` filters documents per the same rules as
-// (querier).collectDocs.
-func (k Keeper) ListVersionsByCorporation(
-	ctx context.Context,
-	corpID uint64,
-	activeVersion uint32,
-	activeOnly bool,
-	preferredLang string,
-) ([]types.GovernanceFrameworkVersionWithDocs, error) {
+// ListVersionsByCorporation returns the Corporation's versions with their
+// documents for MOD-CO-QRY-1. activeVersion and language are the corporation's;
+// with activeOnly only the active version is returned, and preferredLang
+// selects one document per version as collectDocs does.
+func (k Keeper) ListVersionsByCorporation(ctx context.Context, corpID uint64, language string, activeVersion uint32, activeOnly bool, preferredLang string) ([]types.GovernanceFrameworkVersionWithDocs, error) {
 	if corpID == 0 {
 		return nil, cerrors.Wrap(types.ErrInvalidSubject, "corporation_id must be > 0")
 	}
-
-	var gfvIDs []uint64
-	iter, err := k.GFVersionByCorporation.Iterate(ctx, collections.NewPrefixedPairRange[uint64, uint32](corpID))
-	if err != nil {
-		return nil, fmt.Errorf("iterate gfv index: %w", err)
-	}
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		id, err := iter.Value()
-		if err != nil {
-			return nil, fmt.Errorf("iter value: %w", err)
-		}
-		gfvIDs = append(gfvIDs, id)
-	}
-
-	out := make([]types.GovernanceFrameworkVersionWithDocs, 0, len(gfvIDs))
-	q := querier{Keeper: k}
-	for _, id := range gfvIDs {
-		gfv, err := k.GFVersion.Get(ctx, id)
-		if err != nil {
-			return nil, fmt.Errorf("fetch gfv %d: %w", id, err)
-		}
-		if activeOnly && gfv.Version != activeVersion {
-			continue
-		}
-		docs, err := q.collectDocs(ctx, gfv.Id, preferredLang)
-		if err != nil {
-			return nil, fmt.Errorf("collect docs: %w", err)
-		}
-		out = append(out, types.GovernanceFrameworkVersionWithDocs{
-			Id:            gfv.Id,
-			EcosystemId:   gfv.EcosystemId,
-			CorporationId: gfv.CorporationId,
-			Created:       gfv.Created,
-			Version:       gfv.Version,
-			ActiveSince:   gfv.ActiveSince,
-			Documents:     docs,
-		})
-	}
-	sort.Slice(out, func(i, j int) bool { return out[i].Version < out[j].Version })
-	return out, nil
+	return k.listVersions(ctx, k.GFVersionByCorporation, corpID, language, activeVersion, activeOnly, preferredLang)
 }
 
-// ListVersionsByEcosystem mirrors ListVersionsByCorporation but reads the
-// GFVersionByEcosystem index. Used by MOD-ES QRY-1/QRY-2 to inline nested
-// governance framework versions and their documents.
-func (k Keeper) ListVersionsByEcosystem(
-	ctx context.Context,
-	ecID uint64,
-	activeVersion uint32,
-	activeOnly bool,
-	preferredLang string,
-) ([]types.GovernanceFrameworkVersionWithDocs, error) {
+// ListVersionsByEcosystem mirrors ListVersionsByCorporation for MOD-ES-QRY-1.
+func (k Keeper) ListVersionsByEcosystem(ctx context.Context, ecID uint64, language string, activeVersion uint32, activeOnly bool, preferredLang string) ([]types.GovernanceFrameworkVersionWithDocs, error) {
 	if ecID == 0 {
 		return nil, cerrors.Wrap(types.ErrInvalidSubject, "ecosystem_id must be > 0")
 	}
+	return k.listVersions(ctx, k.GFVersionByEcosystem, ecID, language, activeVersion, activeOnly, preferredLang)
+}
 
-	var gfvIDs []uint64
-	iter, err := k.GFVersionByEcosystem.Iterate(ctx, collections.NewPrefixedPairRange[uint64, uint32](ecID))
-	if err != nil {
-		return nil, fmt.Errorf("iterate gfv index: %w", err)
-	}
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		id, err := iter.Value()
-		if err != nil {
-			return nil, fmt.Errorf("iter value: %w", err)
+func (k Keeper) listVersions(ctx context.Context, index collections.Map[collections.Pair[uint64, uint32], uint64], ownerID uint64, language string, activeVersion uint32, activeOnly bool, preferredLang string) ([]types.GovernanceFrameworkVersionWithDocs, error) {
+	var out []types.GovernanceFrameworkVersionWithDocs
+	err := index.Walk(ctx, collections.NewPrefixedPairRange[uint64, uint32](ownerID), func(key collections.Pair[uint64, uint32], id uint64) (bool, error) {
+		if activeOnly && key.K2() != activeVersion {
+			return false, nil
 		}
-		gfvIDs = append(gfvIDs, id)
-	}
-
-	out := make([]types.GovernanceFrameworkVersionWithDocs, 0, len(gfvIDs))
-	q := querier{Keeper: k}
-	for _, id := range gfvIDs {
 		gfv, err := k.GFVersion.Get(ctx, id)
 		if err != nil {
-			return nil, fmt.Errorf("fetch gfv %d: %w", id, err)
+			return true, fmt.Errorf("fetch gfv %d: %w", id, err)
 		}
-		if activeOnly && gfv.Version != activeVersion {
-			continue
-		}
-		docs, err := q.collectDocs(ctx, gfv.Id, preferredLang)
+		docs, err := k.collectDocs(ctx, gfv.Id, preferredLang, language)
 		if err != nil {
-			return nil, fmt.Errorf("collect docs: %w", err)
+			return true, fmt.Errorf("collect docs: %w", err)
 		}
 		out = append(out, types.GovernanceFrameworkVersionWithDocs{
 			Id:            gfv.Id,
@@ -278,7 +204,7 @@ func (k Keeper) ListVersionsByEcosystem(
 			ActiveSince:   gfv.ActiveSince,
 			Documents:     docs,
 		})
-	}
-	sort.Slice(out, func(i, j int) bool { return out[i].Version < out[j].Version })
-	return out, nil
+		return false, nil
+	})
+	return out, err
 }

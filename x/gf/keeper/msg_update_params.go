@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	"github.com/verana-labs/verana-node/util/events"
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
@@ -22,9 +23,10 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 	if err := ms.SetParams(ctx, msg.Params); err != nil {
 		return nil, err
 	}
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUpdateParams,
-		append([]sdk.Attribute{sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority)}, msg.Params.EventAttributes()...)...,
-	))
+	ev := events.New(types.ModuleName, types.EventTypeUpdateModuleParameters)
+	if err := ev.Msg(ms.cdc, msg); err != nil {
+		return nil, err
+	}
+	ev.Emit(ctx)
 	return &types.MsgUpdateParamsResponse{}, nil
 }

@@ -54,7 +54,7 @@ func (stubGFKeeper) CreateInitialGFVersionForEcosystem(_ context.Context, _ uint
 	return nil
 }
 
-func (stubGFKeeper) ListVersionsByEcosystem(_ context.Context, _ uint64, _ uint32, _ bool, _ string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
+func (stubGFKeeper) ListVersionsByEcosystem(_ context.Context, _ uint64, _ string, _ uint32, _ bool, _ string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
 	return nil, nil
 }
 

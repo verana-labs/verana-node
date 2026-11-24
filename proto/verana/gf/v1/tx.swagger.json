@@ -16,6 +16,74 @@
     "application/json"
   ],
   "paths": {
+    "/verana.gf.v1.Msg/AcceptCorporationGovernanceFramework": {
+      "post": {
+        "summary": "[MOD-GF-MSG-4] Accept Corporation Governance Framework",
+        "operationId": "Msg_AcceptCorporationGovernanceFramework",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.gf.v1.MsgAcceptCorporationGovernanceFrameworkResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "[MOD-GF-MSG-4] Records the acceptance by a delegate of the version in force of\nthe governance framework of the corporation that authorized it.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/verana.gf.v1.MsgAcceptCorporationGovernanceFramework"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/verana.gf.v1.Msg/AcceptGovernanceFrameworkVersion": {
+      "post": {
+        "summary": "[MOD-GF-MSG-3] Accept Governance Framework Version",
+        "operationId": "Msg_AcceptGovernanceFrameworkVersion",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.gf.v1.MsgAcceptGovernanceFrameworkVersionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "[MOD-GF-MSG-3] Records the acceptance by a corporation of the version in force\nof the network governance framework, or of an ecosystem's. On the\ngroup-proposal path the policy account signs and delegate equals corporation.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/verana.gf.v1.MsgAcceptGovernanceFrameworkVersion"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
     "/verana.gf.v1.Msg/AddGovernanceFrameworkDocument": {
       "post": {
         "summary": "[MOD-GF-MSG-1] Add Governance Framework Document",
@@ -37,7 +105,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "[MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft\nversion owned by an Ecosystem or a Corporation.",
+            "description": "[MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft\nversion owned by an Ecosystem, a Corporation or the network.",
             "in": "body",
             "required": true,
             "schema": {
@@ -71,7 +139,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "[MOD-GF-MSG-2] Activates the next governance framework version for an\nEcosystem or Corporation owned by the signing corporation.",
+            "description": "[MOD-GF-MSG-2] Activates the next governance framework version of an\nEcosystem or Corporation owned by the signing corporation, or of the network.",
             "in": "body",
             "required": true,
             "schema": {
@@ -148,6 +216,60 @@
         }
       }
     },
+    "verana.gf.v1.MsgAcceptCorporationGovernanceFramework": {
+      "type": "object",
+      "properties": {
+        "delegate": {
+          "type": "string",
+          "description": "delegate is the signer, the account that holds the authorization."
+        },
+        "corporation_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "corporation_id is the corporation whose framework is accepted."
+        },
+        "version": {
+          "type": "integer",
+          "format": "int64",
+          "description": "version is the version accepted, the version in force."
+        }
+      },
+      "description": "[MOD-GF-MSG-4] Records the acceptance by a delegate of the version in force of\nthe governance framework of the corporation that authorized it."
+    },
+    "verana.gf.v1.MsgAcceptCorporationGovernanceFrameworkResponse": {
+      "type": "object"
+    },
+    "verana.gf.v1.MsgAcceptGovernanceFrameworkVersion": {
+      "type": "object",
+      "properties": {
+        "corporation": {
+          "type": "string",
+          "description": "corporation is the policy_address of the accepting corporation."
+        },
+        "delegate": {
+          "type": "string",
+          "description": "delegate is the signer: an authorized delegate, or the corporation's\npolicy_address on the group-proposal path."
+        },
+        "ecosystem_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "ecosystem_id is the ecosystem whose framework is accepted; zero when network is true."
+        },
+        "network": {
+          "type": "boolean",
+          "description": "network accepts the network governance framework."
+        },
+        "version": {
+          "type": "integer",
+          "format": "int64",
+          "description": "version is the version accepted, the version in force."
+        }
+      },
+      "description": "[MOD-GF-MSG-3] Records the acceptance by a corporation of the version in force\nof the network governance framework, or of an ecosystem's. On the\ngroup-proposal path the policy account signs and delegate equals corporation."
+    },
+    "verana.gf.v1.MsgAcceptGovernanceFrameworkVersionResponse": {
+      "type": "object"
+    },
     "verana.gf.v1.MsgAddGovernanceFrameworkDocument": {
       "type": "object",
       "properties": {
@@ -186,7 +308,7 @@
           "description": "authority is the council account, set on the network path only."
         }
       },
-      "description": "[MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft\nversion owned by an Ecosystem or a Corporation."
+      "description": "[MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft\nversion owned by an Ecosystem, a Corporation or the network."
     },
     "verana.gf.v1.MsgAddGovernanceFrameworkDocumentResponse": {
       "type": "object"
@@ -210,9 +332,13 @@
         "authority": {
           "type": "string",
           "description": "authority is the council account, set on the network path only."
+        },
+        "acceptance_grace": {
+          "type": "string",
+          "description": "acceptance_grace is the grace period, from the activation, during which the\nparties that accepted a former version keep acting."
         }
       },
-      "description": "[MOD-GF-MSG-2] Activates the next governance framework version for an\nEcosystem or Corporation owned by the signing corporation."
+      "description": "[MOD-GF-MSG-2] Activates the next governance framework version of an\nEcosystem or Corporation owned by the signing corporation, or of the network."
     },
     "verana.gf.v1.MsgIncreaseActiveGovernanceFrameworkVersionResponse": {
       "type": "object"

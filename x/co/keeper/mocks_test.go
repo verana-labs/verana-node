@@ -68,6 +68,7 @@ type mockGF struct {
 	listErr  error
 	listArgs struct {
 		corpID        uint64
+		language      string
 		activeVersion uint32
 		activeOnly    bool
 		preferredLang string
@@ -78,6 +79,16 @@ type mockGF struct {
 	ngfCalls int
 	ngfCo    gftypes.CorporationView
 	ngfNow   time.Time
+
+	ngfVersion    uint32
+	ngfVersionErr error
+}
+
+func (m *mockGF) NetworkGFVersionInForce(context.Context) (uint32, error) {
+	if m.ngfVersion == 0 {
+		return 1, m.ngfVersionErr
+	}
+	return m.ngfVersion, m.ngfVersionErr
 }
 
 func (m *mockGF) CheckNetworkGFAcceptance(_ context.Context, co gftypes.CorporationView, now time.Time) error {
@@ -96,9 +107,10 @@ func (m *mockGF) CreateInitialGFVersionForCorporation(_ context.Context, corpID 
 	return m.createErr
 }
 
-func (m *mockGF) ListVersionsByCorporation(_ context.Context, corpID uint64, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
+func (m *mockGF) ListVersionsByCorporation(_ context.Context, corpID uint64, language string, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
 	m.listCalls++
 	m.listArgs.corpID = corpID
+	m.listArgs.language = language
 	m.listArgs.activeVersion = activeVersion
 	m.listArgs.activeOnly = activeOnly
 	m.listArgs.preferredLang = preferredLang

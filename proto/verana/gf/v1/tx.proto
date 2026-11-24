@@ -5,6 +5,7 @@ import "amino/amino.proto";
 import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
 import "verana/gf/v1/params.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/gf/types";
@@ -22,6 +23,12 @@ service Msg {
 
   // [MOD-GF-MSG-2] Increase Active Governance Framework Version
   rpc IncreaseActiveGovernanceFrameworkVersion(MsgIncreaseActiveGovernanceFrameworkVersion) returns (MsgIncreaseActiveGovernanceFrameworkVersionResponse);
+
+  // [MOD-GF-MSG-3] Accept Governance Framework Version
+  rpc AcceptGovernanceFrameworkVersion(MsgAcceptGovernanceFrameworkVersion) returns (MsgAcceptGovernanceFrameworkVersionResponse);
+
+  // [MOD-GF-MSG-4] Accept Corporation Governance Framework
+  rpc AcceptCorporationGovernanceFramework(MsgAcceptCorporationGovernanceFramework) returns (MsgAcceptCorporationGovernanceFrameworkResponse);
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
@@ -43,7 +50,7 @@ message MsgUpdateParams {
 message MsgUpdateParamsResponse {}
 
 // [MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft
-// version owned by an Ecosystem or a Corporation.
+// version owned by an Ecosystem, a Corporation or the network.
 message MsgAddGovernanceFrameworkDocument {
   // No signer annotation: a custom signer function returns `authority` (the
   // council account) on the network path, else `delegate`.
@@ -70,8 +77,8 @@ message MsgAddGovernanceFrameworkDocument {
 
 message MsgAddGovernanceFrameworkDocumentResponse {}
 
-// [MOD-GF-MSG-2] Activates the next governance framework version for an
-// Ecosystem or Corporation owned by the signing corporation.
+// [MOD-GF-MSG-2] Activates the next governance framework version of an
+// Ecosystem or Corporation owned by the signing corporation, or of the network.
 message MsgIncreaseActiveGovernanceFrameworkVersion {
   // No signer annotation: a custom signer function returns `authority` (the
   // council account) on the network path, else `delegate`.
@@ -86,6 +93,50 @@ message MsgIncreaseActiveGovernanceFrameworkVersion {
   uint64 ecosystem_id = 3;
   // authority is the council account, set on the network path only.
   string authority = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // acceptance_grace is the grace period, from the activation, during which the
+  // parties that accepted a former version keep acting.
+  google.protobuf.Duration acceptance_grace = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
 }
 
 message MsgIncreaseActiveGovernanceFrameworkVersionResponse {}
+
+// [MOD-GF-MSG-3] Records the acceptance by a corporation of the version in force
+// of the network governance framework, or of an ecosystem's. On the
+// group-proposal path the policy account signs and delegate equals corporation.
+message MsgAcceptGovernanceFrameworkVersion {
+  option (cosmos.msg.v1.signer) = "delegate";
+  option (amino.name) = "verana/x/gf/MsgAcceptGFVersion";
+
+  // corporation is the policy_address of the accepting corporation.
+  string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the signer: an authorized delegate, or the corporation's
+  // policy_address on the group-proposal path.
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // ecosystem_id is the ecosystem whose framework is accepted; zero when network is true.
+  uint64 ecosystem_id = 3;
+  // network accepts the network governance framework.
+  bool network = 4;
+  // version is the version accepted, the version in force.
+  uint32 version = 5;
+}
+
+message MsgAcceptGovernanceFrameworkVersionResponse {}
+
+// [MOD-GF-MSG-4] Records the acceptance by a delegate of the version in force of
+// the governance framework of the corporation that authorized it.
+message MsgAcceptCorporationGovernanceFramework {
+  option (cosmos.msg.v1.signer) = "delegate";
+  option (amino.name) = "verana/x/gf/MsgAcceptCorporationGF";
+
+  // delegate is the signer, the account that holds the authorization.
+  string delegate = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // corporation_id is the corporation whose framework is accepted.
+  uint64 corporation_id = 2;
+  // version is the version accepted, the version in force.
+  uint32 version = 3;
+}
+
+message MsgAcceptCorporationGovernanceFrameworkResponse {}

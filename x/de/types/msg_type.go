@@ -29,6 +29,8 @@ var msgTypeURLs = map[MsgType][]string{
 	MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION:                 {"/verana.de.v1.MsgGrantDelegateAuthorization"},
 	MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION:                {"/verana.de.v1.MsgRevokeDelegateAuthorization"},
 	MsgType_MSG_TYPE_STORE_DIGEST:                                 {"/verana.di.v1.MsgStoreDigest"},
+	MsgType_MSG_TYPE_ACCEPT_GOVERNANCE_FRAMEWORK_VERSION:          {"/verana.gf.v1.MsgAcceptGovernanceFrameworkVersion"},
+	MsgType_MSG_TYPE_ACCEPT_CORPORATION_GOVERNANCE_FRAMEWORK:      {"/verana.gf.v1.MsgAcceptCorporationGovernanceFramework"},
 	MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION:               {"/verana.pp.v1.MsgCreateOrUpdateParticipantSession"},
 }
 
@@ -64,8 +66,7 @@ var (
 		MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION,
 		MsgType_MSG_TYPE_ACCEPT_CORPORATION_GOVERNANCE_FRAMEWORK,
 	)
-	// FeeGrantMsgTypes: the delegable values plus AcceptCorporationGovernanceFramework,
-	// which ValidateMsgTypes accepts once its message (MOD-GF-MSG-4) exists.
+	// FeeGrantMsgTypes: the delegable values plus AcceptCorporationGovernanceFramework.
 	FeeGrantMsgTypes          = allMsgTypesExcept()
 	VerifiableServiceMsgTypes = newMsgTypeSet(
 		MsgType_MSG_TYPE_VALIDATE_ONBOARDING,

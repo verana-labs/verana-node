@@ -16,6 +16,45 @@
     "application/json"
   ],
   "paths": {
+    "/gf/v1/acceptance": {
+      "get": {
+        "summary": "[MOD-GF-QRY-2] Get Ecosystem Acceptance",
+        "operationId": "Query_GetEcosystemAcceptance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.gf.v1.QueryGetEcosystemAcceptanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ecosystem_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "corporation_id",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "Query"
+        ]
+      }
+    },
     "/gf/v1/get": {
       "get": {
         "summary": "[MOD-GF-QRY-1] Get Governance Framework Version",
@@ -47,64 +86,6 @@
             "in": "query",
             "required": false,
             "type": "string"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
-    },
-    "/gf/v1/list": {
-      "get": {
-        "summary": "[MOD-GF-QRY-2] List Governance Framework Versions",
-        "operationId": "Query_ListGovernanceFrameworkVersions",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "ecosystem_id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "corporation_id",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "active_only",
-            "in": "query",
-            "required": false,
-            "type": "boolean"
-          },
-          {
-            "name": "preferred_language",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "response_max_size",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
           }
         ],
         "tags": [
@@ -164,6 +145,28 @@
           }
         }
       }
+    },
+    "verana.gf.v1.EcosystemAcceptance": {
+      "type": "object",
+      "properties": {
+        "ecosystem_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "corporation_id": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "accepted": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "EcosystemAcceptance is the last version of an ecosystem's governance\nframework a corporation accepted, keyed by (ecosystem_id, corporation_id)."
     },
     "verana.gf.v1.GovernanceFrameworkDocument": {
       "type": "object",
@@ -238,23 +241,19 @@
       },
       "description": "Params defines the parameters for the x/gf module."
     },
+    "verana.gf.v1.QueryGetEcosystemAcceptanceResponse": {
+      "type": "object",
+      "properties": {
+        "acceptance": {
+          "$ref": "#/definitions/verana.gf.v1.EcosystemAcceptance"
+        }
+      }
+    },
     "verana.gf.v1.QueryGetGovernanceFrameworkVersionResponse": {
       "type": "object",
       "properties": {
         "version": {
           "$ref": "#/definitions/verana.gf.v1.GovernanceFrameworkVersionWithDocs"
-        }
-      }
-    },
-    "verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse": {
-      "type": "object",
-      "properties": {
-        "versions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/verana.gf.v1.GovernanceFrameworkVersionWithDocs"
-          }
         }
       }
     },

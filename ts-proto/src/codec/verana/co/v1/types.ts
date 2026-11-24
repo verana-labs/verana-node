@@ -26,6 +26,13 @@ export interface Corporation {
   modified: Date | undefined;
   language: string;
   activeVersion: number;
+  /** accepted_ngf_version is the network governance framework version accepted. */
+  acceptedNgfVersion: number;
+  /**
+   * acceptance_deadline ends the grace period of the last activation of the
+   * corporation's governance framework.
+   */
+  acceptanceDeadline: Date | undefined;
 }
 
 /**
@@ -42,10 +49,22 @@ export interface CorporationWithGF {
   language: string;
   activeVersion: number;
   versions: GovernanceFrameworkVersionWithDocs[];
+  acceptedNgfVersion: number;
+  acceptanceDeadline: Date | undefined;
 }
 
 function createBaseCorporation(): Corporation {
-  return { id: 0, policyAddress: "", did: "", created: undefined, modified: undefined, language: "", activeVersion: 0 };
+  return {
+    id: 0,
+    policyAddress: "",
+    did: "",
+    created: undefined,
+    modified: undefined,
+    language: "",
+    activeVersion: 0,
+    acceptedNgfVersion: 0,
+    acceptanceDeadline: undefined,
+  };
 }
 
 export const Corporation = {
@@ -70,6 +89,12 @@ export const Corporation = {
     }
     if (message.activeVersion !== 0) {
       writer.uint32(56).uint32(message.activeVersion);
+    }
+    if (message.acceptedNgfVersion !== 0) {
+      writer.uint32(64).uint32(message.acceptedNgfVersion);
+    }
+    if (message.acceptanceDeadline !== undefined) {
+      Timestamp.encode(toTimestamp(message.acceptanceDeadline), writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -130,6 +155,20 @@ export const Corporation = {
 
           message.activeVersion = reader.uint32();
           continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.acceptedNgfVersion = reader.uint32();
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.acceptanceDeadline = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -148,6 +187,8 @@ export const Corporation = {
       modified: isSet(object.modified) ? fromJsonTimestamp(object.modified) : undefined,
       language: isSet(object.language) ? globalThis.String(object.language) : "",
       activeVersion: isSet(object.activeVersion) ? globalThis.Number(object.activeVersion) : 0,
+      acceptedNgfVersion: isSet(object.acceptedNgfVersion) ? globalThis.Number(object.acceptedNgfVersion) : 0,
+      acceptanceDeadline: isSet(object.acceptanceDeadline) ? fromJsonTimestamp(object.acceptanceDeadline) : undefined,
     };
   },
 
@@ -174,6 +215,12 @@ export const Corporation = {
     if (message.activeVersion !== 0) {
       obj.activeVersion = Math.round(message.activeVersion);
     }
+    if (message.acceptedNgfVersion !== 0) {
+      obj.acceptedNgfVersion = Math.round(message.acceptedNgfVersion);
+    }
+    if (message.acceptanceDeadline !== undefined) {
+      obj.acceptanceDeadline = message.acceptanceDeadline.toISOString();
+    }
     return obj;
   },
 
@@ -189,6 +236,8 @@ export const Corporation = {
     message.modified = object.modified ?? undefined;
     message.language = object.language ?? "";
     message.activeVersion = object.activeVersion ?? 0;
+    message.acceptedNgfVersion = object.acceptedNgfVersion ?? 0;
+    message.acceptanceDeadline = object.acceptanceDeadline ?? undefined;
     return message;
   },
 };
@@ -203,6 +252,8 @@ function createBaseCorporationWithGF(): CorporationWithGF {
     language: "",
     activeVersion: 0,
     versions: [],
+    acceptedNgfVersion: 0,
+    acceptanceDeadline: undefined,
   };
 }
 
@@ -231,6 +282,12 @@ export const CorporationWithGF = {
     }
     for (const v of message.versions) {
       GovernanceFrameworkVersionWithDocs.encode(v!, writer.uint32(66).fork()).ldelim();
+    }
+    if (message.acceptedNgfVersion !== 0) {
+      writer.uint32(72).uint32(message.acceptedNgfVersion);
+    }
+    if (message.acceptanceDeadline !== undefined) {
+      Timestamp.encode(toTimestamp(message.acceptanceDeadline), writer.uint32(82).fork()).ldelim();
     }
     return writer;
   },
@@ -298,6 +355,20 @@ export const CorporationWithGF = {
 
           message.versions.push(GovernanceFrameworkVersionWithDocs.decode(reader, reader.uint32()));
           continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.acceptedNgfVersion = reader.uint32();
+          continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.acceptanceDeadline = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -319,6 +390,8 @@ export const CorporationWithGF = {
       versions: globalThis.Array.isArray(object?.versions)
         ? object.versions.map((e: any) => GovernanceFrameworkVersionWithDocs.fromJSON(e))
         : [],
+      acceptedNgfVersion: isSet(object.acceptedNgfVersion) ? globalThis.Number(object.acceptedNgfVersion) : 0,
+      acceptanceDeadline: isSet(object.acceptanceDeadline) ? fromJsonTimestamp(object.acceptanceDeadline) : undefined,
     };
   },
 
@@ -348,6 +421,12 @@ export const CorporationWithGF = {
     if (message.versions?.length) {
       obj.versions = message.versions.map((e) => GovernanceFrameworkVersionWithDocs.toJSON(e));
     }
+    if (message.acceptedNgfVersion !== 0) {
+      obj.acceptedNgfVersion = Math.round(message.acceptedNgfVersion);
+    }
+    if (message.acceptanceDeadline !== undefined) {
+      obj.acceptanceDeadline = message.acceptanceDeadline.toISOString();
+    }
     return obj;
   },
 
@@ -364,6 +443,8 @@ export const CorporationWithGF = {
     message.language = object.language ?? "";
     message.activeVersion = object.activeVersion ?? 0;
     message.versions = object.versions?.map((e) => GovernanceFrameworkVersionWithDocs.fromPartial(e)) || [];
+    message.acceptedNgfVersion = object.acceptedNgfVersion ?? 0;
+    message.acceptanceDeadline = object.acceptanceDeadline ?? undefined;
     return message;
   },
 };

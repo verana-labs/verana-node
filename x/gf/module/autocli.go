@@ -24,41 +24,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						"preferred_language": {
 							Name:         "preferred-language",
 							DefaultValue: "",
-							Usage:        "If set, return only the document matching this BCP 47 language (falls back to all docs if no match).",
+							Usage:        "If set, return one document: in this BCP 47 language, else in the owner's language, else the earliest.",
 						},
 					},
 				},
 				{
-					RpcMethod: "ListGovernanceFrameworkVersions",
-					Use:       "list-governance-framework-versions",
-					Short:     "List GovernanceFrameworkVersions for an Ecosystem or Corporation",
-					Long:      "List GovernanceFrameworkVersion entries owned by the target subject. Exactly one of --ecosystem-id and --corporation-id must be set. Results ordered by ascending version.",
-					FlagOptions: map[string]*autocliv1.FlagOptions{
-						"ecosystem_id": {
-							Name:         "ecosystem-id",
-							DefaultValue: "0",
-							Usage:        "Ecosystem ID (XOR with --corporation-id).",
-						},
-						"corporation_id": {
-							Name:         "corporation-id",
-							DefaultValue: "0",
-							Usage:        "Corporation ID (uint64, XOR with --ecosystem-id).",
-						},
-						"active_only": {
-							Name:         "active-only",
-							DefaultValue: "false",
-							Usage:        "If true, return only the entry corresponding to the subject's active_version.",
-						},
-						"preferred_language": {
-							Name:         "preferred-language",
-							DefaultValue: "",
-							Usage:        "If set, return only one document per version, preferring this language.",
-						},
-						"response_max_size": {
-							Name:         "response-max-size",
-							DefaultValue: "64",
-							Usage:        "Maximum results to return (1-1024, default 64).",
-						},
+					RpcMethod: "GetEcosystemAcceptance",
+					Use:       "get-ecosystem-acceptance [ecosystem-id] [corporation-id]",
+					Short:     "Get the last version of an ecosystem's governance framework a corporation accepted",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "ecosystem_id"},
+						{ProtoField: "corporation_id"},
 					},
 				},
 				{
@@ -79,6 +55,25 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				{
 					RpcMethod: "IncreaseActiveGovernanceFrameworkVersion",
 					Skip:      true, // custom command in cli_tx.go
+				},
+				{
+					RpcMethod: "AcceptGovernanceFrameworkVersion",
+					Use:       "accept-gf-version [corporation] [version]",
+					Short:     "[MOD-GF-MSG-3] Accept the version in force of the network governance framework (--network) or of an ecosystem's (--ecosystem-id)",
+					Long:      "The signer (--from) is the delegate: an authorized delegate, or the corporation's policy_address on the group-proposal path.",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "corporation"},
+						{ProtoField: "version"},
+					},
+				},
+				{
+					RpcMethod: "AcceptCorporationGovernanceFramework",
+					Use:       "accept-corporation-gf [corporation-id] [version]",
+					Short:     "[MOD-GF-MSG-4] Accept, as its delegate, the version in force of a corporation's governance framework",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "corporation_id"},
+						{ProtoField: "version"},
+					},
 				},
 				{
 					RpcMethod: "UpdateParams",

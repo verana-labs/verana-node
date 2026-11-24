@@ -163,7 +163,7 @@ func TestModule_AutoCLIOptions(t *testing.T) {
 		queryRPCs[c.RpcMethod] = true
 	}
 	require.True(t, queryRPCs["GetGovernanceFrameworkVersion"])
-	require.True(t, queryRPCs["ListGovernanceFrameworkVersions"])
+	require.True(t, queryRPCs["GetEcosystemAcceptance"])
 	require.True(t, queryRPCs["Params"])
 
 	txRPCs := map[string]bool{}
@@ -172,5 +172,7 @@ func TestModule_AutoCLIOptions(t *testing.T) {
 	}
 	require.True(t, txRPCs["AddGovernanceFrameworkDocument"])
 	require.True(t, txRPCs["IncreaseActiveGovernanceFrameworkVersion"])
+	require.True(t, txRPCs["AcceptGovernanceFrameworkVersion"])
+	require.True(t, txRPCs["AcceptCorporationGovernanceFramework"])
 	require.True(t, txRPCs["UpdateParams"])
 }

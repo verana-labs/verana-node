@@ -12,7 +12,7 @@ import (
 
 // RunEcosystemQueriesJourney implements Journey 025: Comprehensive EC + GF query coverage.
 // [MOD-EC-QUERY-1] GetEcosystem, [MOD-EC-QUERY-2] ListEcosystems (filters),
-// [MOD-GF-QUERY-1] GetGFV, [MOD-GF-QUERY-2] ListGFVs (filters).
+// [MOD-GF-QUERY-1] GetGFV, versions nested in Get Ecosystem / Get Corporation.
 // Depends on Journey 020-022 (ec-alpha created, GFD added, GFV increased).
 func RunEcosystemQueriesJourney(ctx context.Context, client cosmosclient.Client) error {
 	fmt.Println("Starting Journey 025: EC + GF Query Coverage")
@@ -91,42 +91,42 @@ func RunEcosystemQueriesJourney(ctx context.Context, client cosmosclient.Client)
 	// Step 4: ListGFVs for ec-alpha [MOD-GF-QUERY-2]
 	// =========================================================================
 	fmt.Println("\n--- Step 4: ListGFVs for ec-alpha (all) ---")
-	gfvResp, err := lib.ListGFVs(client, ctx, 0, ecID, false, 100)
+	gfvResp, err := lib.ListGFVs(client, ctx, 0, ecID, false)
 	if err != nil {
 		return fmt.Errorf("step 4 ListGFVs failed: %w", err)
 	}
-	fmt.Printf("✅ Step 4: ListGFVs returned %d GFV(s) for ec-alpha\n", len(gfvResp.Versions))
-	for _, gfv := range gfvResp.Versions {
+	fmt.Printf("✅ Step 4: ListGFVs returned %d GFV(s) for ec-alpha\n", len(gfvResp))
+	for _, gfv := range gfvResp {
 		isActive := gfv.ActiveSince != nil
 		fmt.Printf("  GFV ID=%d version=%d active=%v\n", gfv.Id, gfv.Version, isActive)
 	}
 
 	fmt.Println("\n--- Step 4b: ListGFVs for ec-alpha (activeOnly=true) ---")
-	activeResp, err := lib.ListGFVs(client, ctx, 0, ecID, true, 100)
+	activeResp, err := lib.ListGFVs(client, ctx, 0, ecID, true)
 	if err != nil {
 		return fmt.Errorf("step 4b ListGFVs(activeOnly) failed: %w", err)
 	}
-	for _, gfv := range activeResp.Versions {
+	for _, gfv := range activeResp {
 		if gfv.ActiveSince == nil {
 			return fmt.Errorf("step 4b failed: inactive GFV returned with activeOnly=true")
 		}
 	}
-	fmt.Printf("✅ Step 4b: activeOnly=true returned %d GFV(s), all active\n", len(activeResp.Versions))
+	fmt.Printf("✅ Step 4b: activeOnly=true returned %d GFV(s), all active\n", len(activeResp))
 
 	// Step 4c: ListGFVs for Corp A CGF
 	fmt.Printf("\n--- Step 4c: ListGFVs for Corp A CGF (corp_id=%d, ecosystem_id=0) ---\n", corpID)
-	corpGFVResp, err := lib.ListGFVs(client, ctx, corpID, 0, false, 100)
+	corpGFVResp, err := lib.ListGFVs(client, ctx, corpID, 0, false)
 	if err != nil {
 		return fmt.Errorf("step 4c ListGFVs(corp) failed: %w", err)
 	}
-	fmt.Printf("✅ Step 4c: Corp A CGF has %d GFV(s)\n", len(corpGFVResp.Versions))
+	fmt.Printf("✅ Step 4c: Corp A CGF has %d GFV(s)\n", len(corpGFVResp))
 
 	// =========================================================================
 	// Step 5: GetGovernanceFrameworkVersion [MOD-GF-QUERY-1]
 	// =========================================================================
 	fmt.Println("\n--- Step 5: GetGovernanceFrameworkVersion (active GFV of ec-alpha) ---")
-	if len(activeResp.Versions) > 0 {
-		gfvID := activeResp.Versions[0].Id
+	if len(activeResp) > 0 {
+		gfvID := activeResp[0].Id
 		singleGFVResp, err := lib.QueryGFV(client, ctx, gfvID)
 		if err != nil {
 			return fmt.Errorf("step 5 GetGFV failed: %w", err)

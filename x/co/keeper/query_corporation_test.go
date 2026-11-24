@@ -26,7 +26,7 @@ func TestQueryGetCorporation_Happy(t *testing.T) {
 	resp, err := qs.GetCorporation(ctx, &types.QueryGetCorporationRequest{
 		CorporationId:     1,
 		ActiveGfOnly:      true,
-		PreferredLanguage: "en",
+		PreferredLanguage: "fr",
 	})
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), resp.Corporation.Id)
@@ -34,10 +34,21 @@ func TestQueryGetCorporation_Happy(t *testing.T) {
 	require.Len(t, resp.Corporation.Versions, 1)
 	require.Equal(t, uint64(7), resp.Corporation.Versions[0].Id)
 
-	// Active-only flag + preferred lang forwarded.
+	require.Equal(t, uint32(1), resp.Corporation.AcceptedNgfVersion)
+	require.Nil(t, resp.Corporation.AcceptanceDeadline)
+
+	// Active-only flag, preferred lang and the corporation's language forwarded.
 	require.True(t, gf.listArgs.activeOnly)
-	require.Equal(t, "en", gf.listArgs.preferredLang)
+	require.Equal(t, "fr", gf.listArgs.preferredLang)
+	require.Equal(t, "en", gf.listArgs.language)
 	require.Equal(t, uint64(1), gf.listArgs.corpID)
+
+	// An activation's deadline is returned.
+	deadline := time.Date(2026, 7, 1, 0, 0, 0, 0, time.UTC)
+	require.NoError(t, keeper.NewCoAsGFCorporationKeeper(k).SetActiveVersion(ctx, 1, 2, deadline))
+	resp, err = qs.GetCorporation(ctx, &types.QueryGetCorporationRequest{CorporationId: 1})
+	require.NoError(t, err)
+	require.Equal(t, deadline, *resp.Corporation.AcceptanceDeadline)
 }
 
 func TestQueryGetCorporation_BadInputs(t *testing.T) {

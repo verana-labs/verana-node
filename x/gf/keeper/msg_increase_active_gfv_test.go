@@ -37,12 +37,23 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 
 		// Now bump active_version 0 → 1.
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: testCorp,
-			Delegate:    testDelegate,
-			EcosystemId: 0,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     testCorp,
+			Delegate:        testDelegate,
+			EcosystemId:     0,
 		})
 		require.NoError(t, err)
 		require.Equal(t, uint32(1), newActive)
+		require.Equal(t, now.Add(types.DefaultGfAcceptanceGraceMin), corp.deadline)
+
+		attrs := eventAttrs(ctx, types.EventTypeIncreaseActiveGovernanceFrameworkVersion)
+		require.Equal(t, "1", attrs["corporation_id"])
+		require.Equal(t, "1", attrs[types.AttributeKeyGFVersionID])
+		require.Equal(t, "1", attrs[types.AttributeKeyVersion])
+		require.Equal(t, now.Format(time.RFC3339), attrs[types.AttributeKeyActiveSince])
+		require.Equal(t, now.Add(types.DefaultGfAcceptanceGraceMin).Format(time.RFC3339), attrs[types.AttributeKeyAcceptanceDeadline])
+		require.NotContains(t, attrs, "ecosystem_id")
+		require.NotContains(t, attrs, "msg")
 
 		// GFV active_since should now be set.
 		_ = k.GFVersion.Walk(ctx, nil, func(_ uint64, gfv types.GovernanceFrameworkVersion) (bool, error) {
@@ -63,8 +74,9 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 
 		// No MSG-1 first — nothing to activate.
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: testCorp,
-			Delegate:    testDelegate,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     testCorp,
+			Delegate:        testDelegate,
 		})
 		require.ErrorIs(t, err, types.ErrNoActivatableVersion)
 	})
@@ -91,8 +103,9 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: testCorp,
-			Delegate:    testDelegate,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     testCorp,
+			Delegate:        testDelegate,
 		})
 		require.ErrorIs(t, err, types.ErrMissingDefaultLang)
 	})
@@ -101,8 +114,9 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, &mockCorporation{})
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: "",
-			Delegate:    testDelegate,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     "",
+			Delegate:        testDelegate,
 		})
 		require.Error(t, err)
 	})
@@ -118,10 +132,20 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		)
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: testCorp,
-			Delegate:    testDelegate,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     testCorp,
+			Delegate:        testDelegate,
 		})
 		require.Error(t, err)
+	})
+
+	t.Run("AUTHZ-CHECK-5 runs GF-CHECK-1", func(t *testing.T) {
+		corp := &mockCorporation{view: types.CorporationView{Id: 1, PolicyAddress: testCorp, Language: "en"}, found: true, gfCheck1Err: types.ErrGFNotAccepted}
+		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, corp)
+		_, err := keeper.NewMsgServerImpl(k).IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
+			Corporation: testCorp, Delegate: testDelegate, AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+		})
+		require.ErrorIs(t, err, types.ErrGFNotAccepted)
 	})
 
 	t.Run("AUTHZ-CHECK-5: unregistered corporation aborts before AUTHZ-CHECK-1", func(t *testing.T) {
@@ -130,8 +154,9 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		k, ctx := keepertest.GfKeeperWithDelegation(t, del, &mockEcosystem{}, corp)
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: testCorp,
-			Delegate:    testDelegate,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     testCorp,
+			Delegate:        testDelegate,
 		})
 		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
 		require.Zero(t, del.calls)
@@ -149,9 +174,10 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: testCorp,
-			Delegate:    testDelegate,
-			EcosystemId: 5,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     testCorp,
+			Delegate:        testDelegate,
+			EcosystemId:     5,
 		})
 		require.ErrorIs(t, err, types.ErrSubjectNotControlled)
 	})
@@ -172,8 +198,9 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: testCorp,
-			Delegate:    testDelegate,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     testCorp,
+			Delegate:        testDelegate,
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "forced setter failure")
@@ -199,11 +226,49 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-			Corporation: testCorp,
-			Delegate:    testDelegate,
-			EcosystemId: 7,
+			AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+			Corporation:     testCorp,
+			Delegate:        testDelegate,
+			EcosystemId:     7,
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "forced eco setter failure")
+	})
+
+	t.Run("MOD-GF-MSG-2-3: ecosystem activation opens the grace period and emits it", func(t *testing.T) {
+		corp := &mockCorporation{view: types.CorporationView{Id: 1, PolicyAddress: testCorp, Language: "en"}, found: true}
+		eco := &mockEcosystem{view: types.EcosystemView{Id: 7, CorporationID: 1, Language: "en"}, found: true}
+		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
+		ms := keeper.NewMsgServerImpl(k)
+		now := time.Date(2026, 5, 22, 12, 0, 0, 0, time.UTC)
+		ctx = ctx.WithBlockTime(now)
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 7, 1))
+		require.NoError(t, err)
+
+		grace := 2 * types.DefaultGfAcceptanceGraceMin
+		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
+			Corporation: testCorp, Delegate: testDelegate, EcosystemId: 7, AcceptanceGrace: grace,
+		})
+		require.NoError(t, err)
+		require.Equal(t, now.Add(grace), eco.deadline)
+
+		attrs := eventAttrs(ctx, types.EventTypeIncreaseActiveGovernanceFrameworkVersion)
+		require.Equal(t, "7", attrs["ecosystem_id"])
+		require.Equal(t, "1", attrs[types.AttributeKeyVersion])
+		require.Equal(t, now.Format(time.RFC3339), attrs[types.AttributeKeyActiveSince])
+		require.Equal(t, now.Add(grace).Format(time.RFC3339), attrs[types.AttributeKeyAcceptanceDeadline])
+	})
+
+	t.Run("MOD-GF-MSG-2-2-1: acceptance_grace under gf_acceptance_grace_min aborts", func(t *testing.T) {
+		corp := &mockCorporation{view: types.CorporationView{Id: 1, PolicyAddress: testCorp, Language: "en"}, found: true}
+		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, corp)
+		ms := keeper.NewMsgServerImpl(k)
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
+		require.NoError(t, err)
+
+		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
+			Corporation: testCorp, Delegate: testDelegate, AcceptanceGrace: types.DefaultGfAcceptanceGraceMin - time.Second,
+		})
+		require.ErrorIs(t, err, types.ErrAcceptanceGraceTooShort)
 	})
 }

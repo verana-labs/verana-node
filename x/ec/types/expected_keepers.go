@@ -57,5 +57,5 @@ type CorporationKeeper interface {
 // interface.
 type GFKeeper interface {
 	CreateInitialGFVersionForEcosystem(ctx context.Context, ecosystemID uint64, language, docURL, docDigestSRI string) error
-	ListVersionsByEcosystem(ctx context.Context, ecosystemID uint64, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error)
+	ListVersionsByEcosystem(ctx context.Context, ecosystemID uint64, language string, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error)
 }

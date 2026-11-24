@@ -3,6 +3,7 @@ package gf
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -69,10 +70,10 @@ func CmdAddGovernanceFrameworkDocument() *cobra.Command {
 // CmdIncreaseActiveGovernanceFrameworkVersion returns the [MOD-GF-MSG-2] command.
 func CmdIncreaseActiveGovernanceFrameworkVersion() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "increase-active-gf-version [corporation] [delegate]",
+		Use:   "increase-active-gf-version [corporation] [delegate] [acceptance-grace]",
 		Short: "[MOD-GF-MSG-2] Activate the next governance framework version",
-		Long:  "Activate the next governance framework version for either an Ecosystem (set --ecosystem-id) or the signing Corporation's own CGF (omit --ecosystem-id). Requires the next version to exist and contain a document in the subject's default language.",
-		Args:  cobra.ExactArgs(2),
+		Long:  "Activate the next governance framework version for either an Ecosystem (set --ecosystem-id) or the signing Corporation's own CGF (omit --ecosystem-id). Requires the next version to exist and contain a document in the subject's default language. acceptance-grace (e.g. 720h) is at least gf_acceptance_grace_min.",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -82,10 +83,15 @@ func CmdIncreaseActiveGovernanceFrameworkVersion() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			grace, err := time.ParseDuration(args[2])
+			if err != nil {
+				return fmt.Errorf("invalid acceptance-grace: %w", err)
+			}
 			msg := &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-				Corporation: args[0],
-				Delegate:    args[1],
-				EcosystemId: ecosystemID,
+				Corporation:     args[0],
+				Delegate:        args[1],
+				EcosystemId:     ecosystemID,
+				AcceptanceGrace: grace,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},

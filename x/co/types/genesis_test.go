@@ -11,13 +11,14 @@ import (
 
 func validCorp(id uint64, addr, did string) types.Corporation {
 	return types.Corporation{
-		Id:            id,
-		PolicyAddress: addr,
-		Did:           did,
-		Created:       time.Unix(0, 0),
-		Modified:      time.Unix(0, 0),
-		Language:      "en",
-		ActiveVersion: 1,
+		Id:                 id,
+		PolicyAddress:      addr,
+		Did:                did,
+		Created:            time.Unix(0, 0),
+		Modified:           time.Unix(0, 0),
+		Language:           "en",
+		ActiveVersion:      1,
+		AcceptedNgfVersion: 1,
 	}
 }
 
@@ -63,10 +64,18 @@ func TestGenesis_Validate(t *testing.T) {
 			func() types.Corporation { c := validCorp(1, "cosmos1a", "did:example:1"); c.Language = "!!"; return c }(),
 		}},
 		"zero created": {Params: types.DefaultParams(), Corporations: []types.Corporation{
-			func() types.Corporation { c := validCorp(1, "cosmos1a", "did:example:1"); c.Created = time.Time{}; return c }(),
+			func() types.Corporation {
+				c := validCorp(1, "cosmos1a", "did:example:1")
+				c.Created = time.Time{}
+				return c
+			}(),
 		}},
 		"zero modified": {Params: types.DefaultParams(), Corporations: []types.Corporation{
-			func() types.Corporation { c := validCorp(1, "cosmos1a", "did:example:1"); c.Modified = time.Time{}; return c }(),
+			func() types.Corporation {
+				c := validCorp(1, "cosmos1a", "did:example:1")
+				c.Modified = time.Time{}
+				return c
+			}(),
 		}},
 		"modified before created": {Params: types.DefaultParams(), Corporations: []types.Corporation{
 			func() types.Corporation {
@@ -98,4 +107,12 @@ func TestGenesis_Validate_TimestampErrorKind(t *testing.T) {
 		c.Created = time.Unix(100, 0)
 		c.Modified = time.Unix(50, 0)
 	}).Validate(), types.ErrInvalidTimestamp)
+}
+
+// [NGG] every corporation has accepted a network governance framework version.
+func TestGenesis_Validate_AcceptedNgfVersion(t *testing.T) {
+	c := validCorp(1, "cosmos1a", "did:example:1")
+	c.AcceptedNgfVersion = 0
+	gs := types.GenesisState{Params: types.DefaultParams(), Corporations: []types.Corporation{c}, CorporationCounter: 1}
+	require.ErrorIs(t, gs.Validate(), types.ErrInvalidAcceptedNgfVersion)
 }

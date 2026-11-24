@@ -174,6 +174,37 @@ func TestCreateCorporation_DIDConflictAbortsBeforeGroupCall(t *testing.T) {
 	require.Equal(t, 1, gf.createCalls, "GF seed must not be called for the failed second attempt")
 }
 
+// The new corporation accepts the network governance framework version in force.
+func TestCreateCorporation_AcceptsNetworkVersionInForce(t *testing.T) {
+	gf := &mockGF{ngfVersion: 3}
+	k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, &mockGroup{policy: tkPolicy}, gf)
+	_, err := keeper.NewMsgServerImpl(k).CreateCorporation(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+
+	co, err := k.Corporation.Get(ctx, 1)
+	require.NoError(t, err)
+	require.Equal(t, uint32(3), co.AcceptedNgfVersion)
+	require.Nil(t, co.AcceptanceDeadline)
+	var accepted string
+	for _, e := range ctx.EventManager().Events() {
+		if e.Type == types.EventTypeCreateCorporation {
+			for _, a := range e.Attributes {
+				if a.Key == types.AttributeKeyAcceptedNgfVersion {
+					accepted = a.Value
+				}
+			}
+		}
+	}
+	require.Equal(t, "3", accepted)
+}
+
+func TestCreateCorporation_NoNetworkVersionInForce(t *testing.T) {
+	gf := &mockGF{ngfVersionErr: errors.New("no network version")}
+	k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, &mockGroup{policy: tkPolicy}, gf)
+	_, err := keeper.NewMsgServerImpl(k).CreateCorporation(ctx, validCreateMsg(t))
+	require.ErrorContains(t, err, "no network version")
+}
+
 func TestCreateCorporation_GFSeedFailureBubblesUp(t *testing.T) {
 	grp := &mockGroup{policy: tkPolicy}
 	gf := &mockGF{createErr: errors.New("gf boom")}

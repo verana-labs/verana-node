@@ -30,29 +30,51 @@ func (m mockDelegation) CheckDelegateAuthorization(_ context.Context, _ uint64, 
 	return m.err
 }
 
-// recordingDelegation records the AUTHZ-CHECK-1 calls it receives.
-type recordingDelegation struct {
-	calls     int
-	gotCorpID uint64
+func (m mockDelegation) SetDelegateAcceptedCGFVersion(_ context.Context, _ uint64, _ string, _ uint32) error {
+	return m.err
 }
 
-func (m *recordingDelegation) CheckDelegateAuthorization(_ context.Context, corporationID uint64, _ string, _ detypes.MsgType, _ time.Time) error {
+// recordingDelegation records the AUTHZ-CHECK-1 calls and the acceptances it receives.
+type recordingDelegation struct {
+	calls       int
+	gotCorpID   uint64
+	gotMsgType  detypes.MsgType
+	acceptErr   error
+	accepted    uint32
+	acceptedBy  string
+	acceptedFor uint64
+}
+
+func (m *recordingDelegation) CheckDelegateAuthorization(_ context.Context, corporationID uint64, _ string, msgType detypes.MsgType, _ time.Time) error {
 	m.calls++
 	m.gotCorpID = corporationID
+	m.gotMsgType = msgType
+	return nil
+}
+
+func (m *recordingDelegation) SetDelegateAcceptedCGFVersion(_ context.Context, corporationID uint64, delegate string, version uint32) error {
+	if m.acceptErr != nil {
+		return m.acceptErr
+	}
+	m.accepted, m.acceptedBy, m.acceptedFor = version, delegate, corporationID
 	return nil
 }
 
 // mockEcosystem implements types.EcosystemKeeper.
 type mockEcosystem struct {
-	view  types.EcosystemView
-	found bool
-	setFn func(uint64, uint32) error
+	view     types.EcosystemView
+	found    bool
+	setFn    func(uint64, uint32) error
+	deadline time.Time
+	gotID    uint64
 }
 
-func (m *mockEcosystem) GetEcosystemView(_ context.Context, _ uint64) (types.EcosystemView, bool) {
+func (m *mockEcosystem) GetEcosystemView(_ context.Context, id uint64) (types.EcosystemView, bool) {
+	m.gotID = id
 	return m.view, m.found
 }
-func (m *mockEcosystem) SetEcosystemActiveVersion(_ context.Context, id uint64, v uint32) error {
+func (m *mockEcosystem) SetEcosystemActiveVersion(_ context.Context, id uint64, v uint32, deadline time.Time) error {
+	m.deadline = deadline
 	if m.setFn != nil {
 		return m.setFn(id, v)
 	}
@@ -61,12 +83,25 @@ func (m *mockEcosystem) SetEcosystemActiveVersion(_ context.Context, id uint64, 
 
 // mockCorporation implements types.CorporationKeeper.
 type mockCorporation struct {
-	view  types.CorporationView
-	found bool
-	setFn func(uint64, uint32) error
+	view     types.CorporationView
+	found    bool
+	setFn    func(uint64, uint32) error
+	deadline time.Time
+	// gfCheck1Err fails GF-CHECK-1, which only ResolveCorporationByPolicyAddress runs.
+	gfCheck1Err error
+	acceptedNgf uint32
 }
 
 func (m *mockCorporation) ResolveCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
+	if !m.found {
+		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
+	}
+	if m.gfCheck1Err != nil {
+		return types.CorporationView{}, m.gfCheck1Err
+	}
+	return m.view, nil
+}
+func (m *mockCorporation) GetCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
 	if !m.found {
 		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
 	}
@@ -75,10 +110,15 @@ func (m *mockCorporation) ResolveCorporationByPolicyAddress(_ context.Context, _
 func (m *mockCorporation) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool) {
 	return m.view, m.found
 }
-func (m *mockCorporation) SetActiveVersion(_ context.Context, id uint64, v uint32) error {
+func (m *mockCorporation) SetActiveVersion(_ context.Context, id uint64, v uint32, deadline time.Time) error {
+	m.deadline = deadline
 	if m.setFn != nil {
 		return m.setFn(id, v)
 	}
+	return nil
+}
+func (m *mockCorporation) SetAcceptedNgfVersion(_ context.Context, _ uint64, v uint32) error {
+	m.acceptedNgf = v
 	return nil
 }
 
@@ -120,6 +160,19 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 			return false, nil
 		})
 		require.Equal(t, 1, gfvCount)
+
+		attrs := eventAttrs(ctx, types.EventTypeAddGovernanceFrameworkDocument)
+		require.Equal(t, "1", attrs["corporation_id"])
+		require.Equal(t, "1", attrs[types.AttributeKeyGFVersionID])
+		require.Equal(t, "1", attrs[types.AttributeKeyGFDocID])
+		require.NotContains(t, attrs, "msg")
+	})
+
+	t.Run("AUTHZ-CHECK-5 runs GF-CHECK-1", func(t *testing.T) {
+		corp := &mockCorporation{view: types.CorporationView{Id: 1, PolicyAddress: testCorp, Language: "en"}, found: true, gfCheck1Err: types.ErrGFNotAccepted}
+		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, corp)
+		_, err := keeper.NewMsgServerImpl(k).AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
+		require.ErrorIs(t, err, types.ErrGFNotAccepted)
 	})
 
 	t.Run("MOD-GF-MSG-1-2-1: AUTHZ-CHECK-1 failure aborts", func(t *testing.T) {
@@ -296,26 +349,4 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 			return false, nil
 		})
 	})
-}
-
-// [MOD-GF-MSG-1-2-1] / [MOD-GF-MSG-2-2-1] the network path is signed by the
-// council account; there is no network framework to act on yet.
-func TestGovernanceFrameworkNetworkPath(t *testing.T) {
-	k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, &mockCorporation{})
-	ms := keeper.NewMsgServerImpl(k)
-	doc := func(authority string) *types.MsgAddGovernanceFrameworkDocument {
-		m := validMsg("", "", 0, 1)
-		m.Authority = authority
-		return m
-	}
-
-	_, err := ms.AddGovernanceFrameworkDocument(ctx, doc(testDelegate))
-	require.ErrorIs(t, err, sdkerrors.ErrUnauthorized)
-	_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: testDelegate})
-	require.ErrorIs(t, err, sdkerrors.ErrUnauthorized)
-
-	_, err = ms.AddGovernanceFrameworkDocument(ctx, doc(k.GetAuthority()))
-	require.ErrorIs(t, err, types.ErrNetworkPathUnavailable)
-	_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: k.GetAuthority()})
-	require.ErrorIs(t, err, types.ErrNetworkPathUnavailable)
 }

@@ -18,14 +18,16 @@ import (
 )
 
 var (
-	md_Corporation                protoreflect.MessageDescriptor
-	fd_Corporation_id             protoreflect.FieldDescriptor
-	fd_Corporation_policy_address protoreflect.FieldDescriptor
-	fd_Corporation_did            protoreflect.FieldDescriptor
-	fd_Corporation_created        protoreflect.FieldDescriptor
-	fd_Corporation_modified       protoreflect.FieldDescriptor
-	fd_Corporation_language       protoreflect.FieldDescriptor
-	fd_Corporation_active_version protoreflect.FieldDescriptor
+	md_Corporation                      protoreflect.MessageDescriptor
+	fd_Corporation_id                   protoreflect.FieldDescriptor
+	fd_Corporation_policy_address       protoreflect.FieldDescriptor
+	fd_Corporation_did                  protoreflect.FieldDescriptor
+	fd_Corporation_created              protoreflect.FieldDescriptor
+	fd_Corporation_modified             protoreflect.FieldDescriptor
+	fd_Corporation_language             protoreflect.FieldDescriptor
+	fd_Corporation_active_version       protoreflect.FieldDescriptor
+	fd_Corporation_accepted_ngf_version protoreflect.FieldDescriptor
+	fd_Corporation_acceptance_deadline  protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -38,6 +40,8 @@ func init() {
 	fd_Corporation_modified = md_Corporation.Fields().ByName("modified")
 	fd_Corporation_language = md_Corporation.Fields().ByName("language")
 	fd_Corporation_active_version = md_Corporation.Fields().ByName("active_version")
+	fd_Corporation_accepted_ngf_version = md_Corporation.Fields().ByName("accepted_ngf_version")
+	fd_Corporation_acceptance_deadline = md_Corporation.Fields().ByName("acceptance_deadline")
 }
 
 var _ protoreflect.Message = (*fastReflection_Corporation)(nil)
@@ -147,6 +151,18 @@ func (x *fastReflection_Corporation) Range(f func(protoreflect.FieldDescriptor, 
 			return
 		}
 	}
+	if x.AcceptedNgfVersion != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.AcceptedNgfVersion)
+		if !f(fd_Corporation_accepted_ngf_version, value) {
+			return
+		}
+	}
+	if x.AcceptanceDeadline != nil {
+		value := protoreflect.ValueOfMessage(x.AcceptanceDeadline.ProtoReflect())
+		if !f(fd_Corporation_acceptance_deadline, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -176,6 +192,10 @@ func (x *fastReflection_Corporation) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Language != ""
 	case "verana.co.v1.Corporation.active_version":
 		return x.ActiveVersion != uint32(0)
+	case "verana.co.v1.Corporation.accepted_ngf_version":
+		return x.AcceptedNgfVersion != uint32(0)
+	case "verana.co.v1.Corporation.acceptance_deadline":
+		return x.AcceptanceDeadline != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.Corporation"))
@@ -206,6 +226,10 @@ func (x *fastReflection_Corporation) Clear(fd protoreflect.FieldDescriptor) {
 		x.Language = ""
 	case "verana.co.v1.Corporation.active_version":
 		x.ActiveVersion = uint32(0)
+	case "verana.co.v1.Corporation.accepted_ngf_version":
+		x.AcceptedNgfVersion = uint32(0)
+	case "verana.co.v1.Corporation.acceptance_deadline":
+		x.AcceptanceDeadline = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.Corporation"))
@@ -243,6 +267,12 @@ func (x *fastReflection_Corporation) Get(descriptor protoreflect.FieldDescriptor
 	case "verana.co.v1.Corporation.active_version":
 		value := x.ActiveVersion
 		return protoreflect.ValueOfUint32(value)
+	case "verana.co.v1.Corporation.accepted_ngf_version":
+		value := x.AcceptedNgfVersion
+		return protoreflect.ValueOfUint32(value)
+	case "verana.co.v1.Corporation.acceptance_deadline":
+		value := x.AcceptanceDeadline
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.Corporation"))
@@ -277,6 +307,10 @@ func (x *fastReflection_Corporation) Set(fd protoreflect.FieldDescriptor, value 
 		x.Language = value.Interface().(string)
 	case "verana.co.v1.Corporation.active_version":
 		x.ActiveVersion = uint32(value.Uint())
+	case "verana.co.v1.Corporation.accepted_ngf_version":
+		x.AcceptedNgfVersion = uint32(value.Uint())
+	case "verana.co.v1.Corporation.acceptance_deadline":
+		x.AcceptanceDeadline = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.Corporation"))
@@ -307,6 +341,11 @@ func (x *fastReflection_Corporation) Mutable(fd protoreflect.FieldDescriptor) pr
 			x.Modified = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Modified.ProtoReflect())
+	case "verana.co.v1.Corporation.acceptance_deadline":
+		if x.AcceptanceDeadline == nil {
+			x.AcceptanceDeadline = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.AcceptanceDeadline.ProtoReflect())
 	case "verana.co.v1.Corporation.id":
 		panic(fmt.Errorf("field id of message verana.co.v1.Corporation is not mutable"))
 	case "verana.co.v1.Corporation.policy_address":
@@ -317,6 +356,8 @@ func (x *fastReflection_Corporation) Mutable(fd protoreflect.FieldDescriptor) pr
 		panic(fmt.Errorf("field language of message verana.co.v1.Corporation is not mutable"))
 	case "verana.co.v1.Corporation.active_version":
 		panic(fmt.Errorf("field active_version of message verana.co.v1.Corporation is not mutable"))
+	case "verana.co.v1.Corporation.accepted_ngf_version":
+		panic(fmt.Errorf("field accepted_ngf_version of message verana.co.v1.Corporation is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.Corporation"))
@@ -346,6 +387,11 @@ func (x *fastReflection_Corporation) NewField(fd protoreflect.FieldDescriptor) p
 		return protoreflect.ValueOfString("")
 	case "verana.co.v1.Corporation.active_version":
 		return protoreflect.ValueOfUint32(uint32(0))
+	case "verana.co.v1.Corporation.accepted_ngf_version":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "verana.co.v1.Corporation.acceptance_deadline":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.Corporation"))
@@ -441,6 +487,13 @@ func (x *fastReflection_Corporation) ProtoMethods() *protoiface.Methods {
 		if x.ActiveVersion != 0 {
 			n += 1 + runtime.Sov(uint64(x.ActiveVersion))
 		}
+		if x.AcceptedNgfVersion != 0 {
+			n += 1 + runtime.Sov(uint64(x.AcceptedNgfVersion))
+		}
+		if x.AcceptanceDeadline != nil {
+			l = options.Size(x.AcceptanceDeadline)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -469,6 +522,25 @@ func (x *fastReflection_Corporation) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.AcceptanceDeadline != nil {
+			encoded, err := options.Marshal(x.AcceptanceDeadline)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x4a
+		}
+		if x.AcceptedNgfVersion != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AcceptedNgfVersion))
+			i--
+			dAtA[i] = 0x40
 		}
 		if x.ActiveVersion != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.ActiveVersion))
@@ -784,6 +856,61 @@ func (x *fastReflection_Corporation) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 8:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AcceptedNgfVersion", wireType)
+				}
+				x.AcceptedNgfVersion = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AcceptedNgfVersion |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 9:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AcceptanceDeadline", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.AcceptanceDeadline == nil {
+					x.AcceptanceDeadline = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AcceptanceDeadline); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -871,15 +998,17 @@ func (x *_CorporationWithGF_8_list) IsValid() bool {
 }
 
 var (
-	md_CorporationWithGF                protoreflect.MessageDescriptor
-	fd_CorporationWithGF_id             protoreflect.FieldDescriptor
-	fd_CorporationWithGF_policy_address protoreflect.FieldDescriptor
-	fd_CorporationWithGF_did            protoreflect.FieldDescriptor
-	fd_CorporationWithGF_created        protoreflect.FieldDescriptor
-	fd_CorporationWithGF_modified       protoreflect.FieldDescriptor
-	fd_CorporationWithGF_language       protoreflect.FieldDescriptor
-	fd_CorporationWithGF_active_version protoreflect.FieldDescriptor
-	fd_CorporationWithGF_versions       protoreflect.FieldDescriptor
+	md_CorporationWithGF                      protoreflect.MessageDescriptor
+	fd_CorporationWithGF_id                   protoreflect.FieldDescriptor
+	fd_CorporationWithGF_policy_address       protoreflect.FieldDescriptor
+	fd_CorporationWithGF_did                  protoreflect.FieldDescriptor
+	fd_CorporationWithGF_created              protoreflect.FieldDescriptor
+	fd_CorporationWithGF_modified             protoreflect.FieldDescriptor
+	fd_CorporationWithGF_language             protoreflect.FieldDescriptor
+	fd_CorporationWithGF_active_version       protoreflect.FieldDescriptor
+	fd_CorporationWithGF_versions             protoreflect.FieldDescriptor
+	fd_CorporationWithGF_accepted_ngf_version protoreflect.FieldDescriptor
+	fd_CorporationWithGF_acceptance_deadline  protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -893,6 +1022,8 @@ func init() {
 	fd_CorporationWithGF_language = md_CorporationWithGF.Fields().ByName("language")
 	fd_CorporationWithGF_active_version = md_CorporationWithGF.Fields().ByName("active_version")
 	fd_CorporationWithGF_versions = md_CorporationWithGF.Fields().ByName("versions")
+	fd_CorporationWithGF_accepted_ngf_version = md_CorporationWithGF.Fields().ByName("accepted_ngf_version")
+	fd_CorporationWithGF_acceptance_deadline = md_CorporationWithGF.Fields().ByName("acceptance_deadline")
 }
 
 var _ protoreflect.Message = (*fastReflection_CorporationWithGF)(nil)
@@ -1008,6 +1139,18 @@ func (x *fastReflection_CorporationWithGF) Range(f func(protoreflect.FieldDescri
 			return
 		}
 	}
+	if x.AcceptedNgfVersion != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.AcceptedNgfVersion)
+		if !f(fd_CorporationWithGF_accepted_ngf_version, value) {
+			return
+		}
+	}
+	if x.AcceptanceDeadline != nil {
+		value := protoreflect.ValueOfMessage(x.AcceptanceDeadline.ProtoReflect())
+		if !f(fd_CorporationWithGF_acceptance_deadline, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -1039,6 +1182,10 @@ func (x *fastReflection_CorporationWithGF) Has(fd protoreflect.FieldDescriptor) 
 		return x.ActiveVersion != uint32(0)
 	case "verana.co.v1.CorporationWithGF.versions":
 		return len(x.Versions) != 0
+	case "verana.co.v1.CorporationWithGF.accepted_ngf_version":
+		return x.AcceptedNgfVersion != uint32(0)
+	case "verana.co.v1.CorporationWithGF.acceptance_deadline":
+		return x.AcceptanceDeadline != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.CorporationWithGF"))
@@ -1071,6 +1218,10 @@ func (x *fastReflection_CorporationWithGF) Clear(fd protoreflect.FieldDescriptor
 		x.ActiveVersion = uint32(0)
 	case "verana.co.v1.CorporationWithGF.versions":
 		x.Versions = nil
+	case "verana.co.v1.CorporationWithGF.accepted_ngf_version":
+		x.AcceptedNgfVersion = uint32(0)
+	case "verana.co.v1.CorporationWithGF.acceptance_deadline":
+		x.AcceptanceDeadline = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.CorporationWithGF"))
@@ -1114,6 +1265,12 @@ func (x *fastReflection_CorporationWithGF) Get(descriptor protoreflect.FieldDesc
 		}
 		listValue := &_CorporationWithGF_8_list{list: &x.Versions}
 		return protoreflect.ValueOfList(listValue)
+	case "verana.co.v1.CorporationWithGF.accepted_ngf_version":
+		value := x.AcceptedNgfVersion
+		return protoreflect.ValueOfUint32(value)
+	case "verana.co.v1.CorporationWithGF.acceptance_deadline":
+		value := x.AcceptanceDeadline
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.CorporationWithGF"))
@@ -1152,6 +1309,10 @@ func (x *fastReflection_CorporationWithGF) Set(fd protoreflect.FieldDescriptor, 
 		lv := value.List()
 		clv := lv.(*_CorporationWithGF_8_list)
 		x.Versions = *clv.list
+	case "verana.co.v1.CorporationWithGF.accepted_ngf_version":
+		x.AcceptedNgfVersion = uint32(value.Uint())
+	case "verana.co.v1.CorporationWithGF.acceptance_deadline":
+		x.AcceptanceDeadline = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.CorporationWithGF"))
@@ -1188,6 +1349,11 @@ func (x *fastReflection_CorporationWithGF) Mutable(fd protoreflect.FieldDescript
 		}
 		value := &_CorporationWithGF_8_list{list: &x.Versions}
 		return protoreflect.ValueOfList(value)
+	case "verana.co.v1.CorporationWithGF.acceptance_deadline":
+		if x.AcceptanceDeadline == nil {
+			x.AcceptanceDeadline = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.AcceptanceDeadline.ProtoReflect())
 	case "verana.co.v1.CorporationWithGF.id":
 		panic(fmt.Errorf("field id of message verana.co.v1.CorporationWithGF is not mutable"))
 	case "verana.co.v1.CorporationWithGF.policy_address":
@@ -1198,6 +1364,8 @@ func (x *fastReflection_CorporationWithGF) Mutable(fd protoreflect.FieldDescript
 		panic(fmt.Errorf("field language of message verana.co.v1.CorporationWithGF is not mutable"))
 	case "verana.co.v1.CorporationWithGF.active_version":
 		panic(fmt.Errorf("field active_version of message verana.co.v1.CorporationWithGF is not mutable"))
+	case "verana.co.v1.CorporationWithGF.accepted_ngf_version":
+		panic(fmt.Errorf("field accepted_ngf_version of message verana.co.v1.CorporationWithGF is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.CorporationWithGF"))
@@ -1230,6 +1398,11 @@ func (x *fastReflection_CorporationWithGF) NewField(fd protoreflect.FieldDescrip
 	case "verana.co.v1.CorporationWithGF.versions":
 		list := []*v1.GovernanceFrameworkVersionWithDocs{}
 		return protoreflect.ValueOfList(&_CorporationWithGF_8_list{list: &list})
+	case "verana.co.v1.CorporationWithGF.accepted_ngf_version":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "verana.co.v1.CorporationWithGF.acceptance_deadline":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.co.v1.CorporationWithGF"))
@@ -1331,6 +1504,13 @@ func (x *fastReflection_CorporationWithGF) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if x.AcceptedNgfVersion != 0 {
+			n += 1 + runtime.Sov(uint64(x.AcceptedNgfVersion))
+		}
+		if x.AcceptanceDeadline != nil {
+			l = options.Size(x.AcceptanceDeadline)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -1359,6 +1539,25 @@ func (x *fastReflection_CorporationWithGF) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.AcceptanceDeadline != nil {
+			encoded, err := options.Marshal(x.AcceptanceDeadline)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x52
+		}
+		if x.AcceptedNgfVersion != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AcceptedNgfVersion))
+			i--
+			dAtA[i] = 0x48
 		}
 		if len(x.Versions) > 0 {
 			for iNdEx := len(x.Versions) - 1; iNdEx >= 0; iNdEx-- {
@@ -1724,6 +1923,61 @@ func (x *fastReflection_CorporationWithGF) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 9:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AcceptedNgfVersion", wireType)
+				}
+				x.AcceptedNgfVersion = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AcceptedNgfVersion |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 10:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AcceptanceDeadline", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.AcceptanceDeadline == nil {
+					x.AcceptanceDeadline = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AcceptanceDeadline); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1788,6 +2042,11 @@ type Corporation struct {
 	Modified      *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=modified,proto3" json:"modified,omitempty"`
 	Language      string                 `protobuf:"bytes,6,opt,name=language,proto3" json:"language,omitempty"`
 	ActiveVersion uint32                 `protobuf:"varint,7,opt,name=active_version,json=activeVersion,proto3" json:"active_version,omitempty"`
+	// accepted_ngf_version is the network governance framework version accepted.
+	AcceptedNgfVersion uint32 `protobuf:"varint,8,opt,name=accepted_ngf_version,json=acceptedNgfVersion,proto3" json:"accepted_ngf_version,omitempty"`
+	// acceptance_deadline ends the grace period of the last activation of the
+	// corporation's governance framework.
+	AcceptanceDeadline *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=acceptance_deadline,json=acceptanceDeadline,proto3" json:"acceptance_deadline,omitempty"`
 }
 
 func (x *Corporation) Reset() {
@@ -1859,6 +2118,20 @@ func (x *Corporation) GetActiveVersion() uint32 {
 	return 0
 }
 
+func (x *Corporation) GetAcceptedNgfVersion() uint32 {
+	if x != nil {
+		return x.AcceptedNgfVersion
+	}
+	return 0
+}
+
+func (x *Corporation) GetAcceptanceDeadline() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AcceptanceDeadline
+	}
+	return nil
+}
+
 // CorporationWithGF is the query response shape including nested governance
 // framework versions (each with its documents). Returned by MOD-CO-QRY-1
 // (Get Corporation) and MOD-CO-QRY-2 (List Corporations).
@@ -1867,14 +2140,16 @@ type CorporationWithGF struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id            uint64                                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	PolicyAddress string                                   `protobuf:"bytes,2,opt,name=policy_address,json=policyAddress,proto3" json:"policy_address,omitempty"`
-	Did           string                                   `protobuf:"bytes,3,opt,name=did,proto3" json:"did,omitempty"`
-	Created       *timestamppb.Timestamp                   `protobuf:"bytes,4,opt,name=created,proto3" json:"created,omitempty"`
-	Modified      *timestamppb.Timestamp                   `protobuf:"bytes,5,opt,name=modified,proto3" json:"modified,omitempty"`
-	Language      string                                   `protobuf:"bytes,6,opt,name=language,proto3" json:"language,omitempty"`
-	ActiveVersion uint32                                   `protobuf:"varint,7,opt,name=active_version,json=activeVersion,proto3" json:"active_version,omitempty"`
-	Versions      []*v1.GovernanceFrameworkVersionWithDocs `protobuf:"bytes,8,rep,name=versions,proto3" json:"versions,omitempty"`
+	Id                 uint64                                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	PolicyAddress      string                                   `protobuf:"bytes,2,opt,name=policy_address,json=policyAddress,proto3" json:"policy_address,omitempty"`
+	Did                string                                   `protobuf:"bytes,3,opt,name=did,proto3" json:"did,omitempty"`
+	Created            *timestamppb.Timestamp                   `protobuf:"bytes,4,opt,name=created,proto3" json:"created,omitempty"`
+	Modified           *timestamppb.Timestamp                   `protobuf:"bytes,5,opt,name=modified,proto3" json:"modified,omitempty"`
+	Language           string                                   `protobuf:"bytes,6,opt,name=language,proto3" json:"language,omitempty"`
+	ActiveVersion      uint32                                   `protobuf:"varint,7,opt,name=active_version,json=activeVersion,proto3" json:"active_version,omitempty"`
+	Versions           []*v1.GovernanceFrameworkVersionWithDocs `protobuf:"bytes,8,rep,name=versions,proto3" json:"versions,omitempty"`
+	AcceptedNgfVersion uint32                                   `protobuf:"varint,9,opt,name=accepted_ngf_version,json=acceptedNgfVersion,proto3" json:"accepted_ngf_version,omitempty"`
+	AcceptanceDeadline *timestamppb.Timestamp                   `protobuf:"bytes,10,opt,name=acceptance_deadline,json=acceptanceDeadline,proto3" json:"acceptance_deadline,omitempty"`
 }
 
 func (x *CorporationWithGF) Reset() {
@@ -1953,6 +2228,20 @@ func (x *CorporationWithGF) GetVersions() []*v1.GovernanceFrameworkVersionWithDo
 	return nil
 }
 
+func (x *CorporationWithGF) GetAcceptedNgfVersion() uint32 {
+	if x != nil {
+		return x.AcceptedNgfVersion
+	}
+	return 0
+}
+
+func (x *CorporationWithGF) GetAcceptanceDeadline() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AcceptanceDeadline
+	}
+	return nil
+}
+
 var File_verana_co_v1_types_proto protoreflect.FileDescriptor
 
 var file_verana_co_v1_types_proto_rawDesc = []byte{
@@ -1966,7 +2255,7 @@ var file_verana_co_v1_types_proto_rawDesc = []byte{
 	0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69,
 	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18, 0x76,
 	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65,
-	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xbf, 0x02, 0x0a, 0x0b, 0x43, 0x6f, 0x72, 0x70,
+	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc4, 0x03, 0x0a, 0x0b, 0x43, 0x6f, 0x72, 0x70,
 	0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x3f, 0x0a, 0x0e, 0x70, 0x6f, 0x6c, 0x69, 0x63,
 	0x79, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42,
@@ -1986,44 +2275,61 @@ var file_verana_co_v1_types_proto_rawDesc = []byte{
 	0x67, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61,
 	0x67, 0x65, 0x12, 0x25, 0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x76, 0x65, 0x72,
 	0x73, 0x69, 0x6f, 0x6e, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0d, 0x61, 0x63, 0x74, 0x69,
-	0x76, 0x65, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x9e, 0x03, 0x0a, 0x11, 0x43, 0x6f,
-	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x47, 0x46, 0x12,
-	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12,
-	0x3f, 0x0a, 0x0e, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e,
-	0x67, 0x52, 0x0d, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x12, 0x10, 0x0a, 0x03, 0x64, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x64,
-	0x69, 0x64, 0x12, 0x43, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42,
-	0x0d, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x45, 0x0a, 0x08, 0x6d, 0x6f, 0x64, 0x69, 0x66,
-	0x69, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x0d, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0xa8,
-	0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x08, 0x6d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x12, 0x1a,
-	0x0a, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x12, 0x25, 0x0a, 0x0e, 0x61, 0x63,
-	0x74, 0x69, 0x76, 0x65, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x07, 0x20, 0x01,
-	0x28, 0x0d, 0x52, 0x0d, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f,
-	0x6e, 0x12, 0x57, 0x0a, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x08, 0x20,
-	0x03, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e,
-	0x76, 0x31, 0x2e, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61,
-	0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x57, 0x69, 0x74,
-	0x68, 0x44, 0x6f, 0x63, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
-	0x52, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63,
-	0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x63, 0x6f, 0x2e, 0x76, 0x31, 0x42,
-	0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67,
-	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
-	0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64,
-	0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x63, 0x6f, 0x2f,
-	0x76, 0x31, 0x3b, 0x63, 0x6f, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x43, 0x58, 0xaa, 0x02, 0x0c,
-	0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x43, 0x6f, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x43, 0x6f, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x5c, 0x43, 0x6f, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
-	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a,
-	0x3a, 0x43, 0x6f, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x76, 0x65, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x30, 0x0a, 0x14, 0x61, 0x63, 0x63,
+	0x65, 0x70, 0x74, 0x65, 0x64, 0x5f, 0x6e, 0x67, 0x66, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x12, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x65,
+	0x64, 0x4e, 0x67, 0x66, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x51, 0x0a, 0x13, 0x61,
+	0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f, 0x64, 0x65, 0x61, 0x64, 0x6c, 0x69,
+	0x6e, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
+	0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x12, 0x61, 0x63, 0x63, 0x65,
+	0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x44, 0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x22, 0xa3,
+	0x04, 0x0a, 0x11, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x57, 0x69,
+	0x74, 0x68, 0x47, 0x46, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x02, 0x69, 0x64, 0x12, 0x3f, 0x0a, 0x0e, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x5f, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4,
+	0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0d, 0x70, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x10, 0x0a, 0x03, 0x64, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x03, 0x64, 0x69, 0x64, 0x12, 0x43, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
+	0x74, 0x61, 0x6d, 0x70, 0x42, 0x0d, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0xa8, 0xe7,
+	0xb0, 0x2a, 0x01, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x45, 0x0a, 0x08,
+	0x6d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x0d, 0xc8, 0xde, 0x1f, 0x00,
+	0x90, 0xdf, 0x1f, 0x01, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x08, 0x6d, 0x6f, 0x64, 0x69, 0x66,
+	0x69, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18,
+	0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x12,
+	0x25, 0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0d, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x56,
+	0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x57, 0x0a, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x73, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e,
+	0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69,
+	0x6f, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x44, 0x6f, 0x63, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00,
+	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12,
+	0x30, 0x0a, 0x14, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x65, 0x64, 0x5f, 0x6e, 0x67, 0x66, 0x5f,
+	0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x12, 0x61,
+	0x63, 0x63, 0x65, 0x70, 0x74, 0x65, 0x64, 0x4e, 0x67, 0x66, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x12, 0x51, 0x0a, 0x13, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f,
+	0x64, 0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01,
+	0x52, 0x12, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x44, 0x65, 0x61, 0x64,
+	0x6c, 0x69, 0x6e, 0x65, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72,
+	0x61, 0x6e, 0x61, 0x2e, 0x63, 0x6f, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73,
+	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f,
+	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x63, 0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x63, 0x6f, 0x76,
+	0x31, 0xa2, 0x02, 0x03, 0x56, 0x43, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x2e, 0x43, 0x6f, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c,
+	0x43, 0x6f, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x43,
+	0x6f, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x43, 0x6f, 0x3a, 0x3a, 0x56,
+	0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2048,14 +2354,16 @@ var file_verana_co_v1_types_proto_goTypes = []interface{}{
 var file_verana_co_v1_types_proto_depIdxs = []int32{
 	2, // 0: verana.co.v1.Corporation.created:type_name -> google.protobuf.Timestamp
 	2, // 1: verana.co.v1.Corporation.modified:type_name -> google.protobuf.Timestamp
-	2, // 2: verana.co.v1.CorporationWithGF.created:type_name -> google.protobuf.Timestamp
-	2, // 3: verana.co.v1.CorporationWithGF.modified:type_name -> google.protobuf.Timestamp
-	3, // 4: verana.co.v1.CorporationWithGF.versions:type_name -> verana.gf.v1.GovernanceFrameworkVersionWithDocs
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	2, // 2: verana.co.v1.Corporation.acceptance_deadline:type_name -> google.protobuf.Timestamp
+	2, // 3: verana.co.v1.CorporationWithGF.created:type_name -> google.protobuf.Timestamp
+	2, // 4: verana.co.v1.CorporationWithGF.modified:type_name -> google.protobuf.Timestamp
+	3, // 5: verana.co.v1.CorporationWithGF.versions:type_name -> verana.gf.v1.GovernanceFrameworkVersionWithDocs
+	2, // 6: verana.co.v1.CorporationWithGF.acceptance_deadline:type_name -> google.protobuf.Timestamp
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_verana_co_v1_types_proto_init() }

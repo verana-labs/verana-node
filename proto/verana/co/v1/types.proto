@@ -29,6 +29,11 @@ message Corporation {
   ];
   string language = 6;
   uint32 active_version = 7;
+  // accepted_ngf_version is the network governance framework version accepted.
+  uint32 accepted_ngf_version = 8;
+  // acceptance_deadline ends the grace period of the last activation of the
+  // corporation's governance framework.
+  google.protobuf.Timestamp acceptance_deadline = 9 [(gogoproto.stdtime) = true];
 }
 
 // CorporationWithGF is the query response shape including nested governance
@@ -54,4 +59,6 @@ message CorporationWithGF {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+  uint32 accepted_ngf_version = 9;
+  google.protobuf.Timestamp acceptance_deadline = 10 [(gogoproto.stdtime) = true];
 }

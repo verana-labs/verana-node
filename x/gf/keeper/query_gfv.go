@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"sort"
 	"strings"
 
 	"cosmossdk.io/collections"
@@ -20,7 +19,7 @@ func (q querier) GetGovernanceFrameworkVersion(goCtx context.Context, req *types
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "gfv %d not found", req.Id)
 	}
-	docs, err := q.collectDocs(goCtx, gfv.Id, req.PreferredLanguage)
+	docs, err := q.collectDocs(goCtx, gfv.Id, req.PreferredLanguage, q.subjectLanguage(goCtx, gfv))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "collect docs: %v", err)
 	}
@@ -37,143 +36,70 @@ func (q querier) GetGovernanceFrameworkVersion(goCtx context.Context, req *types
 	}, nil
 }
 
-func (q querier) ListGovernanceFrameworkVersions(goCtx context.Context, req *types.QueryListGovernanceFrameworkVersionsRequest) (*types.QueryListGovernanceFrameworkVersionsResponse, error) {
+// GetEcosystemAcceptance implements MOD-GF-QRY-2.
+func (q querier) GetEcosystemAcceptance(goCtx context.Context, req *types.QueryGetEcosystemAcceptanceRequest) (*types.QueryGetEcosystemAcceptanceResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
-	hasEco := req.EcosystemId > 0
-	hasCorp := req.CorporationId > 0
-	if hasEco == hasCorp {
-		return nil, status.Error(codes.InvalidArgument, "exactly one of ecosystem_id or corporation_id must be set")
+	acc, found, err := q.getEcosystemAcceptance(goCtx, req.EcosystemId, req.CorporationId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "get acceptance: %v", err)
 	}
-	if req.ResponseMaxSize == 0 {
-		req.ResponseMaxSize = 64
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "no acceptance of ecosystem %d by corporation %d", req.EcosystemId, req.CorporationId)
 	}
-	if req.ResponseMaxSize > 1024 {
-		return nil, status.Error(codes.InvalidArgument, "response_max_size must be <= 1024")
-	}
-
-	// Spec MOD-GF-QRY-2-1: active_only returns "only the entry corresponding to
-	// the subject's active_version" — resolve subject's active_version once.
-	var subjectActiveVersion uint32
-	if req.ActiveOnly {
-		if hasEco {
-			eco, ok := q.ecosystemKeeper().GetEcosystemView(goCtx, req.EcosystemId)
-			if !ok {
-				return nil, status.Errorf(codes.NotFound, "ecosystem %d not found", req.EcosystemId)
-			}
-			subjectActiveVersion = eco.ActiveVersion
-		} else {
-			coView, ok := q.corporationKeeper().GetByID(goCtx, req.CorporationId)
-			if !ok {
-				return nil, status.Errorf(codes.NotFound, "corporation %d not found", req.CorporationId)
-			}
-			subjectActiveVersion = coView.ActiveVersion
-		}
-	}
-
-	var gfvIDs []uint64
-	if hasEco {
-		iter, err := q.GFVersionByEcosystem.Iterate(goCtx, collections.NewPrefixedPairRange[uint64, uint32](req.EcosystemId))
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "iterate: %v", err)
-		}
-		defer iter.Close()
-		for ; iter.Valid(); iter.Next() {
-			id, err := iter.Value()
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "iter value: %v", err)
-			}
-			gfvIDs = append(gfvIDs, id)
-		}
-	} else {
-		iter, err := q.GFVersionByCorporation.Iterate(goCtx, collections.NewPrefixedPairRange[uint64, uint32](req.CorporationId))
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "iterate: %v", err)
-		}
-		defer iter.Close()
-		for ; iter.Valid(); iter.Next() {
-			id, err := iter.Value()
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "iter value: %v", err)
-			}
-			gfvIDs = append(gfvIDs, id)
-		}
-	}
-
-	gfvs := make([]types.GovernanceFrameworkVersion, 0, len(gfvIDs))
-	for _, id := range gfvIDs {
-		gfv, err := q.GFVersion.Get(goCtx, id)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "fetch gfv %d: %v", id, err)
-		}
-		if req.ActiveOnly && gfv.Version != subjectActiveVersion {
-			continue
-		}
-		gfvs = append(gfvs, gfv)
-	}
-	// Spec MOD-GF-QRY-2-3: order by ascending version, then page.
-	sort.Slice(gfvs, func(i, j int) bool { return gfvs[i].Version < gfvs[j].Version })
-	if uint32(len(gfvs)) > req.ResponseMaxSize {
-		gfvs = gfvs[:req.ResponseMaxSize]
-	}
-	// Collect documents only for the page we return.
-	versions := make([]types.GovernanceFrameworkVersionWithDocs, 0, len(gfvs))
-	for _, gfv := range gfvs {
-		docs, err := q.collectDocs(goCtx, gfv.Id, req.PreferredLanguage)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "collect docs: %v", err)
-		}
-		versions = append(versions, types.GovernanceFrameworkVersionWithDocs{
-			Id:            gfv.Id,
-			EcosystemId:   gfv.EcosystemId,
-			CorporationId: gfv.CorporationId,
-			Created:       gfv.Created,
-			Version:       gfv.Version,
-			ActiveSince:   gfv.ActiveSince,
-			Documents:     docs,
-		})
-	}
-	return &types.QueryListGovernanceFrameworkVersionsResponse{Versions: versions}, nil
+	return &types.QueryGetEcosystemAcceptanceResponse{Acceptance: acc}, nil
 }
 
-func (q querier) collectDocs(ctx context.Context, gfvID uint64, preferredLang string) ([]types.GovernanceFrameworkDocument, error) {
+// subjectLanguage returns the language of the owner of gfv, empty for a
+// network version.
+func (k Keeper) subjectLanguage(ctx context.Context, gfv types.GovernanceFrameworkVersion) string {
+	switch {
+	case gfv.EcosystemId > 0:
+		e, _ := k.ecosystemKeeper().GetEcosystemView(ctx, gfv.EcosystemId)
+		return e.Language
+	case gfv.CorporationId > 0:
+		co, _ := k.corporationKeeper().GetByID(ctx, gfv.CorporationId)
+		return co.Language
+	}
+	return ""
+}
+
+// collectDocs returns the documents of a version. With preferredLang set it
+// returns one: the one in preferredLang, else in subjectLang, else the earliest.
+func (k Keeper) collectDocs(ctx context.Context, gfvID uint64, preferredLang, subjectLang string) ([]types.GovernanceFrameworkDocument, error) {
 	var out []types.GovernanceFrameworkDocument
-	var preferred, lowest *types.GovernanceFrameworkDocument
-	// Iterate only this version's documents via the (gfv_id, *) index.
+	var preferred, subject, earliest *types.GovernanceFrameworkDocument
 	rng := collections.NewPrefixedPairRange[uint64, string](gfvID)
-	if err := q.GFDocumentByGFVLang.Walk(ctx, rng, func(_ collections.Pair[uint64, string], id uint64) (bool, error) {
-		d, err := q.GFDocument.Get(ctx, id)
+	if err := k.GFDocumentByGFVLang.Walk(ctx, rng, func(_ collections.Pair[uint64, string], id uint64) (bool, error) {
+		d, err := k.GFDocument.Get(ctx, id)
 		if err != nil {
 			return true, err
 		}
-		if preferredLang != "" {
-			if preferred == nil && strings.EqualFold(d.Language, preferredLang) {
-				cp := d
-				preferred = &cp
-			}
-			if lowest == nil || d.Id < lowest.Id {
-				cp := d
-				lowest = &cp
-			}
+		if preferredLang == "" {
+			out = append(out, d)
 			return false, nil
 		}
-		out = append(out, d)
+		switch {
+		case preferred == nil && strings.EqualFold(d.Language, preferredLang):
+			preferred = &d
+		case subject == nil && subjectLang != "" && strings.EqualFold(d.Language, subjectLang):
+			subject = &d
+		}
+		if earliest == nil || d.Created.Before(earliest.Created) || (d.Created.Equal(earliest.Created) && d.Id < earliest.Id) {
+			earliest = &d
+		}
 		return false, nil
 	}); err != nil {
 		return nil, err
 	}
-	// Spec MOD-GF-QRY: exactly one document per version when a preferred language
-	// is set — the match if present, else the lowest-id document.
-	if preferredLang != "" {
-		switch {
-		case preferred != nil:
-			return []types.GovernanceFrameworkDocument{*preferred}, nil
-		case lowest != nil:
-			return []types.GovernanceFrameworkDocument{*lowest}, nil
-		default:
-			return nil, nil
+	if preferredLang == "" {
+		return out, nil
+	}
+	for _, d := range []*types.GovernanceFrameworkDocument{preferred, subject, earliest} {
+		if d != nil {
+			return []types.GovernanceFrameworkDocument{*d}, nil
 		}
 	}
-	return out, nil
+	return nil, nil
 }

@@ -73,5 +73,39 @@ func (m *MsgAddGovernanceFrameworkDocument) ValidateBasic() error {
 
 // ValidateBasic on MsgIncreaseActiveGovernanceFrameworkVersion.
 func (m *MsgIncreaseActiveGovernanceFrameworkVersion) ValidateBasic() error {
-	return validateSigner(m.Corporation, m.Delegate, m.Authority, m.EcosystemId)
+	if err := validateSigner(m.Corporation, m.Delegate, m.Authority, m.EcosystemId); err != nil {
+		return err
+	}
+	if m.AcceptanceGrace <= 0 {
+		return errors.Wrap(ErrAcceptanceGraceTooShort, "acceptance_grace is required")
+	}
+	return nil
+}
+
+// ValidateBasic on MsgAcceptGovernanceFrameworkVersion.
+func (m *MsgAcceptGovernanceFrameworkVersion) ValidateBasic() error {
+	if err := validateCorpDelegate(m.Corporation, m.Delegate); err != nil {
+		return err
+	}
+	if (m.EcosystemId != 0) == m.Network {
+		return errors.Wrap(ErrInvalidSubject, "exactly one of ecosystem_id and network must be given")
+	}
+	if m.Version < 1 {
+		return errors.Wrap(ErrInvalidVersion, "version must be >= 1")
+	}
+	return nil
+}
+
+// ValidateBasic on MsgAcceptCorporationGovernanceFramework.
+func (m *MsgAcceptCorporationGovernanceFramework) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
+	}
+	if m.CorporationId == 0 {
+		return errors.Wrap(ErrInvalidSubject, "corporation_id is required")
+	}
+	if m.Version < 1 {
+		return errors.Wrap(ErrInvalidVersion, "version must be >= 1")
+	}
+	return nil
 }

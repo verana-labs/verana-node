@@ -772,9 +772,10 @@ func IncreaseActiveGovernanceFrameworkVersion(
 	// Create the complete message with authority and delegate addresses
 	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{
-		Corporation: creatorAddr,
-		Delegate:    creatorAddr,
-		EcosystemId: msg.EcosystemId,
+		Corporation:     creatorAddr,
+		Delegate:        creatorAddr,
+		EcosystemId:     msg.EcosystemId,
+		AcceptanceGrace: gftypes.DefaultGfAcceptanceGraceMin,
 	}
 
 	txResp, err := client.BroadcastTx(ctx, creator, &msgWithCreator)
@@ -2276,6 +2277,49 @@ func submitGrantOpAuthzViaGroup(
 	fmt.Println("    - Waiting for proposal execution to complete...")
 	time.Sleep(1 * time.Second)
 	fmt.Printf("✅ Granted delegate authorization for %s via group proposal\n", grantMsg.Grantee)
+	return AcceptCorporationGovernanceFramework(client, ctx, policyAddr, grantMsg.Grantee)
+}
+
+// AcceptCorporationGovernanceFramework has a delegate accept the version in
+// force of the governance framework of the corporation at policyAddr, without
+// which GF-CHECK-2 refuses its authorization. A re-grant keeps the acceptance,
+// so a delegate that already accepted that version sends nothing; a delegate
+// not in the keyring cannot sign and is skipped.
+func AcceptCorporationGovernanceFramework(client cosmosclient.Client, ctx context.Context, policyAddr, delegateAddr string) error {
+	delegate, err := client.AccountRegistry.GetByAddress(delegateAddr)
+	if err != nil {
+		fmt.Printf("    - %s is not in the keyring, skipping its governance framework acceptance\n", delegateAddr)
+		return nil
+	}
+	corpID, err := ResolveCorporationIDByAddress(client, ctx, policyAddr)
+	if err != nil {
+		return err
+	}
+	co, err := QueryCorporation(client, ctx, corpID)
+	if err != nil {
+		return err
+	}
+	authz, err := detypes.NewQueryClient(client.Context()).ListDelegateAuthorizations(ctx, &detypes.QueryListDelegateAuthorizationsRequest{
+		CorporationId: corpID, Delegate: delegateAddr, ResponseMaxSize: 1,
+	})
+	if err != nil {
+		return err
+	}
+	if len(authz.DelegateAuthorizations) == 1 && authz.DelegateAuthorizations[0].AcceptedCgfVersion == co.Corporation.ActiveVersion {
+		return nil
+	}
+	txResp, err := client.BroadcastTx(ctx, delegate, &gftypes.MsgAcceptCorporationGovernanceFramework{
+		Delegate:      delegateAddr,
+		CorporationId: corpID,
+		Version:       co.Corporation.ActiveVersion,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to accept the governance framework of corporation %d: %w", corpID, err)
+	}
+	if txResp.TxResponse.Code != 0 {
+		return fmt.Errorf("accepting the governance framework of corporation %d failed with code %d: %s", corpID, txResp.TxResponse.Code, txResp.TxResponse.RawLog)
+	}
+	fmt.Printf("✅ %s accepted version %d of the governance framework of corporation %d\n", delegateAddr, co.Corporation.ActiveVersion, corpID)
 	return nil
 }
 
@@ -2431,9 +2475,10 @@ func IncreaseActiveGFVersionWithAuthority(
 	}
 
 	msg := &gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{
-		Corporation: authority,
-		Delegate:    delegateAddr,
-		EcosystemId: ecosystemID,
+		Corporation:     authority,
+		Delegate:        delegateAddr,
+		EcosystemId:     ecosystemID,
+		AcceptanceGrace: gftypes.DefaultGfAcceptanceGraceMin,
 	}
 
 	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)

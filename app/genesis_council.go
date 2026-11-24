@@ -125,7 +125,7 @@ func SetGenesisCouncil(cdc codec.Codec, appState map[string]json.RawMessage, c G
 		id++
 		coGen.Corporations = append(coGen.Corporations, cotypes.Corporation{
 			Id: id, PolicyAddress: policies[i], Did: co.Did, Language: co.Language,
-			Created: now, Modified: now, ActiveVersion: 1,
+			Created: now, Modified: now, ActiveVersion: 1, AcceptedNgfVersion: 1,
 		})
 	}
 	coGen.CorporationCounter = id

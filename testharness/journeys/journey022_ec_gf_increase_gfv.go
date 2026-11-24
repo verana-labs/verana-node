@@ -128,14 +128,14 @@ func RunEcGFIncreaseGFVJourney(ctx context.Context, client cosmosclient.Client) 
 	// Step 5: GetGovernanceFrameworkVersion for the active GFV [MOD-GF-QUERY-1]
 	// =========================================================================
 	fmt.Println("\n--- Step 5: GetGFV — list and fetch active one ---")
-	listResp, err := lib.ListGFVs(client, ctx, 0, ecID, true, 100)
+	listResp, err := lib.ListGFVs(client, ctx, 0, ecID, true)
 	if err != nil {
 		return fmt.Errorf("step 5 ListGFVs failed: %w", err)
 	}
-	if len(listResp.Versions) == 0 {
+	if len(listResp) == 0 {
 		return fmt.Errorf("step 5 failed: no active GFV found")
 	}
-	activeGFV := listResp.Versions[0]
+	activeGFV := listResp[0]
 	gfvResp, err := lib.QueryGFV(client, ctx, activeGFV.Id)
 	if err != nil {
 		return fmt.Errorf("step 5 GetGFV failed: %w", err)

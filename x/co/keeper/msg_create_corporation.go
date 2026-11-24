@@ -24,7 +24,8 @@ import (
 //     the on-chain identity of the Corporation.
 //  4. policy_address uniqueness gate (defence-in-depth: x/group returns a
 //     deterministic address, so this should never fire in practice).
-//  5. Allocate co.id, persist Corporation + reverse indexes.
+//  5. Allocate co.id, persist Corporation + reverse indexes; the corporation
+//     accepts the network governance framework version in force.
 //  6. Call gfKeeper.CreateInitialGFVersionForCorporation to seed v1 GF.
 //  7. Emit create_corporation event.
 func (ms msgServer) CreateCorporation(goCtx context.Context, msg *types.MsgCreateCorporation) (*types.MsgCreateCorporationResponse, error) {
@@ -76,19 +77,24 @@ func (ms msgServer) CreateCorporation(goCtx context.Context, msg *types.MsgCreat
 		return nil, errors.Wrap(types.ErrPolicyAddressAlreadyBound, policyAddr)
 	}
 
+	ngfVersion, err := ms.gfKeeper.NetworkGFVersionInForce(ctx)
+	if err != nil {
+		return nil, err
+	}
 	coID, err := ms.GetNextID(ctx, "co")
 	if err != nil {
 		return nil, err
 	}
 	now := ctx.BlockTime()
 	co := types.Corporation{
-		Id:            coID,
-		PolicyAddress: policyAddr,
-		Did:           msg.Did,
-		Created:       now,
-		Modified:      now,
-		Language:      msg.Language,
-		ActiveVersion: 1,
+		Id:                 coID,
+		PolicyAddress:      policyAddr,
+		Did:                msg.Did,
+		Created:            now,
+		Modified:           now,
+		Language:           msg.Language,
+		ActiveVersion:      1,
+		AcceptedNgfVersion: ngfVersion,
 	}
 	if err := ms.Corporation.Set(ctx, co.Id, co); err != nil {
 		return nil, fmt.Errorf("persist corporation: %w", err)
@@ -109,6 +115,7 @@ func (ms msgServer) CreateCorporation(goCtx context.Context, msg *types.MsgCreat
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
 		sdk.NewAttribute(types.AttributeKeyPolicyAddress, policyAddr),
 		sdk.NewAttribute(types.AttributeKeyDID, msg.Did),
+		sdk.NewAttribute(types.AttributeKeyAcceptedNgfVersion, fmt.Sprintf("%d", co.AcceptedNgfVersion)),
 	))
 
 	return &types.MsgCreateCorporationResponse{
