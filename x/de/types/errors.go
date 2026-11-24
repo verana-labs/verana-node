@@ -30,4 +30,5 @@ var (
 	ErrAccreditationNotActive      = errors.Register(ModuleName, 1119, "primary entry is not an active accreditation")
 	ErrVSAccountNotAuthorized      = errors.Register(ModuleName, 1120, "signer is not an authorized VS account of the corporation's service entry")
 	ErrVSAccountFeeGrantNotEnabled = errors.Register(ModuleName, 1121, "service entry has an empty fee_spend_limit: the corporation does not pay this VS account's fees")
+	ErrFeeAllowanceNotOwned        = errors.Register(ModuleName, 1122, "the corporation's fee allowance to this grantee was not created by this module")
 )
