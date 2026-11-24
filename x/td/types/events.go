@@ -9,6 +9,7 @@ const (
 	EventTypeYieldDistribution                = "yield_distribution"
 	EventTypeYieldTransfer                    = "yield_transfer"
 	EventTypeUpdateParams                     = "update_params"
+	EventTypeCloseEpoch                       = "close_epoch"
 )
 
 const (
@@ -39,4 +40,7 @@ const (
 	AttributeKeyReason                = "reason"
 	AttributeKeyAuthority             = "authority"
 	AttributeKeyPendingTuDecayRate    = "pending_tu_decay_rate"
+	AttributeKeyEpoch                 = "epoch"
+	AttributeKeyTuPegValue            = "tu_peg_value"
+	AttributeKeyTuDecayRate           = "tu_decay_rate"
 )

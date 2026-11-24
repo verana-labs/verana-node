@@ -47,16 +47,16 @@ func (k Keeper) GetPendingTuDecayRate(ctx context.Context) (math.LegacyDec, bool
 	return rate, true, nil
 }
 
-// ApplyPendingTuDecayRate writes the pending tu_decay_rate, step (4) of the epoch boundary.
-func (k Keeper) ApplyPendingTuDecayRate(ctx context.Context) error {
+// applyPendingTuDecayRate writes the pending tu_decay_rate, step (4) of the epoch boundary, and returns it.
+func (k Keeper) applyPendingTuDecayRate(ctx context.Context) (math.LegacyDec, error) {
 	rate, found, err := k.GetPendingTuDecayRate(ctx)
 	if err != nil || !found {
-		return err
+		return math.LegacyDec{}, err
 	}
 	params := k.GetParams(ctx)
 	params.TuDecayRate = rate
 	if err := k.SetParams(ctx, params); err != nil {
-		return err
+		return math.LegacyDec{}, err
 	}
-	return k.PendingTuDecayRate.Remove(ctx)
+	return rate, k.PendingTuDecayRate.Remove(ctx)
 }

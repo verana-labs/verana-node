@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"testing"
+	"time"
 
 	"cosmossdk.io/math"
 
@@ -16,6 +17,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		d := math.LegacyMustNewDecFromStr(s)
 		return &d
 	}
+	origin := time.Unix(1_700_000_000, 0).UTC()
+	closed := uint64(3)
 
 	tests := []struct {
 		desc     string
@@ -30,7 +33,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state with trust deposits",
 			genState: &types.GenesisState{
-				Params: types.DefaultParams(),
+				Params:     types.DefaultParams(),
+				TuPegValue: types.DefaultTuPegValueGenesis,
 				TrustDeposits: []types.TrustDepositRecord{
 					{
 						CorporationId: 1,
@@ -52,6 +56,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "invalid parameter",
 			genState: &types.GenesisState{
 				Params:        invalidParams,
+				TuPegValue:    types.DefaultTuPegValueGenesis,
 				TrustDeposits: []types.TrustDepositRecord{},
 			},
 			valid: false,
@@ -60,6 +65,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "pending decay rate in range",
 			genState: &types.GenesisState{
 				Params:             types.DefaultParams(),
+				TuPegValue:         types.DefaultTuPegValueGenesis,
 				PendingTuDecayRate: pending("0.002"),
 			},
 			valid: true,
@@ -68,14 +74,70 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "pending decay rate above 0.01",
 			genState: &types.GenesisState{
 				Params:             types.DefaultParams(),
+				TuPegValue:         types.DefaultTuPegValueGenesis,
 				PendingTuDecayRate: pending("0.02"),
+			},
+			valid: false,
+		},
+		{
+			desc: "missing peg value",
+			genState: &types.GenesisState{
+				Params: types.DefaultParams(),
+			},
+			valid: false,
+		},
+		{
+			desc: "peg value below the genesis peg with no closed epoch",
+			genState: &types.GenesisState{
+				Params:     types.DefaultParams(),
+				TuPegValue: math.LegacyMustNewDecFromStr("99.9"),
+			},
+			valid: false,
+		},
+		{
+			desc: "decayed peg value after closed epochs",
+			genState: &types.GenesisState{
+				Params:          types.DefaultParams(),
+				TuPegValue:      math.LegacyMustNewDecFromStr("99.7002999"),
+				EpochOrigin:     &origin,
+				LastClosedEpoch: &closed,
+			},
+			valid: true,
+		},
+		{
+			desc: "peg value above the genesis peg",
+			genState: &types.GenesisState{
+				Params:          types.DefaultParams(),
+				TuPegValue:      math.LegacyMustNewDecFromStr("100.1"),
+				EpochOrigin:     &origin,
+				LastClosedEpoch: &closed,
+			},
+			valid: false,
+		},
+		{
+			desc: "negative peg value",
+			genState: &types.GenesisState{
+				Params:          types.DefaultParams(),
+				TuPegValue:      math.LegacyMustNewDecFromStr("-1"),
+				EpochOrigin:     &origin,
+				LastClosedEpoch: &closed,
+			},
+			valid: false,
+		},
+		{
+			desc: "closed epoch without origin",
+			genState: &types.GenesisState{
+				Params:          types.DefaultParams(),
+				TuPegValue:      math.LegacyMustNewDecFromStr("99.9"),
+				LastClosedEpoch: &closed,
 			},
 			valid: false,
 		},
 		{
 			desc: "invalid corporation_id (zero)",
 			genState: &types.GenesisState{
-				Params: types.DefaultParams(),
+				Params:     types.DefaultParams(),
+				TuPegValue: types.DefaultTuPegValueGenesis,
 				TrustDeposits: []types.TrustDepositRecord{
 					{
 						CorporationId: 0, // Invalid: zero corporation_id
@@ -90,7 +152,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicate corporation_id",
 			genState: &types.GenesisState{
-				Params: types.DefaultParams(),
+				Params:     types.DefaultParams(),
+				TuPegValue: types.DefaultTuPegValueGenesis,
 				TrustDeposits: []types.TrustDepositRecord{
 					{
 						CorporationId: 1,
@@ -111,7 +174,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "refunded exceeds deposit",
 			genState: &types.GenesisState{
-				Params: types.DefaultParams(),
+				Params:     types.DefaultParams(),
+				TuPegValue: types.DefaultTuPegValueGenesis,
 				TrustDeposits: []types.TrustDepositRecord{
 					{
 						CorporationId: 1,

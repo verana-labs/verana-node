@@ -62,79 +62,38 @@ func (m *MockTDCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Co
 	return types.CorporationView{Id: m.IDFor(addr), PolicyAddress: addr}, nil
 }
 
-func TrustdepositKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
-	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
-
-	db := dbm.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
-	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
-	require.NoError(t, stateStore.LoadLatestVersion())
-
-	registry := codectypes.NewInterfaceRegistry()
-	cdc := codec.NewProtoCodec(registry)
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	bankKeeper := NewMockBankKeeper()
-	delegationKeeper := &MockDelegationKeeper{}
-
-	k := keeper.NewKeeper(
-		cdc,
-		runtime.NewKVStoreService(storeKey),
-		log.NewNopLogger(),
-		authority.String(),
-		bankKeeper,
-		delegationKeeper,
-		NewMockTDCorporationKeeper(),
-	)
-
-	ctx := sdk.NewContext(stateStore, cmtproto.Header{}, false, log.NewNopLogger())
-
-	// Initialize params
-	if err := k.SetParams(ctx, types.DefaultParams()); err != nil {
-		panic(err)
-	}
-
-	return k, ctx
+// MockGenesisRateKeeper serves the genesis exchange rate entry; Err makes it unavailable.
+type MockGenesisRateKeeper struct {
+	Rate  uint64
+	Scale uint32
+	Err   error
 }
 
-// TrustdepositKeeperWithDelegation creates a keeper with a MockDelegationKeeper for AUTHZ testing.
-// The returned MockDelegationKeeper can be configured to return errors via ErrToReturn.
-func TrustdepositKeeperWithDelegation(t testing.TB) (keeper.Keeper, sdk.Context, *MockDelegationKeeper) {
-	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
-
-	db := dbm.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
-	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
-	require.NoError(t, stateStore.LoadLatestVersion())
-
-	registry := codectypes.NewInterfaceRegistry()
-	cdc := codec.NewProtoCodec(registry)
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	bankKeeper := NewMockBankKeeper()
-	delegationKeeper := &MockDelegationKeeper{}
-
-	k := keeper.NewKeeper(
-		cdc,
-		runtime.NewKVStoreService(storeKey),
-		log.NewNopLogger(),
-		authority.String(),
-		bankKeeper,
-		delegationKeeper,
-		NewMockTDCorporationKeeper(),
-	)
-
-	ctx := sdk.NewContext(stateStore, cmtproto.Header{}, false, log.NewNopLogger())
-
-	if err := k.SetParams(ctx, types.DefaultParams()); err != nil {
-		panic(err)
-	}
-
-	return k, ctx, delegationKeeper
+func (m *MockGenesisRateKeeper) GetGenesisRate(_ context.Context, _, _ string) (uint64, uint32, error) {
+	return m.Rate, m.Scale, m.Err
 }
 
-// TrustdepositKeeperWithCorp creates a keeper exposing the AUTHZ-CHECK-5
-// CorporationKeeper mock so a test can mark a signing account unregistered and
-// assert the ErrCorporationNotRegistered abort path.
-func TrustdepositKeeperWithCorp(t testing.TB) (keeper.Keeper, sdk.Context, *MockDelegationKeeper, *MockTDCorporationKeeper) {
+// MockDistributionKeeper records the epochs paid out; OnPayout runs inside each call.
+type MockDistributionKeeper struct {
+	Epochs   []uint64
+	OnPayout func(ctx context.Context, epoch uint64) error
+}
+
+func (m *MockDistributionKeeper) PayoutEpoch(ctx context.Context, epoch uint64) error {
+	m.Epochs = append(m.Epochs, epoch)
+	if m.OnPayout != nil {
+		return m.OnPayout(ctx, epoch)
+	}
+	return nil
+}
+
+func newTrustdepositKeeper(
+	t testing.TB,
+	delegationKeeper types.DelegationKeeper,
+	coKeeper types.CorporationKeeper,
+	xrKeeper types.ExchangeRateKeeper,
+	dsKeeper types.DistributionKeeper,
+) (keeper.Keeper, sdk.Context) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
 	db := dbm.NewMemDB()
@@ -145,8 +104,6 @@ func TrustdepositKeeperWithCorp(t testing.TB) (keeper.Keeper, sdk.Context, *Mock
 	registry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(registry)
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	delegationKeeper := &MockDelegationKeeper{}
-	coKeeper := NewMockTDCorporationKeeper()
 
 	k := keeper.NewKeeper(
 		cdc,
@@ -156,12 +113,44 @@ func TrustdepositKeeperWithCorp(t testing.TB) (keeper.Keeper, sdk.Context, *Mock
 		NewMockBankKeeper(),
 		delegationKeeper,
 		coKeeper,
+		xrKeeper,
+		dsKeeper,
 	)
 
 	ctx := sdk.NewContext(stateStore, cmtproto.Header{}, false, log.NewNopLogger())
-	if err := k.SetParams(ctx, types.DefaultParams()); err != nil {
-		panic(err)
-	}
+	require.NoError(t, k.SetParams(ctx, types.DefaultParams()))
+	require.NoError(t, k.TuPegValue.Set(ctx, types.DefaultTuPegValueGenesis))
+	require.NoError(t, k.EpochOrigin.Set(ctx, ctx.BlockTime().Unix()))
 
+	return k, ctx
+}
+
+func TrustdepositKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
+	return newTrustdepositKeeper(t, &MockDelegationKeeper{}, NewMockTDCorporationKeeper(), &MockGenesisRateKeeper{}, nil)
+}
+
+// TrustdepositKeeperWithDelegation creates a keeper with a MockDelegationKeeper for AUTHZ testing.
+// The returned MockDelegationKeeper can be configured to return errors via ErrToReturn.
+func TrustdepositKeeperWithDelegation(t testing.TB) (keeper.Keeper, sdk.Context, *MockDelegationKeeper) {
+	delegationKeeper := &MockDelegationKeeper{}
+	k, ctx := newTrustdepositKeeper(t, delegationKeeper, NewMockTDCorporationKeeper(), &MockGenesisRateKeeper{}, nil)
+	return k, ctx, delegationKeeper
+}
+
+// TrustdepositKeeperWithCorp creates a keeper exposing the AUTHZ-CHECK-5
+// CorporationKeeper mock so a test can mark a signing account unregistered and
+// assert the ErrCorporationNotRegistered abort path.
+func TrustdepositKeeperWithCorp(t testing.TB) (keeper.Keeper, sdk.Context, *MockDelegationKeeper, *MockTDCorporationKeeper) {
+	delegationKeeper := &MockDelegationKeeper{}
+	coKeeper := NewMockTDCorporationKeeper()
+	k, ctx := newTrustdepositKeeper(t, delegationKeeper, coKeeper, &MockGenesisRateKeeper{}, nil)
 	return k, ctx, delegationKeeper, coKeeper
+}
+
+// TrustdepositKeeperWithIndex exposes the exchange rate and distribution mocks of the trust unit index.
+func TrustdepositKeeperWithIndex(t testing.TB) (keeper.Keeper, sdk.Context, *MockGenesisRateKeeper, *MockDistributionKeeper) {
+	xrKeeper := &MockGenesisRateKeeper{}
+	dsKeeper := &MockDistributionKeeper{}
+	k, ctx := newTrustdepositKeeper(t, &MockDelegationKeeper{}, NewMockTDCorporationKeeper(), xrKeeper, dsKeeper)
+	return k, ctx, xrKeeper, dsKeeper
 }

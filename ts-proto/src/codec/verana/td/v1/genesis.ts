@@ -7,6 +7,7 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Timestamp } from "../../../google/protobuf/timestamp";
+import { UInt64Value } from "../../../google/protobuf/wrappers";
 import { Params } from "./params";
 import Long = require("long");
 
@@ -21,6 +22,14 @@ export interface GenesisState {
   dust: string;
   /** pending_tu_decay_rate is the tu_decay_rate applied at the next epoch boundary; null when none. */
   pendingTuDecayRate: string;
+  /** tu_peg_value is the trust unit index; tu_peg_value_genesis until an epoch is closed. */
+  tuPegValue: string;
+  /** epoch_origin is the start of epoch 0; the genesis time when absent. */
+  epochOrigin:
+    | Date
+    | undefined;
+  /** last_closed_epoch is null when no epoch is closed. */
+  lastClosedEpoch: number | undefined;
 }
 
 /** TrustDepositRecord defines a trust deposit entry for genesis state */
@@ -40,7 +49,15 @@ export interface TrustDepositRecord {
 }
 
 function createBaseGenesisState(): GenesisState {
-  return { params: undefined, trustDeposits: [], dust: "", pendingTuDecayRate: "" };
+  return {
+    params: undefined,
+    trustDeposits: [],
+    dust: "",
+    pendingTuDecayRate: "",
+    tuPegValue: "",
+    epochOrigin: undefined,
+    lastClosedEpoch: undefined,
+  };
 }
 
 export const GenesisState = {
@@ -56,6 +73,15 @@ export const GenesisState = {
     }
     if (message.pendingTuDecayRate !== "") {
       writer.uint32(34).string(message.pendingTuDecayRate);
+    }
+    if (message.tuPegValue !== "") {
+      writer.uint32(42).string(message.tuPegValue);
+    }
+    if (message.epochOrigin !== undefined) {
+      Timestamp.encode(toTimestamp(message.epochOrigin), writer.uint32(50).fork()).ldelim();
+    }
+    if (message.lastClosedEpoch !== undefined) {
+      UInt64Value.encode({ value: message.lastClosedEpoch! }, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -95,6 +121,27 @@ export const GenesisState = {
 
           message.pendingTuDecayRate = reader.string();
           continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.tuPegValue = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.epochOrigin = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.lastClosedEpoch = UInt64Value.decode(reader, reader.uint32()).value;
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -112,6 +159,9 @@ export const GenesisState = {
         : [],
       dust: isSet(object.dust) ? globalThis.String(object.dust) : "",
       pendingTuDecayRate: isSet(object.pendingTuDecayRate) ? globalThis.String(object.pendingTuDecayRate) : "",
+      tuPegValue: isSet(object.tuPegValue) ? globalThis.String(object.tuPegValue) : "",
+      epochOrigin: isSet(object.epochOrigin) ? fromJsonTimestamp(object.epochOrigin) : undefined,
+      lastClosedEpoch: isSet(object.lastClosedEpoch) ? Number(object.lastClosedEpoch) : undefined,
     };
   },
 
@@ -129,6 +179,15 @@ export const GenesisState = {
     if (message.pendingTuDecayRate !== "") {
       obj.pendingTuDecayRate = message.pendingTuDecayRate;
     }
+    if (message.tuPegValue !== "") {
+      obj.tuPegValue = message.tuPegValue;
+    }
+    if (message.epochOrigin !== undefined) {
+      obj.epochOrigin = message.epochOrigin.toISOString();
+    }
+    if (message.lastClosedEpoch !== undefined) {
+      obj.lastClosedEpoch = message.lastClosedEpoch;
+    }
     return obj;
   },
 
@@ -143,6 +202,9 @@ export const GenesisState = {
     message.trustDeposits = object.trustDeposits?.map((e) => TrustDepositRecord.fromPartial(e)) || [];
     message.dust = object.dust ?? "";
     message.pendingTuDecayRate = object.pendingTuDecayRate ?? "";
+    message.tuPegValue = object.tuPegValue ?? "";
+    message.epochOrigin = object.epochOrigin ?? undefined;
+    message.lastClosedEpoch = object.lastClosedEpoch ?? undefined;
     return message;
   },
 };

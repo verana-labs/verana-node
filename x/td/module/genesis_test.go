@@ -14,7 +14,8 @@ import (
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
-		Params: types.DefaultParams(),
+		Params:     types.DefaultParams(),
+		TuPegValue: types.DefaultTuPegValueGenesis,
 		TrustDeposits: []types.TrustDepositRecord{
 			{
 				CorporationId: 1,
@@ -91,6 +92,7 @@ func TestGenesisRoundtripPreservesSlashState(t *testing.T) {
 func TestEmptyGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params:        types.DefaultParams(),
+		TuPegValue:    types.DefaultTuPegValueGenesis,
 		TrustDeposits: []types.TrustDepositRecord{},
 	}
 
@@ -159,4 +161,46 @@ func TestGenesisRoundtripPendingTuDecayRate(t *testing.T) {
 	got := trustdeposit.ExportGenesis(ctx2, k2)
 	require.NotNil(t, got.PendingTuDecayRate)
 	require.Equal(t, pending, *got.PendingTuDecayRate)
+}
+
+func TestGenesisFirstEpochOrigin(t *testing.T) {
+	k, ctx := keepertest.TrustdepositKeeper(t)
+	genesisTime := time.Unix(1_700_000_123, 500).UTC()
+	ctx = ctx.WithBlockTime(genesisTime)
+
+	trustdeposit.InitGenesis(ctx, k, *types.DefaultGenesis())
+	got := trustdeposit.ExportGenesis(ctx, k)
+
+	require.Equal(t, types.DefaultTuPegValueGenesis, got.TuPegValue)
+	require.Equal(t, time.Unix(1_700_000_123, 0).UTC(), *got.EpochOrigin)
+	require.Nil(t, got.LastClosedEpoch)
+	require.Nil(t, got.PendingTuDecayRate)
+}
+
+func TestGenesisRoundtripTuIndex(t *testing.T) {
+	origin := time.Unix(1_700_000_000, 0).UTC()
+	closed := uint64(41)
+	gs := *types.DefaultGenesis()
+	gs.TuPegValue = math.LegacyMustNewDecFromStr("95.9")
+	gs.EpochOrigin = &origin
+	gs.LastClosedEpoch = &closed
+
+	k, ctx := keepertest.TrustdepositKeeper(t)
+	ctx = ctx.WithBlockTime(origin.Add(400 * 24 * time.Hour))
+	trustdeposit.InitGenesis(ctx, k, gs)
+	got := trustdeposit.ExportGenesis(ctx, k)
+
+	require.Equal(t, gs.TuPegValue, got.TuPegValue)
+	require.Equal(t, origin, *got.EpochOrigin)
+	require.Equal(t, closed, *got.LastClosedEpoch)
+}
+
+func TestGenesisEpochOriginAfterGenesisTime(t *testing.T) {
+	origin := time.Unix(1_700_000_000, 0).UTC()
+	gs := *types.DefaultGenesis()
+	gs.EpochOrigin = &origin
+
+	k, ctx := keepertest.TrustdepositKeeper(t)
+	ctx = ctx.WithBlockTime(origin.Add(-time.Second))
+	require.Panics(t, func() { trustdeposit.InitGenesis(ctx, k, gs) })
 }
