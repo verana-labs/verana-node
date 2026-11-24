@@ -2,19 +2,19 @@ package keeper
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	feegrant "github.com/cosmos/cosmos-sdk/x/feegrant"
 
+	"github.com/verana-labs/verana-node/util/events"
 	"github.com/verana-labs/verana-node/x/de/types"
 )
 
-// GrantFeeAllowance implements [MOD-DE-MSG-1] with a fresh budget. The MSG-5-5
-// recompute uses grantFeeAllowance to carry the spent budget instead.
+// GrantFeeAllowance implements [MOD-DE-MSG-1].
 func (k Keeper) GrantFeeAllowance(
 	goCtx context.Context,
 	grantorCorporationID uint64,
@@ -23,20 +23,6 @@ func (k Keeper) GrantFeeAllowance(
 	expiration *time.Time,
 	spendLimit sdk.Coins,
 	period *time.Duration,
-) error {
-	return k.grantFeeAllowance(goCtx, grantorCorporationID, grantee, msgTypes, expiration, spendLimit, period, spendLimit)
-}
-
-// grantFeeAllowance is GrantFeeAllowance with an explicit remaining budget.
-func (k Keeper) grantFeeAllowance(
-	goCtx context.Context,
-	grantorCorporationID uint64,
-	grantee string,
-	msgTypes []types.MsgType,
-	expiration *time.Time,
-	spendLimit sdk.Coins,
-	period *time.Duration,
-	remaining sdk.Coins,
 ) error {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
@@ -68,34 +54,54 @@ func (k Keeper) grantFeeAllowance(
 		return fmt.Errorf("expiration must be specified when period is set")
 	}
 
-	// [MOD-DE-MSG-1-4] Execution.
 	key := collections.Join(grantorCorporationID, grantee)
+	existing, err := k.getFeeGrant(ctx, key)
+	if err != nil {
+		return err
+	}
+	fk := k.feegrantKeeper()
+	var granter, granteeAddr sdk.AccAddress
+	var current feegrant.FeeAllowanceI
+	if fk != nil {
+		if granter, granteeAddr, err = k.feeGrantAddrs(ctx, grantorCorporationID, grantee); err != nil {
+			return err
+		}
+		// The module never overwrites an allowance it did not create.
+		if current, _ = fk.GetAllowance(ctx, granter, granteeAddr); current != nil {
+			owned, err := ownsAllowance(existing, current, now)
+			if err != nil {
+				return err
+			}
+			if !owned {
+				return types.ErrFeeAllowanceNotOwned
+			}
+		}
+	}
+
+	// [MOD-DE-MSG-1-4] Execution.
 	feeGrant := types.FeeGrant{
 		GrantorCorporationId: grantorCorporationID,
 		Grantee:              grantee,
 		MsgTypes:             msgTypes,
 		SpendLimit:           spendLimit,
-		RemainingSpend:       remaining,
+		RemainingSpend:       spendLimit,
 		Expiration:           expiration,
-		Period:               period,
+	}
+	if len(spendLimit) > 0 {
+		feeGrant.Period = period
 	}
 	if err := k.FeeGrants.Set(ctx, key, feeGrant); err != nil {
 		return fmt.Errorf("failed to set FeeGrant: %w", err)
 	}
 
-	// Realize the on-chain x/feegrant allowance (MOD-DE-MSG-1-4).
-	if fk := k.feegrantKeeper(); fk != nil {
-		granter, granteeAddr, err := k.feeGrantAddrs(ctx, grantorCorporationID, grantee)
-		if err != nil {
-			return err
-		}
+	if fk != nil {
 		var inner feegrant.FeeAllowanceI
-		if len(spendLimit) > 0 && period != nil {
-			// [MOD-DE-MSG-1-4] No absolute expiration: auto-renews until revoked.
+		if feeGrant.Period != nil {
+			// No absolute expiration: auto-renews until revoked.
 			inner = &feegrant.PeriodicAllowance{
 				Period:           *period,
 				PeriodSpendLimit: spendLimit,
-				PeriodCanSpend:   remaining,
+				PeriodCanSpend:   spendLimit,
 				PeriodReset:      *expiration,
 			}
 		} else {
@@ -109,8 +115,8 @@ func (k Keeper) grantFeeAllowance(
 		if err != nil {
 			return fmt.Errorf("build fee allowance: %w", err)
 		}
-		// "create or update" => revoke-then-grant (x/feegrant rejects an existing grant).
-		if _, gerr := fk.GetAllowance(ctx, granter, granteeAddr); gerr == nil {
+		// x/feegrant rejects a grant over an existing one.
+		if current != nil {
 			if err := fk.RevokeAllowance(ctx, granter, granteeAddr); err != nil {
 				return fmt.Errorf("revoke existing allowance: %w", err)
 			}
@@ -120,21 +126,11 @@ func (k Keeper) grantFeeAllowance(
 		}
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeGrantFeeAllowance,
-			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(grantorCorporationID, 10)),
-			sdk.NewAttribute(types.AttributeKeyGrantee, grantee),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
-		),
-	)
+	feeAllowanceEvent(types.EventTypeGrantFeeAllowance, grantorCorporationID, grantee).Emit(ctx)
 	return nil
 }
 
-// RevokeFeeAllowance implements [MOD-DE-MSG-2]. It removes the FeeGrant for the
-// composite (grantor_corporation_id, grantee). This is an internal method called
-// by GrantDelegateAuthorization, RevokeDelegateAuthorization, and the MSG-5-5
-// recompute subroutine.
+// RevokeFeeAllowance implements [MOD-DE-MSG-2].
 func (k Keeper) RevokeFeeAllowance(goCtx context.Context, grantorCorporationID uint64, grantee string) error {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -146,78 +142,72 @@ func (k Keeper) RevokeFeeAllowance(goCtx context.Context, grantorCorporationID u
 		return fmt.Errorf("grantee must be specified")
 	}
 
-	// Revoke the on-chain x/feegrant allowance if present (MOD-DE-MSG-2-4).
-	if fk := k.feegrantKeeper(); fk != nil {
-		granter, granteeAddr, err := k.feeGrantAddrs(ctx, grantorCorporationID, grantee)
-		if err != nil {
-			return err
-		}
-		if _, gerr := fk.GetAllowance(ctx, granter, granteeAddr); gerr == nil {
-			if err := fk.RevokeAllowance(ctx, granter, granteeAddr); err != nil {
-				return err
-			}
-		}
-	}
-
-	// [MOD-DE-MSG-2-4] Execution: if FeeGrant exists, delete it, else do nothing.
+	// [MOD-DE-MSG-2-4] Execution: with no FeeGrant, nothing is touched.
 	key := collections.Join(grantorCorporationID, grantee)
-	has, err := k.FeeGrants.Has(ctx, key)
+	existing, err := k.getFeeGrant(ctx, key)
 	if err != nil {
 		return err
 	}
-	if !has {
+	if existing == nil {
 		return nil
 	}
 	if err := k.FeeGrants.Remove(ctx, key); err != nil {
 		return err
 	}
 
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeRevokeFeeAllowance,
-			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(grantorCorporationID, 10)),
-			sdk.NewAttribute(types.AttributeKeyGrantee, grantee),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
-		),
-	)
+	if fk := k.feegrantKeeper(); fk != nil {
+		granter, granteeAddr, err := k.feeGrantAddrs(ctx, grantorCorporationID, grantee)
+		if err != nil {
+			return err
+		}
+		if current, _ := fk.GetAllowance(ctx, granter, granteeAddr); current != nil {
+			owned, err := ownsAllowance(existing, current, ctx.BlockTime())
+			if err != nil {
+				return err
+			}
+			if owned {
+				if err := fk.RevokeAllowance(ctx, granter, granteeAddr); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	feeAllowanceEvent(types.EventTypeRevokeFeeAllowance, grantorCorporationID, grantee).Emit(ctx)
 	return nil
 }
 
-// carriedFeeBudget keeps the current reset and subtracts what was already spent
-// from the new total, floored at zero; fresh once the period has elapsed.
-func (k Keeper) carriedFeeBudget(ctx context.Context, grantorCorporationID uint64, grantee string, total sdk.Coins, period time.Duration) (time.Time, sdk.Coins) {
-	now := sdk.UnwrapSDKContext(ctx).BlockTime()
-	fresh := now.Add(period)
-	fk := k.feegrantKeeper()
-	if fk == nil {
-		return fresh, total
+func (k Keeper) getFeeGrant(ctx context.Context, key collections.Pair[uint64, string]) (*types.FeeGrant, error) {
+	fg, err := k.FeeGrants.Get(ctx, key)
+	if errors.Is(err, collections.ErrNotFound) {
+		return nil, nil
 	}
-	granter, granteeAddr, err := k.feeGrantAddrs(ctx, grantorCorporationID, grantee)
 	if err != nil {
-		return fresh, total
+		return nil, err
 	}
-	cur, err := fk.GetAllowance(ctx, granter, granteeAddr)
+	return &fg, nil
+}
+
+// ownsAllowance reports whether the allowance in fg's slot is this module's:
+// fg exists and has not ended by expiry while the allowance has not expired.
+func ownsAllowance(fg *types.FeeGrant, allowance feegrant.FeeAllowanceI, now time.Time) (bool, error) {
+	if fg == nil {
+		return false, nil
+	}
+	if fg.Period != nil || fg.Expiration == nil || fg.Expiration.After(now) {
+		return true, nil
+	}
+	exp, err := allowance.ExpiresAt()
 	if err != nil {
-		return fresh, total
+		return false, err
 	}
-	if wrapped, ok := cur.(*feegrant.AllowedMsgAllowance); ok {
-		if cur, err = wrapped.GetAllowance(); err != nil {
-			return fresh, total
-		}
-	}
-	pa, ok := cur.(*feegrant.PeriodicAllowance)
-	if !ok || !pa.PeriodReset.After(now) {
-		return fresh, total
-	}
-	remaining := sdk.NewCoins()
-	for _, c := range total {
-		spent := pa.PeriodSpendLimit.AmountOf(c.Denom).Sub(pa.PeriodCanSpend.AmountOf(c.Denom))
-		left := c.Amount.Sub(spent)
-		if left.IsPositive() {
-			remaining = remaining.Add(sdk.NewCoin(c.Denom, left))
-		}
-	}
-	return pa.PeriodReset, remaining
+	return exp != nil && !exp.After(now), nil
+}
+
+func feeAllowanceEvent(eventType string, grantorCorporationID uint64, grantee string) *events.Event {
+	return events.New(types.ModuleName, eventType).
+		Uint(types.AttributeKeyGrantorCorporationID, grantorCorporationID).
+		Str(types.AttributeKeyGrantee, grantee)
 }
 
 // feeGrantAddrs resolves the granter (corp policy_address) and grantee accounts.

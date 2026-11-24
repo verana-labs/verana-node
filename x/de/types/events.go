@@ -17,8 +17,7 @@ const (
 
 	EventTypeGrantSponsorship  = "grant_sponsorship"
 	EventTypeRevokeSponsorship = "revoke_sponsorship"
-	// Emitted when FUND-CHECK-1 step 1 fails for a corporation with an active
-	// sponsor.
+	// FUND-CHECK-1 step 1 failed for a corporation with an active sponsor.
 	EventTypeSponsorCouldNotPay = "sponsor_could_not_pay"
 
 	AttributeKeyCorporation   = "corporation"
@@ -32,6 +31,8 @@ const (
 	AttributeKeyAuthzID       = "authz_id"
 	AttributeKeyVsoaID        = "vsoa_id"
 	AttributeKeyParticipantID = "participant_id"
+
+	AttributeKeyGrantorCorporationID = "grantor_corporation_id"
 
 	AttributeKeySponsorCorporationID   = "sponsor_corporation_id"
 	AttributeKeySponsoredCorporationID = "sponsored_corporation_id"

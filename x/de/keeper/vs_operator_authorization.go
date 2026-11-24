@@ -276,7 +276,7 @@ func (k Keeper) SyncVSOperatorAuthorization(ctx context.Context, participantID u
 
 // recomputeFeeAllowance implements [MOD-DE-MSG-5-5]: one PeriodicAllowance over
 // the live feegrant records (union of msg_types, sum of fee_spend_limit), their
-// window ends queued, the spent budget carried over. None left: revoke.
+// window ends queued. None left: revoke.
 func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperatorAuthorization) error {
 	params, err := k.Params.Get(ctx)
 	if err != nil {
@@ -312,6 +312,6 @@ func (k Keeper) recomputeFeeAllowance(ctx context.Context, vsoa types.VSOperator
 		return k.RevokeFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator)
 	}
 	period := params.VsOperatorFeePeriod
-	reset, remaining := k.carriedFeeBudget(ctx, vsoa.CorporationId, vsoa.VsOperator, total, period)
-	return k.grantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, &reset, total, &period, remaining)
+	reset := sdk.UnwrapSDKContext(ctx).BlockTime().Add(period)
+	return k.GrantFeeAllowance(ctx, vsoa.CorporationId, vsoa.VsOperator, feegrantMsgTypes, &reset, total, &period)
 }
