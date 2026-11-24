@@ -166,7 +166,6 @@ async function main() {
       delegate: authorityAccount.address,
       grantee: delegateAccount.address,
       msgTypes: allCsMsgTypes,
-      withFeegrant: false,
     }),
   };
 

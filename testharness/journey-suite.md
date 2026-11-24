@@ -68,14 +68,14 @@ active_version   uint32   // starts at 1
 
 ### DelegateAuthorization (x/de)
 ```
-id               uint64
-corporation_id   uint64
-delegate         string   // grantee account
-msg_types        []string
-expiration       Timestamp (optional)
-spend_limit      []Coin (optional)
-remaining_spend  []Coin
-period           Duration (optional)
+corporation_id        uint64   // key
+delegate              string   // key, grantee account
+msg_types             []MsgType
+expiration            Timestamp (optional)
+spend_limit           []Coin (optional)
+remaining_spend       []Coin
+period                Duration (optional)
+accepted_cgf_version  uint32   // 0 until the delegate accepts
 ```
 
 ---
@@ -238,7 +238,7 @@ On first authorization, no DelegateAuthorization exists yet. The corporation exe
 | delegate | corp_a_policy_addr (self — bootstrap) |
 | grantee | co_delegate_addr |
 | msg_types | [MsgUpdateCorporation, MsgAddGFD, MsgIncreaseActiveGFV, MsgCreateEcosystem, MsgUpdateEcosystem, MsgArchiveEcosystem, MsgGrantDelegateAuthorization, MsgRevokeDelegateAuthorization] |
-| with_feegrant | true |
+| feegrant_spend_limit | set |
 | expiration | (unset — no expiry) |
 
 #### Expected chain state
@@ -250,7 +250,7 @@ On first authorization, no DelegateAuthorization exists yet. The corporation exe
 - Confirm feegrant by querying x/feegrant
 
 #### Saves to J002.json
-`authz_id`
+`corporation_id`, `delegate`
 
 ---
 

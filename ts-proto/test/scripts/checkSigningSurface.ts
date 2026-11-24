@@ -46,7 +46,6 @@ const deMsg = MsgGrantDelegateAuthorization.fromPartial({
   expiration: new Date("2026-04-01T12:00:00.123Z"),
   authzSpendLimit: [{ denom: "uvna", amount: "42" }],
   authzSpendLimitPeriod: { seconds: 3600, nanos: 5 },
-  withFeegrant: true,
   feegrantSpendLimit: [{ denom: "uvna", amount: "7" }],
   feegrantSpendLimitPeriod: { seconds: 7200, nanos: 0 },
 });
@@ -54,7 +53,6 @@ const deRoundTrip = deConverter.fromAmino(deConverter.toAmino(deMsg));
 assert.equal(deRoundTrip.msgTypes.length, 2);
 assert.equal(deRoundTrip.authzSpendLimitPeriod?.seconds, 3600);
 assert.equal(deRoundTrip.authzSpendLimitPeriod?.nanos, 5);
-assert.equal(deRoundTrip.withFeegrant, true);
 assert.equal(deRoundTrip.feegrantSpendLimitPeriod?.seconds, 7200);
 
 // The chain's aminojson writes a Duration as a string of total nanoseconds

@@ -14,7 +14,7 @@ import (
 )
 
 // RunDeFeegrantAllowanceJourney implements Journey 313: AUTHZ-CHECK-2 fee grant.
-// Granting a delegate authz with_feegrant realizes a cosmos x/feegrant allowance
+// Granting a delegate authz with a feegrant_spend_limit realizes a cosmos x/feegrant allowance
 // (MOD-DE-MSG-1-4); revoking it removes the allowance (MOD-DE-MSG-2-4). Self-
 // contained off journey301.
 func RunDeFeegrantAllowanceJourney(ctx context.Context, client cosmosclient.Client) error {
@@ -37,7 +37,7 @@ func RunDeFeegrantAllowanceJourney(ctx context.Context, client cosmosclient.Clie
 	}
 
 	// Step 1: grant delegate authz WITH a corporation fee grant.
-	fmt.Println("\n--- Step 1: Grant delegate authz with_feegrant (feegrant_spend_limit=100 VNA) ---")
+	fmt.Println("\n--- Step 1: Grant delegate authz with feegrant_spend_limit=100 VNA ---")
 	exp := time.Now().Add(24 * time.Hour)
 	if err := lib.GrantDelegateAuthorizationWithFeegrantViaGroup(
 		client, ctx, adminAccount, member1Account, policyAddr, delegateAddr,
@@ -56,8 +56,8 @@ func RunDeFeegrantAllowanceJourney(ctx context.Context, client cosmosclient.Clie
 	}
 	fmt.Printf("OK Step 2: x/feegrant allowance exists (granter=%s grantee=%s type=%s)\n", grant.Granter, grant.Grantee, grant.Allowance.TypeUrl)
 
-	// Step 3: re-grant with_feegrant=false -> allowance MUST be revoked.
-	fmt.Println("\n--- Step 3: Re-grant with_feegrant=false (revokes the allowance) ---")
+	// Step 3: re-grant without feegrant_spend_limit -> allowance MUST be revoked.
+	fmt.Println("\n--- Step 3: Re-grant without feegrant_spend_limit (revokes the allowance) ---")
 	if err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account, policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_START_ONBOARDING},

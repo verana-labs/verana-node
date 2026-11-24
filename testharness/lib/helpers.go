@@ -2237,7 +2237,6 @@ func GrantDelegateAuthorizationWithFeegrantViaGroup(
 		Delegate:                 policyAddr, // group-proposal path: delegate == corporation policy_address
 		Grantee:                  granteeAddr,
 		MsgTypes:                 msgTypes,
-		WithFeegrant:             true,
 		FeegrantSpendLimit:       feegrantSpendLimit,
 		FeegrantSpendLimitPeriod: feegrantSpendLimitPeriod,
 		Expiration:               expiration,

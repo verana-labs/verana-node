@@ -37,18 +37,17 @@ func TestDelegateAuthzPeriodRenewal(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
+	key := &types.QueryGetDelegateAuthorizationRequest{CorporationId: testCorpID, Delegate: grantee}
+	got, err := qs.GetDelegateAuthorization(ctx, key)
 	require.NoError(t, err)
-	require.Len(t, list.DelegateAuthorizations, 1)
-	id := list.DelegateAuthorizations[0].Id
 	// Seeded at grant time.
-	require.Equal(t, spend, list.DelegateAuthorizations[0].RemainingSpend)
+	require.Equal(t, spend, got.DelegateAuthorization.RemainingSpend)
 
 	// Check well past expiry: must succeed (auto-renew), not abort.
 	checkAt := now.Add(90 * time.Minute)
 	require.NoError(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, grantee, mtEcosystem, checkAt))
 
-	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: id})
+	got, err = qs.GetDelegateAuthorization(ctx, key)
 	require.NoError(t, err)
 	require.True(t, got.DelegateAuthorization.Expiration.After(checkAt), "expiration rolled forward")
 	require.Equal(t, spend, got.DelegateAuthorization.RemainingSpend, "remaining reset on renewal")
@@ -136,13 +135,10 @@ func TestConsumeDelegateSpend(t *testing.T) {
 		AuthzSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", 100)),
 	})
 	require.NoError(t, err)
-	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
-	require.NoError(t, err)
-	id := list.DelegateAuthorizations[0].Id
 
 	// Debit 60 -> remaining 40.
 	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, testCorpID, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))))
-	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: id})
+	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{CorporationId: testCorpID, Delegate: grantee})
 	require.NoError(t, err)
 	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uvna", 40)), got.DelegateAuthorization.RemainingSpend)
 

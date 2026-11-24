@@ -15,16 +15,11 @@ import Long = require("long");
 export const protobufPackage = "verana.de.v1";
 
 /**
- * DelegateAuthorization is the delegate authorization record. It is keyed by
- * its own uint64 id; (corporation_id, delegate) is a unique secondary index.
+ * DelegateAuthorization is the delegate authorization record, keyed by
+ * (corporation_id, delegate). The key fields are not stored in the value.
  */
 export interface DelegateAuthorization {
-  /** id is the own uint64 key of this DelegateAuthorization. */
-  id: number;
-  /**
-   * corporation_id is the id of the corporation granting the authorization. The
-   * (corporation_id, delegate) tuple MUST be unique.
-   */
+  /** corporation_id is the id of the corporation granting the authorization. */
   corporationId: number;
   /** delegate is the account receiving the authorization. */
   delegate: string;
@@ -38,14 +33,21 @@ export interface DelegateAuthorization {
    */
   remainingSpend: Coin[];
   /**
-   * expiration is the timestamp after which the authorization is no longer
-   * valid.
+   * expiration is the absolute end of the authorization when period is unset,
+   * else the end of its current cycle.
    */
   expiration:
     | Date
     | undefined;
   /** period is the reset period for spend_limit. If set, expiration MUST also be set. */
-  period: Duration | undefined;
+  period:
+    | Duration
+    | undefined;
+  /**
+   * accepted_cgf_version is the last version of the corporation's governance
+   * framework the delegate accepted; 0 until it accepts.
+   */
+  acceptedCgfVersion: number;
 }
 
 /**
@@ -162,7 +164,6 @@ export interface VSOperatorAuthorization {
 
 function createBaseDelegateAuthorization(): DelegateAuthorization {
   return {
-    id: 0,
     corporationId: 0,
     delegate: "",
     msgTypes: [],
@@ -170,14 +171,12 @@ function createBaseDelegateAuthorization(): DelegateAuthorization {
     remainingSpend: [],
     expiration: undefined,
     period: undefined,
+    acceptedCgfVersion: 0,
   };
 }
 
 export const DelegateAuthorization = {
   encode(message: DelegateAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).uint64(message.id);
-    }
     if (message.corporationId !== 0) {
       writer.uint32(16).uint64(message.corporationId);
     }
@@ -201,6 +200,9 @@ export const DelegateAuthorization = {
     if (message.period !== undefined) {
       Duration.encode(message.period, writer.uint32(82).fork()).ldelim();
     }
+    if (message.acceptedCgfVersion !== 0) {
+      writer.uint32(88).uint32(message.acceptedCgfVersion);
+    }
     return writer;
   },
 
@@ -211,13 +213,6 @@ export const DelegateAuthorization = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.id = longToNumber(reader.uint64() as Long);
-          continue;
         case 2:
           if (tag !== 16) {
             break;
@@ -277,6 +272,13 @@ export const DelegateAuthorization = {
 
           message.period = Duration.decode(reader, reader.uint32());
           continue;
+        case 11:
+          if (tag !== 88) {
+            break;
+          }
+
+          message.acceptedCgfVersion = reader.uint32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -288,7 +290,6 @@ export const DelegateAuthorization = {
 
   fromJSON(object: any): DelegateAuthorization {
     return {
-      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
       delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
@@ -300,14 +301,12 @@ export const DelegateAuthorization = {
         : [],
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
       period: isSet(object.period) ? Duration.fromJSON(object.period) : undefined,
+      acceptedCgfVersion: isSet(object.acceptedCgfVersion) ? globalThis.Number(object.acceptedCgfVersion) : 0,
     };
   },
 
   toJSON(message: DelegateAuthorization): unknown {
     const obj: any = {};
-    if (message.id !== 0) {
-      obj.id = Math.round(message.id);
-    }
     if (message.corporationId !== 0) {
       obj.corporationId = Math.round(message.corporationId);
     }
@@ -329,6 +328,9 @@ export const DelegateAuthorization = {
     if (message.period !== undefined) {
       obj.period = Duration.toJSON(message.period);
     }
+    if (message.acceptedCgfVersion !== 0) {
+      obj.acceptedCgfVersion = Math.round(message.acceptedCgfVersion);
+    }
     return obj;
   },
 
@@ -337,7 +339,6 @@ export const DelegateAuthorization = {
   },
   fromPartial<I extends Exact<DeepPartial<DelegateAuthorization>, I>>(object: I): DelegateAuthorization {
     const message = createBaseDelegateAuthorization();
-    message.id = object.id ?? 0;
     message.corporationId = object.corporationId ?? 0;
     message.delegate = object.delegate ?? "";
     message.msgTypes = object.msgTypes?.map((e) => e) || [];
@@ -347,6 +348,7 @@ export const DelegateAuthorization = {
     message.period = (object.period !== undefined && object.period !== null)
       ? Duration.fromPartial(object.period)
       : undefined;
+    message.acceptedCgfVersion = object.acceptedCgfVersion ?? 0;
     return message;
   },
 };

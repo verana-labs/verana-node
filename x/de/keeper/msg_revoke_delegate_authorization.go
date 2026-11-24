@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,7 +26,8 @@ func (ms msgServer) RevokeDelegateAuthorization(goCtx context.Context, msg *type
 
 	// Group-proposal path: delegate equals corporation and AUTHZ-CHECK-5 alone
 	// applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
-	if msg.Delegate != msg.Corporation {
+	groupPath := msg.Delegate == msg.Corporation
+	if !groupPath {
 		if err := ms.CheckDelegateAuthorization(
 			ctx,
 			co.Id,
@@ -40,39 +40,29 @@ func (ms msgServer) RevokeDelegateAuthorization(goCtx context.Context, msg *type
 	}
 
 	// A DelegateAuthorization MUST exist for (co.id, grantee).
-	existing, found, err := ms.getDelegateAuthorizationByCorpDelegate(ctx, co.Id, msg.Grantee)
+	grantee, err := sdk.AccAddressFromBech32(msg.Grantee)
+	if err != nil {
+		return nil, fmt.Errorf("invalid grantee address: %w", err)
+	}
+	key := collections.Join(co.Id, grantee)
+	has, err := ms.DelegateAuthorizations.Has(ctx, key)
 	if err != nil {
 		return nil, err
 	}
-	if !found {
+	if !has {
 		return nil, types.ErrDelegateAuthzNotFound
 	}
 
 	// [MOD-DE-MSG-4-4] Execution.
-
-	// 1. Delete the DelegateAuthorization and its secondary index.
-	if err := ms.DelegateAuthorizations.Remove(ctx, existing.Id); err != nil {
+	if err := ms.DelegateAuthorizations.Remove(ctx, key); err != nil {
 		return nil, fmt.Errorf("failed to remove DelegateAuthorization: %w", err)
 	}
-	if err := ms.DelegateAuthorizationByCorpDelegate.Remove(ctx, collections.Join(co.Id, msg.Grantee)); err != nil {
-		return nil, fmt.Errorf("failed to remove DelegateAuthorization index: %w", err)
-	}
-
-	// 2. Revoke Fee Allowance for (co.id, grantee).
-	if err := ms.RevokeFeeAllowance(ctx, co.Id, msg.Grantee); err != nil {
+	if err := ms.RevokeFeeAllowance(ctx, co.Id, grantee.String()); err != nil {
 		return nil, fmt.Errorf("failed to revoke fee allowance: %w", err)
 	}
 
-	// 3. Emit events.
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeRevokeDelegateAuthorization,
-			sdk.NewAttribute(types.AttributeKeyAuthzID, strconv.FormatUint(existing.Id, 10)),
-			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(co.Id, 10)),
-			sdk.NewAttribute(types.AttributeKeyGrantee, msg.Grantee),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
-		),
-	)
-
+	if err := ms.emitDelegateAuthorizationEvent(ctx, types.EventTypeRevokeDelegateAuthorization, co.Id, grantee, groupPath, msg); err != nil {
+		return nil, err
+	}
 	return &types.MsgRevokeDelegateAuthorizationResponse{}, nil
 }

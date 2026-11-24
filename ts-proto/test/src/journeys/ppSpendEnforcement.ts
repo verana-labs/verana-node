@@ -37,7 +37,7 @@ import { ParticipantRole, OptionalUInt64 } from "../../../src/codec/verana/pp/v1
 import { MsgStartParticipantOP } from "../../../src/codec/verana/pp/v1/tx";
 import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
 import { QueryClientImpl } from "../../../src/codec/verana/de/v1/query";
-import { getPermAuthzSetup } from "../helpers/journeyResults";
+import { getActiveCorporation, getPermAuthzSetup } from "../helpers/journeyResults";
 import { createPermPrerequisites, createRootPermWithDelegate, createCSWithDelegate } from "../helpers/permissionHelpers";
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
@@ -82,7 +82,6 @@ async function reGrantWithSpendLimit(
       delegate: corporation,
       grantee,
       msgTypes: GRANT_MSG_TYPES,
-      withFeegrant: false,
       authzSpendLimit: [{ denom: config.denom, amount: spendLimitAmount }],
     }),
   ).finish();
@@ -153,14 +152,11 @@ async function queryRemainingSpend(delegate: string): Promise<bigint> {
     const queryClient = new QueryClient(cometClient as any);
     const rpc = createProtobufRpcClient(queryClient);
     const de = new QueryClientImpl(rpc);
-    const resp = await de.ListDelegateAuthorizations({ corporationId: 0, delegate, responseMaxSize: 64 });
-    for (const oa of resp.delegateAuthorizations) {
-      if (oa.delegate === delegate) {
-        const coin = oa.remainingSpend.find((c) => c.denom === config.denom);
-        return coin ? BigInt(coin.amount) : 0n;
-      }
-    }
-    throw new Error(`No DelegateAuthorization found for delegate ${delegate}`);
+    const corp = getActiveCorporation();
+    if (!corp) throw new Error("No active corporation; run the corporation journey first");
+    const resp = await de.GetDelegateAuthorization({ corporationId: corp.corporationId, delegate });
+    const coin = resp.delegateAuthorization?.remainingSpend.find((c) => c.denom === config.denom);
+    return coin ? BigInt(coin.amount) : 0n;
   } finally {
     cometClient.disconnect();
   }

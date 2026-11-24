@@ -98,7 +98,6 @@ async function main() {
       delegate: account.address,
       grantee: account.address,
       msgTypes: [MsgType.MSG_TYPE_STORE_DIGEST],
-      withFeegrant: false,
     }),
   };
 

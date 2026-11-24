@@ -26,7 +26,6 @@ message GenesisState {
   repeated VSOperatorAuthorization vs_operator_authorizations = 4 [(gogoproto.nullable) = false];
 
   // Id sequences, exported so ids are never re-issued after a delete.
-  uint64 delegate_authorization_seq = 6;
   uint64 vsoa_seq = 7;
 
   // window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5.

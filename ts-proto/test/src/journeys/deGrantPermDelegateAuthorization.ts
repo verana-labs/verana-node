@@ -151,7 +151,6 @@ async function main() {
       delegate: authorityAddress,
       grantee: delegateAccount.address,
       msgTypes: allMsgTypes,
-      withFeegrant: false,
     }),
   ).finish();
 

@@ -199,21 +199,17 @@
           "type": "string",
           "description": "authz_spend_limit_period is the optional reset period for\nauthz_spend_limit."
         },
-        "with_feegrant": {
-          "type": "boolean",
-          "description": "with_feegrant indicates whether to also grant a fee allowance."
-        },
         "feegrant_spend_limit": {
           "type": "array",
           "items": {
             "type": "object",
             "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
           },
-          "description": "feegrant_spend_limit is the optional maximum fee amount. Ignored if\nwith_feegrant is false."
+          "description": "feegrant_spend_limit, when set, makes the corporation pay the grantee's\nnetwork fees for msg_types up to this amount; absent means no fee allowance."
         },
         "feegrant_spend_limit_period": {
           "type": "string",
-          "description": "feegrant_spend_limit_period is the optional reset period for\nfeegrant_spend_limit. Ignored if with_feegrant is false."
+          "description": "feegrant_spend_limit_period is the optional reset period for\nfeegrant_spend_limit. Ignored if feegrant_spend_limit is not set."
         }
       },
       "description": "[MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization\nto a grantee on behalf of a corporation.\n\nThe signer is `delegate`. On the group-proposal path the corporation's\npolicy account executes the message and `delegate` equals `corporation`;\nonly AUTHZ-CHECK-5 then applies."

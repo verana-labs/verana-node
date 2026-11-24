@@ -24,32 +24,30 @@ func (gs GenesisState) Validate() error {
 		return err
 	}
 
-	// DelegateAuthorization: id (key) non-zero + unique; (corporation_id,
-	// delegate) secondary index unique.
-	oaIDs := make(map[uint64]bool)
-	oaCorpOp := make(map[string]bool)
+	// DelegateAuthorization: (corporation_id, delegate) key unique.
+	daKeys := make(map[string]bool)
 	for i, da := range gs.DelegateAuthorizations {
-		if da.Id == 0 {
-			return fmt.Errorf("delegate_authorizations[%d]: id cannot be 0", i)
-		}
-		if oaIDs[da.Id] {
-			return fmt.Errorf("delegate_authorizations[%d]: duplicate id %d", i, da.Id)
-		}
-		oaIDs[da.Id] = true
 		if da.CorporationId == 0 {
 			return fmt.Errorf("delegate_authorizations[%d]: corporation_id cannot be 0", i)
 		}
-		if _, err := sdk.AccAddressFromBech32(da.Delegate); err != nil {
+		delegate, err := sdk.AccAddressFromBech32(da.Delegate)
+		if err != nil {
 			return fmt.Errorf("delegate_authorizations[%d]: invalid delegate address: %w", i, err)
 		}
 		if err := ValidateMsgTypes(da.MsgTypes, DelegateAuthorizationMsgTypes); err != nil {
 			return fmt.Errorf("delegate_authorizations[%d]: %w", i, err)
 		}
-		idx := fmt.Sprintf("%d/%s", da.CorporationId, da.Delegate)
-		if oaCorpOp[idx] {
-			return fmt.Errorf("delegate_authorizations[%d]: duplicate (corporation_id, delegate) %s", i, idx)
+		if da.Period != nil && da.Expiration == nil {
+			return fmt.Errorf("delegate_authorizations[%d]: period requires expiration", i)
 		}
-		oaCorpOp[idx] = true
+		if len(da.RemainingSpend) > 0 && len(da.SpendLimit) == 0 {
+			return fmt.Errorf("delegate_authorizations[%d]: remaining_spend requires spend_limit", i)
+		}
+		key := fmt.Sprintf("%d/%s", da.CorporationId, delegate)
+		if daKeys[key] {
+			return fmt.Errorf("delegate_authorizations[%d]: duplicate (corporation_id, delegate) %s", i, key)
+		}
+		daKeys[key] = true
 	}
 
 	// FeeGrant: composite key (grantor_corporation_id, grantee) unique.

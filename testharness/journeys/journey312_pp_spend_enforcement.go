@@ -356,17 +356,17 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 func queryDelegateRemainingSpend(
 	ctx context.Context, client cosmosclient.Client, policyAddr, delegateAddr string,
 ) (math.Int, error) {
+	corpID, err := lib.ResolveCorporationIDByAddress(client, ctx, policyAddr)
+	if err != nil {
+		return math.Int{}, err
+	}
 	qc := detypes.NewQueryClient(client.Context())
-	resp, err := qc.ListDelegateAuthorizations(ctx, &detypes.QueryListDelegateAuthorizationsRequest{
-		Delegate: delegateAddr,
+	resp, err := qc.GetDelegateAuthorization(ctx, &detypes.QueryGetDelegateAuthorizationRequest{
+		CorporationId: corpID,
+		Delegate:      delegateAddr,
 	})
 	if err != nil {
 		return math.Int{}, err
 	}
-	for _, oa := range resp.DelegateAuthorizations {
-		if oa.Delegate == delegateAddr {
-			return oa.RemainingSpend.AmountOf(permtypes.BondDenom), nil
-		}
-	}
-	return math.Int{}, fmt.Errorf("no DelegateAuthorization found for delegate %s", delegateAddr)
+	return resp.DelegateAuthorization.RemainingSpend.AmountOf(permtypes.BondDenom), nil
 }

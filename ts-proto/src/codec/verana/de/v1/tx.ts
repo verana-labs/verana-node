@@ -69,16 +69,14 @@ export interface MsgGrantDelegateAuthorization {
   authzSpendLimitPeriod:
     | Duration
     | undefined;
-  /** with_feegrant indicates whether to also grant a fee allowance. */
-  withFeegrant: boolean;
   /**
-   * feegrant_spend_limit is the optional maximum fee amount. Ignored if
-   * with_feegrant is false.
+   * feegrant_spend_limit, when set, makes the corporation pay the grantee's
+   * network fees for msg_types up to this amount; absent means no fee allowance.
    */
   feegrantSpendLimit: Coin[];
   /**
    * feegrant_spend_limit_period is the optional reset period for
-   * feegrant_spend_limit. Ignored if with_feegrant is false.
+   * feegrant_spend_limit. Ignored if feegrant_spend_limit is not set.
    */
   feegrantSpendLimitPeriod: Duration | undefined;
 }
@@ -242,7 +240,6 @@ function createBaseMsgGrantDelegateAuthorization(): MsgGrantDelegateAuthorizatio
     expiration: undefined,
     authzSpendLimit: [],
     authzSpendLimitPeriod: undefined,
-    withFeegrant: false,
     feegrantSpendLimit: [],
     feegrantSpendLimitPeriod: undefined,
   };
@@ -272,9 +269,6 @@ export const MsgGrantDelegateAuthorization = {
     }
     if (message.authzSpendLimitPeriod !== undefined) {
       Duration.encode(message.authzSpendLimitPeriod, writer.uint32(58).fork()).ldelim();
-    }
-    if (message.withFeegrant !== false) {
-      writer.uint32(64).bool(message.withFeegrant);
     }
     for (const v of message.feegrantSpendLimit) {
       Coin.encode(v!, writer.uint32(74).fork()).ldelim();
@@ -351,13 +345,6 @@ export const MsgGrantDelegateAuthorization = {
 
           message.authzSpendLimitPeriod = Duration.decode(reader, reader.uint32());
           continue;
-        case 8:
-          if (tag !== 64) {
-            break;
-          }
-
-          message.withFeegrant = reader.bool();
-          continue;
         case 9:
           if (tag !== 74) {
             break;
@@ -394,7 +381,6 @@ export const MsgGrantDelegateAuthorization = {
       authzSpendLimitPeriod: isSet(object.authzSpendLimitPeriod)
         ? Duration.fromJSON(object.authzSpendLimitPeriod)
         : undefined,
-      withFeegrant: isSet(object.withFeegrant) ? globalThis.Boolean(object.withFeegrant) : false,
       feegrantSpendLimit: globalThis.Array.isArray(object?.feegrantSpendLimit)
         ? object.feegrantSpendLimit.map((e: any) => Coin.fromJSON(e))
         : [],
@@ -427,9 +413,6 @@ export const MsgGrantDelegateAuthorization = {
     if (message.authzSpendLimitPeriod !== undefined) {
       obj.authzSpendLimitPeriod = Duration.toJSON(message.authzSpendLimitPeriod);
     }
-    if (message.withFeegrant !== false) {
-      obj.withFeegrant = message.withFeegrant;
-    }
     if (message.feegrantSpendLimit?.length) {
       obj.feegrantSpendLimit = message.feegrantSpendLimit.map((e) => Coin.toJSON(e));
     }
@@ -456,7 +439,6 @@ export const MsgGrantDelegateAuthorization = {
       (object.authzSpendLimitPeriod !== undefined && object.authzSpendLimitPeriod !== null)
         ? Duration.fromPartial(object.authzSpendLimitPeriod)
         : undefined;
-    message.withFeegrant = object.withFeegrant ?? false;
     message.feegrantSpendLimit = object.feegrantSpendLimit?.map((e) => Coin.fromPartial(e)) || [];
     message.feegrantSpendLimitPeriod =
       (object.feegrantSpendLimitPeriod !== undefined && object.feegrantSpendLimitPeriod !== null)

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"cosmossdk.io/collections"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/de/types"
 )
@@ -17,24 +18,10 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 		return err
 	}
 
-	var maxOAID uint64
 	for _, da := range genState.DelegateAuthorizations {
-		if err := k.DelegateAuthorizations.Set(ctx, da.Id, da); err != nil {
+		if err := k.setDelegateAuthorization(ctx, da); err != nil {
 			return fmt.Errorf("failed to set delegate authorization: %w", err)
 		}
-		if err := k.DelegateAuthorizationByCorpDelegate.Set(ctx, collections.Join(da.CorporationId, da.Delegate), da.Id); err != nil {
-			return fmt.Errorf("failed to set delegate authorization index: %w", err)
-		}
-		if da.Id > maxOAID {
-			maxOAID = da.Id
-		}
-	}
-	oaSeq := genState.DelegateAuthorizationSeq
-	if maxOAID > oaSeq {
-		oaSeq = maxOAID
-	}
-	if err := k.DelegateAuthorizationSeq.Set(ctx, oaSeq); err != nil {
-		return fmt.Errorf("failed to seed delegate authorization sequence: %w", err)
 	}
 
 	for _, fg := range genState.FeeGrants {
@@ -91,16 +78,15 @@ func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) 
 		return nil, err
 	}
 
-	// Delegate authorizations (keyed by id).
-	oaList := []types.DelegateAuthorization{}
-	if err := k.DelegateAuthorizations.Walk(ctx, nil, func(_ uint64, val types.DelegateAuthorization) (bool, error) {
-		oaList = append(oaList, val)
+	daList := []types.DelegateAuthorization{}
+	if err := k.DelegateAuthorizations.Walk(ctx, nil, func(key collections.Pair[uint64, sdk.AccAddress], val types.DelegateAuthorization) (bool, error) {
+		withKey(&val, key.K1(), key.K2())
+		daList = append(daList, val)
 		return false, nil
 	}); err != nil {
 		return nil, fmt.Errorf("failed to export delegate authorizations: %w", err)
 	}
-	sort.Slice(oaList, func(i, j int) bool { return oaList[i].Id < oaList[j].Id })
-	genesis.DelegateAuthorizations = oaList
+	genesis.DelegateAuthorizations = daList
 
 	// Fee grants (composite key).
 	fgList := []types.FeeGrant{}
@@ -129,9 +115,6 @@ func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) 
 	sort.Slice(vsoaList, func(i, j int) bool { return vsoaList[i].Id < vsoaList[j].Id })
 	genesis.VsOperatorAuthorizations = vsoaList
 
-	if genesis.DelegateAuthorizationSeq, err = k.DelegateAuthorizationSeq.Peek(ctx); err != nil {
-		return nil, err
-	}
 	if genesis.VsoaSeq, err = k.VSOASeq.Peek(ctx); err != nil {
 		return nil, err
 	}

@@ -34,11 +34,11 @@ const (
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// [MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters.
+	// [MOD-DE-QRY-1] ListDelegateAuthorizations returns the delegate authorizations of a corporation.
 	ListDelegateAuthorizations(ctx context.Context, in *QueryListDelegateAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListDelegateAuthorizationsResponse, error)
 	// ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.
 	ListVSOperatorAuthorizations(ctx context.Context, in *QueryListVSOperatorAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListVSOperatorAuthorizationsResponse, error)
-	// [MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id.
+	// [MOD-DE-QRY-3] GetDelegateAuthorization returns the DelegateAuthorization of (corporation_id, delegate).
 	GetDelegateAuthorization(ctx context.Context, in *QueryGetDelegateAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(ctx context.Context, in *QueryGetVSOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetVSOperatorAuthorizationResponse, error)
@@ -110,11 +110,11 @@ func (c *queryClient) GetVSOperatorAuthorization(ctx context.Context, in *QueryG
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// [MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters.
+	// [MOD-DE-QRY-1] ListDelegateAuthorizations returns the delegate authorizations of a corporation.
 	ListDelegateAuthorizations(context.Context, *QueryListDelegateAuthorizationsRequest) (*QueryListDelegateAuthorizationsResponse, error)
 	// ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.
 	ListVSOperatorAuthorizations(context.Context, *QueryListVSOperatorAuthorizationsRequest) (*QueryListVSOperatorAuthorizationsResponse, error)
-	// [MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id.
+	// [MOD-DE-QRY-3] GetDelegateAuthorization returns the DelegateAuthorization of (corporation_id, delegate).
 	GetDelegateAuthorization(context.Context, *QueryGetDelegateAuthorizationRequest) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(context.Context, *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error)

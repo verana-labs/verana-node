@@ -44,7 +44,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "GrantDelegateAuthorization",
 					Use:       "grant-delegate-authz [grantee]",
 					Short:     "Grant delegate authorization to a grantee on behalf of a corporation",
-					Long:      "[MOD-DE-MSG-3] Grant delegate authorization. The signer (--from) is the delegate: the corporation's policy_address on the group-proposal path, or an authorized delegate. The grantee receives authorization to execute specified message types on behalf of the corporation and cannot be the corporation's own policy_address. Optionally includes a fee grant.",
+					Long:      "[MOD-DE-MSG-3] Grant delegate authorization. The signer (--from) is the delegate: the corporation's policy_address on the group-proposal path, or an authorized delegate. The grantee receives authorization to execute specified message types on behalf of the corporation and cannot be the corporation's own policy_address. A fee allowance is granted when --feegrant-spend-limit is set.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "grantee"},
 					},
@@ -69,18 +69,13 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 							Name:  "authz-spend-limit-period",
 							Usage: "reset period for authz spend limit",
 						},
-						"with_feegrant": {
-							Name:         "with-feegrant",
-							Usage:        "whether to also grant fee allowance",
-							DefaultValue: "false",
-						},
 						"feegrant_spend_limit": {
 							Name:  "feegrant-spend-limit",
-							Usage: "maximum fee amount (e.g. 100stake). Ignored if --with-feegrant is false",
+							Usage: "maximum fee amount the corporation pays for the grantee (e.g. 100stake); no fee allowance when absent",
 						},
 						"feegrant_spend_limit_period": {
 							Name:  "feegrant-spend-limit-period",
-							Usage: "reset period for fee spend limit. Ignored if --with-feegrant is false",
+							Usage: "reset period for fee spend limit. Ignored without --feegrant-spend-limit",
 						},
 					},
 				},
