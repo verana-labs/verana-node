@@ -15,6 +15,12 @@ const (
 	EventTypeDelegateAuthorizationUpdated   = "delegate_authorization_updated"
 	EventTypeVSOperatorAuthorizationUpdated = "vs_operator_authorization_updated"
 
+	EventTypeGrantSponsorship  = "grant_sponsorship"
+	EventTypeRevokeSponsorship = "revoke_sponsorship"
+	// Emitted when FUND-CHECK-1 step 1 fails for a corporation with an active
+	// sponsor.
+	EventTypeSponsorCouldNotPay = "sponsor_could_not_pay"
+
 	AttributeKeyCorporation   = "corporation"
 	AttributeKeyCorporationID = "corporation_id"
 	AttributeKeyDelegate      = "delegate"
@@ -26,4 +32,10 @@ const (
 	AttributeKeyAuthzID       = "authz_id"
 	AttributeKeyVsoaID        = "vsoa_id"
 	AttributeKeyParticipantID = "participant_id"
+
+	AttributeKeySponsorCorporationID   = "sponsor_corporation_id"
+	AttributeKeySponsoredCorporationID = "sponsored_corporation_id"
+	AttributeKeySponsorCleared         = "sponsor_cleared"
+	AttributeKeyMsgType                = "msg_type"
+	AttributeKeyTotals                 = "totals"
 )

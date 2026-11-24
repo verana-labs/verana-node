@@ -7,7 +7,7 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
-import { DelegateAuthorization, VSOperatorAuthorization } from "./types";
+import { DelegateAuthorization, Sponsorship, VSOperatorAuthorization } from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
@@ -96,6 +96,54 @@ export interface QueryGetVSOperatorAuthorizationRequest {
  */
 export interface QueryGetVSOperatorAuthorizationResponse {
   vsOperatorAuthorization: VSOperatorAuthorization | undefined;
+}
+
+/**
+ * QueryGetSponsorshipRequest is the request type for the Query/GetSponsorship
+ * RPC method.
+ */
+export interface QueryGetSponsorshipRequest {
+  sponsorCorporationId: number;
+  sponsoredCorporationId: number;
+}
+
+/**
+ * QueryGetSponsorshipResponse is the response type for the
+ * Query/GetSponsorship RPC method.
+ */
+export interface QueryGetSponsorshipResponse {
+  sponsorship: Sponsorship | undefined;
+}
+
+/**
+ * QueryListSponsorshipsRequest is the request type for the
+ * Query/ListSponsorships RPC method.
+ */
+export interface QueryListSponsorshipsRequest {
+  /** sponsor_corporation_id is the sponsor whose sponsorships are listed. */
+  sponsorCorporationId: number;
+  /** response_max_size limits the number of results. Must be 1-1024, defaults to 64. */
+  responseMaxSize: number;
+}
+
+/** ListedSponsorship is a Sponsorship with its derived active flag. */
+export interface ListedSponsorship {
+  sponsorship:
+    | Sponsorship
+    | undefined;
+  /**
+   * active is true iff the sponsored corporation elected this sponsor and the
+   * sponsorship is not expired.
+   */
+  active: boolean;
+}
+
+/**
+ * QueryListSponsorshipsResponse is the response type for the
+ * Query/ListSponsorships RPC method.
+ */
+export interface QueryListSponsorshipsResponse {
+  sponsorships: ListedSponsorship[];
 }
 
 function createBaseQueryParamsRequest(): QueryParamsRequest {
@@ -776,6 +824,354 @@ export const QueryGetVSOperatorAuthorizationResponse = {
   },
 };
 
+function createBaseQueryGetSponsorshipRequest(): QueryGetSponsorshipRequest {
+  return { sponsorCorporationId: 0, sponsoredCorporationId: 0 };
+}
+
+export const QueryGetSponsorshipRequest = {
+  encode(message: QueryGetSponsorshipRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.sponsorCorporationId !== 0) {
+      writer.uint32(8).uint64(message.sponsorCorporationId);
+    }
+    if (message.sponsoredCorporationId !== 0) {
+      writer.uint32(16).uint64(message.sponsoredCorporationId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetSponsorshipRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGetSponsorshipRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.sponsorCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.sponsoredCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetSponsorshipRequest {
+    return {
+      sponsorCorporationId: isSet(object.sponsorCorporationId) ? globalThis.Number(object.sponsorCorporationId) : 0,
+      sponsoredCorporationId: isSet(object.sponsoredCorporationId)
+        ? globalThis.Number(object.sponsoredCorporationId)
+        : 0,
+    };
+  },
+
+  toJSON(message: QueryGetSponsorshipRequest): unknown {
+    const obj: any = {};
+    if (message.sponsorCorporationId !== 0) {
+      obj.sponsorCorporationId = Math.round(message.sponsorCorporationId);
+    }
+    if (message.sponsoredCorporationId !== 0) {
+      obj.sponsoredCorporationId = Math.round(message.sponsoredCorporationId);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryGetSponsorshipRequest>, I>>(base?: I): QueryGetSponsorshipRequest {
+    return QueryGetSponsorshipRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryGetSponsorshipRequest>, I>>(object: I): QueryGetSponsorshipRequest {
+    const message = createBaseQueryGetSponsorshipRequest();
+    message.sponsorCorporationId = object.sponsorCorporationId ?? 0;
+    message.sponsoredCorporationId = object.sponsoredCorporationId ?? 0;
+    return message;
+  },
+};
+
+function createBaseQueryGetSponsorshipResponse(): QueryGetSponsorshipResponse {
+  return { sponsorship: undefined };
+}
+
+export const QueryGetSponsorshipResponse = {
+  encode(message: QueryGetSponsorshipResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.sponsorship !== undefined) {
+      Sponsorship.encode(message.sponsorship, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetSponsorshipResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGetSponsorshipResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.sponsorship = Sponsorship.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetSponsorshipResponse {
+    return { sponsorship: isSet(object.sponsorship) ? Sponsorship.fromJSON(object.sponsorship) : undefined };
+  },
+
+  toJSON(message: QueryGetSponsorshipResponse): unknown {
+    const obj: any = {};
+    if (message.sponsorship !== undefined) {
+      obj.sponsorship = Sponsorship.toJSON(message.sponsorship);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryGetSponsorshipResponse>, I>>(base?: I): QueryGetSponsorshipResponse {
+    return QueryGetSponsorshipResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryGetSponsorshipResponse>, I>>(object: I): QueryGetSponsorshipResponse {
+    const message = createBaseQueryGetSponsorshipResponse();
+    message.sponsorship = (object.sponsorship !== undefined && object.sponsorship !== null)
+      ? Sponsorship.fromPartial(object.sponsorship)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryListSponsorshipsRequest(): QueryListSponsorshipsRequest {
+  return { sponsorCorporationId: 0, responseMaxSize: 0 };
+}
+
+export const QueryListSponsorshipsRequest = {
+  encode(message: QueryListSponsorshipsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.sponsorCorporationId !== 0) {
+      writer.uint32(8).uint64(message.sponsorCorporationId);
+    }
+    if (message.responseMaxSize !== 0) {
+      writer.uint32(16).uint32(message.responseMaxSize);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListSponsorshipsRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryListSponsorshipsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.sponsorCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.responseMaxSize = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryListSponsorshipsRequest {
+    return {
+      sponsorCorporationId: isSet(object.sponsorCorporationId) ? globalThis.Number(object.sponsorCorporationId) : 0,
+      responseMaxSize: isSet(object.responseMaxSize) ? globalThis.Number(object.responseMaxSize) : 0,
+    };
+  },
+
+  toJSON(message: QueryListSponsorshipsRequest): unknown {
+    const obj: any = {};
+    if (message.sponsorCorporationId !== 0) {
+      obj.sponsorCorporationId = Math.round(message.sponsorCorporationId);
+    }
+    if (message.responseMaxSize !== 0) {
+      obj.responseMaxSize = Math.round(message.responseMaxSize);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryListSponsorshipsRequest>, I>>(base?: I): QueryListSponsorshipsRequest {
+    return QueryListSponsorshipsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryListSponsorshipsRequest>, I>>(object: I): QueryListSponsorshipsRequest {
+    const message = createBaseQueryListSponsorshipsRequest();
+    message.sponsorCorporationId = object.sponsorCorporationId ?? 0;
+    message.responseMaxSize = object.responseMaxSize ?? 0;
+    return message;
+  },
+};
+
+function createBaseListedSponsorship(): ListedSponsorship {
+  return { sponsorship: undefined, active: false };
+}
+
+export const ListedSponsorship = {
+  encode(message: ListedSponsorship, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.sponsorship !== undefined) {
+      Sponsorship.encode(message.sponsorship, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.active !== false) {
+      writer.uint32(16).bool(message.active);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListedSponsorship {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseListedSponsorship();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.sponsorship = Sponsorship.decode(reader, reader.uint32());
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.active = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListedSponsorship {
+    return {
+      sponsorship: isSet(object.sponsorship) ? Sponsorship.fromJSON(object.sponsorship) : undefined,
+      active: isSet(object.active) ? globalThis.Boolean(object.active) : false,
+    };
+  },
+
+  toJSON(message: ListedSponsorship): unknown {
+    const obj: any = {};
+    if (message.sponsorship !== undefined) {
+      obj.sponsorship = Sponsorship.toJSON(message.sponsorship);
+    }
+    if (message.active !== false) {
+      obj.active = message.active;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ListedSponsorship>, I>>(base?: I): ListedSponsorship {
+    return ListedSponsorship.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ListedSponsorship>, I>>(object: I): ListedSponsorship {
+    const message = createBaseListedSponsorship();
+    message.sponsorship = (object.sponsorship !== undefined && object.sponsorship !== null)
+      ? Sponsorship.fromPartial(object.sponsorship)
+      : undefined;
+    message.active = object.active ?? false;
+    return message;
+  },
+};
+
+function createBaseQueryListSponsorshipsResponse(): QueryListSponsorshipsResponse {
+  return { sponsorships: [] };
+}
+
+export const QueryListSponsorshipsResponse = {
+  encode(message: QueryListSponsorshipsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.sponsorships) {
+      ListedSponsorship.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListSponsorshipsResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryListSponsorshipsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.sponsorships.push(ListedSponsorship.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryListSponsorshipsResponse {
+    return {
+      sponsorships: globalThis.Array.isArray(object?.sponsorships)
+        ? object.sponsorships.map((e: any) => ListedSponsorship.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: QueryListSponsorshipsResponse): unknown {
+    const obj: any = {};
+    if (message.sponsorships?.length) {
+      obj.sponsorships = message.sponsorships.map((e) => ListedSponsorship.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QueryListSponsorshipsResponse>, I>>(base?: I): QueryListSponsorshipsResponse {
+    return QueryListSponsorshipsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QueryListSponsorshipsResponse>, I>>(
+    object: I,
+  ): QueryListSponsorshipsResponse {
+    const message = createBaseQueryListSponsorshipsResponse();
+    message.sponsorships = object.sponsorships?.map((e) => ListedSponsorship.fromPartial(e)) || [];
+    return message;
+  },
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -796,6 +1192,16 @@ export interface Query {
   GetVSOperatorAuthorization(
     request: QueryGetVSOperatorAuthorizationRequest,
   ): Promise<QueryGetVSOperatorAuthorizationResponse>;
+  /**
+   * [MOD-DE-QRY-5] GetSponsorship returns the Sponsorship of a sponsor and a
+   * sponsored corporation.
+   */
+  GetSponsorship(request: QueryGetSponsorshipRequest): Promise<QueryGetSponsorshipResponse>;
+  /**
+   * [MOD-DE-QRY-6] ListSponsorships returns the sponsorships of a sponsor with
+   * whether each is active.
+   */
+  ListSponsorships(request: QueryListSponsorshipsRequest): Promise<QueryListSponsorshipsResponse>;
 }
 
 export const QueryServiceName = "verana.de.v1.Query";
@@ -810,6 +1216,8 @@ export class QueryClientImpl implements Query {
     this.ListVSOperatorAuthorizations = this.ListVSOperatorAuthorizations.bind(this);
     this.GetDelegateAuthorization = this.GetDelegateAuthorization.bind(this);
     this.GetVSOperatorAuthorization = this.GetVSOperatorAuthorization.bind(this);
+    this.GetSponsorship = this.GetSponsorship.bind(this);
+    this.ListSponsorships = this.ListSponsorships.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -847,6 +1255,18 @@ export class QueryClientImpl implements Query {
     const data = QueryGetVSOperatorAuthorizationRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "GetVSOperatorAuthorization", data);
     return promise.then((data) => QueryGetVSOperatorAuthorizationResponse.decode(_m0.Reader.create(data)));
+  }
+
+  GetSponsorship(request: QueryGetSponsorshipRequest): Promise<QueryGetSponsorshipResponse> {
+    const data = QueryGetSponsorshipRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GetSponsorship", data);
+    return promise.then((data) => QueryGetSponsorshipResponse.decode(_m0.Reader.create(data)));
+  }
+
+  ListSponsorships(request: QueryListSponsorshipsRequest): Promise<QueryListSponsorshipsResponse> {
+    const data = QueryListSponsorshipsRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "ListSponsorships", data);
+    return promise.then((data) => QueryListSponsorshipsResponse.decode(_m0.Reader.create(data)));
   }
 }
 

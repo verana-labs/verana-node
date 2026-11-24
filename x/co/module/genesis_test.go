@@ -72,7 +72,7 @@ func TestAppModule_InitExportGenesis(t *testing.T) {
 		DelegationKeeper: stubDelegation{},
 		GroupKeeper:      groupkeeper.Keeper{},
 		GFKeeper:         gfkeeper.NewKeeper(cdc, runtime.NewKVStoreService(gfStoreKey), log.NewNopLogger(), authority, stubGFDelegation{}),
-		DeKeeper:         dekeeper.NewKeeper(runtime.NewKVStoreService(deStoreKey), cdc, addrCodec, authtypes.NewModuleAddress(govtypes.ModuleName)),
+		DeKeeper:         dekeeper.NewKeeper(runtime.NewKVStoreService(deStoreKey), cdc, addrCodec, authtypes.NewModuleAddress(govtypes.ModuleName), nil),
 	}
 	out := co.ProvideModule(in)
 	require.NotNil(t, out.Module)
@@ -103,7 +103,7 @@ func TestProvideModule_CustomAuthority(t *testing.T) {
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	gfk := gfkeeper.NewKeeper(cdc, runtime.NewKVStoreService(gfStoreKey), log.NewNopLogger(), authority, stubGFDelegation{})
 	addrCodec := addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix())
-	dek := dekeeper.NewKeeper(runtime.NewKVStoreService(deStoreKey), cdc, addrCodec, authtypes.NewModuleAddress(govtypes.ModuleName))
+	dek := dekeeper.NewKeeper(runtime.NewKVStoreService(deStoreKey), cdc, addrCodec, authtypes.NewModuleAddress(govtypes.ModuleName), nil)
 
 	custom := authtypes.NewModuleAddress("custom").String()
 	out := co.ProvideModule(co.ModuleInputs{

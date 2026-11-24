@@ -537,6 +537,263 @@ func (m *QueryGetVSOperatorAuthorizationResponse) GetVsOperatorAuthorization() V
 	return VSOperatorAuthorization{}
 }
 
+// QueryGetSponsorshipRequest is the request type for the Query/GetSponsorship
+// RPC method.
+type QueryGetSponsorshipRequest struct {
+	SponsorCorporationId   uint64 `protobuf:"varint,1,opt,name=sponsor_corporation_id,json=sponsorCorporationId,proto3" json:"sponsor_corporation_id,omitempty"`
+	SponsoredCorporationId uint64 `protobuf:"varint,2,opt,name=sponsored_corporation_id,json=sponsoredCorporationId,proto3" json:"sponsored_corporation_id,omitempty"`
+}
+
+func (m *QueryGetSponsorshipRequest) Reset()         { *m = QueryGetSponsorshipRequest{} }
+func (m *QueryGetSponsorshipRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetSponsorshipRequest) ProtoMessage()    {}
+func (*QueryGetSponsorshipRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_41e9e1468cb47da6, []int{10}
+}
+func (m *QueryGetSponsorshipRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetSponsorshipRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetSponsorshipRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetSponsorshipRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetSponsorshipRequest.Merge(m, src)
+}
+func (m *QueryGetSponsorshipRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetSponsorshipRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetSponsorshipRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetSponsorshipRequest proto.InternalMessageInfo
+
+func (m *QueryGetSponsorshipRequest) GetSponsorCorporationId() uint64 {
+	if m != nil {
+		return m.SponsorCorporationId
+	}
+	return 0
+}
+
+func (m *QueryGetSponsorshipRequest) GetSponsoredCorporationId() uint64 {
+	if m != nil {
+		return m.SponsoredCorporationId
+	}
+	return 0
+}
+
+// QueryGetSponsorshipResponse is the response type for the
+// Query/GetSponsorship RPC method.
+type QueryGetSponsorshipResponse struct {
+	Sponsorship Sponsorship `protobuf:"bytes,1,opt,name=sponsorship,proto3" json:"sponsorship"`
+}
+
+func (m *QueryGetSponsorshipResponse) Reset()         { *m = QueryGetSponsorshipResponse{} }
+func (m *QueryGetSponsorshipResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetSponsorshipResponse) ProtoMessage()    {}
+func (*QueryGetSponsorshipResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_41e9e1468cb47da6, []int{11}
+}
+func (m *QueryGetSponsorshipResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetSponsorshipResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetSponsorshipResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetSponsorshipResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetSponsorshipResponse.Merge(m, src)
+}
+func (m *QueryGetSponsorshipResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetSponsorshipResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetSponsorshipResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetSponsorshipResponse proto.InternalMessageInfo
+
+func (m *QueryGetSponsorshipResponse) GetSponsorship() Sponsorship {
+	if m != nil {
+		return m.Sponsorship
+	}
+	return Sponsorship{}
+}
+
+// QueryListSponsorshipsRequest is the request type for the
+// Query/ListSponsorships RPC method.
+type QueryListSponsorshipsRequest struct {
+	// sponsor_corporation_id is the sponsor whose sponsorships are listed.
+	SponsorCorporationId uint64 `protobuf:"varint,1,opt,name=sponsor_corporation_id,json=sponsorCorporationId,proto3" json:"sponsor_corporation_id,omitempty"`
+	// response_max_size limits the number of results. Must be 1-1024, defaults to 64.
+	ResponseMaxSize uint32 `protobuf:"varint,2,opt,name=response_max_size,json=responseMaxSize,proto3" json:"response_max_size,omitempty"`
+}
+
+func (m *QueryListSponsorshipsRequest) Reset()         { *m = QueryListSponsorshipsRequest{} }
+func (m *QueryListSponsorshipsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryListSponsorshipsRequest) ProtoMessage()    {}
+func (*QueryListSponsorshipsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_41e9e1468cb47da6, []int{12}
+}
+func (m *QueryListSponsorshipsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryListSponsorshipsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryListSponsorshipsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryListSponsorshipsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryListSponsorshipsRequest.Merge(m, src)
+}
+func (m *QueryListSponsorshipsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryListSponsorshipsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryListSponsorshipsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryListSponsorshipsRequest proto.InternalMessageInfo
+
+func (m *QueryListSponsorshipsRequest) GetSponsorCorporationId() uint64 {
+	if m != nil {
+		return m.SponsorCorporationId
+	}
+	return 0
+}
+
+func (m *QueryListSponsorshipsRequest) GetResponseMaxSize() uint32 {
+	if m != nil {
+		return m.ResponseMaxSize
+	}
+	return 0
+}
+
+// ListedSponsorship is a Sponsorship with its derived active flag.
+type ListedSponsorship struct {
+	Sponsorship Sponsorship `protobuf:"bytes,1,opt,name=sponsorship,proto3" json:"sponsorship"`
+	// active is true iff the sponsored corporation elected this sponsor and the
+	// sponsorship is not expired.
+	Active bool `protobuf:"varint,2,opt,name=active,proto3" json:"active,omitempty"`
+}
+
+func (m *ListedSponsorship) Reset()         { *m = ListedSponsorship{} }
+func (m *ListedSponsorship) String() string { return proto.CompactTextString(m) }
+func (*ListedSponsorship) ProtoMessage()    {}
+func (*ListedSponsorship) Descriptor() ([]byte, []int) {
+	return fileDescriptor_41e9e1468cb47da6, []int{13}
+}
+func (m *ListedSponsorship) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ListedSponsorship) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ListedSponsorship.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ListedSponsorship) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListedSponsorship.Merge(m, src)
+}
+func (m *ListedSponsorship) XXX_Size() int {
+	return m.Size()
+}
+func (m *ListedSponsorship) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListedSponsorship.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListedSponsorship proto.InternalMessageInfo
+
+func (m *ListedSponsorship) GetSponsorship() Sponsorship {
+	if m != nil {
+		return m.Sponsorship
+	}
+	return Sponsorship{}
+}
+
+func (m *ListedSponsorship) GetActive() bool {
+	if m != nil {
+		return m.Active
+	}
+	return false
+}
+
+// QueryListSponsorshipsResponse is the response type for the
+// Query/ListSponsorships RPC method.
+type QueryListSponsorshipsResponse struct {
+	Sponsorships []ListedSponsorship `protobuf:"bytes,1,rep,name=sponsorships,proto3" json:"sponsorships"`
+}
+
+func (m *QueryListSponsorshipsResponse) Reset()         { *m = QueryListSponsorshipsResponse{} }
+func (m *QueryListSponsorshipsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryListSponsorshipsResponse) ProtoMessage()    {}
+func (*QueryListSponsorshipsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_41e9e1468cb47da6, []int{14}
+}
+func (m *QueryListSponsorshipsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryListSponsorshipsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryListSponsorshipsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryListSponsorshipsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryListSponsorshipsResponse.Merge(m, src)
+}
+func (m *QueryListSponsorshipsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryListSponsorshipsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryListSponsorshipsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryListSponsorshipsResponse proto.InternalMessageInfo
+
+func (m *QueryListSponsorshipsResponse) GetSponsorships() []ListedSponsorship {
+	if m != nil {
+		return m.Sponsorships
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "verana.de.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "verana.de.v1.QueryParamsResponse")
@@ -548,60 +805,78 @@ func init() {
 	proto.RegisterType((*QueryGetDelegateAuthorizationResponse)(nil), "verana.de.v1.QueryGetDelegateAuthorizationResponse")
 	proto.RegisterType((*QueryGetVSOperatorAuthorizationRequest)(nil), "verana.de.v1.QueryGetVSOperatorAuthorizationRequest")
 	proto.RegisterType((*QueryGetVSOperatorAuthorizationResponse)(nil), "verana.de.v1.QueryGetVSOperatorAuthorizationResponse")
+	proto.RegisterType((*QueryGetSponsorshipRequest)(nil), "verana.de.v1.QueryGetSponsorshipRequest")
+	proto.RegisterType((*QueryGetSponsorshipResponse)(nil), "verana.de.v1.QueryGetSponsorshipResponse")
+	proto.RegisterType((*QueryListSponsorshipsRequest)(nil), "verana.de.v1.QueryListSponsorshipsRequest")
+	proto.RegisterType((*ListedSponsorship)(nil), "verana.de.v1.ListedSponsorship")
+	proto.RegisterType((*QueryListSponsorshipsResponse)(nil), "verana.de.v1.QueryListSponsorshipsResponse")
 }
 
 func init() { proto.RegisterFile("verana/de/v1/query.proto", fileDescriptor_41e9e1468cb47da6) }
 
 var fileDescriptor_41e9e1468cb47da6 = []byte{
-	// 763 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x95, 0xcf, 0x6b, 0x13, 0x41,
-	0x14, 0xc7, 0x33, 0x69, 0x0d, 0x76, 0x6a, 0x5b, 0x3a, 0x4d, 0xdb, 0xcd, 0x52, 0x63, 0x5c, 0xad,
-	0xc6, 0x42, 0xb2, 0x24, 0xad, 0xad, 0x1e, 0x1b, 0x84, 0x22, 0xf8, 0x33, 0x05, 0x0f, 0x5e, 0xe2,
-	0xa4, 0x3b, 0x6c, 0x07, 0x92, 0x9d, 0xed, 0xce, 0x66, 0x69, 0x23, 0x5e, 0xbc, 0x79, 0x10, 0x44,
-	0x41, 0xef, 0xe2, 0x41, 0x10, 0x41, 0xc1, 0x83, 0x7f, 0x42, 0x8f, 0x45, 0x2f, 0x9e, 0x44, 0x5a,
-	0xc1, 0x7f, 0x43, 0x32, 0x3b, 0x5b, 0xb3, 0x75, 0xb7, 0x6b, 0xf0, 0xb2, 0xec, 0xce, 0xbc, 0x1f,
-	0x9f, 0xf7, 0x7d, 0xf3, 0x66, 0xa1, 0xe2, 0x11, 0x07, 0x5b, 0x58, 0x37, 0x88, 0xee, 0x55, 0xf4,
-	0xad, 0x0e, 0x71, 0x76, 0xca, 0xb6, 0xc3, 0x5c, 0x86, 0x4e, 0xf9, 0x3b, 0x65, 0x83, 0x94, 0xbd,
-	0x8a, 0x3a, 0x89, 0xdb, 0xd4, 0x62, 0xba, 0x78, 0xfa, 0x06, 0xea, 0xc2, 0x06, 0xe3, 0x6d, 0xc6,
-	0xf5, 0x26, 0xe6, 0xc4, 0xf7, 0xd4, 0xbd, 0x4a, 0x93, 0xb8, 0xb8, 0xa2, 0xdb, 0xd8, 0xa4, 0x16,
-	0x76, 0x29, 0xb3, 0xa4, 0x6d, 0xce, 0xb7, 0x6d, 0x88, 0x2f, 0xdd, 0xff, 0x90, 0x5b, 0x59, 0x93,
-	0x99, 0xcc, 0x5f, 0xef, 0xbd, 0xc9, 0xd5, 0x39, 0x93, 0x31, 0xb3, 0x45, 0x74, 0x6c, 0x53, 0x1d,
-	0x5b, 0x16, 0x73, 0x45, 0xb4, 0xc0, 0x27, 0x17, 0xa2, 0xb6, 0xb1, 0x83, 0xdb, 0xc1, 0x56, 0xb8,
-	0x20, 0x77, 0xc7, 0x26, 0x72, 0x47, 0xcb, 0x42, 0x74, 0xb7, 0x47, 0x79, 0x47, 0x98, 0xd7, 0xc9,
-	0x56, 0x87, 0x70, 0x57, 0xbb, 0x05, 0xa7, 0x42, 0xab, 0xdc, 0x66, 0x16, 0x27, 0x68, 0x05, 0x66,
-	0xfc, 0xb0, 0x0a, 0x28, 0x80, 0xe2, 0x68, 0x35, 0x5b, 0xee, 0x97, 0xa3, 0xec, 0x5b, 0xd7, 0x46,
-	0x76, 0xbf, 0x9f, 0x49, 0xbd, 0xfd, 0xf5, 0x61, 0x01, 0xd4, 0xa5, 0xb9, 0xf6, 0x11, 0xc0, 0x0b,
-	0x22, 0xe0, 0x0d, 0xca, 0xdd, 0x6b, 0xa4, 0x45, 0x4c, 0xec, 0x92, 0xd5, 0x8e, 0xbb, 0xc9, 0x1c,
-	0xda, 0xf5, 0x8b, 0x90, 0xa9, 0xd1, 0x3c, 0x1c, 0xdf, 0x60, 0x8e, 0xcd, 0x1c, 0xb1, 0xdc, 0xa0,
-	0x86, 0xc8, 0x35, 0x5c, 0x1f, 0xeb, 0x5b, 0xbd, 0x6e, 0xa0, 0x25, 0x78, 0xd2, 0x90, 0x71, 0x94,
-	0x74, 0x01, 0x14, 0x47, 0x6a, 0xca, 0x97, 0x4f, 0xa5, 0xac, 0x14, 0x71, 0xd5, 0x30, 0x1c, 0xc2,
-	0xf9, 0xba, 0xeb, 0x50, 0xcb, 0xac, 0x1f, 0x5a, 0xa2, 0x05, 0x38, 0xe9, 0xc8, 0x62, 0x1a, 0x6d,
-	0xbc, 0xdd, 0xe0, 0xb4, 0x4b, 0x94, 0xa1, 0x02, 0x28, 0x8e, 0xd5, 0x27, 0x82, 0x8d, 0x9b, 0x78,
-	0x7b, 0x9d, 0x76, 0x89, 0xf6, 0x14, 0xc0, 0x8b, 0x89, 0xcc, 0x52, 0x98, 0x26, 0x9c, 0x0d, 0x72,
-	0x34, 0x70, 0xc8, 0x44, 0x01, 0x85, 0xa1, 0xe2, 0x68, 0xf5, 0x5c, 0x58, 0xa9, 0xc8, 0x70, 0xb5,
-	0xe1, 0x9e, 0x70, 0xf5, 0x19, 0x23, 0x32, 0x97, 0xf6, 0x19, 0xc0, 0xe2, 0x21, 0xcf, 0xbd, 0xf5,
-	0xdb, 0x36, 0x71, 0xb0, 0xcb, 0x9c, 0xff, 0x52, 0xf1, 0x2a, 0x1c, 0xf5, 0x78, 0x83, 0xc9, 0x50,
-	0x89, 0x42, 0x42, 0x8f, 0x07, 0x69, 0x07, 0x92, 0xf2, 0x25, 0x80, 0x97, 0xfe, 0x01, 0x5d, 0x8a,
-	0x49, 0xa1, 0xda, 0x07, 0x15, 0xad, 0xe7, 0x7c, 0x58, 0xcf, 0x98, 0x98, 0x52, 0x51, 0xe5, 0x0f,
-	0xf6, 0x11, 0x4d, 0x97, 0xe1, 0x79, 0xc1, 0xb5, 0x46, 0xa2, 0x3b, 0x1c, 0xc8, 0x39, 0x0e, 0xd3,
-	0x87, 0x12, 0xa6, 0xa9, 0xa1, 0x3d, 0x01, 0x70, 0x3e, 0xc1, 0x51, 0x16, 0xf3, 0x00, 0xce, 0x44,
-	0x9f, 0x0c, 0x39, 0x42, 0x03, 0x1c, 0x8c, 0xe9, 0xc8, 0x83, 0xa1, 0x5d, 0x91, 0xa3, 0xb5, 0x46,
-	0xe2, 0xa4, 0x8d, 0xab, 0xe2, 0x79, 0x70, 0xc2, 0x8f, 0x73, 0x95, 0x75, 0x98, 0x30, 0x17, 0xdb,
-	0x14, 0x59, 0xca, 0x40, 0x3d, 0x99, 0x8d, 0xe9, 0x49, 0xf5, 0x55, 0x06, 0x9e, 0x10, 0x50, 0xc8,
-	0x80, 0x19, 0xff, 0x46, 0x41, 0x85, 0x70, 0xe4, 0xbf, 0x2f, 0x2c, 0xf5, 0xec, 0x31, 0x16, 0x7e,
-	0x05, 0xda, 0xf4, 0xe3, 0xaf, 0x3f, 0x5f, 0xa4, 0x27, 0xd0, 0x58, 0xe8, 0x82, 0x44, 0x6f, 0x00,
-	0x54, 0xe3, 0x27, 0x1c, 0x2d, 0x45, 0x04, 0x4e, 0xbc, 0xc4, 0xd4, 0xcb, 0x03, 0x7a, 0x49, 0xc4,
-	0x9c, 0x40, 0x9c, 0x42, 0x93, 0x12, 0xb1, 0xa7, 0x72, 0x57, 0x6f, 0x51, 0xee, 0xa2, 0xf7, 0x00,
-	0xce, 0x1d, 0x37, 0x3d, 0x68, 0x39, 0x26, 0x65, 0xc2, 0x4d, 0xa1, 0xae, 0x0c, 0xec, 0x27, 0x61,
-	0xe7, 0x04, 0xec, 0x0c, 0xca, 0x4a, 0x58, 0x8f, 0x97, 0xfa, 0x78, 0x5f, 0x03, 0xa8, 0xc4, 0x0d,
-	0x07, 0xaa, 0x46, 0xe4, 0x4c, 0x18, 0x41, 0x75, 0x71, 0x20, 0x1f, 0xc9, 0x78, 0x5a, 0x30, 0xce,
-	0xa2, 0xe9, 0x90, 0xa0, 0x26, 0x71, 0xf5, 0x87, 0xd4, 0x78, 0x84, 0xde, 0x01, 0xa8, 0xc6, 0x9f,
-	0xfd, 0xc8, 0xde, 0x27, 0x4e, 0x59, 0x64, 0xef, 0x93, 0x07, 0x4c, 0x2b, 0x08, 0x54, 0x15, 0x29,
-	0x47, 0xe5, 0x0c, 0x68, 0x6b, 0x6b, 0xbb, 0xfb, 0x79, 0xb0, 0xb7, 0x9f, 0x07, 0x3f, 0xf6, 0xf3,
-	0xe0, 0xd9, 0x41, 0x3e, 0xb5, 0x77, 0x90, 0x4f, 0x7d, 0x3b, 0xc8, 0xa7, 0xee, 0x97, 0x4c, 0xea,
-	0x6e, 0x76, 0x9a, 0xe5, 0x0d, 0xd6, 0xd6, 0xfd, 0xe4, 0xa5, 0x16, 0x6e, 0xf2, 0xe0, 0xdd, 0x62,
-	0x06, 0xd1, 0xb7, 0x7b, 0x71, 0xc5, 0x9f, 0xbf, 0x99, 0x11, 0xbf, 0xfe, 0xc5, 0xdf, 0x01, 0x00,
-	0x00, 0xff, 0xff, 0x8b, 0xa0, 0x19, 0xf7, 0xe7, 0x08, 0x00, 0x00,
+	// 966 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0xcf, 0x6b, 0x24, 0x45,
+	0x14, 0xc7, 0x53, 0xb3, 0x6b, 0xd8, 0x7d, 0xd9, 0x64, 0x4d, 0xed, 0x64, 0xd2, 0xd3, 0x66, 0x27,
+	0x63, 0x6b, 0x74, 0x36, 0x92, 0x69, 0x92, 0x8d, 0xbb, 0xeb, 0x31, 0x51, 0x08, 0x0b, 0xfe, 0x9c,
+	0x80, 0x07, 0x2f, 0xb3, 0x35, 0xe9, 0xa2, 0x53, 0x92, 0xe9, 0xea, 0xed, 0xea, 0x0c, 0xd9, 0x88,
+	0x20, 0x82, 0x07, 0x61, 0x05, 0x51, 0xf0, 0x0f, 0x10, 0x0f, 0x82, 0x28, 0x0a, 0x1e, 0xfc, 0x13,
+	0xf6, 0xb8, 0xe8, 0xc5, 0x93, 0x48, 0x22, 0xf8, 0x6f, 0x48, 0x57, 0xbf, 0x9e, 0xed, 0x4e, 0xaa,
+	0x33, 0x19, 0xd6, 0x4b, 0x48, 0x57, 0xbd, 0x1f, 0x9f, 0xf7, 0xad, 0x7a, 0xaf, 0x06, 0xac, 0x01,
+	0x8f, 0x58, 0xc0, 0x5c, 0x8f, 0xbb, 0x83, 0x55, 0xf7, 0xfe, 0x3e, 0x8f, 0x1e, 0xb4, 0xc3, 0x48,
+	0xc6, 0x92, 0x5e, 0x49, 0x77, 0xda, 0x1e, 0x6f, 0x0f, 0x56, 0xed, 0x59, 0xd6, 0x17, 0x81, 0x74,
+	0xf5, 0xdf, 0xd4, 0xc0, 0x5e, 0xde, 0x91, 0xaa, 0x2f, 0x95, 0xdb, 0x63, 0x8a, 0xa7, 0x9e, 0xee,
+	0x60, 0xb5, 0xc7, 0x63, 0xb6, 0xea, 0x86, 0xcc, 0x17, 0x01, 0x8b, 0x85, 0x0c, 0xd0, 0xb6, 0x9e,
+	0xda, 0x76, 0xf5, 0x97, 0x9b, 0x7e, 0xe0, 0x56, 0xd5, 0x97, 0xbe, 0x4c, 0xd7, 0x93, 0xff, 0x70,
+	0x75, 0xc1, 0x97, 0xd2, 0xdf, 0xe3, 0x2e, 0x0b, 0x85, 0xcb, 0x82, 0x40, 0xc6, 0x3a, 0x5a, 0xe6,
+	0x53, 0x2f, 0x50, 0x87, 0x2c, 0x62, 0xfd, 0x6c, 0xab, 0x58, 0x50, 0xfc, 0x20, 0xe4, 0xb8, 0xe3,
+	0x54, 0x81, 0xbe, 0x97, 0x50, 0xbe, 0xab, 0xcd, 0x3b, 0xfc, 0xfe, 0x3e, 0x57, 0xb1, 0xf3, 0x36,
+	0x5c, 0x2b, 0xac, 0xaa, 0x50, 0x06, 0x8a, 0xd3, 0xdb, 0x30, 0x99, 0x86, 0xb5, 0x48, 0x93, 0xb4,
+	0xa6, 0xd6, 0xaa, 0xed, 0xbc, 0x1c, 0xed, 0xd4, 0x7a, 0xf3, 0xf2, 0xa3, 0xbf, 0x16, 0x27, 0xbe,
+	0xff, 0xf7, 0xe7, 0x65, 0xd2, 0x41, 0x73, 0xe7, 0x17, 0x02, 0x2f, 0xe9, 0x80, 0x6f, 0x0a, 0x15,
+	0xbf, 0xc1, 0xf7, 0xb8, 0xcf, 0x62, 0xbe, 0xb1, 0x1f, 0xef, 0xca, 0x48, 0x1c, 0xa6, 0x45, 0x60,
+	0x6a, 0xba, 0x04, 0x33, 0x3b, 0x32, 0x0a, 0x65, 0xa4, 0x97, 0xbb, 0xc2, 0xd3, 0xb9, 0x2e, 0x76,
+	0xa6, 0x73, 0xab, 0x77, 0x3d, 0xba, 0x0e, 0x97, 0x3c, 0x8c, 0x63, 0x55, 0x9a, 0xa4, 0x75, 0x79,
+	0xd3, 0xfa, 0xfd, 0xd7, 0x95, 0x2a, 0x8a, 0xb8, 0xe1, 0x79, 0x11, 0x57, 0x6a, 0x3b, 0x8e, 0x44,
+	0xe0, 0x77, 0x86, 0x96, 0x74, 0x19, 0x66, 0x23, 0x2c, 0xa6, 0xdb, 0x67, 0x07, 0x5d, 0x25, 0x0e,
+	0xb9, 0x75, 0xa1, 0x49, 0x5a, 0xd3, 0x9d, 0xab, 0xd9, 0xc6, 0x5b, 0xec, 0x60, 0x5b, 0x1c, 0x72,
+	0xe7, 0x0b, 0x02, 0x2f, 0x8f, 0x64, 0x46, 0x61, 0x7a, 0x30, 0x9f, 0xe5, 0xe8, 0xb2, 0x82, 0x89,
+	0x45, 0x9a, 0x17, 0x5a, 0x53, 0x6b, 0x2f, 0x14, 0x95, 0x32, 0x86, 0xdb, 0xbc, 0x98, 0x08, 0xd7,
+	0xa9, 0x79, 0xc6, 0x5c, 0xce, 0x6f, 0x04, 0x5a, 0x43, 0x9e, 0xf7, 0xb7, 0xdf, 0x09, 0x79, 0xc4,
+	0x62, 0x19, 0x3d, 0x95, 0x8a, 0xaf, 0xc1, 0xd4, 0x40, 0x75, 0x25, 0x86, 0x1a, 0x29, 0x24, 0x0c,
+	0x54, 0x96, 0x76, 0x2c, 0x29, 0xbf, 0x21, 0x70, 0xe3, 0x1c, 0xe8, 0x28, 0xa6, 0x00, 0x3b, 0x07,
+	0x65, 0xd6, 0x73, 0xa9, 0xa8, 0x67, 0x49, 0x4c, 0x54, 0xd4, 0x7a, 0x82, 0x7d, 0x42, 0xd3, 0x5b,
+	0xf0, 0xa2, 0xe6, 0xda, 0xe2, 0xe6, 0x13, 0xce, 0xe4, 0x9c, 0x81, 0xca, 0x50, 0xc2, 0x8a, 0xf0,
+	0x9c, 0xcf, 0x09, 0x2c, 0x8d, 0x70, 0xc4, 0x62, 0xee, 0x41, 0xcd, 0x7c, 0x33, 0xb0, 0x85, 0xc6,
+	0xb8, 0x18, 0x73, 0xc6, 0x8b, 0xe1, 0xdc, 0xc1, 0xd6, 0xda, 0xe2, 0x65, 0xd2, 0x96, 0x55, 0xf1,
+	0x55, 0x76, 0xc3, 0xcf, 0x72, 0xc5, 0x3a, 0x7c, 0xa8, 0x97, 0x1e, 0x0a, 0x96, 0x32, 0xd6, 0x99,
+	0xcc, 0x97, 0x9c, 0x89, 0xf3, 0x90, 0x80, 0x9d, 0x41, 0x6d, 0x27, 0xb9, 0x65, 0xa4, 0x76, 0x45,
+	0x98, 0xd5, 0xb0, 0x0e, 0x35, 0x95, 0xae, 0x76, 0x8d, 0x17, 0xbc, 0x8a, 0xbb, 0xaf, 0x17, 0xee,
+	0xf9, 0x1d, 0xb0, 0x70, 0x9d, 0x7b, 0x27, 0xfd, 0x2a, 0xda, 0xaf, 0x36, 0xdc, 0x2f, 0x78, 0x3a,
+	0xf7, 0xe0, 0x39, 0x23, 0x0d, 0xca, 0xb2, 0x01, 0x53, 0xea, 0xc9, 0x32, 0x0a, 0x51, 0x2f, 0x0a,
+	0x91, 0xf3, 0xc3, 0xe2, 0xf3, 0x3e, 0xce, 0x27, 0x04, 0x16, 0x86, 0xcd, 0x91, 0xb3, 0x55, 0x4f,
+	0x57, 0xb2, 0xb1, 0x3f, 0x2b, 0xe6, 0xfe, 0x0c, 0x60, 0x36, 0x49, 0xce, 0xbd, 0x5c, 0xfa, 0xff,
+	0xa1, 0x34, 0x5a, 0x83, 0x49, 0xb6, 0x13, 0x8b, 0x41, 0x9a, 0xf8, 0x52, 0x07, 0xbf, 0x9c, 0x0f,
+	0xe1, 0x7a, 0x49, 0xc5, 0x28, 0xeb, 0x5d, 0xb8, 0x92, 0x8b, 0x93, 0x35, 0xfd, 0x62, 0x31, 0xf9,
+	0x29, 0x64, 0x44, 0x28, 0xb8, 0xae, 0xfd, 0x74, 0x09, 0x9e, 0xd1, 0xc9, 0xa8, 0x07, 0x93, 0xe9,
+	0x0b, 0x45, 0x9b, 0xc5, 0x40, 0xa7, 0x1f, 0x40, 0xfb, 0xf9, 0x33, 0x2c, 0x52, 0x46, 0x67, 0xee,
+	0xd3, 0x3f, 0xfe, 0xf9, 0xba, 0x72, 0x95, 0x4e, 0x17, 0x1e, 0x5c, 0xfa, 0x1d, 0x01, 0xbb, 0xfc,
+	0xc5, 0xa0, 0xeb, 0x86, 0xc0, 0x23, 0x1f, 0x45, 0xfb, 0xd5, 0x31, 0xbd, 0x10, 0xb1, 0xae, 0x11,
+	0xaf, 0xd1, 0x59, 0x44, 0x4c, 0xba, 0xf6, 0xd0, 0xdd, 0x13, 0x2a, 0xa6, 0x3f, 0x12, 0x58, 0x38,
+	0x6b, 0x1a, 0xd3, 0x5b, 0x25, 0x29, 0x47, 0xbc, 0x3c, 0xf6, 0xed, 0xb1, 0xfd, 0x10, 0x76, 0x41,
+	0xc3, 0xd6, 0x68, 0x15, 0x61, 0x07, 0x6a, 0x25, 0xc7, 0xfb, 0x2d, 0x01, 0xab, 0x6c, 0xd8, 0xd2,
+	0x35, 0x43, 0xce, 0x11, 0x23, 0xdd, 0xbe, 0x39, 0x96, 0x0f, 0x32, 0x5e, 0xd7, 0x8c, 0xf3, 0x74,
+	0xae, 0x20, 0xa8, 0xcf, 0x63, 0xf7, 0x23, 0xe1, 0x7d, 0x4c, 0x7f, 0x20, 0x60, 0x97, 0xcf, 0x52,
+	0xe3, 0xd9, 0x8f, 0x9c, 0xda, 0xc6, 0xb3, 0x1f, 0x3d, 0xb0, 0x9d, 0xa6, 0x46, 0xb5, 0xa9, 0x75,
+	0x52, 0xce, 0x21, 0xed, 0x67, 0x04, 0x66, 0x8a, 0x63, 0x8d, 0xb6, 0xcc, 0xb9, 0x4e, 0xcf, 0x61,
+	0xfb, 0xc6, 0x39, 0x2c, 0x91, 0xa4, 0xa1, 0x49, 0x2c, 0x5a, 0x43, 0x92, 0x5c, 0x7b, 0x26, 0x30,
+	0xf4, 0x21, 0x81, 0x67, 0x4f, 0x4e, 0x02, 0xba, 0x5c, 0x72, 0x8d, 0x0c, 0x03, 0xd2, 0x7e, 0xe5,
+	0x5c, 0xb6, 0x48, 0xb3, 0xa8, 0x69, 0xea, 0x74, 0xde, 0x40, 0x93, 0xdc, 0xb4, 0xcd, 0xad, 0x47,
+	0x47, 0x0d, 0xf2, 0xf8, 0xa8, 0x41, 0xfe, 0x3e, 0x6a, 0x90, 0x2f, 0x8f, 0x1b, 0x13, 0x8f, 0x8f,
+	0x1b, 0x13, 0x7f, 0x1e, 0x37, 0x26, 0x3e, 0x58, 0xf1, 0x45, 0xbc, 0xbb, 0xdf, 0x6b, 0xef, 0xc8,
+	0xbe, 0x9b, 0x66, 0x5c, 0xd9, 0x63, 0x3d, 0x95, 0xfd, 0x1f, 0x48, 0x8f, 0xbb, 0x07, 0x49, 0x58,
+	0xfd, 0x03, 0xbb, 0x37, 0xa9, 0x7f, 0x61, 0xdf, 0xfc, 0x2f, 0x00, 0x00, 0xff, 0xff, 0x6f, 0x06,
+	0x62, 0xa0, 0x4e, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -626,6 +901,12 @@ type QueryClient interface {
 	GetDelegateAuthorization(ctx context.Context, in *QueryGetDelegateAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(ctx context.Context, in *QueryGetVSOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetVSOperatorAuthorizationResponse, error)
+	// [MOD-DE-QRY-5] GetSponsorship returns the Sponsorship of a sponsor and a
+	// sponsored corporation.
+	GetSponsorship(ctx context.Context, in *QueryGetSponsorshipRequest, opts ...grpc.CallOption) (*QueryGetSponsorshipResponse, error)
+	// [MOD-DE-QRY-6] ListSponsorships returns the sponsorships of a sponsor with
+	// whether each is active.
+	ListSponsorships(ctx context.Context, in *QueryListSponsorshipsRequest, opts ...grpc.CallOption) (*QueryListSponsorshipsResponse, error)
 }
 
 type queryClient struct {
@@ -681,6 +962,24 @@ func (c *queryClient) GetVSOperatorAuthorization(ctx context.Context, in *QueryG
 	return out, nil
 }
 
+func (c *queryClient) GetSponsorship(ctx context.Context, in *QueryGetSponsorshipRequest, opts ...grpc.CallOption) (*QueryGetSponsorshipResponse, error) {
+	out := new(QueryGetSponsorshipResponse)
+	err := c.cc.Invoke(ctx, "/verana.de.v1.Query/GetSponsorship", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ListSponsorships(ctx context.Context, in *QueryListSponsorshipsRequest, opts ...grpc.CallOption) (*QueryListSponsorshipsResponse, error) {
+	out := new(QueryListSponsorshipsResponse)
+	err := c.cc.Invoke(ctx, "/verana.de.v1.Query/ListSponsorships", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
@@ -693,6 +992,12 @@ type QueryServer interface {
 	GetDelegateAuthorization(context.Context, *QueryGetDelegateAuthorizationRequest) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(context.Context, *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error)
+	// [MOD-DE-QRY-5] GetSponsorship returns the Sponsorship of a sponsor and a
+	// sponsored corporation.
+	GetSponsorship(context.Context, *QueryGetSponsorshipRequest) (*QueryGetSponsorshipResponse, error)
+	// [MOD-DE-QRY-6] ListSponsorships returns the sponsorships of a sponsor with
+	// whether each is active.
+	ListSponsorships(context.Context, *QueryListSponsorshipsRequest) (*QueryListSponsorshipsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -713,6 +1018,12 @@ func (*UnimplementedQueryServer) GetDelegateAuthorization(ctx context.Context, r
 }
 func (*UnimplementedQueryServer) GetVSOperatorAuthorization(ctx context.Context, req *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVSOperatorAuthorization not implemented")
+}
+func (*UnimplementedQueryServer) GetSponsorship(ctx context.Context, req *QueryGetSponsorshipRequest) (*QueryGetSponsorshipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSponsorship not implemented")
+}
+func (*UnimplementedQueryServer) ListSponsorships(ctx context.Context, req *QueryListSponsorshipsRequest) (*QueryListSponsorshipsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSponsorships not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -809,6 +1120,42 @@ func _Query_GetVSOperatorAuthorization_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GetSponsorship_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetSponsorshipRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetSponsorship(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/verana.de.v1.Query/GetSponsorship",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetSponsorship(ctx, req.(*QueryGetSponsorshipRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ListSponsorships_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryListSponsorshipsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ListSponsorships(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/verana.de.v1.Query/ListSponsorships",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ListSponsorships(ctx, req.(*QueryListSponsorshipsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var Query_serviceDesc = _Query_serviceDesc
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "verana.de.v1.Query",
@@ -833,6 +1180,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetVSOperatorAuthorization",
 			Handler:    _Query_GetVSOperatorAuthorization_Handler,
+		},
+		{
+			MethodName: "GetSponsorship",
+			Handler:    _Query_GetSponsorship_Handler,
+		},
+		{
+			MethodName: "ListSponsorships",
+			Handler:    _Query_ListSponsorships_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1171,6 +1526,185 @@ func (m *QueryGetVSOperatorAuthorizationResponse) MarshalToSizedBuffer(dAtA []by
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetSponsorshipRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetSponsorshipRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetSponsorshipRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.SponsoredCorporationId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SponsoredCorporationId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.SponsorCorporationId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SponsorCorporationId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetSponsorshipResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetSponsorshipResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetSponsorshipResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Sponsorship.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryListSponsorshipsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryListSponsorshipsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListSponsorshipsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ResponseMaxSize != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.ResponseMaxSize))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.SponsorCorporationId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SponsorCorporationId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ListedSponsorship) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ListedSponsorship) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ListedSponsorship) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Active {
+		i--
+		if m.Active {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
+	}
+	{
+		size, err := m.Sponsorship.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryListSponsorshipsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryListSponsorshipsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListSponsorshipsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Sponsorships) > 0 {
+		for iNdEx := len(m.Sponsorships) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Sponsorships[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -1313,6 +1847,76 @@ func (m *QueryGetVSOperatorAuthorizationResponse) Size() (n int) {
 	_ = l
 	l = m.VsOperatorAuthorization.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryGetSponsorshipRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SponsorCorporationId != 0 {
+		n += 1 + sovQuery(uint64(m.SponsorCorporationId))
+	}
+	if m.SponsoredCorporationId != 0 {
+		n += 1 + sovQuery(uint64(m.SponsoredCorporationId))
+	}
+	return n
+}
+
+func (m *QueryGetSponsorshipResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Sponsorship.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryListSponsorshipsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SponsorCorporationId != 0 {
+		n += 1 + sovQuery(uint64(m.SponsorCorporationId))
+	}
+	if m.ResponseMaxSize != 0 {
+		n += 1 + sovQuery(uint64(m.ResponseMaxSize))
+	}
+	return n
+}
+
+func (m *ListedSponsorship) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Sponsorship.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	if m.Active {
+		n += 2
+	}
+	return n
+}
+
+func (m *QueryListSponsorshipsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Sponsorships) > 0 {
+		for _, e := range m.Sponsorships {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -2143,6 +2747,452 @@ func (m *QueryGetVSOperatorAuthorizationResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.VsOperatorAuthorization.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetSponsorshipRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetSponsorshipRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetSponsorshipRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SponsorCorporationId", wireType)
+			}
+			m.SponsorCorporationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SponsorCorporationId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SponsoredCorporationId", wireType)
+			}
+			m.SponsoredCorporationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SponsoredCorporationId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetSponsorshipResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetSponsorshipResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetSponsorshipResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sponsorship", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Sponsorship.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryListSponsorshipsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryListSponsorshipsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryListSponsorshipsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SponsorCorporationId", wireType)
+			}
+			m.SponsorCorporationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SponsorCorporationId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ResponseMaxSize", wireType)
+			}
+			m.ResponseMaxSize = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ResponseMaxSize |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ListedSponsorship) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ListedSponsorship: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ListedSponsorship: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sponsorship", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Sponsorship.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Active", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Active = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryListSponsorshipsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryListSponsorshipsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryListSponsorshipsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sponsorships", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Sponsorships = append(m.Sponsorships, ListedSponsorship{})
+			if err := m.Sponsorships[len(m.Sponsorships)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

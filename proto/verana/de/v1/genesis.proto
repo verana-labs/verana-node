@@ -31,4 +31,7 @@ message GenesisState {
 
   // window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5.
   repeated WindowEndQueueEntry window_end_queue = 8 [(gogoproto.nullable) = false];
+
+  // sponsorships is a list of all Sponsorship objects
+  repeated Sponsorship sponsorships = 9 [(gogoproto.nullable) = false];
 }

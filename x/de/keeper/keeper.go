@@ -36,6 +36,9 @@ type Keeper struct {
 	// FeeGrant: composite key (grantor_corporation_id, grantee).
 	FeeGrants collections.Map[collections.Pair[uint64, string], types.FeeGrant]
 
+	// Sponsorship: composite key (sponsor_corporation_id, sponsored_corporation_id).
+	Sponsorships collections.Map[collections.Pair[uint64, uint64], types.Sponsorship]
+
 	// VSOperatorAuthorization: keyed by its own uint64 id; (corporation_id,
 	// vs_operator) is a unique secondary index; participant_id -> vsoa.id is a
 	// tertiary index for global participant_id uniqueness and MSG-6 / MSG-9.
@@ -64,6 +67,11 @@ type Keeper struct {
 
 	// vsBudgetRef backs AUTHZ-CHECK-3 steps 5 and 6 on the VS account path.
 	vsBudgetRef *vsAccountBudgetStoreRef
+
+	// networkFeeRef backs the message filter of a sponsorship's fee allowance.
+	networkFeeRef *networkFeeKeeperRef
+
+	bankKeeper types.BankKeeper
 }
 
 func NewKeeper(
@@ -71,7 +79,7 @@ func NewKeeper(
 	cdc codec.Codec,
 	addressCodec address.Codec,
 	authority []byte,
-
+	bankKeeper types.BankKeeper,
 ) Keeper {
 	if _, err := addressCodec.BytesToString(authority); err != nil {
 		panic(fmt.Sprintf("invalid authority address %s: %s", authority, err))
@@ -91,6 +99,8 @@ func NewKeeper(
 		participantRef: &participantKeeperRef{K: StubParticipantKeeper{}},
 		gfRef:          &gfKeeperRef{K: StubGovernanceFrameworkKeeper{}},
 		vsBudgetRef:    &vsAccountBudgetStoreRef{S: StubVsAccountBudgetStore{}},
+		networkFeeRef:  &networkFeeKeeperRef{K: StubNetworkFeeKeeper{}},
+		bankKeeper:     bankKeeper,
 
 		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
 
@@ -102,6 +112,9 @@ func NewKeeper(
 
 		FeeGrants: collections.NewMap(sb, types.FeeGrantKey, "fee_grant",
 			corpOpKeyCodec, codec.CollValue[types.FeeGrant](cdc)),
+
+		Sponsorships: collections.NewMap(sb, types.SponsorshipKey, "sponsorship",
+			collections.PairKeyCodec(collections.Uint64Key, collections.Uint64Key), codec.CollValue[types.Sponsorship](cdc)),
 
 		VSOperatorAuthorizations: collections.NewMap(sb, types.VSOperatorAuthorizationKey, "vs_operator_authorization",
 			collections.Uint64Key, codec.CollValue[types.VSOperatorAuthorization](cdc)),
@@ -161,6 +174,11 @@ func (k Keeper) SetGovernanceFrameworkKeeper(g types.GovernanceFrameworkKeeper) 
 // SetVsAccountBudgetStore wires the VsAccountBudget store read by AUTHZ-CHECK-3.
 func (k Keeper) SetVsAccountBudgetStore(s types.VsAccountBudgetStore) {
 	k.vsBudgetRef.S = s
+}
+
+// SetNetworkFeeKeeper wires the source of GlobalVariables.max_gas_per_msg_type.
+func (k Keeper) SetNetworkFeeKeeper(n types.NetworkFeeKeeper) {
+	k.networkFeeRef.K = n
 }
 
 // participantKeeper returns the wired participant view (real or stub).

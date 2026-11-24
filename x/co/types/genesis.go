@@ -69,6 +69,14 @@ func (gs GenesisState) Validate() error {
 			maxID = co.Id
 		}
 	}
+	for _, co := range gs.Corporations {
+		if co.SponsorCorporationId == 0 {
+			continue
+		}
+		if _, ok := ids[co.SponsorCorporationId]; !ok || co.SponsorCorporationId == co.Id {
+			return ErrCorporationNotFound.Wrapf("corporation %d: sponsor_corporation_id %d must be another corporation", co.Id, co.SponsorCorporationId)
+		}
+	}
 	if gs.CorporationCounter < maxID {
 		return ErrInvalidCounter.Wrapf("corporation_counter %d is less than the highest corporation id %d", gs.CorporationCounter, maxID)
 	}

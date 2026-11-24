@@ -32,6 +32,10 @@ var (
 	// (grantor_corporation_id, grantee).
 	FeeGrantKey = collections.NewPrefix("fg_de")
 
+	// SponsorshipKey is the prefix for Sponsorship storage, keyed by the
+	// composite (sponsor_corporation_id, sponsored_corporation_id).
+	SponsorshipKey = collections.NewPrefix("sp_de")
+
 	// VSOperatorAuthorizationKey is the prefix for VSOperatorAuthorization
 	// storage, keyed by its own uint64 id.
 	VSOperatorAuthorizationKey = collections.NewPrefix("vsoa_de")

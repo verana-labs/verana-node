@@ -33,6 +33,14 @@ func (StubCorporationKeeper) ResolveCorporationByID(_ context.Context, id uint64
 	return types.CorporationView{}, fmt.Errorf("corporation keeper not wired: cannot resolve corporation id %d", id)
 }
 
+func (StubCorporationKeeper) GetCorporationByPolicyAddress(_ context.Context, policyAddress string) (types.CorporationView, bool, error) {
+	return types.CorporationView{}, false, fmt.Errorf("corporation keeper not wired: cannot look up %s", policyAddress)
+}
+
+func (StubCorporationKeeper) ClearSponsor(_ context.Context, corporationID, _ uint64) (bool, error) {
+	return false, fmt.Errorf("corporation keeper not wired: cannot clear the sponsor of corporation %d", corporationID)
+}
+
 // feegrantKeeperRef holds the FeegrantKeeper behind a shared pointer; nil until wired.
 type feegrantKeeperRef struct {
 	K types.FeegrantKeeper
@@ -81,4 +89,16 @@ func (StubVsAccountBudgetStore) Get(_ context.Context, _ uint64) (types.VsAccoun
 
 func (StubVsAccountBudgetStore) Set(_ context.Context, vsID uint64, _ types.VsAccountBudget) error {
 	return fmt.Errorf("VS account budget store not wired: cannot write the budget of entry %d", vsID)
+}
+
+// networkFeeKeeperRef holds the NetworkFeeKeeper behind a shared pointer.
+type networkFeeKeeperRef struct {
+	K types.NetworkFeeKeeper
+}
+
+// StubNetworkFeeKeeper is the pre-wiring default: covers_fees grants abort.
+type StubNetworkFeeKeeper struct{}
+
+func (StubNetworkFeeKeeper) MaxGasMsgTypeURLs(_ context.Context) ([]string, error) {
+	return nil, fmt.Errorf("network fee keeper not wired: max_gas_per_msg_type is unavailable")
 }

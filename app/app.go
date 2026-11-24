@@ -308,7 +308,7 @@ func New(
 	app.App = appBuilder.Build(db, baseAppOptions...)
 
 	// AUTHZ-CHECK-4 reads the fee granter the ante handler stores per tx.
-	app.SetAnteHandler(demodulekeeper.NewFeeGranterAnteHandler(app.AnteHandler()))
+	app.SetAnteHandler(demodulekeeper.NewFeeGranterAnteHandler(app.newAnteHandler()))
 
 	// register legacy modules
 	if err := app.registerIBCModules(appOpts); err != nil {
