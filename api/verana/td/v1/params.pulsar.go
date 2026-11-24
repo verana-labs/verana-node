@@ -1513,7 +1513,8 @@ type Params struct {
 	MainFiatCurrency string `protobuf:"bytes,2,opt,name=main_fiat_currency,json=mainFiatCurrency,proto3" json:"main_fiat_currency,omitempty"`
 	// immutable
 	TuPegValueGenesis string `protobuf:"bytes,3,opt,name=tu_peg_value_genesis,json=tuPegValueGenesis,proto3" json:"tu_peg_value_genesis,omitempty"`
-	// the rate in force; an update is stored as pending until the next epoch boundary
+	// the rate in force; an update that sends another value stores it as pending
+	// until the next epoch boundary, one that sends this rate keeps a pending value
 	TuDecayRate string `protobuf:"bytes,4,opt,name=tu_decay_rate,json=tuDecayRate,proto3" json:"tu_decay_rate,omitempty"`
 	// immutable
 	EpochLength   *durationpb.Duration `protobuf:"bytes,5,opt,name=epoch_length,json=epochLength,proto3" json:"epoch_length,omitempty"`

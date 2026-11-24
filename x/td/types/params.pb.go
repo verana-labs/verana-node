@@ -37,7 +37,8 @@ type Params struct {
 	MainFiatCurrency string `protobuf:"bytes,2,opt,name=main_fiat_currency,json=mainFiatCurrency,proto3" json:"main_fiat_currency,omitempty"`
 	// immutable
 	TuPegValueGenesis cosmossdk_io_math.LegacyDec `protobuf:"bytes,3,opt,name=tu_peg_value_genesis,json=tuPegValueGenesis,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"tu_peg_value_genesis"`
-	// the rate in force; an update is stored as pending until the next epoch boundary
+	// the rate in force; an update that sends another value stores it as pending
+	// until the next epoch boundary, one that sends this rate keeps a pending value
 	TuDecayRate cosmossdk_io_math.LegacyDec `protobuf:"bytes,4,opt,name=tu_decay_rate,json=tuDecayRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"tu_decay_rate"`
 	// immutable
 	EpochLength   time.Duration               `protobuf:"bytes,5,opt,name=epoch_length,json=epochLength,proto3,stdduration" json:"epoch_length"`

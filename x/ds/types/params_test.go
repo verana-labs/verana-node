@@ -58,3 +58,13 @@ func TestParams_Validate(t *testing.T) {
 		})
 	}
 }
+
+func TestParams_ValidateNamesFirstInvalidField(t *testing.T) {
+	p := types.DefaultParams()
+	p.ValidatorNodeBudget = math.LegacyNewDec(-1)
+	p.CouncilBudget = math.LegacyNewDec(-1)
+	p.VnaHolderMaxYieldRate = math.LegacyNewDec(-1)
+	for i := 0; i < 50; i++ {
+		require.ErrorContains(t, p.Validate(), "validator_node_budget must be >= 0")
+	}
+}

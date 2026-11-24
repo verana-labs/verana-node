@@ -45,3 +45,13 @@ func TestParams_Validate(t *testing.T) {
 		})
 	}
 }
+
+func TestParams_ValidateNamesFirstInvalidField(t *testing.T) {
+	p := types.DefaultParams()
+	p.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays = 0
+	p.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays = 0
+	p.CredentialSchemaPresentationValidityPeriodMaxDays = 0
+	for i := 0; i < 50; i++ {
+		require.ErrorContains(t, p.Validate(), "credential_schema_issuer_grantor_accreditation_validity_period_max_days must be positive")
+	}
+}

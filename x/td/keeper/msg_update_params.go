@@ -24,15 +24,14 @@ func (ms msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdatePara
 		return nil, err
 	}
 
-	// [MOD-TD-MSG-4-3] a new tu_decay_rate waits for the next epoch boundary.
+	// [MOD-TD-MSG-4-3] a new tu_decay_rate waits for the next epoch boundary;
+	// the rate in force is not a new value and keeps a pending one.
 	next := req.Params
 	next.TuDecayRate = current.TuDecayRate
-	if req.Params.TuDecayRate.Equal(current.TuDecayRate) {
-		if err := ms.PendingTuDecayRate.Remove(ctx); err != nil {
+	if !req.Params.TuDecayRate.Equal(current.TuDecayRate) {
+		if err := ms.PendingTuDecayRate.Set(ctx, req.Params.TuDecayRate); err != nil {
 			return nil, err
 		}
-	} else if err := ms.PendingTuDecayRate.Set(ctx, req.Params.TuDecayRate); err != nil {
-		return nil, err
 	}
 	if err := ms.SetParams(ctx, next); err != nil {
 		return nil, err

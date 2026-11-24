@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	DefaultCredentialSchemaSchemaMaxSize                                    = uint64(8192)
+	DefaultCredentialSchemaSchemaMaxSize                                     = uint64(8192)
 	DefaultCredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays   = uint32(3650)
 	DefaultCredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays = uint32(3650)
 	DefaultCredentialSchemaIssuerAccreditationValidityPeriodMaxDays          = uint32(3650)
@@ -28,7 +28,7 @@ func NewParams(
 	presentationMaxDays uint32,
 ) Params {
 	return Params{
-		CredentialSchemaSchemaMaxSize:                                    schemaMaxSize,
+		CredentialSchemaSchemaMaxSize:                                     schemaMaxSize,
 		CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays:   issuerGrantorMaxDays,
 		CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays: verifierGrantorMaxDays,
 		CredentialSchemaIssuerAccreditationValidityPeriodMaxDays:          issuerMaxDays,
@@ -56,16 +56,19 @@ func (p Params) Validate() error {
 	if p.CredentialSchemaSchemaMaxSize == 0 {
 		return errorsmod.Wrap(ErrInvalidParams, "credential_schema_schema_max_size must be positive")
 	}
-	for name, v := range map[string]uint32{
-		"credential_schema_issuer_grantor_accreditation_validity_period_max_days":   p.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays,
-		"credential_schema_verifier_grantor_accreditation_validity_period_max_days": p.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays,
-		"credential_schema_issuer_accreditation_validity_period_max_days":           p.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays,
-		"credential_schema_verifier_accreditation_validity_period_max_days":         p.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays,
-		"credential_schema_holder_accreditation_validity_period_max_days":           p.CredentialSchemaHolderAccreditationValidityPeriodMaxDays,
-		"credential_schema_presentation_validity_period_max_days":                   p.CredentialSchemaPresentationValidityPeriodMaxDays,
+	for _, f := range []struct {
+		name string
+		v    uint32
+	}{
+		{"credential_schema_issuer_grantor_accreditation_validity_period_max_days", p.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays},
+		{"credential_schema_verifier_grantor_accreditation_validity_period_max_days", p.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays},
+		{"credential_schema_issuer_accreditation_validity_period_max_days", p.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays},
+		{"credential_schema_verifier_accreditation_validity_period_max_days", p.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays},
+		{"credential_schema_holder_accreditation_validity_period_max_days", p.CredentialSchemaHolderAccreditationValidityPeriodMaxDays},
+		{"credential_schema_presentation_validity_period_max_days", p.CredentialSchemaPresentationValidityPeriodMaxDays},
 	} {
-		if v == 0 {
-			return errorsmod.Wrapf(ErrInvalidParams, "%s must be positive", name)
+		if f.v == 0 {
+			return errorsmod.Wrapf(ErrInvalidParams, "%s must be positive", f.name)
 		}
 	}
 	return nil

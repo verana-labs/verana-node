@@ -21,7 +21,10 @@ export interface Params {
   mainFiatCurrency: string;
   /** immutable */
   tuPegValueGenesis: string;
-  /** the rate in force; an update is stored as pending until the next epoch boundary */
+  /**
+   * the rate in force; an update that sends another value stores it as pending
+   * until the next epoch boundary, one that sends this rate keeps a pending value
+   */
   tuDecayRate: string;
   /** immutable */
   epochLength: Duration | undefined;

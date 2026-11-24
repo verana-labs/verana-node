@@ -24,7 +24,8 @@ message Params {
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
-  // the rate in force; an update is stored as pending until the next epoch boundary
+  // the rate in force; an update that sends another value stores it as pending
+  // until the next epoch boundary, one that sends this rate keeps a pending value
   string tu_decay_rate = 4 [
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false

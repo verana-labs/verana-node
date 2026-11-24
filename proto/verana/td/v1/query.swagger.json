@@ -129,7 +129,7 @@
         },
         "tu_decay_rate": {
           "type": "string",
-          "title": "the rate in force; an update is stored as pending until the next epoch boundary"
+          "title": "the rate in force; an update that sends another value stores it as pending\nuntil the next epoch boundary, one that sends this rate keeps a pending value"
         },
         "epoch_length": {
           "type": "string",

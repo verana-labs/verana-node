@@ -60,14 +60,17 @@ func DefaultParams() Params {
 
 // Validate checks [MOD-DS-MSG-1-2-1].
 func (p Params) Validate() error {
-	for name, v := range map[string]math.LegacyDec{
-		"validator_node_budget":     p.ValidatorNodeBudget,
-		"council_budget":            p.CouncilBudget,
-		"foundation_budget":         p.FoundationBudget,
-		"vna_holder_max_yield_rate": p.VnaHolderMaxYieldRate,
+	for _, f := range []struct {
+		name string
+		v    math.LegacyDec
+	}{
+		{"validator_node_budget", p.ValidatorNodeBudget},
+		{"council_budget", p.CouncilBudget},
+		{"foundation_budget", p.FoundationBudget},
+		{"vna_holder_max_yield_rate", p.VnaHolderMaxYieldRate},
 	} {
-		if v.IsNil() || v.IsNegative() {
-			return errorsmod.Wrapf(ErrInvalidParams, "%s must be >= 0", name)
+		if f.v.IsNil() || f.v.IsNegative() {
+			return errorsmod.Wrapf(ErrInvalidParams, "%s must be >= 0", f.name)
 		}
 	}
 	if p.ValidatorMinUptime.IsNil() || p.ValidatorTargetUptime.IsNil() ||

@@ -122,7 +122,7 @@ func (k Keeper) GetWalletUserAgentRewardRate(ctx sdk.Context) math.LegacyDec {
 	return k.GetParams(ctx).VuaRewardRate
 }
 
-// GetTrustDepositShareValue returns the v4 share value, 1 unless set.
+// GetTrustDepositShareValue returns the v4 share value, 1 unless set. Genesis does not carry it.
 func (k Keeper) GetTrustDepositShareValue(ctx context.Context) math.LegacyDec {
 	v, err := k.ShareValue.Get(ctx)
 	if err != nil {

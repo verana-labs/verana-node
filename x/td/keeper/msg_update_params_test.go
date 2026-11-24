@@ -142,31 +142,39 @@ func TestMsgUpdateParams_PendingTuDecayRate(t *testing.T) {
 	require.NoError(t, k.SetParams(wctx, types.DefaultParams()))
 	inForce := types.DefaultParams().TuDecayRate
 
-	update := func(rate string) {
-		p := types.DefaultParams()
-		p.TuDecayRate = math.LegacyMustNewDecFromStr(rate)
+	send := func(p types.Params) {
 		_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: p})
 		require.NoError(t, err)
 	}
+	withRate := func(rate string) types.Params {
+		p := types.DefaultParams()
+		p.TuDecayRate = math.LegacyMustNewDecFromStr(rate)
+		return p
+	}
+	requirePending := func(rate string) {
+		pending, found, err := k.GetPendingTuDecayRate(wctx)
+		require.NoError(t, err)
+		require.True(t, found)
+		require.Equal(t, math.LegacyMustNewDecFromStr(rate), pending)
+		require.Equal(t, inForce, k.GetParams(wctx).TuDecayRate)
+	}
 
-	update("0.002")
-	require.Equal(t, inForce, k.GetParams(wctx).TuDecayRate)
-	pending, found, err := k.GetPendingTuDecayRate(wctx)
-	require.NoError(t, err)
-	require.True(t, found)
-	require.Equal(t, math.LegacyMustNewDecFromStr("0.002"), pending)
+	send(withRate("0.002"))
+	requirePending("0.002")
 
-	update("0.003")
-	pending, found, err = k.GetPendingTuDecayRate(wctx)
-	require.NoError(t, err)
-	require.True(t, found)
-	require.Equal(t, math.LegacyMustNewDecFromStr("0.003"), pending)
+	send(withRate("0.003"))
+	requirePending("0.003")
 
-	update(inForce.String())
-	_, found, err = k.GetPendingTuDecayRate(wctx)
-	require.NoError(t, err)
-	require.False(t, found)
-	require.Equal(t, inForce, k.GetParams(wctx).TuDecayRate)
+	// queried params carry the rate in force
+	p := k.GetParams(wctx)
+	p.NetworkGasPrice = math.LegacyMustNewDecFromStr("0.5")
+	send(p)
+	requirePending("0.003")
+	require.Equal(t, p.NetworkGasPrice, k.GetParams(wctx).NetworkGasPrice)
+	require.Equal(t, "0.003000000000000000", attrValue(lastEvent(t, wctx, types.EventTypeUpdateParams), types.AttributeKeyPendingTuDecayRate))
+
+	send(withRate(inForce.String()))
+	requirePending("0.003")
 }
 
 func TestApplyPendingTuDecayRate(t *testing.T) {
@@ -199,4 +207,13 @@ func lastEvent(t *testing.T, ctx sdk.Context, eventType string) sdk.Event {
 	}
 	t.Fatalf("event %s not emitted", eventType)
 	return sdk.Event{}
+}
+
+func attrValue(ev sdk.Event, key string) string {
+	for _, a := range ev.Attributes {
+		if a.Key == key {
+			return a.Value
+		}
+	}
+	return ""
 }
