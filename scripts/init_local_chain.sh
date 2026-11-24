@@ -4,7 +4,7 @@
 # This script initializes a fresh local Verana blockchain for development and testing.
 # It sets up:
 # - A single validator node with the 'cooluser' account
-# - Fast voting periods (30s voting, 20s expedited)
+# - A 3-seat council (cooluser + 2 voting members), 30s ballot, 10s min execution
 # - API, gRPC, and CORS enabled
 #
 # Usage:
@@ -28,8 +28,10 @@ APP_TOML_PATH="$HOME_DIR/config/app.toml"
 CONFIG_TOML_PATH="$HOME_DIR/config/config.toml"
 VALIDATOR_NAME="cooluser"
 VALIDATOR_AMOUNT="1000000000000000000000uvna"
-GENTX_AMOUNT="1000000000uvna"
+GENTX_AMOUNT="1000000uvna"
 SEED_PHRASE_COOLUSER="pink glory help gown abstract eight nice crazy forward ketchup skill cheese"
+SEED_PHRASE_COUNCIL_MEMBER1="answer effort virtual mother muffin stadium buddy air enact luggage burger slim couch brass sight merge legend aspect clown boss august wish unknown wasp"
+SEED_PHRASE_COUNCIL_MEMBER2="kitchen enough rough enforce bamboo easily exchange bullet error phone please razor claim quarter bounce stereo execute path pool series invite lucky warfare next"
 
 # Default ports
 P2P_PORT="26656"
@@ -69,11 +71,18 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Replace remaining "stake" references and update governance params BEFORE gentx
+# Council members (vote only; cooluser is the seated validator)
+log "Adding council member keys and genesis accounts..."
+echo "$SEED_PHRASE_COUNCIL_MEMBER1" | $BINARY keys add council_member1 --recover --keyring-backend test
+echo "$SEED_PHRASE_COUNCIL_MEMBER2" | $BINARY keys add council_member2 --recover --keyring-backend test
+$BINARY add-genesis-account council_member1 1000000000000uvna --keyring-backend test
+$BINARY add-genesis-account council_member2 1000000000000uvna --keyring-backend test
+
+# Replace remaining "stake" references BEFORE gentx
 # Use Python for reliable cross-platform editing (macOS sed -i '' has issues with bash variables)
-log "Replacing 'stake' with 'uvna' in genesis.json and updating governance params..."
+log "Replacing 'stake' with 'uvna' in genesis.json..."
 python3 - <<'PYEOF'
-import json, os
+import os
 
 home = os.path.expanduser("~")
 genesis_path = os.path.join(home, ".verana", "config", "genesis.json")
@@ -81,23 +90,17 @@ genesis_path = os.path.join(home, ".verana", "config", "genesis.json")
 with open(genesis_path) as f:
     content = f.read()
 
-# Replace any remaining "stake" denom references
-content = content.replace('"stake"', '"uvna"')
-
 with open(genesis_path, "w") as f:
-    f.write(content)
-
-# Now update governance params via JSON
-with open(genesis_path) as f:
-    g = json.load(f)
-
-g['app_state']['gov']['params']['max_deposit_period'] = '100s'
-g['app_state']['gov']['params']['voting_period'] = '30s'
-g['app_state']['gov']['params']['expedited_voting_period'] = '20s'
-
-with open(genesis_path, "w") as f:
-    json.dump(g, f, indent=" ")
+    f.write(content.replace('"stake"', '"uvna"'))
 PYEOF
+
+# Seat the council: 3 weight-1 members, 2/3 policy, short windows for local testing
+log "Seating the council in genesis..."
+$BINARY genesis add-council cooluser,council_member1,council_member2 \
+    --voting-period 30s \
+    --min-execution-period 10s \
+    --unbonding-time 60s \
+    --keyring-backend test
 
 # Create gentx (bond_denom=uvna is now set in genesis)
 log "Creating genesis transaction..."
