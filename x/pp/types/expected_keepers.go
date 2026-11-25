@@ -95,11 +95,11 @@ type DigestKeeper interface {
 // methods, which take corporation_id (uint64).
 type DelegationKeeper interface {
 	// [AUTHZ-CHECK-1] operator-delegation check (corporation account + operator).
-	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time) error
+	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgType detypes.MsgType, now time.Time) error
 	// [AUTHZ-CHECK-1] step 3: debit the operation's nominal spend from remaining_spend.
-	ConsumeOperatorSpend(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time, amount sdk.Coins) error
+	ConsumeOperatorSpend(ctx context.Context, authority string, operator string, msgType detypes.MsgType, now time.Time, amount sdk.Coins) error
 	// [AUTHZ-CHECK-3] record-based VS operator authorization check on a participant.
-	CheckVSOperatorAuthorizationOnParticipant(ctx context.Context, corporationID uint64, operator string, participantID uint64, msgType string) error
+	CheckVSOperatorAuthorizationOnParticipant(ctx context.Context, corporationID uint64, operator string, participantID uint64, msgType detypes.MsgType) error
 	// [AUTHZ-CHECK-3] step 6: debit the operation's nominal spend from the record's remaining_spend.
 	ConsumeRecordSpend(ctx context.Context, corporationID uint64, operator string, participantID uint64, amount sdk.Coins) error
 	// [AUTHZ-CHECK-4] the record MUST enable corporation-paid fees.

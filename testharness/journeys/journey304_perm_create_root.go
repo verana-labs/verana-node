@@ -12,6 +12,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionCreateRootJourney implements Journey 304: Test CreateRootPermission
@@ -46,7 +47,7 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgCreateEcosystem"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 1a failed: %w", err)
@@ -81,7 +82,7 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgCreateCredentialSchema"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 2a failed: %w", err)
@@ -132,7 +133,7 @@ func RunPermissionCreateRootJourney(ctx context.Context, client cosmosclient.Cli
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgCreateRootParticipant"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)

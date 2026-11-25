@@ -42,8 +42,8 @@ func (gs GenesisState) Validate() error {
 		if _, err := sdk.AccAddressFromBech32(oa.Operator); err != nil {
 			return fmt.Errorf("operator_authorizations[%d]: invalid operator address: %w", i, err)
 		}
-		if len(oa.MsgTypes) == 0 {
-			return fmt.Errorf("operator_authorizations[%d]: msg_types cannot be empty", i)
+		if err := ValidateMsgTypes(oa.MsgTypes, DelegateAuthorizationMsgTypes); err != nil {
+			return fmt.Errorf("operator_authorizations[%d]: %w", i, err)
 		}
 		idx := fmt.Sprintf("%d/%s", oa.CorporationId, oa.Operator)
 		if oaCorpOp[idx] {
@@ -61,8 +61,8 @@ func (gs GenesisState) Validate() error {
 		if _, err := sdk.AccAddressFromBech32(fg.Grantee); err != nil {
 			return fmt.Errorf("fee_grants[%d]: invalid grantee address: %w", i, err)
 		}
-		if len(fg.MsgTypes) == 0 {
-			return fmt.Errorf("fee_grants[%d]: msg_types cannot be empty", i)
+		if err := ValidateMsgTypes(fg.MsgTypes, FeeGrantMsgTypes); err != nil {
+			return fmt.Errorf("fee_grants[%d]: %w", i, err)
 		}
 		key := fmt.Sprintf("%d/%s", fg.GrantorCorporationId, fg.Grantee)
 		if fgKeys[key] {
@@ -107,8 +107,8 @@ func (gs GenesisState) Validate() error {
 				return fmt.Errorf("vs_operator_authorizations[%d].records[%d]: duplicate participant_id %d (must be globally unique)", i, j, rec.ParticipantId)
 			}
 			participantIDs[rec.ParticipantId] = true
-			if len(rec.MsgTypes) == 0 {
-				return fmt.Errorf("vs_operator_authorizations[%d].records[%d]: msg_types cannot be empty", i, j)
+			if err := ValidateMsgTypes(rec.MsgTypes, VerifiableServiceMsgTypes); err != nil {
+				return fmt.Errorf("vs_operator_authorizations[%d].records[%d]: %w", i, j, err)
 			}
 		}
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/pp/keeper"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
@@ -270,6 +271,11 @@ func TestCreateOrUpdateParticipantSession_FeeGrantCheck(t *testing.T) {
 			for _, id := range del.FeeGrantCheckCalls {
 				require.Equal(t, wantID, id)
 			}
+			wantMsgType := detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE
+			if tc.verifier {
+				wantMsgType = detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION
+			}
+			require.Equal(t, []detypes.MsgType{wantMsgType}, del.VSOACheckMsgTypes)
 		})
 	}
 }

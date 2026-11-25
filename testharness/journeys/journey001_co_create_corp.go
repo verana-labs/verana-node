@@ -11,6 +11,7 @@ import (
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 const (
@@ -138,13 +139,13 @@ func RunCorpCreateJourney(ctx context.Context, client cosmosclient.Client) error
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{
-			"/verana.ec.v1.MsgCreateEcosystem",
-			"/verana.ec.v1.MsgUpdateEcosystem",
-			"/verana.ec.v1.MsgArchiveEcosystem",
-			"/verana.gf.v1.MsgAddGovernanceFrameworkDocument",
-			"/verana.gf.v1.MsgIncreaseActiveGovernanceFrameworkVersion",
-			"/verana.co.v1.MsgUpdateCorporation",
+		[]detypes.MsgType{
+			detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM,
+			detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM,
+			detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM,
+			detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT,
+			detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION,
+			detypes.MsgType_MSG_TYPE_UPDATE_CORPORATION,
 		},
 	)
 	if err != nil {

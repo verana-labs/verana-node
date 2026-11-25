@@ -50,7 +50,7 @@ func testAllowances(t *testing.T, now time.Time) map[string]feegrant.FeeAllowanc
 	}
 	out := map[string]feegrant.FeeAllowanceI{}
 	for name, a := range inner {
-		allowed, err := feegrant.NewAllowedMsgAllowance(a, []string{pptypes.MsgCreateOrUpdateParticipantSessionTypeURL})
+		allowed, err := feegrant.NewAllowedMsgAllowance(a, []string{sdk.MsgTypeURL(&pptypes.MsgCreateOrUpdateParticipantSession{})})
 		require.NoError(t, err)
 		out[name] = allowed
 	}
@@ -174,12 +174,12 @@ func newSelfGrantEnv(t *testing.T) selfGrantEnv {
 
 	_, err = e.des.GrantOperatorAuthorization(ctx, &detypes.MsgGrantOperatorAuthorization{
 		Corporation: e.pX.String(), Operator: e.pX.String(), Grantee: e.opX.String(),
-		MsgTypes: []string{"/verana.pp.v1.MsgSelfCreateParticipant", "/verana.pp.v1.MsgSetParticipantEffectiveUntil"},
+		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_SELF_CREATE_ACCREDITATION, detypes.MsgType_MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL},
 	})
 	require.NoError(t, err)
 	_, err = e.des.GrantOperatorAuthorization(ctx, &detypes.MsgGrantOperatorAuthorization{
 		Corporation: e.pE.String(), Operator: e.pE.String(), Grantee: e.opE.String(),
-		MsgTypes: []string{"/verana.pp.v1.MsgRevokeParticipant"},
+		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_REVOKE_ACCREDITATION},
 	})
 	require.NoError(t, err)
 	return e
@@ -198,7 +198,7 @@ func (e selfGrantEnv) seedSelfVSOA(t *testing.T, p pptypes.Participant) uint64 {
 	require.NoError(t, de.VSOperatorAuthorizations.Set(e.ctx, n+1, detypes.VSOperatorAuthorization{
 		Id: n + 1, CorporationId: 2, VsOperator: X,
 		Records: []detypes.ParticipantAuthorizationRecord{{
-			ParticipantId: id, MsgTypes: []string{pptypes.MsgCreateOrUpdateParticipantSessionTypeURL},
+			ParticipantId: id, MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE},
 			WithFeegrant: true, FeeSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", 1)),
 		}},
 	}))
@@ -252,7 +252,7 @@ func TestSelfFeeGrant_RevokeParticipant(t *testing.T) {
 func TestSelfFeeGrant_OperatorAuthorization(t *testing.T) {
 	e := newSelfGrantEnv(t)
 	X, de := e.pX.String(), e.a.DeKeeper
-	msgTypes := []string{"/verana.ec.v1.MsgCreateEcosystem"}
+	msgTypes := []detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM}
 
 	// Stored before the handler refused the corporation as its own grantee.
 	n, err := de.OperatorAuthorizationSeq.Next(e.ctx)
@@ -285,13 +285,13 @@ func TestSelfFeeGrant_Refused(t *testing.T) {
 	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
 
 	err = e.a.DeKeeper.GrantVSOperatorAuthorization(e.ctx, 2, X, detypes.ParticipantAuthorizationRecord{
-		ParticipantId: 99, MsgTypes: []string{pptypes.MsgCreateOrUpdateParticipantSessionTypeURL},
+		ParticipantId: 99, MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE},
 		WithFeegrant: true, FeeSpendLimit: limit,
 	})
 	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
 
 	_, err = e.des.GrantOperatorAuthorization(e.ctx, &detypes.MsgGrantOperatorAuthorization{
-		Corporation: X, Operator: X, Grantee: X, MsgTypes: []string{"/verana.ec.v1.MsgCreateEcosystem"},
+		Corporation: X, Operator: X, Grantee: X, MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
 		WithFeegrant: true, FeegrantSpendLimit: limit,
 	})
 	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
@@ -364,12 +364,12 @@ func TestSelfFeeGrant_ValidatedEntry(t *testing.T) {
 
 	_, err = e.des.GrantOperatorAuthorization(ctx, &detypes.MsgGrantOperatorAuthorization{
 		Corporation: e.pX.String(), Operator: e.pX.String(), Grantee: e.opX.String(),
-		MsgTypes: []string{"/verana.pp.v1.MsgRenewParticipantOP"},
+		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING},
 	})
 	require.NoError(t, err)
 	_, err = e.des.GrantOperatorAuthorization(ctx, &detypes.MsgGrantOperatorAuthorization{
 		Corporation: e.pE.String(), Operator: e.pE.String(), Grantee: e.opE.String(),
-		MsgTypes: []string{"/verana.pp.v1.MsgSetParticipantOPToValidated", "/verana.pp.v1.MsgSlashParticipantTrustDeposit"},
+		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, detypes.MsgType_MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT},
 	})
 	require.NoError(t, err)
 

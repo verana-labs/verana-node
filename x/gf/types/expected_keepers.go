@@ -3,13 +3,15 @@ package types
 import (
 	"context"
 	"time"
+
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // DelegationKeeper is the minimum surface MOD-GF needs from x/de for AUTHZ-CHECK-1.
 // Signature matches x/de/keeper.Keeper.CheckOperatorAuthorization exactly so the
 // DE keeper concrete type satisfies this interface and depinject can auto-wire it.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, corporation string, operator string, msgTypeURL string, now time.Time) error
+	CheckOperatorAuthorization(ctx context.Context, corporation string, operator string, msgType detypes.MsgType, now time.Time) error
 }
 
 // EcosystemView is the read shape MOD-GF needs to validate ecosystem subjects.

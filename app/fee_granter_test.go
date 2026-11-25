@@ -112,7 +112,7 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 		require.NoError(t, err)
 		*p.pid = id
 		rec := detypes.ParticipantAuthorizationRecord{
-			ParticipantId: id, MsgTypes: []string{pptypes.MsgTriggerResolverTypeURL}, WithFeegrant: p.withFee,
+			ParticipantId: id, MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_TRIGGER_RESOLVER}, WithFeegrant: p.withFee,
 		}
 		if p.withFee {
 			rec.FeeSpendLimit = sdk.NewCoins(sdk.NewInt64Coin("uvna", 1e9))
@@ -123,7 +123,7 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 	require.NoError(t, a.FeeGrantKeeper.GrantAllowance(ctx, e.corp, e.execAddr(), &feegrant.BasicAllowance{}))
 	require.NoError(t, a.FeeGrantKeeper.GrantAllowance(ctx, e.other, e.opAddr(), &feegrant.BasicAllowance{}))
 	require.NoError(t, a.AuthzKeeper.SaveGrant(ctx, e.execAddr(), e.opAddr(),
-		authz.NewGenericAuthorization(pptypes.MsgTriggerResolverTypeURL), nil))
+		authz.NewGenericAuthorization(sdk.MsgTypeURL(&pptypes.MsgTriggerResolver{})), nil))
 	e.finalize(t)
 	return e
 }

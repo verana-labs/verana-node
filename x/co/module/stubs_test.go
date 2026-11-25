@@ -7,12 +7,13 @@ import (
 	"github.com/verana-labs/cosmos-group"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 type stubDelegation struct{}
 
-func (stubDelegation) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (stubDelegation) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 
@@ -35,7 +36,7 @@ func (stubGF) ListVersionsByCorporation(_ context.Context, _ uint64, _ uint32, _
 // tests that need to build a real GF concrete keeper (post-cycle-break).
 type stubGFDelegation struct{}
 
-func (stubGFDelegation) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (stubGFDelegation) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // AccountKeeper defines the expected interface for the Account module.
@@ -40,8 +41,8 @@ type MintKeeper interface {
 // DelegationKeeper defines the expected interface for the Delegation (DE) module.
 // Used to perform [AUTHZ-CHECK] for (authority, operator) pairs.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time) error
-	ConsumeOperatorSpend(ctx context.Context, corporation, operator, msgTypeURL string, now time.Time, amount sdk.Coins) error
+	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgType detypes.MsgType, now time.Time) error
+	ConsumeOperatorSpend(ctx context.Context, corporation, operator string, msgType detypes.MsgType, now time.Time, amount sdk.Coins) error
 }
 
 // CorporationView is the read shape MOD-TD needs about a Corporation subject

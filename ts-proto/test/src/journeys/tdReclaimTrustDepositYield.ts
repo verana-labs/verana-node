@@ -1,8 +1,7 @@
 /**
  * Journey: TD Reclaim Trust Deposit Yield
  *
- * Reclaims any accrued yield on the ecosystem trust deposit for the authority
- * (group policy address), executed by an authorized operator.
+ * MOD-TD-MSG-2 is void in v5: the message must be refused.
  *
  * Requires: test:de-grant-perm-auth must be run first (provides authority + operator).
  *
@@ -54,8 +53,8 @@ async function main() {
   console.log();
 
   try {
-    // Step 3: Build and send MsgReclaimTrustDepositYield
-    console.log("Step 3: Reclaiming trust deposit yield (MsgReclaimTrustDepositYield)...");
+    // Step 3: Send MsgReclaimTrustDepositYield and expect it to be refused
+    console.log("Step 3: Sending MsgReclaimTrustDepositYield (void in v5, expect refusal)...");
     const msg = {
       typeUrl: typeUrls.MsgReclaimTrustDepositYield,
       value: MsgReclaimTrustDepositYield.fromPartial({
@@ -64,27 +63,19 @@ async function main() {
       }),
     };
 
-    const fee = await calculateFeeWithSimulation(client, account.address, [msg], "Reclaiming trust deposit yield");
-    const result = await signAndBroadcastWithRetry(client, account.address, [msg], fee, "Reclaiming trust deposit yield");
-
-    if (result.code !== 0) {
-      const rawLog = result.rawLog || "";
-      // "no claimable yield" is an acceptable outcome
-      if (rawLog.includes("no claimable yield") || rawLog.includes("nothing to claim")) {
-        console.log();
-        console.log("No claimable yield available (this is acceptable).");
-        console.log(`  Tx Hash: ${result.transactionHash}`);
-        console.log(`  Raw Log: ${rawLog}`);
-      } else {
-        throw new Error(`Failed to reclaim trust deposit yield: ${rawLog}`);
-      }
-    } else {
-      console.log();
-      console.log("SUCCESS! Trust deposit yield reclaimed!");
-      console.log(`  Tx Hash: ${result.transactionHash}`);
-      console.log(`  Block: ${result.height}`);
-      console.log(`  Gas: ${result.gasUsed}/${result.gasWanted}`);
+    let refusal = "";
+    try {
+      const fee = await calculateFeeWithSimulation(client, account.address, [msg], "Reclaiming trust deposit yield");
+      const result = await signAndBroadcastWithRetry(client, account.address, [msg], fee, "Reclaiming trust deposit yield");
+      refusal = result.code !== 0 ? result.rawLog || "" : "";
+    } catch (error: any) {
+      refusal = error?.message || String(error);
     }
+    if (!refusal.includes("void in v5")) {
+      throw new Error(`MsgReclaimTrustDepositYield was not refused as void: ${refusal || "tx succeeded"}`);
+    }
+    console.log();
+    console.log("OK: MsgReclaimTrustDepositYield refused (void in v5).");
   } catch (error: any) {
     console.log("ERROR!");
     console.error(error);

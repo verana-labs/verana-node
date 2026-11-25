@@ -6853,7 +6853,7 @@ func TestVSOA_StartParticipantOPGrantsDisabledRecord(t *testing.T) {
 		ValidatorParticipantId:  validatorPermID,
 		Did:                     "did:example:vsoa-issuer",
 		VsOperator:              vsOperator,
-		VsOperatorAuthzMsgTypes: []string{types.MsgCreateOrUpdateParticipantSessionTypeURL},
+		VsOperatorAuthzMsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE},
 	})
 	require.NoError(t, err)
 
@@ -7009,7 +7009,7 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 			Corporation: corp, Operator: corp, Role: types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemPermID, Did: "did:example:vsoa-self-a",
 			EffectiveFrom: &future, EffectiveUntil: &farFuture, VerificationFees: 100, ValidationFees: 50,
-			VsOperator: vsOp, VsOperatorAuthzMsgTypes: []string{types.MsgCreateOrUpdateParticipantSessionTypeURL},
+			VsOperator: vsOp, VsOperatorAuthzMsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE},
 		})
 		require.NoError(t, err)
 		require.Len(t, delKeeper.GrantVSOACalls, 1)
@@ -7057,7 +7057,7 @@ func TestVSOA_CreateRootActiveRecord(t *testing.T) {
 		Corporation: authority, Operator: authority, SchemaId: 1, Did: did,
 		ValidationFees: 100, IssuanceFees: 50, VerificationFees: 25,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
-		VsOperator: vsOp, VsOperatorAuthzMsgTypes: []string{types.MsgSetParticipantOPToValidatedTypeURL},
+		VsOperator: vsOp, VsOperatorAuthzMsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING},
 		VsOperatorAuthzSpendLimit: sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, 1000)),
 		VsOperatorAuthzPeriod:     &period,
 	})
@@ -7118,7 +7118,7 @@ func TestStartParticipantVP_VsOperatorOwnPolicy(t *testing.T) {
 	delKeeper.Reset()
 
 	for name, vsOp := range ownPolicyVsOperators(corp) {
-		for _, msgTypes := range [][]string{nil, {types.MsgCreateOrUpdateParticipantSessionTypeURL}} {
+		for _, msgTypes := range [][]detypes.MsgType{nil, {detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE}} {
 			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
 				msg := &types.MsgStartParticipantOP{
 					Corporation: corp, Operator: operator, Role: types.ParticipantRole_ISSUER,
@@ -7153,7 +7153,7 @@ func TestCreateRootParticipant_VsOperatorOwnPolicy(t *testing.T) {
 	delKeeper.Reset()
 
 	for name, vsOp := range ownPolicyVsOperators(corp) {
-		for _, msgTypes := range [][]string{nil, {types.MsgSetParticipantOPToValidatedTypeURL}} {
+		for _, msgTypes := range [][]detypes.MsgType{nil, {detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING}} {
 			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
 				msg := &types.MsgCreateRootParticipant{
 					Corporation: corp, Operator: operator, SchemaId: 1, Did: did,
@@ -7196,7 +7196,7 @@ func TestSelfCreateParticipant_VsOperatorOwnPolicy(t *testing.T) {
 	delKeeper.Reset()
 
 	for name, vsOp := range ownPolicyVsOperators(corp) {
-		for _, msgTypes := range [][]string{nil, {types.MsgCreateOrUpdateParticipantSessionTypeURL}} {
+		for _, msgTypes := range [][]detypes.MsgType{nil, {detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE}} {
 			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
 				msg := &types.MsgSelfCreateParticipant{
 					Corporation: corp, Operator: operator, Role: types.ParticipantRole_ISSUER,

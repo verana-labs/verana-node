@@ -33,6 +33,7 @@ import {
 } from "../helpers/client";
 import { typeUrls } from "../helpers/registry";
 import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/tx";
+import { MsgType } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
@@ -96,7 +97,7 @@ async function main() {
       // self-grant (operator == corporation): AUTHZ-CHECK-1 skipped, AUTHZ-CHECK-5 is the gate
       operator: account.address,
       grantee: account.address,
-      msgTypes: [typeUrls.MsgStoreDigest],
+      msgTypes: [MsgType.MSG_TYPE_STORE_DIGEST],
       withFeegrant: false,
     }),
   };

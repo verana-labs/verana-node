@@ -28,7 +28,7 @@ func TestAuthzCheck5_OperatorAuthorization(t *testing.T) {
 			Corporation: corp,
 			Operator:    corp, // group-proposal path: operator == corporation
 			Grantee:     grantee,
-			MsgTypes:    []string{"/verana.ec.v1.MsgCreateEcosystem"},
+			MsgTypes:    []types.MsgType{mtEcosystem},
 		})
 		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
 	})

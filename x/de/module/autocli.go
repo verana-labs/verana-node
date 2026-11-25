@@ -55,7 +55,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						},
 						"msg_types": {
 							Name:  "msg-types",
-							Usage: "comma-separated list of VPR delegable message type URLs",
+							Usage: "MsgType values, one per flag: --msg-types create-ecosystem --msg-types store-digest",
 						},
 						"expiration": {
 							Name:  "expiration",

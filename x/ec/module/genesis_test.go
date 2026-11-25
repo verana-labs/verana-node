@@ -18,6 +18,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	ecosystem "github.com/verana-labs/verana-node/x/ec/module"
 	"github.com/verana-labs/verana-node/x/ec/types"
@@ -26,7 +27,7 @@ import (
 
 type genStub struct{}
 
-func (genStub) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (genStub) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 func (genStub) ResolveByPolicyAddress(_ context.Context, _ string) (types.CorporationView, bool) {

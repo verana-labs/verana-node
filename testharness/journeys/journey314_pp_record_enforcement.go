@@ -63,18 +63,18 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 		feeSpendLimit    = int64(3_000_000)     // CHECK-4 cap, drained by CLI fees
 		tinySpendLimit   = int64(1)             // 1 uvna, below one CSPS cost
 	)
-	cspsMsg := permtypes.MsgCreateOrUpdateParticipantSessionTypeURL
+	cspsMsg := detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE
 
 	fmt.Println("\n--- Step 0: Top up the corporation policy account (covers trust_fees) ---")
 	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, policyAddr, math.NewInt(300_000_000))
 	waitForTx("policy top-up")
 
 	fmt.Println("\n--- Step 1: Grant operator prereq authz (CS, root, startop, validate) ---")
-	baseMsgTypes := []string{
-		"/verana.cs.v1.MsgCreateCredentialSchema",
-		"/verana.pp.v1.MsgCreateRootParticipant",
-		"/verana.pp.v1.MsgStartParticipantOP",
-		"/verana.pp.v1.MsgSetParticipantOPToValidated",
+	baseMsgTypes := []detypes.MsgType{
+		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+		detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+		detypes.MsgType_MSG_TYPE_START_ONBOARDING,
+		detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
 	}
 	if err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
@@ -98,7 +98,7 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 	// with_feegrant. Exercises CHECK-3 positive (here) and CHECK-4 (CLI).
 	issuerX, err := buildValidatedIssuer(
 		client, ctx, operatorAccount, policyAddr, trID, rootIssuanceFees,
-		vsOperatorAddr, []string{cspsMsg}, true,
+		vsOperatorAddr, []detypes.MsgType{cspsMsg}, true,
 		&recordLimits{spend: bigSpendLimit, feeSpend: feeSpendLimit},
 	)
 	if err != nil {
@@ -110,7 +110,7 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 	// Issuer-Y: tiny spend_limit so the very first CSPS is rejected on CHECK-3.
 	issuerY, err := buildValidatedIssuer(
 		client, ctx, operatorAccount, policyAddr, trID, rootIssuanceFees,
-		vsOperatorAddr, []string{cspsMsg}, false,
+		vsOperatorAddr, []detypes.MsgType{cspsMsg}, false,
 		&recordLimits{spend: tinySpendLimit},
 	)
 	if err != nil {
@@ -189,7 +189,7 @@ func buildValidatedIssuer(
 	trID uint64,
 	issuanceFees uint64,
 	vsOperatorAddr string,
-	vsMsgTypes []string,
+	vsMsgTypes []detypes.MsgType,
 	withFeegrant bool,
 	limits *recordLimits,
 ) (uint64, error) {

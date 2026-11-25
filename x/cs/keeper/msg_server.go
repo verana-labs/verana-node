@@ -9,6 +9,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 type msgServer struct {
@@ -34,7 +35,7 @@ func (ms msgServer) CreateCredentialSchema(goCtx context.Context, msg *types.Msg
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.cs.v1.MsgCreateCredentialSchema",
+		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
 		ctx.BlockTime(),
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -73,7 +74,7 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.cs.v1.MsgUpdateCredentialSchema",
+		detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -182,7 +183,7 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 		ctx,
 		msg.Corporation,
 		msg.Operator,
-		"/verana.cs.v1.MsgArchiveCredentialSchema",
+		detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)

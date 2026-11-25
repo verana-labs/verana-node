@@ -11,6 +11,7 @@ import {
   MsgSetExchangeRateState,
   MsgUpdateExchangeRate,
 } from "../../src/codec/verana/xr/v1/tx";
+import { MsgType } from "../../src/codec/verana/de/v1/msg_type";
 
 const registry = createVeranaRegistry();
 const amino = createVeranaAminoTypes() as any;
@@ -41,7 +42,7 @@ const deMsg = MsgGrantOperatorAuthorization.fromPartial({
   corporation: "verana1authority0000000000000000000000000000000",
   operator: "verana1operator0000000000000000000000000000000",
   grantee: "verana1grantee00000000000000000000000000000000",
-  msgTypes: [veranaTypeUrls.MsgCreateEcosystem, veranaTypeUrls.MsgSelfCreateParticipant],
+  msgTypes: [MsgType.MSG_TYPE_CREATE_ECOSYSTEM, MsgType.MSG_TYPE_SELF_CREATE_ACCREDITATION],
   expiration: new Date("2026-04-01T12:00:00.123Z"),
   authzSpendLimit: [{ denom: "uvna", amount: "42" }],
   authzSpendLimitPeriod: { seconds: 3600, nanos: 5 },
@@ -164,14 +165,14 @@ const permMsg = MsgSelfCreateParticipant.fromPartial({
   verificationFees: 0,
   validationFees: 0,
   vsOperator: "verana1vsoperator0000000000000000000000000000",
-  vsOperatorAuthzMsgTypes: ["/verana.pp.v1.MsgCreateOrUpdateParticipantSession"],
+  vsOperatorAuthzMsgTypes: [MsgType.MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION],
   vsOperatorAuthzSpendLimit: [{ denom: "uvna", amount: "15" }],
   vsOperatorAuthzWithFeegrant: true,
   vsOperatorAuthzFeeSpendLimit: [{ denom: "uvna", amount: "5" }],
   vsOperatorAuthzPeriod: { seconds: 5400, nanos: 11 },
 });
 const permRoundTrip = permConverter.fromAmino(permConverter.toAmino(permMsg));
-assert.equal(permRoundTrip.vsOperatorAuthzMsgTypes?.[0], "/verana.pp.v1.MsgCreateOrUpdateParticipantSession");
+assert.equal(permRoundTrip.vsOperatorAuthzMsgTypes?.[0], MsgType.MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION);
 assert.equal(permRoundTrip.vsOperatorAuthzPeriod?.seconds, 5400);
 assert.equal(permRoundTrip.vsOperatorAuthzPeriod?.nanos, 11);
 

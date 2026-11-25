@@ -8,6 +8,7 @@ import (
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
@@ -46,7 +47,7 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
 	}
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -122,7 +123,7 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
 	}
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -189,7 +190,7 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
 	}
 
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), now); err != nil {
+	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 

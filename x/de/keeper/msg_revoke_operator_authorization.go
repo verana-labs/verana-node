@@ -33,7 +33,7 @@ func (ms msgServer) RevokeOperatorAuthorization(goCtx context.Context, msg *type
 			ctx,
 			msg.Corporation,
 			msg.Operator,
-			"/verana.de.v1.MsgRevokeOperatorAuthorization",
+			types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION,
 			now,
 		); err != nil {
 			return nil, err

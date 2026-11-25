@@ -10,6 +10,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionCancelVPJourney implements Journey 303: Test CancelPermissionVPLastRequest
@@ -51,7 +52,7 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 	if err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgRenewParticipantOP"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING},
 	); err != nil {
 		return fmt.Errorf("prerequisite failed: could not grant renew authz: %w", err)
 	}
@@ -96,7 +97,7 @@ func RunPermissionCancelVPJourney(ctx context.Context, client cosmosclient.Clien
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgCancelParticipantOPLastRequest"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_WITHDRAW_ONBOARDING_REQUEST},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)

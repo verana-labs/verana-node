@@ -13,6 +13,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionSlashTDJourney implements Journey 308: Test SlashPermissionTrustDeposit
@@ -52,7 +53,7 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgCreateCredentialSchema"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 1 failed: could not grant CS auth: %w", err)
@@ -81,7 +82,7 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgCreateRootParticipant"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 3 failed: could not grant CreateRootPermission auth: %w", err)
@@ -114,9 +115,9 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{
-			"/verana.pp.v1.MsgStartParticipantOP",
-			"/verana.pp.v1.MsgSetParticipantOPToValidated",
+		[]detypes.MsgType{
+			detypes.MsgType_MSG_TYPE_START_ONBOARDING,
+			detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
 		},
 	)
 	if err != nil {
@@ -192,7 +193,7 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgSlashParticipantTrustDeposit"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)

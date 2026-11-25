@@ -21,18 +21,9 @@ func TestAuthzCheck5_TrustDeposit(t *testing.T) {
 	corp := sdk.AccAddress([]byte("unregistered_corp___")).String()
 	operator := sdk.AccAddress([]byte("operator____________")).String()
 
-	t.Run("ReclaimTrustDepositYield: unregistered corporation aborts", func(t *testing.T) {
-		coKeeper.Unregistered[corp] = true
-		_, err := ms.ReclaimTrustDepositYield(ctx, &types.MsgReclaimTrustDepositYield{
-			Corporation: corp,
-			Operator:    operator,
-		})
-		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
-	})
-
-	t.Run("ReclaimTrustDepositYield: registered corporation passes AUTHZ-CHECK-5", func(t *testing.T) {
+	t.Run("RepaySlashedTrustDeposit: registered corporation passes AUTHZ-CHECK-5", func(t *testing.T) {
 		delete(coKeeper.Unregistered, corp)
-		_, err := ms.ReclaimTrustDepositYield(ctx, &types.MsgReclaimTrustDepositYield{
+		_, err := ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
 			Corporation: corp,
 			Operator:    operator,
 		})

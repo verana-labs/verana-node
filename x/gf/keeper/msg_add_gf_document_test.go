@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	keepertest "github.com/verana-labs/verana-node/testutil/keeper"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/gf/keeper"
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
@@ -24,7 +25,7 @@ const (
 // mockDelegation implements types.DelegationKeeper.
 type mockDelegation struct{ err error }
 
-func (m mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (m mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return m.err
 }
 

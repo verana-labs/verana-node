@@ -12,6 +12,7 @@ import (
 	"cosmossdk.io/collections"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -106,8 +107,10 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 	// Define the primary participant: verifier_participant in a Credential Verification, else issuer_participant.
 	// The vs_operator and corporation checks apply to it only.
 	primaryParticipant, primaryRole := issuerParticipant, "issuer"
+	primaryMsgType := detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE
 	if hasVerifier {
 		primaryParticipant, primaryRole = verifierParticipant, "verifier"
+		primaryMsgType = detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION
 	}
 
 	// if participant.vs_operator is not equal to operator, abort
@@ -139,7 +142,7 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 		primaryCorpID,
 		msg.Operator,
 		primaryParticipant.Id,
-		types.MsgCreateOrUpdateParticipantSessionTypeURL,
+		primaryMsgType,
 	); err != nil {
 		return fmt.Errorf("VS operator authorization check failed: %w", err)
 	}

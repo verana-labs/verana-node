@@ -28,6 +28,7 @@ import {
 import { typeUrls } from "../helpers/registry";
 import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/tx";
 import { saveCsAuthzSetup } from "../helpers/journeyResults";
+import { MsgType, msgTypeToJSON } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
@@ -144,15 +145,15 @@ async function main() {
   console.log("Step 3: Granting CS operator authorization...");
 
   const allCsMsgTypes = [
-    typeUrls.MsgCreateEcosystem,            // needed so operator can create the EC for CS tests
-    typeUrls.MsgCreateCredentialSchema,
-    typeUrls.MsgUpdateCredentialSchema,
-    typeUrls.MsgArchiveCredentialSchema,
+    MsgType.MSG_TYPE_CREATE_ECOSYSTEM,            // needed so operator can create the EC for CS tests
+    MsgType.MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+    MsgType.MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA,
+    MsgType.MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA,
   ];
 
   console.log("  Message types being authorized:");
   for (const msgType of allCsMsgTypes) {
-    console.log(`    - ${msgType}`);
+    console.log(`    - ${msgTypeToJSON(msgType)}`);
   }
 
   const client = await createSigningClient(authorityWallet);

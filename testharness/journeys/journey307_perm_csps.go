@@ -13,6 +13,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionCSPSJourney implements Journey 307: Test CreateOrUpdatePermissionSession (CSPS)
@@ -63,11 +64,11 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	err := lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{
-			"/verana.cs.v1.MsgCreateCredentialSchema",
-			"/verana.pp.v1.MsgSetParticipantOPToValidated",
-			"/verana.pp.v1.MsgCreateRootParticipant",
-			"/verana.pp.v1.MsgStartParticipantOP",
+		[]detypes.MsgType{
+			detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+			detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
+			detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+			detypes.MsgType_MSG_TYPE_START_ONBOARDING,
 		},
 	)
 	if err != nil {
@@ -120,7 +121,7 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 		ValidatorParticipantId:  rootPermID,
 		Did:                     issuerDID,
 		VsOperator:              vsOperatorAddr,
-		VsOperatorAuthzMsgTypes: []string{permtypes.MsgCreateOrUpdateParticipantSessionTypeURL},
+		VsOperatorAuthzMsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE},
 	})
 	if err != nil {
 		return fmt.Errorf("prerequisite 4 failed: could not start issuer perm VP: %w", err)

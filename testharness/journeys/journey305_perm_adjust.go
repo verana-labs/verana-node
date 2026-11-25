@@ -11,6 +11,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionAdjustJourney implements Journey 305: Test AdjustPermission
@@ -82,7 +83,7 @@ func RunPermissionAdjustJourney(ctx context.Context, client cosmosclient.Client)
 	err = lib.GrantOperatorAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
 		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgSetParticipantEffectiveUntil"},
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)

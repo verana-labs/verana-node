@@ -2187,7 +2187,7 @@ func GrantOperatorAuthorizationViaGroup(
 	policyAddr string,
 	operatorAddr string,
 	granteeAddr string,
-	msgTypes []string,
+	msgTypes []detypes.MsgType,
 ) error {
 	return GrantOperatorAuthorizationWithSpendViaGroup(
 		client, ctx, admin, voter2, policyAddr, operatorAddr, granteeAddr, msgTypes, nil, nil,
@@ -2205,7 +2205,7 @@ func GrantOperatorAuthorizationWithSpendViaGroup(
 	policyAddr string,
 	operatorAddr string,
 	granteeAddr string,
-	msgTypes []string,
+	msgTypes []detypes.MsgType,
 	authzSpendLimit sdk.Coins,
 	authzSpendLimitPeriod *time.Duration,
 ) error {
@@ -2227,7 +2227,7 @@ func GrantOperatorAuthorizationWithFeegrantViaGroup(
 	voter2 cosmosaccount.Account,
 	policyAddr string,
 	granteeAddr string,
-	msgTypes []string,
+	msgTypes []detypes.MsgType,
 	feegrantSpendLimit sdk.Coins,
 	feegrantSpendLimitPeriod *time.Duration,
 	expiration *time.Time,
@@ -2286,7 +2286,7 @@ func GrantSelfDelegation(
 	client cosmosclient.Client,
 	ctx context.Context,
 	account cosmosaccount.Account,
-	msgTypes []string,
+	msgTypes []detypes.MsgType,
 ) error {
 	addr, err := account.Address(addressPrefix)
 	if err != nil {
