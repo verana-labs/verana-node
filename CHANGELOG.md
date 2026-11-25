@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.11.0](https://github.com/verana-labs/verana-node/compare/v0.10.8...v0.11.0) (2026-11-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **poa,app:** council governance via x/group and proof-of-authority validator set ([#57](https://github.com/verana-labs/verana-node/issues/57)) (#60)
+
+### Features
+
+* **co,de,gf:** one AUTHZ-CHECK-5 resolver with GF-CHECK-1, GF-CHECK-2 step and v5 VS account checks ([#126](https://github.com/verana-labs/verana-node/issues/126)) ([603db29](https://github.com/verana-labs/verana-node/commit/603db29c03f13b554a92d9f817e480fde5ad41f0))
+* **de,pp:** carry msg_types as the v5 MsgType enum instead of type URLs ([#124](https://github.com/verana-labs/verana-node/issues/124)) ([35a2b7a](https://github.com/verana-labs/verana-node/commit/35a2b7a7aecc01f6ae01a83c2139df9681c8617b))
+* **poa,app:** council governance via x/group and proof-of-authority validator set ([#57](https://github.com/verana-labs/verana-node/issues/57)) ([#60](https://github.com/verana-labs/verana-node/issues/60)) ([b8edf2f](https://github.com/verana-labs/verana-node/commit/b8edf2fce1b948df03b6b924cb9d1cc05155bdeb))
+* rename operator to delegate and settle the group-path and council signer conventions ([#125](https://github.com/verana-labs/verana-node/issues/125)) ([ef5bb91](https://github.com/verana-labs/verana-node/commit/ef5bb91515a48fa93b8ca8e259ffb4efff44de11))
+* **util:** shared event builder for the v5 events convention ([#128](https://github.com/verana-labs/verana-node/issues/128)) ([1d5bd0a](https://github.com/verana-labs/verana-node/commit/1d5bd0a1282d96a2c84f5f75ba6d695f8f42a636))
+
 ## [0.10.8](https://github.com/verana-labs/verana-node/compare/v0.10.7...v0.10.8) (2026-11-20)
 
 
