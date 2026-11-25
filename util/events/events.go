@@ -10,7 +10,8 @@
 //   - values use their API form: decimal integers, RFC 3339 UTC timestamps at
 //     second precision, 18-digit decimals, bech32 accounts, enum names, base64
 //     bytes, durations as seconds;
-//   - an absent value is omitted, a zero value is kept.
+//   - an absent value (nil, empty or a zero time) is omitted, a zero number or
+//     duration is kept.
 package events
 
 import (
@@ -66,6 +67,9 @@ func (e *Event) Enum(key string, v fmt.Stringer) *Event {
 }
 
 func (e *Event) Time(key string, t time.Time) *Event {
+	if t.IsZero() {
+		return e
+	}
 	return e.add(key, t.UTC().Format(time.RFC3339))
 }
 
@@ -74,6 +78,17 @@ func (e *Event) OptTime(key string, t *time.Time) *Event {
 		return e
 	}
 	return e.Time(key, *t)
+}
+
+func (e *Event) Duration(key string, d time.Duration) *Event {
+	return e.add(key, strconv.FormatInt(int64(d/time.Second), 10))
+}
+
+func (e *Event) OptDuration(key string, d *time.Duration) *Event {
+	if d == nil {
+		return e
+	}
+	return e.Duration(key, *d)
 }
 
 func (e *Event) Dec(key string, v math.LegacyDec) *Event {

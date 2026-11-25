@@ -49,6 +49,7 @@ func TestEncodings(t *testing.T) {
 		Addr("grantee", addr).
 		Bytes("digest", []byte{0xde, 0xad, 0xbe, 0xef}).
 		Time("now", now).
+		Duration("period", 90*time.Minute+500*time.Millisecond).
 		Event()
 
 	require.Equal(t, [][2]string{
@@ -63,6 +64,7 @@ func TestEncodings(t *testing.T) {
 		{"grantee", addr.String()},
 		{"digest", "3q2+7w=="},
 		{"now", "2026-11-24T09:30:15Z"},
+		{"period", "5400"},
 	}, attrs(e))
 }
 
@@ -70,6 +72,8 @@ func TestAbsentValuesAreOmitted(t *testing.T) {
 	e := events.New("ac", "self_create_accreditation").
 		OptUint("validator_accreditation_id", nil).
 		OptTime("effective_until", nil).
+		Time("archived", time.Time{}).
+		OptDuration("period", nil).
 		Str("vid", "").
 		Dec("rate", math.LegacyDec{}).
 		Int("amount", math.Int{}).
@@ -83,14 +87,17 @@ func TestAbsentValuesAreOmitted(t *testing.T) {
 func TestOptionalValuesWhenSet(t *testing.T) {
 	id := uint64(3)
 	until := time.Unix(1795000000, 0)
+	period := 30 * 24 * time.Hour
 	e := events.New("ac", "self_create_accreditation").
 		OptUint("validator_accreditation_id", &id).
 		OptTime("effective_until", &until).
+		OptDuration("period", &period).
 		Event()
 	require.Equal(t, [][2]string{
 		{"module", "ac"},
 		{"validator_accreditation_id", "3"},
 		{"effective_until", "2026-11-18T11:06:40Z"},
+		{"period", "2592000"},
 	}, attrs(e))
 }
 
@@ -99,12 +106,14 @@ func TestZeroValuesAreKept(t *testing.T) {
 		Uint("tu_amount", 0).
 		Dec("fiat_amount", math.LegacyZeroDec()).
 		Int("amount", math.ZeroInt()).
+		Duration("transition", 0).
 		Event()
 	require.Equal(t, [][2]string{
 		{"module", "td"},
 		{"tu_amount", "0"},
 		{"fiat_amount", "0.000000000000000000"},
 		{"amount", "0"},
+		{"transition", "0"},
 	}, attrs(e))
 }
 
