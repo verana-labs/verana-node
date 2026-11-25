@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // [MOD-DE-MSG-5-2] budget rules as checked at the message level for MSG-1/7/14.
@@ -31,9 +32,9 @@ func TestMsgStartParticipantOP_ValidateBasic_Budget(t *testing.T) {
 	vsOp := sdk.AccAddress([]byte("start_op_vsop_______")).String()
 	base := func() *MsgStartParticipantOP {
 		return &MsgStartParticipantOP{
-			Corporation: addr, Operator: addr, Role: ParticipantRole_ISSUER, ValidatorParticipantId: 1,
+			Corporation: addr, Delegate: addr, Role: ParticipantRole_ISSUER, ValidatorParticipantId: 1,
 			Did: "did:example:budget", VsOperator: vsOp,
-			VsOperatorAuthzMsgTypes: []string{MsgCreateOrUpdateParticipantSessionTypeURL},
+			VsOperatorAuthzMsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE},
 		}
 	}
 
@@ -49,4 +50,32 @@ func TestMsgStartParticipantOP_ValidateBasic_Budget(t *testing.T) {
 	stray := base()
 	stray.VsOperatorAuthzFeeSpendLimit = sdk.NewCoins(sdk.NewInt64Coin("uvna", 10))
 	require.Error(t, stray.ValidateBasic())
+}
+
+func TestValidateVSOperatorAuthz_RoleMsgTypes(t *testing.T) {
+	vsOp := sdk.AccAddress([]byte("role_vsop___________")).String()
+	for _, tc := range []struct {
+		role ParticipantRole
+		mt   detypes.MsgType
+		ok   bool
+	}{
+		{ParticipantRole_HOLDER, detypes.MsgType_MSG_TYPE_TRIGGER_RESOLVER, true},
+		{ParticipantRole_HOLDER, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, false},
+		{ParticipantRole_ISSUER, detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE, true},
+		{ParticipantRole_ISSUER, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, true},
+		{ParticipantRole_ISSUER, detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION, false},
+		{ParticipantRole_VERIFIER, detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION, true},
+		{ParticipantRole_VERIFIER, detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE, false},
+		{ParticipantRole_ISSUER_GRANTOR, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, true},
+		{ParticipantRole_VERIFIER_GRANTOR, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, true},
+		{ParticipantRole_VERIFIER_GRANTOR, detypes.MsgType_MSG_TYPE_STORE_DIGEST, false},
+		{ParticipantRole_ECOSYSTEM, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, false},
+	} {
+		err := validateVSOperatorAuthz(tc.role, vsOp, []detypes.MsgType{tc.mt}, true)
+		if tc.ok {
+			require.NoError(t, err, "%s %s", tc.role, tc.mt)
+		} else {
+			require.Error(t, err, "%s %s", tc.role, tc.mt)
+		}
+	}
 }

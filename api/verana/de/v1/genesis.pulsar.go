@@ -17,7 +17,7 @@ import (
 var _ protoreflect.List = (*_GenesisState_2_list)(nil)
 
 type _GenesisState_2_list struct {
-	list *[]*OperatorAuthorization
+	list *[]*DelegateAuthorization
 }
 
 func (x *_GenesisState_2_list) Len() int {
@@ -33,18 +33,18 @@ func (x *_GenesisState_2_list) Get(i int) protoreflect.Value {
 
 func (x *_GenesisState_2_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*OperatorAuthorization)
+	concreteValue := valueUnwrapped.Interface().(*DelegateAuthorization)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_GenesisState_2_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*OperatorAuthorization)
+	concreteValue := valueUnwrapped.Interface().(*DelegateAuthorization)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_GenesisState_2_list) AppendMutable() protoreflect.Value {
-	v := new(OperatorAuthorization)
+	v := new(DelegateAuthorization)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
@@ -57,7 +57,7 @@ func (x *_GenesisState_2_list) Truncate(n int) {
 }
 
 func (x *_GenesisState_2_list) NewElement() protoreflect.Value {
-	v := new(OperatorAuthorization)
+	v := new(DelegateAuthorization)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
@@ -220,10 +220,10 @@ func (x *_GenesisState_8_list) IsValid() bool {
 
 var (
 	md_GenesisState                            protoreflect.MessageDescriptor
-	fd_GenesisState_operator_authorizations    protoreflect.FieldDescriptor
+	fd_GenesisState_delegate_authorizations    protoreflect.FieldDescriptor
 	fd_GenesisState_fee_grants                 protoreflect.FieldDescriptor
 	fd_GenesisState_vs_operator_authorizations protoreflect.FieldDescriptor
-	fd_GenesisState_operator_authorization_seq protoreflect.FieldDescriptor
+	fd_GenesisState_delegate_authorization_seq protoreflect.FieldDescriptor
 	fd_GenesisState_vsoa_seq                   protoreflect.FieldDescriptor
 	fd_GenesisState_window_end_queue           protoreflect.FieldDescriptor
 )
@@ -231,10 +231,10 @@ var (
 func init() {
 	file_verana_de_v1_genesis_proto_init()
 	md_GenesisState = File_verana_de_v1_genesis_proto.Messages().ByName("GenesisState")
-	fd_GenesisState_operator_authorizations = md_GenesisState.Fields().ByName("operator_authorizations")
+	fd_GenesisState_delegate_authorizations = md_GenesisState.Fields().ByName("delegate_authorizations")
 	fd_GenesisState_fee_grants = md_GenesisState.Fields().ByName("fee_grants")
 	fd_GenesisState_vs_operator_authorizations = md_GenesisState.Fields().ByName("vs_operator_authorizations")
-	fd_GenesisState_operator_authorization_seq = md_GenesisState.Fields().ByName("operator_authorization_seq")
+	fd_GenesisState_delegate_authorization_seq = md_GenesisState.Fields().ByName("delegate_authorization_seq")
 	fd_GenesisState_vsoa_seq = md_GenesisState.Fields().ByName("vsoa_seq")
 	fd_GenesisState_window_end_queue = md_GenesisState.Fields().ByName("window_end_queue")
 }
@@ -304,9 +304,9 @@ func (x *fastReflection_GenesisState) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.OperatorAuthorizations) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_2_list{list: &x.OperatorAuthorizations})
-		if !f(fd_GenesisState_operator_authorizations, value) {
+	if len(x.DelegateAuthorizations) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_2_list{list: &x.DelegateAuthorizations})
+		if !f(fd_GenesisState_delegate_authorizations, value) {
 			return
 		}
 	}
@@ -322,9 +322,9 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
-	if x.OperatorAuthorizationSeq != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.OperatorAuthorizationSeq)
-		if !f(fd_GenesisState_operator_authorization_seq, value) {
+	if x.DelegateAuthorizationSeq != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.DelegateAuthorizationSeq)
+		if !f(fd_GenesisState_delegate_authorization_seq, value) {
 			return
 		}
 	}
@@ -355,14 +355,14 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.GenesisState.operator_authorizations":
-		return len(x.OperatorAuthorizations) != 0
+	case "verana.de.v1.GenesisState.delegate_authorizations":
+		return len(x.DelegateAuthorizations) != 0
 	case "verana.de.v1.GenesisState.fee_grants":
 		return len(x.FeeGrants) != 0
 	case "verana.de.v1.GenesisState.vs_operator_authorizations":
 		return len(x.VsOperatorAuthorizations) != 0
-	case "verana.de.v1.GenesisState.operator_authorization_seq":
-		return x.OperatorAuthorizationSeq != uint64(0)
+	case "verana.de.v1.GenesisState.delegate_authorization_seq":
+		return x.DelegateAuthorizationSeq != uint64(0)
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		return x.VsoaSeq != uint64(0)
 	case "verana.de.v1.GenesisState.window_end_queue":
@@ -383,14 +383,14 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.GenesisState.operator_authorizations":
-		x.OperatorAuthorizations = nil
+	case "verana.de.v1.GenesisState.delegate_authorizations":
+		x.DelegateAuthorizations = nil
 	case "verana.de.v1.GenesisState.fee_grants":
 		x.FeeGrants = nil
 	case "verana.de.v1.GenesisState.vs_operator_authorizations":
 		x.VsOperatorAuthorizations = nil
-	case "verana.de.v1.GenesisState.operator_authorization_seq":
-		x.OperatorAuthorizationSeq = uint64(0)
+	case "verana.de.v1.GenesisState.delegate_authorization_seq":
+		x.DelegateAuthorizationSeq = uint64(0)
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		x.VsoaSeq = uint64(0)
 	case "verana.de.v1.GenesisState.window_end_queue":
@@ -411,11 +411,11 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.GenesisState.operator_authorizations":
-		if len(x.OperatorAuthorizations) == 0 {
+	case "verana.de.v1.GenesisState.delegate_authorizations":
+		if len(x.DelegateAuthorizations) == 0 {
 			return protoreflect.ValueOfList(&_GenesisState_2_list{})
 		}
-		listValue := &_GenesisState_2_list{list: &x.OperatorAuthorizations}
+		listValue := &_GenesisState_2_list{list: &x.DelegateAuthorizations}
 		return protoreflect.ValueOfList(listValue)
 	case "verana.de.v1.GenesisState.fee_grants":
 		if len(x.FeeGrants) == 0 {
@@ -429,8 +429,8 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_4_list{list: &x.VsOperatorAuthorizations}
 		return protoreflect.ValueOfList(listValue)
-	case "verana.de.v1.GenesisState.operator_authorization_seq":
-		value := x.OperatorAuthorizationSeq
+	case "verana.de.v1.GenesisState.delegate_authorization_seq":
+		value := x.DelegateAuthorizationSeq
 		return protoreflect.ValueOfUint64(value)
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		value := x.VsoaSeq
@@ -461,10 +461,10 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.GenesisState.operator_authorizations":
+	case "verana.de.v1.GenesisState.delegate_authorizations":
 		lv := value.List()
 		clv := lv.(*_GenesisState_2_list)
-		x.OperatorAuthorizations = *clv.list
+		x.DelegateAuthorizations = *clv.list
 	case "verana.de.v1.GenesisState.fee_grants":
 		lv := value.List()
 		clv := lv.(*_GenesisState_3_list)
@@ -473,8 +473,8 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_4_list)
 		x.VsOperatorAuthorizations = *clv.list
-	case "verana.de.v1.GenesisState.operator_authorization_seq":
-		x.OperatorAuthorizationSeq = value.Uint()
+	case "verana.de.v1.GenesisState.delegate_authorization_seq":
+		x.DelegateAuthorizationSeq = value.Uint()
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		x.VsoaSeq = value.Uint()
 	case "verana.de.v1.GenesisState.window_end_queue":
@@ -501,11 +501,11 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.GenesisState.operator_authorizations":
-		if x.OperatorAuthorizations == nil {
-			x.OperatorAuthorizations = []*OperatorAuthorization{}
+	case "verana.de.v1.GenesisState.delegate_authorizations":
+		if x.DelegateAuthorizations == nil {
+			x.DelegateAuthorizations = []*DelegateAuthorization{}
 		}
-		value := &_GenesisState_2_list{list: &x.OperatorAuthorizations}
+		value := &_GenesisState_2_list{list: &x.DelegateAuthorizations}
 		return protoreflect.ValueOfList(value)
 	case "verana.de.v1.GenesisState.fee_grants":
 		if x.FeeGrants == nil {
@@ -525,8 +525,8 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_8_list{list: &x.WindowEndQueue}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.GenesisState.operator_authorization_seq":
-		panic(fmt.Errorf("field operator_authorization_seq of message verana.de.v1.GenesisState is not mutable"))
+	case "verana.de.v1.GenesisState.delegate_authorization_seq":
+		panic(fmt.Errorf("field delegate_authorization_seq of message verana.de.v1.GenesisState is not mutable"))
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		panic(fmt.Errorf("field vsoa_seq of message verana.de.v1.GenesisState is not mutable"))
 	default:
@@ -542,8 +542,8 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.GenesisState.operator_authorizations":
-		list := []*OperatorAuthorization{}
+	case "verana.de.v1.GenesisState.delegate_authorizations":
+		list := []*DelegateAuthorization{}
 		return protoreflect.ValueOfList(&_GenesisState_2_list{list: &list})
 	case "verana.de.v1.GenesisState.fee_grants":
 		list := []*FeeGrant{}
@@ -551,7 +551,7 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "verana.de.v1.GenesisState.vs_operator_authorizations":
 		list := []*VSOperatorAuthorization{}
 		return protoreflect.ValueOfList(&_GenesisState_4_list{list: &list})
-	case "verana.de.v1.GenesisState.operator_authorization_seq":
+	case "verana.de.v1.GenesisState.delegate_authorization_seq":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "verana.de.v1.GenesisState.vsoa_seq":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -627,8 +627,8 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if len(x.OperatorAuthorizations) > 0 {
-			for _, e := range x.OperatorAuthorizations {
+		if len(x.DelegateAuthorizations) > 0 {
+			for _, e := range x.DelegateAuthorizations {
 				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -645,8 +645,8 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
-		if x.OperatorAuthorizationSeq != 0 {
-			n += 1 + runtime.Sov(uint64(x.OperatorAuthorizationSeq))
+		if x.DelegateAuthorizationSeq != 0 {
+			n += 1 + runtime.Sov(uint64(x.DelegateAuthorizationSeq))
 		}
 		if x.VsoaSeq != 0 {
 			n += 1 + runtime.Sov(uint64(x.VsoaSeq))
@@ -707,8 +707,8 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x38
 		}
-		if x.OperatorAuthorizationSeq != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.OperatorAuthorizationSeq))
+		if x.DelegateAuthorizationSeq != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DelegateAuthorizationSeq))
 			i--
 			dAtA[i] = 0x30
 		}
@@ -744,9 +744,9 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				dAtA[i] = 0x1a
 			}
 		}
-		if len(x.OperatorAuthorizations) > 0 {
-			for iNdEx := len(x.OperatorAuthorizations) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.OperatorAuthorizations[iNdEx])
+		if len(x.DelegateAuthorizations) > 0 {
+			for iNdEx := len(x.DelegateAuthorizations) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.DelegateAuthorizations[iNdEx])
 				if err != nil {
 					return protoiface.MarshalOutput{
 						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -811,7 +811,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperatorAuthorizations", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DelegateAuthorizations", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -838,8 +838,8 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.OperatorAuthorizations = append(x.OperatorAuthorizations, &OperatorAuthorization{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.OperatorAuthorizations[len(x.OperatorAuthorizations)-1]); err != nil {
+				x.DelegateAuthorizations = append(x.DelegateAuthorizations, &DelegateAuthorization{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.DelegateAuthorizations[len(x.DelegateAuthorizations)-1]); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -913,9 +913,9 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 6:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperatorAuthorizationSeq", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DelegateAuthorizationSeq", wireType)
 				}
-				x.OperatorAuthorizationSeq = 0
+				x.DelegateAuthorizationSeq = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -925,7 +925,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.OperatorAuthorizationSeq |= uint64(b&0x7F) << shift
+					x.DelegateAuthorizationSeq |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -1037,14 +1037,14 @@ type GenesisState struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// operator_authorizations is a list of all OperatorAuthorization objects
-	OperatorAuthorizations []*OperatorAuthorization `protobuf:"bytes,2,rep,name=operator_authorizations,json=operatorAuthorizations,proto3" json:"operator_authorizations,omitempty"`
+	// delegate_authorizations is a list of all DelegateAuthorization objects
+	DelegateAuthorizations []*DelegateAuthorization `protobuf:"bytes,2,rep,name=delegate_authorizations,json=delegateAuthorizations,proto3" json:"delegate_authorizations,omitempty"`
 	// fee_grants is a list of all FeeGrant objects
 	FeeGrants []*FeeGrant `protobuf:"bytes,3,rep,name=fee_grants,json=feeGrants,proto3" json:"fee_grants,omitempty"`
 	// vs_operator_authorizations is a list of all VSOperatorAuthorization objects
 	VsOperatorAuthorizations []*VSOperatorAuthorization `protobuf:"bytes,4,rep,name=vs_operator_authorizations,json=vsOperatorAuthorizations,proto3" json:"vs_operator_authorizations,omitempty"`
 	// Id sequences, exported so ids are never re-issued after a delete.
-	OperatorAuthorizationSeq uint64 `protobuf:"varint,6,opt,name=operator_authorization_seq,json=operatorAuthorizationSeq,proto3" json:"operator_authorization_seq,omitempty"`
+	DelegateAuthorizationSeq uint64 `protobuf:"varint,6,opt,name=delegate_authorization_seq,json=delegateAuthorizationSeq,proto3" json:"delegate_authorization_seq,omitempty"`
 	VsoaSeq                  uint64 `protobuf:"varint,7,opt,name=vsoa_seq,json=vsoaSeq,proto3" json:"vsoa_seq,omitempty"`
 	// window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5.
 	WindowEndQueue []*WindowEndQueueEntry `protobuf:"bytes,8,rep,name=window_end_queue,json=windowEndQueue,proto3" json:"window_end_queue,omitempty"`
@@ -1070,9 +1070,9 @@ func (*GenesisState) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_genesis_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GenesisState) GetOperatorAuthorizations() []*OperatorAuthorization {
+func (x *GenesisState) GetDelegateAuthorizations() []*DelegateAuthorization {
 	if x != nil {
-		return x.OperatorAuthorizations
+		return x.DelegateAuthorizations
 	}
 	return nil
 }
@@ -1091,9 +1091,9 @@ func (x *GenesisState) GetVsOperatorAuthorizations() []*VSOperatorAuthorization 
 	return nil
 }
 
-func (x *GenesisState) GetOperatorAuthorizationSeq() uint64 {
+func (x *GenesisState) GetDelegateAuthorizationSeq() uint64 {
 	if x != nil {
-		return x.OperatorAuthorizationSeq
+		return x.DelegateAuthorizationSeq
 	}
 	return 0
 }
@@ -1123,12 +1123,12 @@ var file_verana_de_v1_genesis_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x6f, 0x1a, 0x18, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76,
 	0x31, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc6, 0x03,
 	0x0a, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x62,
-	0x0a, 0x17, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x75, 0x74, 0x68, 0x6f,
+	0x0a, 0x17, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x5f, 0x61, 0x75, 0x74, 0x68, 0x6f,
 	0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x23, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4f,
-	0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x16, 0x6f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
+	0x23, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x44,
+	0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x16, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
 	0x6e, 0x73, 0x12, 0x3b, 0x0a, 0x0a, 0x66, 0x65, 0x65, 0x5f, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x73,
 	0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
 	0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x42, 0x04,
@@ -1139,10 +1139,10 @@ var file_verana_de_v1_genesis_proto_rawDesc = []byte{
 	0x76, 0x31, 0x2e, 0x56, 0x53, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74,
 	0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
 	0x52, 0x18, 0x76, 0x73, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68,
-	0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x3c, 0x0a, 0x1a, 0x6f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
+	0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x3c, 0x0a, 0x1a, 0x64, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x5f, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
 	0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x73, 0x65, 0x71, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x18,
-	0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a,
+	0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x71, 0x12, 0x19, 0x0a, 0x08, 0x76, 0x73, 0x6f, 0x61,
 	0x5f, 0x73, 0x65, 0x71, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x76, 0x73, 0x6f, 0x61,
 	0x53, 0x65, 0x71, 0x12, 0x51, 0x0a, 0x10, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x5f, 0x65, 0x6e,
@@ -1179,13 +1179,13 @@ func file_verana_de_v1_genesis_proto_rawDescGZIP() []byte {
 var file_verana_de_v1_genesis_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_verana_de_v1_genesis_proto_goTypes = []interface{}{
 	(*GenesisState)(nil),            // 0: verana.de.v1.GenesisState
-	(*OperatorAuthorization)(nil),   // 1: verana.de.v1.OperatorAuthorization
+	(*DelegateAuthorization)(nil),   // 1: verana.de.v1.DelegateAuthorization
 	(*FeeGrant)(nil),                // 2: verana.de.v1.FeeGrant
 	(*VSOperatorAuthorization)(nil), // 3: verana.de.v1.VSOperatorAuthorization
 	(*WindowEndQueueEntry)(nil),     // 4: verana.de.v1.WindowEndQueueEntry
 }
 var file_verana_de_v1_genesis_proto_depIdxs = []int32{
-	1, // 0: verana.de.v1.GenesisState.operator_authorizations:type_name -> verana.de.v1.OperatorAuthorization
+	1, // 0: verana.de.v1.GenesisState.delegate_authorizations:type_name -> verana.de.v1.DelegateAuthorization
 	2, // 1: verana.de.v1.GenesisState.fee_grants:type_name -> verana.de.v1.FeeGrant
 	3, // 2: verana.de.v1.GenesisState.vs_operator_authorizations:type_name -> verana.de.v1.VSOperatorAuthorization
 	4, // 3: verana.de.v1.GenesisState.window_end_queue:type_name -> verana.de.v1.WindowEndQueueEntry

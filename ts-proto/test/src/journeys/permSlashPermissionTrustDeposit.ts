@@ -30,7 +30,7 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 15;
+const DELEGATE_INDEX = 15;
 
 async function main() {
   console.log("=".repeat(60));
@@ -46,12 +46,12 @@ async function main() {
     process.exit(1);
   }
   console.log(`  Authority: ${setup.authorityAddress}`);
-  console.log(`  Operator:  ${setup.operatorAddress}`);
+  console.log(`  Delegate:  ${setup.delegateAddress}`);
   console.log();
 
-  // Step 2: Connect operator
-  console.log("Step 2: Setting up operator wallet...");
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Connect delegate
+  console.log("Step 2: Setting up delegate wallet...");
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
   const client = await createSigningClient(wallet);
   console.log(`  Connected as ${account.address}`);
@@ -63,7 +63,7 @@ async function main() {
     const { schemaId, rootPermId, did, effectiveFrom } = await createPermPrerequisites(
       client,
       setup.authorityAddress,
-      setup.operatorAddress,
+      setup.delegateAddress,
       IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
     );
     console.log(`  Schema ID: ${schemaId}, Root Permission ID: ${rootPermId}`);
@@ -85,7 +85,7 @@ async function main() {
     const issuerParticipantId = await createValidatedPermission(
       client,
       setup.authorityAddress,
-      setup.operatorAddress,
+      setup.delegateAddress,
       schemaId,
       rootPermId,
       did,
@@ -101,7 +101,7 @@ async function main() {
       typeUrl: typeUrls.MsgSlashParticipantTrustDeposit,
       value: MsgSlashParticipantTrustDeposit.fromPartial({
         corporation: setup.authorityAddress,
-        operator: setup.operatorAddress,
+        delegate: setup.delegateAddress,
         id: issuerParticipantId,
         amount: slashAmount,
         // [MOD-PP-MSG-12-1] reason is mandatory per spec v4 draft 13.

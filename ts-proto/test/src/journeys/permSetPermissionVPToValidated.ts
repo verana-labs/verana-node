@@ -25,7 +25,7 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 15;
+const DELEGATE_INDEX = 15;
 
 async function main() {
   console.log("=".repeat(60));
@@ -45,9 +45,9 @@ async function main() {
   console.log(`  VP Permission ID: ${vpSetup.vpPermId}`);
   console.log();
 
-  // Step 2: Connect operator
-  console.log("Step 2: Setting up operator wallet...");
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Connect delegate
+  console.log("Step 2: Setting up delegate wallet...");
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
   const client = await createSigningClient(wallet);
   console.log(`  Connected as ${account.address}`);
@@ -62,7 +62,7 @@ async function main() {
       typeUrl: typeUrls.MsgSetParticipantOPToValidated,
       value: MsgSetParticipantOPToValidated.fromPartial({
         corporation: authzSetup.authorityAddress,
-        operator: authzSetup.operatorAddress,
+        delegate: authzSetup.delegateAddress,
         id: vpSetup.vpPermId,
         effectiveUntil,
         validationFees: 5,

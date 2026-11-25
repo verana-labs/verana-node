@@ -70,6 +70,46 @@ type ParticipantKeeper interface {
 	ViewParticipant(ctx context.Context, id uint64) (ParticipantView, bool)
 }
 
+// GovernanceFrameworkKeeper runs GF-CHECK-2 for a delegate (AUTHZ-CHECK-1 step
+// 4). Wired post-construction via Keeper.SetGovernanceFrameworkKeeper: MOD-GF
+// depends on MOD-DE.
+type GovernanceFrameworkKeeper interface {
+	CheckDelegateCGFAcceptance(ctx context.Context, corporationID uint64, authz *DelegateAuthorization, now time.Time) error
+}
+
+// VerifiableServiceView is what AUTHZ-CHECK-3 and AUTHZ-CHECK-4 read of a
+// VerifiableService entry; the calling method resolves it.
+type VerifiableServiceView struct {
+	Id            uint64
+	CorporationId uint64
+	VsAccount     string
+	MsgTypes      []MsgType
+	Period        *time.Duration
+	FeeSpendLimit sdk.Coins
+}
+
+// AccreditationView is what AUTHZ-CHECK-3 reads of its primary entry.
+type AccreditationView struct {
+	Id     uint64
+	Active bool
+}
+
+// VsAccountBudget is the running operation budget of the VS account of a
+// VerifiableService entry.
+type VsAccountBudget struct {
+	SpendLimit     sdk.Coins
+	RemainingSpend sdk.Coins
+	Expiration     *time.Time
+}
+
+// VsAccountBudgetStore holds the VsAccountBudget rows keyed by vs_id that
+// AUTHZ-CHECK-3 steps 5 and 6 read and write. Get returns
+// collections.ErrNotFound when the entry has no budget.
+type VsAccountBudgetStore interface {
+	Get(ctx context.Context, vsID uint64) (VsAccountBudget, error)
+	Set(ctx context.Context, vsID uint64, budget VsAccountBudget) error
+}
+
 // VerifiableServiceKeeper serves GlobalVariables.vs_account_fee_period, owned by
 // MOD-VS. Wired post-construction via Keeper.SetVerifiableServiceKeeper.
 type VerifiableServiceKeeper interface {

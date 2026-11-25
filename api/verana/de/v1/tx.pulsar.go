@@ -19,192 +19,192 @@ import (
 	sync "sync"
 )
 
-var _ protoreflect.List = (*_MsgGrantOperatorAuthorization_4_list)(nil)
+var _ protoreflect.List = (*_MsgGrantDelegateAuthorization_4_list)(nil)
 
-type _MsgGrantOperatorAuthorization_4_list struct {
-	list *[]string
+type _MsgGrantDelegateAuthorization_4_list struct {
+	list *[]MsgType
 }
 
-func (x *_MsgGrantOperatorAuthorization_4_list) Len() int {
+func (x *_MsgGrantDelegateAuthorization_4_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgGrantOperatorAuthorization_4_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfString((*x.list)[i])
+func (x *_MsgGrantDelegateAuthorization_4_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfEnum((protoreflect.EnumNumber)((*x.list)[i]))
 }
 
-func (x *_MsgGrantOperatorAuthorization_4_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+func (x *_MsgGrantDelegateAuthorization_4_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Enum()
+	concreteValue := (MsgType)(valueUnwrapped)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgGrantOperatorAuthorization_4_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+func (x *_MsgGrantDelegateAuthorization_4_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Enum()
+	concreteValue := (MsgType)(valueUnwrapped)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgGrantOperatorAuthorization_4_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message MsgGrantOperatorAuthorization at list field MsgTypes as it is not of Message kind"))
+func (x *_MsgGrantDelegateAuthorization_4_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message MsgGrantDelegateAuthorization at list field MsgTypes as it is not of Message kind"))
 }
 
-func (x *_MsgGrantOperatorAuthorization_4_list) Truncate(n int) {
+func (x *_MsgGrantDelegateAuthorization_4_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgGrantOperatorAuthorization_4_list) NewElement() protoreflect.Value {
-	v := ""
-	return protoreflect.ValueOfString(v)
+func (x *_MsgGrantDelegateAuthorization_4_list) NewElement() protoreflect.Value {
+	v := 0
+	return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(v))
 }
 
-func (x *_MsgGrantOperatorAuthorization_4_list) IsValid() bool {
+func (x *_MsgGrantDelegateAuthorization_4_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_MsgGrantOperatorAuthorization_6_list)(nil)
+var _ protoreflect.List = (*_MsgGrantDelegateAuthorization_6_list)(nil)
 
-type _MsgGrantOperatorAuthorization_6_list struct {
+type _MsgGrantDelegateAuthorization_6_list struct {
 	list *[]*v1beta1.Coin
 }
 
-func (x *_MsgGrantOperatorAuthorization_6_list) Len() int {
+func (x *_MsgGrantDelegateAuthorization_6_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgGrantOperatorAuthorization_6_list) Get(i int) protoreflect.Value {
+func (x *_MsgGrantDelegateAuthorization_6_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_MsgGrantOperatorAuthorization_6_list) Set(i int, value protoreflect.Value) {
+func (x *_MsgGrantDelegateAuthorization_6_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgGrantOperatorAuthorization_6_list) Append(value protoreflect.Value) {
+func (x *_MsgGrantDelegateAuthorization_6_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgGrantOperatorAuthorization_6_list) AppendMutable() protoreflect.Value {
+func (x *_MsgGrantDelegateAuthorization_6_list) AppendMutable() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_MsgGrantOperatorAuthorization_6_list) Truncate(n int) {
+func (x *_MsgGrantDelegateAuthorization_6_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgGrantOperatorAuthorization_6_list) NewElement() protoreflect.Value {
+func (x *_MsgGrantDelegateAuthorization_6_list) NewElement() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_MsgGrantOperatorAuthorization_6_list) IsValid() bool {
+func (x *_MsgGrantDelegateAuthorization_6_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_MsgGrantOperatorAuthorization_9_list)(nil)
+var _ protoreflect.List = (*_MsgGrantDelegateAuthorization_9_list)(nil)
 
-type _MsgGrantOperatorAuthorization_9_list struct {
+type _MsgGrantDelegateAuthorization_9_list struct {
 	list *[]*v1beta1.Coin
 }
 
-func (x *_MsgGrantOperatorAuthorization_9_list) Len() int {
+func (x *_MsgGrantDelegateAuthorization_9_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgGrantOperatorAuthorization_9_list) Get(i int) protoreflect.Value {
+func (x *_MsgGrantDelegateAuthorization_9_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_MsgGrantOperatorAuthorization_9_list) Set(i int, value protoreflect.Value) {
+func (x *_MsgGrantDelegateAuthorization_9_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgGrantOperatorAuthorization_9_list) Append(value protoreflect.Value) {
+func (x *_MsgGrantDelegateAuthorization_9_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgGrantOperatorAuthorization_9_list) AppendMutable() protoreflect.Value {
+func (x *_MsgGrantDelegateAuthorization_9_list) AppendMutable() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_MsgGrantOperatorAuthorization_9_list) Truncate(n int) {
+func (x *_MsgGrantDelegateAuthorization_9_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgGrantOperatorAuthorization_9_list) NewElement() protoreflect.Value {
+func (x *_MsgGrantDelegateAuthorization_9_list) NewElement() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_MsgGrantOperatorAuthorization_9_list) IsValid() bool {
+func (x *_MsgGrantDelegateAuthorization_9_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_MsgGrantOperatorAuthorization                             protoreflect.MessageDescriptor
-	fd_MsgGrantOperatorAuthorization_corporation                 protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_operator                    protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_grantee                     protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_msg_types                   protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_expiration                  protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_authz_spend_limit           protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_authz_spend_limit_period    protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_with_feegrant               protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_feegrant_spend_limit        protoreflect.FieldDescriptor
-	fd_MsgGrantOperatorAuthorization_feegrant_spend_limit_period protoreflect.FieldDescriptor
+	md_MsgGrantDelegateAuthorization                             protoreflect.MessageDescriptor
+	fd_MsgGrantDelegateAuthorization_corporation                 protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_delegate                    protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_grantee                     protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_msg_types                   protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_expiration                  protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_authz_spend_limit           protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_authz_spend_limit_period    protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_with_feegrant               protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_feegrant_spend_limit        protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_feegrant_spend_limit_period protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_de_v1_tx_proto_init()
-	md_MsgGrantOperatorAuthorization = File_verana_de_v1_tx_proto.Messages().ByName("MsgGrantOperatorAuthorization")
-	fd_MsgGrantOperatorAuthorization_corporation = md_MsgGrantOperatorAuthorization.Fields().ByName("corporation")
-	fd_MsgGrantOperatorAuthorization_operator = md_MsgGrantOperatorAuthorization.Fields().ByName("operator")
-	fd_MsgGrantOperatorAuthorization_grantee = md_MsgGrantOperatorAuthorization.Fields().ByName("grantee")
-	fd_MsgGrantOperatorAuthorization_msg_types = md_MsgGrantOperatorAuthorization.Fields().ByName("msg_types")
-	fd_MsgGrantOperatorAuthorization_expiration = md_MsgGrantOperatorAuthorization.Fields().ByName("expiration")
-	fd_MsgGrantOperatorAuthorization_authz_spend_limit = md_MsgGrantOperatorAuthorization.Fields().ByName("authz_spend_limit")
-	fd_MsgGrantOperatorAuthorization_authz_spend_limit_period = md_MsgGrantOperatorAuthorization.Fields().ByName("authz_spend_limit_period")
-	fd_MsgGrantOperatorAuthorization_with_feegrant = md_MsgGrantOperatorAuthorization.Fields().ByName("with_feegrant")
-	fd_MsgGrantOperatorAuthorization_feegrant_spend_limit = md_MsgGrantOperatorAuthorization.Fields().ByName("feegrant_spend_limit")
-	fd_MsgGrantOperatorAuthorization_feegrant_spend_limit_period = md_MsgGrantOperatorAuthorization.Fields().ByName("feegrant_spend_limit_period")
+	md_MsgGrantDelegateAuthorization = File_verana_de_v1_tx_proto.Messages().ByName("MsgGrantDelegateAuthorization")
+	fd_MsgGrantDelegateAuthorization_corporation = md_MsgGrantDelegateAuthorization.Fields().ByName("corporation")
+	fd_MsgGrantDelegateAuthorization_delegate = md_MsgGrantDelegateAuthorization.Fields().ByName("delegate")
+	fd_MsgGrantDelegateAuthorization_grantee = md_MsgGrantDelegateAuthorization.Fields().ByName("grantee")
+	fd_MsgGrantDelegateAuthorization_msg_types = md_MsgGrantDelegateAuthorization.Fields().ByName("msg_types")
+	fd_MsgGrantDelegateAuthorization_expiration = md_MsgGrantDelegateAuthorization.Fields().ByName("expiration")
+	fd_MsgGrantDelegateAuthorization_authz_spend_limit = md_MsgGrantDelegateAuthorization.Fields().ByName("authz_spend_limit")
+	fd_MsgGrantDelegateAuthorization_authz_spend_limit_period = md_MsgGrantDelegateAuthorization.Fields().ByName("authz_spend_limit_period")
+	fd_MsgGrantDelegateAuthorization_with_feegrant = md_MsgGrantDelegateAuthorization.Fields().ByName("with_feegrant")
+	fd_MsgGrantDelegateAuthorization_feegrant_spend_limit = md_MsgGrantDelegateAuthorization.Fields().ByName("feegrant_spend_limit")
+	fd_MsgGrantDelegateAuthorization_feegrant_spend_limit_period = md_MsgGrantDelegateAuthorization.Fields().ByName("feegrant_spend_limit_period")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgGrantOperatorAuthorization)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgGrantDelegateAuthorization)(nil)
 
-type fastReflection_MsgGrantOperatorAuthorization MsgGrantOperatorAuthorization
+type fastReflection_MsgGrantDelegateAuthorization MsgGrantDelegateAuthorization
 
-func (x *MsgGrantOperatorAuthorization) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgGrantOperatorAuthorization)(x)
+func (x *MsgGrantDelegateAuthorization) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgGrantDelegateAuthorization)(x)
 }
 
-func (x *MsgGrantOperatorAuthorization) slowProtoReflect() protoreflect.Message {
+func (x *MsgGrantDelegateAuthorization) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_tx_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -216,43 +216,43 @@ func (x *MsgGrantOperatorAuthorization) slowProtoReflect() protoreflect.Message 
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgGrantOperatorAuthorization_messageType fastReflection_MsgGrantOperatorAuthorization_messageType
-var _ protoreflect.MessageType = fastReflection_MsgGrantOperatorAuthorization_messageType{}
+var _fastReflection_MsgGrantDelegateAuthorization_messageType fastReflection_MsgGrantDelegateAuthorization_messageType
+var _ protoreflect.MessageType = fastReflection_MsgGrantDelegateAuthorization_messageType{}
 
-type fastReflection_MsgGrantOperatorAuthorization_messageType struct{}
+type fastReflection_MsgGrantDelegateAuthorization_messageType struct{}
 
-func (x fastReflection_MsgGrantOperatorAuthorization_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgGrantOperatorAuthorization)(nil)
+func (x fastReflection_MsgGrantDelegateAuthorization_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgGrantDelegateAuthorization)(nil)
 }
-func (x fastReflection_MsgGrantOperatorAuthorization_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgGrantOperatorAuthorization)
+func (x fastReflection_MsgGrantDelegateAuthorization_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgGrantDelegateAuthorization)
 }
-func (x fastReflection_MsgGrantOperatorAuthorization_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgGrantOperatorAuthorization
+func (x fastReflection_MsgGrantDelegateAuthorization_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgGrantDelegateAuthorization
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgGrantOperatorAuthorization
+func (x *fastReflection_MsgGrantDelegateAuthorization) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgGrantDelegateAuthorization
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Type() protoreflect.MessageType {
-	return _fastReflection_MsgGrantOperatorAuthorization_messageType
+func (x *fastReflection_MsgGrantDelegateAuthorization) Type() protoreflect.MessageType {
+	return _fastReflection_MsgGrantDelegateAuthorization_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgGrantOperatorAuthorization) New() protoreflect.Message {
-	return new(fastReflection_MsgGrantOperatorAuthorization)
+func (x *fastReflection_MsgGrantDelegateAuthorization) New() protoreflect.Message {
+	return new(fastReflection_MsgGrantDelegateAuthorization)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Interface() protoreflect.ProtoMessage {
-	return (*MsgGrantOperatorAuthorization)(x)
+func (x *fastReflection_MsgGrantDelegateAuthorization) Interface() protoreflect.ProtoMessage {
+	return (*MsgGrantDelegateAuthorization)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -260,64 +260,64 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) Interface() protoreflect.
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgGrantDelegateAuthorization) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Corporation != "" {
 		value := protoreflect.ValueOfString(x.Corporation)
-		if !f(fd_MsgGrantOperatorAuthorization_corporation, value) {
+		if !f(fd_MsgGrantDelegateAuthorization_corporation, value) {
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgGrantOperatorAuthorization_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgGrantDelegateAuthorization_delegate, value) {
 			return
 		}
 	}
 	if x.Grantee != "" {
 		value := protoreflect.ValueOfString(x.Grantee)
-		if !f(fd_MsgGrantOperatorAuthorization_grantee, value) {
+		if !f(fd_MsgGrantDelegateAuthorization_grantee, value) {
 			return
 		}
 	}
 	if len(x.MsgTypes) != 0 {
-		value := protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_4_list{list: &x.MsgTypes})
-		if !f(fd_MsgGrantOperatorAuthorization_msg_types, value) {
+		value := protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_4_list{list: &x.MsgTypes})
+		if !f(fd_MsgGrantDelegateAuthorization_msg_types, value) {
 			return
 		}
 	}
 	if x.Expiration != nil {
 		value := protoreflect.ValueOfMessage(x.Expiration.ProtoReflect())
-		if !f(fd_MsgGrantOperatorAuthorization_expiration, value) {
+		if !f(fd_MsgGrantDelegateAuthorization_expiration, value) {
 			return
 		}
 	}
 	if len(x.AuthzSpendLimit) != 0 {
-		value := protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_6_list{list: &x.AuthzSpendLimit})
-		if !f(fd_MsgGrantOperatorAuthorization_authz_spend_limit, value) {
+		value := protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_6_list{list: &x.AuthzSpendLimit})
+		if !f(fd_MsgGrantDelegateAuthorization_authz_spend_limit, value) {
 			return
 		}
 	}
 	if x.AuthzSpendLimitPeriod != nil {
 		value := protoreflect.ValueOfMessage(x.AuthzSpendLimitPeriod.ProtoReflect())
-		if !f(fd_MsgGrantOperatorAuthorization_authz_spend_limit_period, value) {
+		if !f(fd_MsgGrantDelegateAuthorization_authz_spend_limit_period, value) {
 			return
 		}
 	}
 	if x.WithFeegrant != false {
 		value := protoreflect.ValueOfBool(x.WithFeegrant)
-		if !f(fd_MsgGrantOperatorAuthorization_with_feegrant, value) {
+		if !f(fd_MsgGrantDelegateAuthorization_with_feegrant, value) {
 			return
 		}
 	}
 	if len(x.FeegrantSpendLimit) != 0 {
-		value := protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_9_list{list: &x.FeegrantSpendLimit})
-		if !f(fd_MsgGrantOperatorAuthorization_feegrant_spend_limit, value) {
+		value := protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_9_list{list: &x.FeegrantSpendLimit})
+		if !f(fd_MsgGrantDelegateAuthorization_feegrant_spend_limit, value) {
 			return
 		}
 	}
 	if x.FeegrantSpendLimitPeriod != nil {
 		value := protoreflect.ValueOfMessage(x.FeegrantSpendLimitPeriod.ProtoReflect())
-		if !f(fd_MsgGrantOperatorAuthorization_feegrant_spend_limit_period, value) {
+		if !f(fd_MsgGrantDelegateAuthorization_feegrant_spend_limit_period, value) {
 			return
 		}
 	}
@@ -334,33 +334,33 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) Range(f func(protoreflect
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgGrantDelegateAuthorization) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		return x.Corporation != ""
-	case "verana.de.v1.MsgGrantOperatorAuthorization.operator":
-		return x.Operator != ""
-	case "verana.de.v1.MsgGrantOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
+		return x.Delegate != ""
+	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		return x.Grantee != ""
-	case "verana.de.v1.MsgGrantOperatorAuthorization.msg_types":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
 		return len(x.MsgTypes) != 0
-	case "verana.de.v1.MsgGrantOperatorAuthorization.expiration":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.expiration":
 		return x.Expiration != nil
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit":
 		return len(x.AuthzSpendLimit) != 0
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period":
 		return x.AuthzSpendLimitPeriod != nil
-	case "verana.de.v1.MsgGrantOperatorAuthorization.with_feegrant":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.with_feegrant":
 		return x.WithFeegrant != false
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit":
 		return len(x.FeegrantSpendLimit) != 0
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period":
 		return x.FeegrantSpendLimitPeriod != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -370,33 +370,33 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) Has(fd protoreflect.Field
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgGrantDelegateAuthorization) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		x.Corporation = ""
-	case "verana.de.v1.MsgGrantOperatorAuthorization.operator":
-		x.Operator = ""
-	case "verana.de.v1.MsgGrantOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
+		x.Delegate = ""
+	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		x.Grantee = ""
-	case "verana.de.v1.MsgGrantOperatorAuthorization.msg_types":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
 		x.MsgTypes = nil
-	case "verana.de.v1.MsgGrantOperatorAuthorization.expiration":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.expiration":
 		x.Expiration = nil
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit":
 		x.AuthzSpendLimit = nil
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period":
 		x.AuthzSpendLimitPeriod = nil
-	case "verana.de.v1.MsgGrantOperatorAuthorization.with_feegrant":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.with_feegrant":
 		x.WithFeegrant = false
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit":
 		x.FeegrantSpendLimit = nil
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period":
 		x.FeegrantSpendLimitPeriod = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -406,52 +406,52 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) Clear(fd protoreflect.Fie
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgGrantDelegateAuthorization) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.MsgGrantOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.operator":
-		value := x.Operator
+	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		value := x.Grantee
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.msg_types":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
 		if len(x.MsgTypes) == 0 {
-			return protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_4_list{})
+			return protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_4_list{})
 		}
-		listValue := &_MsgGrantOperatorAuthorization_4_list{list: &x.MsgTypes}
+		listValue := &_MsgGrantDelegateAuthorization_4_list{list: &x.MsgTypes}
 		return protoreflect.ValueOfList(listValue)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.expiration":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.expiration":
 		value := x.Expiration
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit":
 		if len(x.AuthzSpendLimit) == 0 {
-			return protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_6_list{})
+			return protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_6_list{})
 		}
-		listValue := &_MsgGrantOperatorAuthorization_6_list{list: &x.AuthzSpendLimit}
+		listValue := &_MsgGrantDelegateAuthorization_6_list{list: &x.AuthzSpendLimit}
 		return protoreflect.ValueOfList(listValue)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period":
 		value := x.AuthzSpendLimitPeriod
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "verana.de.v1.MsgGrantOperatorAuthorization.with_feegrant":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.with_feegrant":
 		value := x.WithFeegrant
 		return protoreflect.ValueOfBool(value)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit":
 		if len(x.FeegrantSpendLimit) == 0 {
-			return protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_9_list{})
+			return protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_9_list{})
 		}
-		listValue := &_MsgGrantOperatorAuthorization_9_list{list: &x.FeegrantSpendLimit}
+		listValue := &_MsgGrantDelegateAuthorization_9_list{list: &x.FeegrantSpendLimit}
 		return protoreflect.ValueOfList(listValue)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period":
 		value := x.FeegrantSpendLimitPeriod
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorization does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorization does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -465,39 +465,39 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) Get(descriptor protorefle
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgGrantDelegateAuthorization) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.operator":
-		x.Operator = value.Interface().(string)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
+		x.Delegate = value.Interface().(string)
+	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		x.Grantee = value.Interface().(string)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.msg_types":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
 		lv := value.List()
-		clv := lv.(*_MsgGrantOperatorAuthorization_4_list)
+		clv := lv.(*_MsgGrantDelegateAuthorization_4_list)
 		x.MsgTypes = *clv.list
-	case "verana.de.v1.MsgGrantOperatorAuthorization.expiration":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.expiration":
 		x.Expiration = value.Message().Interface().(*timestamppb.Timestamp)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit":
 		lv := value.List()
-		clv := lv.(*_MsgGrantOperatorAuthorization_6_list)
+		clv := lv.(*_MsgGrantDelegateAuthorization_6_list)
 		x.AuthzSpendLimit = *clv.list
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period":
 		x.AuthzSpendLimitPeriod = value.Message().Interface().(*durationpb.Duration)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.with_feegrant":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.with_feegrant":
 		x.WithFeegrant = value.Bool()
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit":
 		lv := value.List()
-		clv := lv.(*_MsgGrantOperatorAuthorization_9_list)
+		clv := lv.(*_MsgGrantDelegateAuthorization_9_list)
 		x.FeegrantSpendLimit = *clv.list
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period":
 		x.FeegrantSpendLimitPeriod = value.Message().Interface().(*durationpb.Duration)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -511,103 +511,103 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) Set(fd protoreflect.Field
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgGrantOperatorAuthorization) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgGrantDelegateAuthorization) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantOperatorAuthorization.msg_types":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
 		if x.MsgTypes == nil {
-			x.MsgTypes = []string{}
+			x.MsgTypes = []MsgType{}
 		}
-		value := &_MsgGrantOperatorAuthorization_4_list{list: &x.MsgTypes}
+		value := &_MsgGrantDelegateAuthorization_4_list{list: &x.MsgTypes}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.expiration":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.expiration":
 		if x.Expiration == nil {
 			x.Expiration = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Expiration.ProtoReflect())
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit":
 		if x.AuthzSpendLimit == nil {
 			x.AuthzSpendLimit = []*v1beta1.Coin{}
 		}
-		value := &_MsgGrantOperatorAuthorization_6_list{list: &x.AuthzSpendLimit}
+		value := &_MsgGrantDelegateAuthorization_6_list{list: &x.AuthzSpendLimit}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period":
 		if x.AuthzSpendLimitPeriod == nil {
 			x.AuthzSpendLimitPeriod = new(durationpb.Duration)
 		}
 		return protoreflect.ValueOfMessage(x.AuthzSpendLimitPeriod.ProtoReflect())
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit":
 		if x.FeegrantSpendLimit == nil {
 			x.FeegrantSpendLimit = []*v1beta1.Coin{}
 		}
-		value := &_MsgGrantOperatorAuthorization_9_list{list: &x.FeegrantSpendLimit}
+		value := &_MsgGrantDelegateAuthorization_9_list{list: &x.FeegrantSpendLimit}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit_period":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period":
 		if x.FeegrantSpendLimitPeriod == nil {
 			x.FeegrantSpendLimitPeriod = new(durationpb.Duration)
 		}
 		return protoreflect.ValueOfMessage(x.FeegrantSpendLimitPeriod.ProtoReflect())
-	case "verana.de.v1.MsgGrantOperatorAuthorization.corporation":
-		panic(fmt.Errorf("field corporation of message verana.de.v1.MsgGrantOperatorAuthorization is not mutable"))
-	case "verana.de.v1.MsgGrantOperatorAuthorization.operator":
-		panic(fmt.Errorf("field operator of message verana.de.v1.MsgGrantOperatorAuthorization is not mutable"))
-	case "verana.de.v1.MsgGrantOperatorAuthorization.grantee":
-		panic(fmt.Errorf("field grantee of message verana.de.v1.MsgGrantOperatorAuthorization is not mutable"))
-	case "verana.de.v1.MsgGrantOperatorAuthorization.with_feegrant":
-		panic(fmt.Errorf("field with_feegrant of message verana.de.v1.MsgGrantOperatorAuthorization is not mutable"))
+	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
+		panic(fmt.Errorf("field corporation of message verana.de.v1.MsgGrantDelegateAuthorization is not mutable"))
+	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
+		panic(fmt.Errorf("field delegate of message verana.de.v1.MsgGrantDelegateAuthorization is not mutable"))
+	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
+		panic(fmt.Errorf("field grantee of message verana.de.v1.MsgGrantDelegateAuthorization is not mutable"))
+	case "verana.de.v1.MsgGrantDelegateAuthorization.with_feegrant":
+		panic(fmt.Errorf("field with_feegrant of message verana.de.v1.MsgGrantDelegateAuthorization is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgGrantOperatorAuthorization) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgGrantDelegateAuthorization) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgGrantOperatorAuthorization.operator":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgGrantOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgGrantOperatorAuthorization.msg_types":
-		list := []string{}
-		return protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_4_list{list: &list})
-	case "verana.de.v1.MsgGrantOperatorAuthorization.expiration":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
+		list := []MsgType{}
+		return protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_4_list{list: &list})
+	case "verana.de.v1.MsgGrantDelegateAuthorization.expiration":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit":
 		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_6_list{list: &list})
-	case "verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit_period":
+		return protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_6_list{list: &list})
+	case "verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period":
 		m := new(durationpb.Duration)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "verana.de.v1.MsgGrantOperatorAuthorization.with_feegrant":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.with_feegrant":
 		return protoreflect.ValueOfBool(false)
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit":
 		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_MsgGrantOperatorAuthorization_9_list{list: &list})
-	case "verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit_period":
+		return protoreflect.ValueOfList(&_MsgGrantDelegateAuthorization_9_list{list: &list})
+	case "verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period":
 		m := new(durationpb.Duration)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgGrantOperatorAuthorization) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgGrantDelegateAuthorization) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgGrantOperatorAuthorization", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgGrantDelegateAuthorization", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -615,7 +615,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) WhichOneof(d protoreflect
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgGrantOperatorAuthorization) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgGrantDelegateAuthorization) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -626,7 +626,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) GetUnknown() protoreflect
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgGrantOperatorAuthorization) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgGrantDelegateAuthorization) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -638,7 +638,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) SetUnknown(fields protore
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgGrantOperatorAuthorization) IsValid() bool {
+func (x *fastReflection_MsgGrantDelegateAuthorization) IsValid() bool {
 	return x != nil
 }
 
@@ -648,9 +648,9 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgGrantDelegateAuthorization) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgGrantOperatorAuthorization)
+		x := input.Message.Interface().(*MsgGrantDelegateAuthorization)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -666,7 +666,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -675,10 +675,11 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if len(x.MsgTypes) > 0 {
-			for _, s := range x.MsgTypes {
-				l = len(s)
-				n += 1 + l + runtime.Sov(uint64(l))
+			l = 0
+			for _, e := range x.MsgTypes {
+				l += runtime.Sov(uint64(e))
 			}
+			n += 1 + runtime.Sov(uint64(l)) + l
 		}
 		if x.Expiration != nil {
 			l = options.Size(x.Expiration)
@@ -717,7 +718,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgGrantOperatorAuthorization)
+		x := input.Message.Interface().(*MsgGrantDelegateAuthorization)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -821,13 +822,25 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 			dAtA[i] = 0x2a
 		}
 		if len(x.MsgTypes) > 0 {
-			for iNdEx := len(x.MsgTypes) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.MsgTypes[iNdEx])
-				copy(dAtA[i:], x.MsgTypes[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MsgTypes[iNdEx])))
-				i--
-				dAtA[i] = 0x22
+			var pksize2 int
+			for _, num := range x.MsgTypes {
+				pksize2 += runtime.Sov(uint64(num))
 			}
+			i -= pksize2
+			j1 := i
+			for _, num1 := range x.MsgTypes {
+				num := uint64(num1)
+				for num >= 1<<7 {
+					dAtA[j1] = uint8(uint64(num)&0x7f | 0x80)
+					num >>= 7
+					j1++
+				}
+				dAtA[j1] = uint8(num)
+				j1++
+			}
+			i = runtime.EncodeVarint(dAtA, i, uint64(pksize2))
+			i--
+			dAtA[i] = 0x22
 		}
 		if len(x.Grantee) > 0 {
 			i -= len(x.Grantee)
@@ -836,10 +849,10 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -861,7 +874,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgGrantOperatorAuthorization)
+		x := input.Message.Interface().(*MsgGrantDelegateAuthorization)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -893,10 +906,10 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGrantOperatorAuthorization: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGrantDelegateAuthorization: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGrantOperatorAuthorization: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGrantDelegateAuthorization: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -933,7 +946,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -961,7 +974,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -996,37 +1009,74 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 				x.Grantee = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MsgTypes", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				if wireType == 0 {
+					var v MsgType
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= MsgType(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
 					}
-					if iNdEx >= l {
+					x.MsgTypes = append(x.MsgTypes, v)
+				} else if wireType == 2 {
+					var packedLen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						packedLen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if packedLen < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					postIndex := iNdEx + packedLen
+					if postIndex < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					if postIndex > l {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
+					var elementCount int
+					if elementCount != 0 && len(x.MsgTypes) == 0 {
+						x.MsgTypes = make([]MsgType, 0, elementCount)
 					}
+					for iNdEx < postIndex {
+						var v MsgType
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							v |= MsgType(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						x.MsgTypes = append(x.MsgTypes, v)
+					}
+				} else {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MsgTypes", wireType)
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.MsgTypes = append(x.MsgTypes, string(dAtA[iNdEx:postIndex]))
-				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Expiration", wireType)
@@ -1259,23 +1309,23 @@ func (x *fastReflection_MsgGrantOperatorAuthorization) ProtoMethods() *protoifac
 }
 
 var (
-	md_MsgGrantOperatorAuthorizationResponse protoreflect.MessageDescriptor
+	md_MsgGrantDelegateAuthorizationResponse protoreflect.MessageDescriptor
 )
 
 func init() {
 	file_verana_de_v1_tx_proto_init()
-	md_MsgGrantOperatorAuthorizationResponse = File_verana_de_v1_tx_proto.Messages().ByName("MsgGrantOperatorAuthorizationResponse")
+	md_MsgGrantDelegateAuthorizationResponse = File_verana_de_v1_tx_proto.Messages().ByName("MsgGrantDelegateAuthorizationResponse")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgGrantOperatorAuthorizationResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgGrantDelegateAuthorizationResponse)(nil)
 
-type fastReflection_MsgGrantOperatorAuthorizationResponse MsgGrantOperatorAuthorizationResponse
+type fastReflection_MsgGrantDelegateAuthorizationResponse MsgGrantDelegateAuthorizationResponse
 
-func (x *MsgGrantOperatorAuthorizationResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgGrantOperatorAuthorizationResponse)(x)
+func (x *MsgGrantDelegateAuthorizationResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgGrantDelegateAuthorizationResponse)(x)
 }
 
-func (x *MsgGrantOperatorAuthorizationResponse) slowProtoReflect() protoreflect.Message {
+func (x *MsgGrantDelegateAuthorizationResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_tx_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1287,43 +1337,43 @@ func (x *MsgGrantOperatorAuthorizationResponse) slowProtoReflect() protoreflect.
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgGrantOperatorAuthorizationResponse_messageType fastReflection_MsgGrantOperatorAuthorizationResponse_messageType
-var _ protoreflect.MessageType = fastReflection_MsgGrantOperatorAuthorizationResponse_messageType{}
+var _fastReflection_MsgGrantDelegateAuthorizationResponse_messageType fastReflection_MsgGrantDelegateAuthorizationResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgGrantDelegateAuthorizationResponse_messageType{}
 
-type fastReflection_MsgGrantOperatorAuthorizationResponse_messageType struct{}
+type fastReflection_MsgGrantDelegateAuthorizationResponse_messageType struct{}
 
-func (x fastReflection_MsgGrantOperatorAuthorizationResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgGrantOperatorAuthorizationResponse)(nil)
+func (x fastReflection_MsgGrantDelegateAuthorizationResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgGrantDelegateAuthorizationResponse)(nil)
 }
-func (x fastReflection_MsgGrantOperatorAuthorizationResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgGrantOperatorAuthorizationResponse)
+func (x fastReflection_MsgGrantDelegateAuthorizationResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgGrantDelegateAuthorizationResponse)
 }
-func (x fastReflection_MsgGrantOperatorAuthorizationResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgGrantOperatorAuthorizationResponse
+func (x fastReflection_MsgGrantDelegateAuthorizationResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgGrantDelegateAuthorizationResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgGrantOperatorAuthorizationResponse
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgGrantDelegateAuthorizationResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Type() protoreflect.MessageType {
-	return _fastReflection_MsgGrantOperatorAuthorizationResponse_messageType
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgGrantDelegateAuthorizationResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) New() protoreflect.Message {
-	return new(fastReflection_MsgGrantOperatorAuthorizationResponse)
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgGrantDelegateAuthorizationResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Interface() protoreflect.ProtoMessage {
-	return (*MsgGrantOperatorAuthorizationResponse)(x)
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgGrantDelegateAuthorizationResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1331,7 +1381,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Interface() proto
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 }
 
 // Has reports whether a field is populated.
@@ -1345,13 +1395,13 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Range(f func(prot
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1361,13 +1411,13 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Has(fd protorefle
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1377,13 +1427,13 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Clear(fd protoref
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorizationResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorizationResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1397,13 +1447,13 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Get(descriptor pr
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1417,36 +1467,36 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Set(fd protorefle
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgGrantDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgGrantOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgGrantDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgGrantOperatorAuthorizationResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgGrantDelegateAuthorizationResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1454,7 +1504,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) WhichOneof(d prot
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -1465,7 +1515,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) GetUnknown() prot
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -1477,7 +1527,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) SetUnknown(fields
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) IsValid() bool {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -1487,9 +1537,9 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgGrantOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*MsgGrantDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1511,7 +1561,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) ProtoMethods() *p
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgGrantOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*MsgGrantDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1541,7 +1591,7 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) ProtoMethods() *p
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgGrantOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*MsgGrantDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1573,10 +1623,10 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) ProtoMethods() *p
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGrantOperatorAuthorizationResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGrantDelegateAuthorizationResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGrantOperatorAuthorizationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgGrantDelegateAuthorizationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			default:
@@ -1615,29 +1665,29 @@ func (x *fastReflection_MsgGrantOperatorAuthorizationResponse) ProtoMethods() *p
 }
 
 var (
-	md_MsgRevokeOperatorAuthorization             protoreflect.MessageDescriptor
-	fd_MsgRevokeOperatorAuthorization_corporation protoreflect.FieldDescriptor
-	fd_MsgRevokeOperatorAuthorization_operator    protoreflect.FieldDescriptor
-	fd_MsgRevokeOperatorAuthorization_grantee     protoreflect.FieldDescriptor
+	md_MsgRevokeDelegateAuthorization             protoreflect.MessageDescriptor
+	fd_MsgRevokeDelegateAuthorization_corporation protoreflect.FieldDescriptor
+	fd_MsgRevokeDelegateAuthorization_delegate    protoreflect.FieldDescriptor
+	fd_MsgRevokeDelegateAuthorization_grantee     protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_de_v1_tx_proto_init()
-	md_MsgRevokeOperatorAuthorization = File_verana_de_v1_tx_proto.Messages().ByName("MsgRevokeOperatorAuthorization")
-	fd_MsgRevokeOperatorAuthorization_corporation = md_MsgRevokeOperatorAuthorization.Fields().ByName("corporation")
-	fd_MsgRevokeOperatorAuthorization_operator = md_MsgRevokeOperatorAuthorization.Fields().ByName("operator")
-	fd_MsgRevokeOperatorAuthorization_grantee = md_MsgRevokeOperatorAuthorization.Fields().ByName("grantee")
+	md_MsgRevokeDelegateAuthorization = File_verana_de_v1_tx_proto.Messages().ByName("MsgRevokeDelegateAuthorization")
+	fd_MsgRevokeDelegateAuthorization_corporation = md_MsgRevokeDelegateAuthorization.Fields().ByName("corporation")
+	fd_MsgRevokeDelegateAuthorization_delegate = md_MsgRevokeDelegateAuthorization.Fields().ByName("delegate")
+	fd_MsgRevokeDelegateAuthorization_grantee = md_MsgRevokeDelegateAuthorization.Fields().ByName("grantee")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgRevokeOperatorAuthorization)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgRevokeDelegateAuthorization)(nil)
 
-type fastReflection_MsgRevokeOperatorAuthorization MsgRevokeOperatorAuthorization
+type fastReflection_MsgRevokeDelegateAuthorization MsgRevokeDelegateAuthorization
 
-func (x *MsgRevokeOperatorAuthorization) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgRevokeOperatorAuthorization)(x)
+func (x *MsgRevokeDelegateAuthorization) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgRevokeDelegateAuthorization)(x)
 }
 
-func (x *MsgRevokeOperatorAuthorization) slowProtoReflect() protoreflect.Message {
+func (x *MsgRevokeDelegateAuthorization) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_tx_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1649,43 +1699,43 @@ func (x *MsgRevokeOperatorAuthorization) slowProtoReflect() protoreflect.Message
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgRevokeOperatorAuthorization_messageType fastReflection_MsgRevokeOperatorAuthorization_messageType
-var _ protoreflect.MessageType = fastReflection_MsgRevokeOperatorAuthorization_messageType{}
+var _fastReflection_MsgRevokeDelegateAuthorization_messageType fastReflection_MsgRevokeDelegateAuthorization_messageType
+var _ protoreflect.MessageType = fastReflection_MsgRevokeDelegateAuthorization_messageType{}
 
-type fastReflection_MsgRevokeOperatorAuthorization_messageType struct{}
+type fastReflection_MsgRevokeDelegateAuthorization_messageType struct{}
 
-func (x fastReflection_MsgRevokeOperatorAuthorization_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgRevokeOperatorAuthorization)(nil)
+func (x fastReflection_MsgRevokeDelegateAuthorization_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgRevokeDelegateAuthorization)(nil)
 }
-func (x fastReflection_MsgRevokeOperatorAuthorization_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgRevokeOperatorAuthorization)
+func (x fastReflection_MsgRevokeDelegateAuthorization_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgRevokeDelegateAuthorization)
 }
-func (x fastReflection_MsgRevokeOperatorAuthorization_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgRevokeOperatorAuthorization
+func (x fastReflection_MsgRevokeDelegateAuthorization_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRevokeDelegateAuthorization
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgRevokeOperatorAuthorization
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRevokeDelegateAuthorization
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Type() protoreflect.MessageType {
-	return _fastReflection_MsgRevokeOperatorAuthorization_messageType
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Type() protoreflect.MessageType {
+	return _fastReflection_MsgRevokeDelegateAuthorization_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) New() protoreflect.Message {
-	return new(fastReflection_MsgRevokeOperatorAuthorization)
+func (x *fastReflection_MsgRevokeDelegateAuthorization) New() protoreflect.Message {
+	return new(fastReflection_MsgRevokeDelegateAuthorization)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Interface() protoreflect.ProtoMessage {
-	return (*MsgRevokeOperatorAuthorization)(x)
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Interface() protoreflect.ProtoMessage {
+	return (*MsgRevokeDelegateAuthorization)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1693,22 +1743,22 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) Interface() protoreflect
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Corporation != "" {
 		value := protoreflect.ValueOfString(x.Corporation)
-		if !f(fd_MsgRevokeOperatorAuthorization_corporation, value) {
+		if !f(fd_MsgRevokeDelegateAuthorization_corporation, value) {
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgRevokeOperatorAuthorization_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgRevokeDelegateAuthorization_delegate, value) {
 			return
 		}
 	}
 	if x.Grantee != "" {
 		value := protoreflect.ValueOfString(x.Grantee)
-		if !f(fd_MsgRevokeOperatorAuthorization_grantee, value) {
+		if !f(fd_MsgRevokeDelegateAuthorization_grantee, value) {
 			return
 		}
 	}
@@ -1725,19 +1775,19 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) Range(f func(protoreflec
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		return x.Corporation != ""
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.operator":
-		return x.Operator != ""
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
+		return x.Delegate != ""
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		return x.Grantee != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1747,19 +1797,19 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) Has(fd protoreflect.Fiel
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		x.Corporation = ""
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.operator":
-		x.Operator = ""
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
+		x.Delegate = ""
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		x.Grantee = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1769,22 +1819,22 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) Clear(fd protoreflect.Fi
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.operator":
-		value := x.Operator
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		value := x.Grantee
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorization does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorization does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1798,19 +1848,19 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) Get(descriptor protorefl
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.operator":
-		x.Operator = value.Interface().(string)
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
+		x.Delegate = value.Interface().(string)
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		x.Grantee = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1824,48 +1874,48 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) Set(fd protoreflect.Fiel
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.corporation":
-		panic(fmt.Errorf("field corporation of message verana.de.v1.MsgRevokeOperatorAuthorization is not mutable"))
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.operator":
-		panic(fmt.Errorf("field operator of message verana.de.v1.MsgRevokeOperatorAuthorization is not mutable"))
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.grantee":
-		panic(fmt.Errorf("field grantee of message verana.de.v1.MsgRevokeOperatorAuthorization is not mutable"))
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
+		panic(fmt.Errorf("field corporation of message verana.de.v1.MsgRevokeDelegateAuthorization is not mutable"))
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
+		panic(fmt.Errorf("field delegate of message verana.de.v1.MsgRevokeDelegateAuthorization is not mutable"))
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
+		panic(fmt.Errorf("field grantee of message verana.de.v1.MsgRevokeDelegateAuthorization is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.corporation":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.operator":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgRevokeOperatorAuthorization.grantee":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgRevokeOperatorAuthorization", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgRevokeDelegateAuthorization", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1873,7 +1923,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) WhichOneof(d protoreflec
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -1884,7 +1934,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) GetUnknown() protoreflec
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -1896,7 +1946,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) SetUnknown(fields protor
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) IsValid() bool {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) IsValid() bool {
 	return x != nil
 }
 
@@ -1906,9 +1956,9 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgRevokeDelegateAuthorization) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgRevokeOperatorAuthorization)
+		x := input.Message.Interface().(*MsgRevokeDelegateAuthorization)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1924,7 +1974,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoifa
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -1942,7 +1992,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoifa
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgRevokeOperatorAuthorization)
+		x := input.Message.Interface().(*MsgRevokeDelegateAuthorization)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1968,10 +2018,10 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoifa
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -1993,7 +2043,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoifa
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgRevokeOperatorAuthorization)
+		x := input.Message.Interface().(*MsgRevokeDelegateAuthorization)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2025,10 +2075,10 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoifa
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRevokeOperatorAuthorization: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRevokeDelegateAuthorization: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRevokeOperatorAuthorization: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRevokeDelegateAuthorization: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -2065,7 +2115,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoifa
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -2093,7 +2143,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoifa
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -2163,23 +2213,23 @@ func (x *fastReflection_MsgRevokeOperatorAuthorization) ProtoMethods() *protoifa
 }
 
 var (
-	md_MsgRevokeOperatorAuthorizationResponse protoreflect.MessageDescriptor
+	md_MsgRevokeDelegateAuthorizationResponse protoreflect.MessageDescriptor
 )
 
 func init() {
 	file_verana_de_v1_tx_proto_init()
-	md_MsgRevokeOperatorAuthorizationResponse = File_verana_de_v1_tx_proto.Messages().ByName("MsgRevokeOperatorAuthorizationResponse")
+	md_MsgRevokeDelegateAuthorizationResponse = File_verana_de_v1_tx_proto.Messages().ByName("MsgRevokeDelegateAuthorizationResponse")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgRevokeOperatorAuthorizationResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgRevokeDelegateAuthorizationResponse)(nil)
 
-type fastReflection_MsgRevokeOperatorAuthorizationResponse MsgRevokeOperatorAuthorizationResponse
+type fastReflection_MsgRevokeDelegateAuthorizationResponse MsgRevokeDelegateAuthorizationResponse
 
-func (x *MsgRevokeOperatorAuthorizationResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgRevokeOperatorAuthorizationResponse)(x)
+func (x *MsgRevokeDelegateAuthorizationResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgRevokeDelegateAuthorizationResponse)(x)
 }
 
-func (x *MsgRevokeOperatorAuthorizationResponse) slowProtoReflect() protoreflect.Message {
+func (x *MsgRevokeDelegateAuthorizationResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_tx_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2191,43 +2241,43 @@ func (x *MsgRevokeOperatorAuthorizationResponse) slowProtoReflect() protoreflect
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgRevokeOperatorAuthorizationResponse_messageType fastReflection_MsgRevokeOperatorAuthorizationResponse_messageType
-var _ protoreflect.MessageType = fastReflection_MsgRevokeOperatorAuthorizationResponse_messageType{}
+var _fastReflection_MsgRevokeDelegateAuthorizationResponse_messageType fastReflection_MsgRevokeDelegateAuthorizationResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgRevokeDelegateAuthorizationResponse_messageType{}
 
-type fastReflection_MsgRevokeOperatorAuthorizationResponse_messageType struct{}
+type fastReflection_MsgRevokeDelegateAuthorizationResponse_messageType struct{}
 
-func (x fastReflection_MsgRevokeOperatorAuthorizationResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgRevokeOperatorAuthorizationResponse)(nil)
+func (x fastReflection_MsgRevokeDelegateAuthorizationResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgRevokeDelegateAuthorizationResponse)(nil)
 }
-func (x fastReflection_MsgRevokeOperatorAuthorizationResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgRevokeOperatorAuthorizationResponse)
+func (x fastReflection_MsgRevokeDelegateAuthorizationResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgRevokeDelegateAuthorizationResponse)
 }
-func (x fastReflection_MsgRevokeOperatorAuthorizationResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgRevokeOperatorAuthorizationResponse
+func (x fastReflection_MsgRevokeDelegateAuthorizationResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRevokeDelegateAuthorizationResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgRevokeOperatorAuthorizationResponse
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgRevokeDelegateAuthorizationResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Type() protoreflect.MessageType {
-	return _fastReflection_MsgRevokeOperatorAuthorizationResponse_messageType
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgRevokeDelegateAuthorizationResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) New() protoreflect.Message {
-	return new(fastReflection_MsgRevokeOperatorAuthorizationResponse)
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgRevokeDelegateAuthorizationResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Interface() protoreflect.ProtoMessage {
-	return (*MsgRevokeOperatorAuthorizationResponse)(x)
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgRevokeDelegateAuthorizationResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -2235,7 +2285,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Interface() prot
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 }
 
 // Has reports whether a field is populated.
@@ -2249,13 +2299,13 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Range(f func(pro
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2265,13 +2315,13 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Has(fd protorefl
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2281,13 +2331,13 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Clear(fd protore
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorizationResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorizationResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2301,13 +2351,13 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Get(descriptor p
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2321,36 +2371,36 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Set(fd protorefl
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgRevokeDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.MsgRevokeOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.MsgRevokeDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgRevokeOperatorAuthorizationResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgRevokeDelegateAuthorizationResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2358,7 +2408,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) WhichOneof(d pro
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2369,7 +2419,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) GetUnknown() pro
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2381,7 +2431,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) SetUnknown(field
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) IsValid() bool {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -2391,9 +2441,9 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgRevokeDelegateAuthorizationResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgRevokeOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*MsgRevokeDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2415,7 +2465,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) ProtoMethods() *
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgRevokeOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*MsgRevokeDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2445,7 +2495,7 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) ProtoMethods() *
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgRevokeOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*MsgRevokeDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2477,10 +2527,10 @@ func (x *fastReflection_MsgRevokeOperatorAuthorizationResponse) ProtoMethods() *
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRevokeOperatorAuthorizationResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRevokeDelegateAuthorizationResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRevokeOperatorAuthorizationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgRevokeDelegateAuthorizationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			default:
@@ -2531,32 +2581,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// [MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization
+// [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
 // to a grantee on behalf of a corporation.
 //
-// Signer semantics (spec "corporation + operator OR group proposal"):
-// The signer is `operator` (consistent with the other delegable modules).
-//   - Group-proposal path: the corporation's group policy account executes the
-//     message, so `operator` equals `corporation` (the policy_address) and the
-//     handler skips AUTHZ-CHECK-1 (the corporation is acting alone).
-//   - Operator path: an individual `operator` signs; the handler resolves the
-//     corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to
-//     verify the operator's delegation covers this message type.
-type MsgGrantOperatorAuthorization struct {
+// The signer is `delegate`. On the group-proposal path the corporation's
+// policy account executes the message and `delegate` equals `corporation`;
+// only AUTHZ-CHECK-5 then applies.
+type MsgGrantDelegateAuthorization struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// corporation is the policy_address of the corporation granting the authorization.
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// operator is the signer: an authorized operator, or the corporation's
+	// delegate is the signer: an authorized delegate, or the corporation's
 	// policy_address itself on the group-proposal path.
-	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
-	// grantee is the account that receives the authorization from authority.
+	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// grantee is the account that receives the authorization from corporation.
 	Grantee string `protobuf:"bytes,3,opt,name=grantee,proto3" json:"grantee,omitempty"`
 	// msg_types is the list of VPR delegable message types for which
 	// authorization is granted.
-	MsgTypes []string `protobuf:"bytes,4,rep,name=msg_types,json=msgTypes,proto3" json:"msg_types,omitempty"`
+	MsgTypes []MsgType `protobuf:"varint,4,rep,packed,name=msg_types,json=msgTypes,proto3,enum=verana.de.v1.MsgType" json:"msg_types,omitempty"`
 	// expiration is the optional timestamp after which the authorization expires.
 	Expiration *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=expiration,proto3" json:"expiration,omitempty"`
 	// authz_spend_limit is the optional maximum spendable amount.
@@ -2574,8 +2619,8 @@ type MsgGrantOperatorAuthorization struct {
 	FeegrantSpendLimitPeriod *durationpb.Duration `protobuf:"bytes,10,opt,name=feegrant_spend_limit_period,json=feegrantSpendLimitPeriod,proto3" json:"feegrant_spend_limit_period,omitempty"`
 }
 
-func (x *MsgGrantOperatorAuthorization) Reset() {
-	*x = MsgGrantOperatorAuthorization{}
+func (x *MsgGrantDelegateAuthorization) Reset() {
+	*x = MsgGrantDelegateAuthorization{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_tx_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2583,97 +2628,97 @@ func (x *MsgGrantOperatorAuthorization) Reset() {
 	}
 }
 
-func (x *MsgGrantOperatorAuthorization) String() string {
+func (x *MsgGrantDelegateAuthorization) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgGrantOperatorAuthorization) ProtoMessage() {}
+func (*MsgGrantDelegateAuthorization) ProtoMessage() {}
 
-// Deprecated: Use MsgGrantOperatorAuthorization.ProtoReflect.Descriptor instead.
-func (*MsgGrantOperatorAuthorization) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgGrantDelegateAuthorization.ProtoReflect.Descriptor instead.
+func (*MsgGrantDelegateAuthorization) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *MsgGrantOperatorAuthorization) GetCorporation() string {
+func (x *MsgGrantDelegateAuthorization) GetCorporation() string {
 	if x != nil {
 		return x.Corporation
 	}
 	return ""
 }
 
-func (x *MsgGrantOperatorAuthorization) GetOperator() string {
+func (x *MsgGrantDelegateAuthorization) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
 
-func (x *MsgGrantOperatorAuthorization) GetGrantee() string {
+func (x *MsgGrantDelegateAuthorization) GetGrantee() string {
 	if x != nil {
 		return x.Grantee
 	}
 	return ""
 }
 
-func (x *MsgGrantOperatorAuthorization) GetMsgTypes() []string {
+func (x *MsgGrantDelegateAuthorization) GetMsgTypes() []MsgType {
 	if x != nil {
 		return x.MsgTypes
 	}
 	return nil
 }
 
-func (x *MsgGrantOperatorAuthorization) GetExpiration() *timestamppb.Timestamp {
+func (x *MsgGrantDelegateAuthorization) GetExpiration() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Expiration
 	}
 	return nil
 }
 
-func (x *MsgGrantOperatorAuthorization) GetAuthzSpendLimit() []*v1beta1.Coin {
+func (x *MsgGrantDelegateAuthorization) GetAuthzSpendLimit() []*v1beta1.Coin {
 	if x != nil {
 		return x.AuthzSpendLimit
 	}
 	return nil
 }
 
-func (x *MsgGrantOperatorAuthorization) GetAuthzSpendLimitPeriod() *durationpb.Duration {
+func (x *MsgGrantDelegateAuthorization) GetAuthzSpendLimitPeriod() *durationpb.Duration {
 	if x != nil {
 		return x.AuthzSpendLimitPeriod
 	}
 	return nil
 }
 
-func (x *MsgGrantOperatorAuthorization) GetWithFeegrant() bool {
+func (x *MsgGrantDelegateAuthorization) GetWithFeegrant() bool {
 	if x != nil {
 		return x.WithFeegrant
 	}
 	return false
 }
 
-func (x *MsgGrantOperatorAuthorization) GetFeegrantSpendLimit() []*v1beta1.Coin {
+func (x *MsgGrantDelegateAuthorization) GetFeegrantSpendLimit() []*v1beta1.Coin {
 	if x != nil {
 		return x.FeegrantSpendLimit
 	}
 	return nil
 }
 
-func (x *MsgGrantOperatorAuthorization) GetFeegrantSpendLimitPeriod() *durationpb.Duration {
+func (x *MsgGrantDelegateAuthorization) GetFeegrantSpendLimitPeriod() *durationpb.Duration {
 	if x != nil {
 		return x.FeegrantSpendLimitPeriod
 	}
 	return nil
 }
 
-// MsgGrantOperatorAuthorizationResponse defines the response for
-// MsgGrantOperatorAuthorization.
-type MsgGrantOperatorAuthorizationResponse struct {
+// MsgGrantDelegateAuthorizationResponse defines the response for
+// MsgGrantDelegateAuthorization.
+type MsgGrantDelegateAuthorizationResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
-func (x *MsgGrantOperatorAuthorizationResponse) Reset() {
-	*x = MsgGrantOperatorAuthorizationResponse{}
+func (x *MsgGrantDelegateAuthorizationResponse) Reset() {
+	*x = MsgGrantDelegateAuthorizationResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_tx_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2681,36 +2726,36 @@ func (x *MsgGrantOperatorAuthorizationResponse) Reset() {
 	}
 }
 
-func (x *MsgGrantOperatorAuthorizationResponse) String() string {
+func (x *MsgGrantDelegateAuthorizationResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgGrantOperatorAuthorizationResponse) ProtoMessage() {}
+func (*MsgGrantDelegateAuthorizationResponse) ProtoMessage() {}
 
-// Deprecated: Use MsgGrantOperatorAuthorizationResponse.ProtoReflect.Descriptor instead.
-func (*MsgGrantOperatorAuthorizationResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgGrantDelegateAuthorizationResponse.ProtoReflect.Descriptor instead.
+func (*MsgGrantDelegateAuthorizationResponse) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{1}
 }
 
-// [MOD-DE-MSG-4] MsgRevokeOperatorAuthorization revokes an operator
+// [MOD-DE-MSG-4] MsgRevokeDelegateAuthorization revokes a delegate
 // authorization for a grantee on behalf of a corporation. Same signer
-// semantics as MsgGrantOperatorAuthorization (see above).
-type MsgRevokeOperatorAuthorization struct {
+// semantics as MsgGrantDelegateAuthorization (see above).
+type MsgRevokeDelegateAuthorization struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// corporation is the policy_address of the corporation revoking the authorization.
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// operator is the signer: an authorized operator, or the corporation's
+	// delegate is the signer: an authorized delegate, or the corporation's
 	// policy_address itself on the group-proposal path.
-	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	// grantee is the account whose authorization is being revoked.
 	Grantee string `protobuf:"bytes,3,opt,name=grantee,proto3" json:"grantee,omitempty"`
 }
 
-func (x *MsgRevokeOperatorAuthorization) Reset() {
-	*x = MsgRevokeOperatorAuthorization{}
+func (x *MsgRevokeDelegateAuthorization) Reset() {
+	*x = MsgRevokeDelegateAuthorization{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_tx_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2718,48 +2763,48 @@ func (x *MsgRevokeOperatorAuthorization) Reset() {
 	}
 }
 
-func (x *MsgRevokeOperatorAuthorization) String() string {
+func (x *MsgRevokeDelegateAuthorization) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgRevokeOperatorAuthorization) ProtoMessage() {}
+func (*MsgRevokeDelegateAuthorization) ProtoMessage() {}
 
-// Deprecated: Use MsgRevokeOperatorAuthorization.ProtoReflect.Descriptor instead.
-func (*MsgRevokeOperatorAuthorization) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgRevokeDelegateAuthorization.ProtoReflect.Descriptor instead.
+func (*MsgRevokeDelegateAuthorization) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *MsgRevokeOperatorAuthorization) GetCorporation() string {
+func (x *MsgRevokeDelegateAuthorization) GetCorporation() string {
 	if x != nil {
 		return x.Corporation
 	}
 	return ""
 }
 
-func (x *MsgRevokeOperatorAuthorization) GetOperator() string {
+func (x *MsgRevokeDelegateAuthorization) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
 
-func (x *MsgRevokeOperatorAuthorization) GetGrantee() string {
+func (x *MsgRevokeDelegateAuthorization) GetGrantee() string {
 	if x != nil {
 		return x.Grantee
 	}
 	return ""
 }
 
-// MsgRevokeOperatorAuthorizationResponse defines the response for
-// MsgRevokeOperatorAuthorization.
-type MsgRevokeOperatorAuthorizationResponse struct {
+// MsgRevokeDelegateAuthorizationResponse defines the response for
+// MsgRevokeDelegateAuthorization.
+type MsgRevokeDelegateAuthorizationResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
-func (x *MsgRevokeOperatorAuthorizationResponse) Reset() {
-	*x = MsgRevokeOperatorAuthorizationResponse{}
+func (x *MsgRevokeDelegateAuthorizationResponse) Reset() {
+	*x = MsgRevokeDelegateAuthorizationResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_tx_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2767,14 +2812,14 @@ func (x *MsgRevokeOperatorAuthorizationResponse) Reset() {
 	}
 }
 
-func (x *MsgRevokeOperatorAuthorizationResponse) String() string {
+func (x *MsgRevokeDelegateAuthorizationResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgRevokeOperatorAuthorizationResponse) ProtoMessage() {}
+func (*MsgRevokeDelegateAuthorizationResponse) ProtoMessage() {}
 
-// Deprecated: Use MsgRevokeOperatorAuthorizationResponse.ProtoReflect.Descriptor instead.
-func (*MsgRevokeOperatorAuthorizationResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgRevokeDelegateAuthorizationResponse.ProtoReflect.Descriptor instead.
+func (*MsgRevokeDelegateAuthorizationResponse) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{3}
 }
 
@@ -2795,95 +2840,98 @@ var file_verana_de_v1_tx_proto_rawDesc = []byte{
 	0x62, 0x75, 0x66, 0x2f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x22, 0xbe, 0x06, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74,
-	0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x34, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f,
-	0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74,
-	0x65, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69,
-	0x6e, 0x67, 0x52, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x6d,
-	0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08,
-	0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x44, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
-	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x90, 0xdf,
-	0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x77,
-	0x0a, 0x11, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69,
-	0x6d, 0x69, 0x74, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
-	0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73,
-	0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0f, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x53, 0x70, 0x65,
-	0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x5c, 0x0a, 0x18, 0x61, 0x75, 0x74, 0x68, 0x7a,
-	0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x5f, 0x70, 0x65, 0x72,
-	0x69, 0x6f, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x15,
-	0x61, 0x75, 0x74, 0x68, 0x7a, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x50,
-	0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x77, 0x69, 0x74, 0x68, 0x5f, 0x66, 0x65,
-	0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x77, 0x69,
-	0x74, 0x68, 0x46, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x12, 0x7d, 0x0a, 0x14, 0x66, 0x65,
-	0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d,
-	0x69, 0x74, 0x18, 0x09, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43,
-	0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e,
-	0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x12, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x53,
-	0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x62, 0x0a, 0x1b, 0x66, 0x65, 0x65,
-	0x67, 0x72, 0x61, 0x6e, 0x74, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69,
-	0x74, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
-	0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98,
-	0xdf, 0x1f, 0x01, 0x52, 0x18, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x65,
-	0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x3a, 0x35, 0x82,
-	0xe7, 0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a,
-	0x23, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67,
-	0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x70, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x22, 0x27, 0x0a, 0x25, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xfe, 0x01,
-	0x0a, 0x1e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61,
-	0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76,
+	0x31, 0x2f, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x22, 0xd3, 0x06, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e,
+	0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34,
+	0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x12, 0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
 	0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52,
-	0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08,
-	0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18,
-	0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74,
-	0x6f, 0x72, 0x12, 0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x67,
-	0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x3a, 0x36, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x24, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
-	0x2f, 0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f,
-	0x70, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x28,
-	0x0a, 0x26, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61,
-	0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x12, 0x32, 0x0a, 0x09, 0x6d, 0x73, 0x67, 0x5f,
+	0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x15, 0x2e, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x79,
+	0x70, 0x65, 0x52, 0x08, 0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x44, 0x0a, 0x0a,
+	0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde,
+	0x1f, 0x01, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x77, 0x0a, 0x11, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x5f, 0x73, 0x70, 0x65, 0x6e,
+	0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf,
+	0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74,
+	0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0f, 0x61, 0x75, 0x74, 0x68,
+	0x7a, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x5c, 0x0a, 0x18, 0x61,
+	0x75, 0x74, 0x68, 0x7a, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74,
+	0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98, 0xdf,
+	0x1f, 0x01, 0x52, 0x15, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69,
+	0x6d, 0x69, 0x74, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x77, 0x69, 0x74,
+	0x68, 0x5f, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x0c, 0x77, 0x69, 0x74, 0x68, 0x46, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x12, 0x7d,
+	0x0a, 0x14, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64,
+	0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x09, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f,
+	0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79,
+	0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x12, 0x66, 0x65, 0x65, 0x67, 0x72,
+	0x61, 0x6e, 0x74, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x62, 0x0a,
+	0x1b, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f,
+	0x6c, 0x69, 0x6d, 0x69, 0x74, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x0a, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8,
+	0xde, 0x1f, 0x01, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x18, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e,
+	0x74, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x50, 0x65, 0x72, 0x69, 0x6f,
+	0x64, 0x3a, 0x33, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65,
+	0x8a, 0xe7, 0xb0, 0x2a, 0x21, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65,
+	0x2f, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74,
+	0x65, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x22, 0x27, 0x0a, 0x25, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61,
+	0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72,
+	0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0xfc, 0x01, 0x0a, 0x1e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e,
+	0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34,
+	0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x12, 0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52,
+	0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x3a, 0x34, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64,
+	0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x8a, 0xe7, 0xb0, 0x2a, 0x22, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b,
+	0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x22, 0x28,
+	0x0a, 0x26, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67,
+	0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x90, 0x02, 0x0a, 0x03, 0x4d, 0x73, 0x67,
-	0x12, 0x7e, 0x0a, 0x1a, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f,
-	0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2b,
+	0x12, 0x7e, 0x0a, 0x1a, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74,
+	0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2b,
 	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75,
+	0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75,
 	0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x33, 0x2e, 0x76, 0x65,
 	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x72,
-	0x61, 0x6e, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f,
+	0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f,
 	0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x81, 0x01, 0x0a, 0x1b, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61,
-	0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x81, 0x01, 0x0a, 0x1b, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67,
+	0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x12, 0x2c, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f,
-	0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x34,
+	0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74,
+	0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x34,
 	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41,
+	0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41,
 	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
 	0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0, 0x2a, 0x01, 0x42, 0xa7, 0x01, 0x0a, 0x10,
 	0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31,
@@ -2913,29 +2961,31 @@ func file_verana_de_v1_tx_proto_rawDescGZIP() []byte {
 
 var file_verana_de_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_verana_de_v1_tx_proto_goTypes = []interface{}{
-	(*MsgGrantOperatorAuthorization)(nil),          // 0: verana.de.v1.MsgGrantOperatorAuthorization
-	(*MsgGrantOperatorAuthorizationResponse)(nil),  // 1: verana.de.v1.MsgGrantOperatorAuthorizationResponse
-	(*MsgRevokeOperatorAuthorization)(nil),         // 2: verana.de.v1.MsgRevokeOperatorAuthorization
-	(*MsgRevokeOperatorAuthorizationResponse)(nil), // 3: verana.de.v1.MsgRevokeOperatorAuthorizationResponse
-	(*timestamppb.Timestamp)(nil),                  // 4: google.protobuf.Timestamp
-	(*v1beta1.Coin)(nil),                           // 5: cosmos.base.v1beta1.Coin
-	(*durationpb.Duration)(nil),                    // 6: google.protobuf.Duration
+	(*MsgGrantDelegateAuthorization)(nil),          // 0: verana.de.v1.MsgGrantDelegateAuthorization
+	(*MsgGrantDelegateAuthorizationResponse)(nil),  // 1: verana.de.v1.MsgGrantDelegateAuthorizationResponse
+	(*MsgRevokeDelegateAuthorization)(nil),         // 2: verana.de.v1.MsgRevokeDelegateAuthorization
+	(*MsgRevokeDelegateAuthorizationResponse)(nil), // 3: verana.de.v1.MsgRevokeDelegateAuthorizationResponse
+	(MsgType)(0),                  // 4: verana.de.v1.MsgType
+	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
+	(*v1beta1.Coin)(nil),          // 6: cosmos.base.v1beta1.Coin
+	(*durationpb.Duration)(nil),   // 7: google.protobuf.Duration
 }
 var file_verana_de_v1_tx_proto_depIdxs = []int32{
-	4, // 0: verana.de.v1.MsgGrantOperatorAuthorization.expiration:type_name -> google.protobuf.Timestamp
-	5, // 1: verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	6, // 2: verana.de.v1.MsgGrantOperatorAuthorization.authz_spend_limit_period:type_name -> google.protobuf.Duration
-	5, // 3: verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	6, // 4: verana.de.v1.MsgGrantOperatorAuthorization.feegrant_spend_limit_period:type_name -> google.protobuf.Duration
-	0, // 5: verana.de.v1.Msg.GrantOperatorAuthorization:input_type -> verana.de.v1.MsgGrantOperatorAuthorization
-	2, // 6: verana.de.v1.Msg.RevokeOperatorAuthorization:input_type -> verana.de.v1.MsgRevokeOperatorAuthorization
-	1, // 7: verana.de.v1.Msg.GrantOperatorAuthorization:output_type -> verana.de.v1.MsgGrantOperatorAuthorizationResponse
-	3, // 8: verana.de.v1.Msg.RevokeOperatorAuthorization:output_type -> verana.de.v1.MsgRevokeOperatorAuthorizationResponse
-	7, // [7:9] is the sub-list for method output_type
-	5, // [5:7] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	4, // 0: verana.de.v1.MsgGrantDelegateAuthorization.msg_types:type_name -> verana.de.v1.MsgType
+	5, // 1: verana.de.v1.MsgGrantDelegateAuthorization.expiration:type_name -> google.protobuf.Timestamp
+	6, // 2: verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	7, // 3: verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period:type_name -> google.protobuf.Duration
+	6, // 4: verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	7, // 5: verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period:type_name -> google.protobuf.Duration
+	0, // 6: verana.de.v1.Msg.GrantDelegateAuthorization:input_type -> verana.de.v1.MsgGrantDelegateAuthorization
+	2, // 7: verana.de.v1.Msg.RevokeDelegateAuthorization:input_type -> verana.de.v1.MsgRevokeDelegateAuthorization
+	1, // 8: verana.de.v1.Msg.GrantDelegateAuthorization:output_type -> verana.de.v1.MsgGrantDelegateAuthorizationResponse
+	3, // 9: verana.de.v1.Msg.RevokeDelegateAuthorization:output_type -> verana.de.v1.MsgRevokeDelegateAuthorizationResponse
+	8, // [8:10] is the sub-list for method output_type
+	6, // [6:8] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_verana_de_v1_tx_proto_init() }
@@ -2943,9 +2993,10 @@ func file_verana_de_v1_tx_proto_init() {
 	if File_verana_de_v1_tx_proto != nil {
 		return
 	}
+	file_verana_de_v1_msg_type_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_verana_de_v1_tx_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGrantOperatorAuthorization); i {
+			switch v := v.(*MsgGrantDelegateAuthorization); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2957,7 +3008,7 @@ func file_verana_de_v1_tx_proto_init() {
 			}
 		}
 		file_verana_de_v1_tx_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgGrantOperatorAuthorizationResponse); i {
+			switch v := v.(*MsgGrantDelegateAuthorizationResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2969,7 +3020,7 @@ func file_verana_de_v1_tx_proto_init() {
 			}
 		}
 		file_verana_de_v1_tx_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgRevokeOperatorAuthorization); i {
+			switch v := v.(*MsgRevokeDelegateAuthorization); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2981,7 +3032,7 @@ func file_verana_de_v1_tx_proto_init() {
 			}
 		}
 		file_verana_de_v1_tx_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgRevokeOperatorAuthorizationResponse); i {
+			switch v := v.(*MsgRevokeDelegateAuthorizationResponse); i {
 			case 0:
 				return &v.state
 			case 1:

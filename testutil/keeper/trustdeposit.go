@@ -28,8 +28,10 @@ import (
 // ErrCorporationNotRegistered abort path.
 type MockTDCorporationKeeper struct {
 	Unregistered map[string]bool
-	ids          map[string]uint64
-	nextID       uint64
+	// Resolved lists the accounts that went through AUTHZ-CHECK-5.
+	Resolved []string
+	ids      map[string]uint64
+	nextID   uint64
 }
 
 func NewMockTDCorporationKeeper() *MockTDCorporationKeeper {
@@ -55,7 +57,12 @@ func (m *MockTDCorporationKeeper) IDFor(addr string) uint64 {
 	return id
 }
 
-func (m *MockTDCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context, addr string) (types.CorporationView, error) {
+func (m *MockTDCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.Context, addr string) (types.CorporationView, error) {
+	m.Resolved = append(m.Resolved, addr)
+	return m.GetCorporationByPolicyAddress(ctx, addr)
+}
+
+func (m *MockTDCorporationKeeper) GetCorporationByPolicyAddress(_ context.Context, addr string) (types.CorporationView, error) {
 	if m.Unregistered[addr] {
 		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
 	}

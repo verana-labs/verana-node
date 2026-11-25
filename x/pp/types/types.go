@@ -9,32 +9,24 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/google/uuid"
 	"github.com/verana-labs/verana-node/util/validation"
-)
-
-// VSOA per-role permitted msg_types (spec MOD-PP-MSG-1/7/14).
-const (
-	MsgSetParticipantOPToValidatedTypeURL      = "/verana.pp.v1.MsgSetParticipantOPToValidated"
-	MsgCreateOrUpdateParticipantSessionTypeURL = "/verana.pp.v1.MsgCreateOrUpdateParticipantSession"
-	// MsgTriggerResolverTypeURL is the HOLDER-permitted msg type, implemented by
-	// [MOD-PP-MSG-15] (event-only trust-resolution trigger).
-	MsgTriggerResolverTypeURL = "/verana.pp.v1.MsgTriggerResolver"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // vsoaPermittedMsgTypes returns the set of msg_types a vs_operator may be granted
 // for the given participant role, or nil if the role cannot be granted VSOA.
-func vsoaPermittedMsgTypes(role ParticipantRole) map[string]bool {
+func vsoaPermittedMsgTypes(role ParticipantRole) map[detypes.MsgType]bool {
 	switch role {
 	case ParticipantRole_HOLDER:
-		return map[string]bool{MsgTriggerResolverTypeURL: true}
+		return map[detypes.MsgType]bool{detypes.MsgType_MSG_TYPE_TRIGGER_RESOLVER: true}
 	case ParticipantRole_ISSUER:
-		return map[string]bool{
-			MsgCreateOrUpdateParticipantSessionTypeURL: true,
-			MsgSetParticipantOPToValidatedTypeURL:      true,
+		return map[detypes.MsgType]bool{
+			detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE: true,
+			detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING:        true,
 		}
 	case ParticipantRole_VERIFIER:
-		return map[string]bool{MsgCreateOrUpdateParticipantSessionTypeURL: true}
+		return map[detypes.MsgType]bool{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION: true}
 	case ParticipantRole_ISSUER_GRANTOR, ParticipantRole_VERIFIER_GRANTOR:
-		return map[string]bool{MsgSetParticipantOPToValidatedTypeURL: true}
+		return map[detypes.MsgType]bool{detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING: true}
 	default:
 		return nil
 	}
@@ -66,7 +58,7 @@ func validateVSOperatorAuthzBudget(withFeegrant bool, feeSpendLimit, spendLimit 
 	return nil
 }
 
-func validateVSOperatorAuthz(role ParticipantRole, vsOperator string, msgTypes []string, anyParamSet bool) error {
+func validateVSOperatorAuthz(role ParticipantRole, vsOperator string, msgTypes []detypes.MsgType, anyParamSet bool) error {
 	if !anyParamSet {
 		return nil
 	}
@@ -94,9 +86,9 @@ func (msg *MsgStartParticipantOP) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-1-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-1-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	if msg.ValidatorParticipantId == 0 {
@@ -162,9 +154,9 @@ func (msg *MsgRenewParticipantOP) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-2-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-2-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// Validate participant ID
@@ -182,9 +174,9 @@ func (msg *MsgSetParticipantOPToValidated) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-3-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-3-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// Validate participant ID
@@ -216,9 +208,9 @@ func (msg *MsgCancelParticipantOPLastRequest) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// Validate operator address
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// Validate delegate address
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// Validate participant ID
@@ -235,9 +227,9 @@ func (msg *MsgCreateRootParticipant) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// Validate operator address
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// Validate delegate address
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// if a mandatory parameter is not present, transaction MUST abort
@@ -255,7 +247,7 @@ func (msg *MsgCreateRootParticipant) ValidateBasic() error {
 	}
 
 	// [MOD-PP-MSG-7-2-1] VSOA params: msg_types MUST be a subset of
-	// [SetParticipantOPToValidated]; vs_operator required if any param set.
+	// [ValidateOnboarding]; vs_operator required if any param set.
 	anyParam := len(msg.VsOperatorAuthzMsgTypes) > 0 ||
 		len(msg.VsOperatorAuthzSpendLimit) > 0 ||
 		msg.VsOperatorAuthzWithFeegrant ||
@@ -269,8 +261,8 @@ func (msg *MsgCreateRootParticipant) ValidateBasic() error {
 			return fmt.Errorf("vs_operator is required when vs_operator_authz_* params are set")
 		}
 		for _, mt := range msg.VsOperatorAuthzMsgTypes {
-			if mt != MsgSetParticipantOPToValidatedTypeURL {
-				return fmt.Errorf("msg_type %s is not permitted for root participant (only SetParticipantOPToValidated)", mt)
+			if mt != detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING {
+				return fmt.Errorf("msg_type %s is not permitted for root participant (only %s)", mt, detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING)
 			}
 		}
 	}
@@ -295,9 +287,9 @@ func (msg *MsgSetParticipantEffectiveUntil) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// Validate operator address
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// Validate delegate address
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// if a mandatory parameter is not present, transaction MUST abort
@@ -320,9 +312,9 @@ func (msg *MsgRevokeParticipant) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// Validate operator address
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// Validate delegate address
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// Validate participant ID
@@ -337,8 +329,8 @@ func (msg *MsgTriggerResolver) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 	if msg.Id == 0 {
 		return fmt.Errorf("participant ID cannot be 0")
@@ -352,9 +344,9 @@ func (msg *MsgCreateOrUpdateParticipantSession) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-10-2] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-10-2] vs_account (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.VsAccount); err != nil {
+		return fmt.Errorf("invalid vs_account address: %w", err)
 	}
 
 	// Validate UUID format
@@ -384,9 +376,9 @@ func (msg *MsgSlashParticipantTrustDeposit) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-12-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-12-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// if a mandatory parameter is not present, transaction MUST abort
@@ -412,9 +404,9 @@ func (msg *MsgRepayParticipantSlashedTrustDeposit) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-13-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-13-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// [MOD-PP-MSG-13-2-1] id MUST be a valid uint64
@@ -431,9 +423,9 @@ func (msg *MsgSelfCreateParticipant) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-14-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-14-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// type (ParticipantRole) (mandatory): MUST be ISSUER or VERIFIER, else abort

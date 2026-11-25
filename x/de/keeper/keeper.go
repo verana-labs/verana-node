@@ -24,12 +24,12 @@ type Keeper struct {
 
 	Schema collections.Schema
 
-	// OperatorAuthorization: keyed by its own uint64 id; (corporation_id,
-	// operator) is a unique secondary index. Runtime spend balances live
+	// DelegateAuthorization: keyed by its own uint64 id; (corporation_id,
+	// delegate) is a unique secondary index. Runtime spend balances live
 	// on-object (remaining_spend).
-	OperatorAuthorizations        collections.Map[uint64, types.OperatorAuthorization]
-	OperatorAuthorizationByCorpOp collections.Map[collections.Pair[uint64, string], uint64]
-	OperatorAuthorizationSeq      collections.Sequence
+	DelegateAuthorizations              collections.Map[uint64, types.DelegateAuthorization]
+	DelegateAuthorizationByCorpDelegate collections.Map[collections.Pair[uint64, string], uint64]
+	DelegateAuthorizationSeq            collections.Sequence
 
 	// FeeGrant: composite key (grantor_corporation_id, grantee).
 	FeeGrants collections.Map[collections.Pair[uint64, string], types.FeeGrant]
@@ -56,6 +56,12 @@ type Keeper struct {
 	// participantRef backs AUTHZ-CHECK-3 step 1 and the MOD-DE-MSG-5-5 scan;
 	// wired post-construction via SetParticipantKeeper (MOD-PP depends on MOD-DE).
 	participantRef *participantKeeperRef
+
+	// gfRef backs GF-CHECK-2 (AUTHZ-CHECK-1 step 4).
+	gfRef *gfKeeperRef
+
+	// vsBudgetRef backs AUTHZ-CHECK-3 steps 5 and 6 on the VS account path.
+	vsBudgetRef *vsAccountBudgetStoreRef
 
 	// vsRef serves vs_account_fee_period; wired via SetVerifiableServiceKeeper.
 	vsRef *vsKeeperRef
@@ -84,13 +90,15 @@ func NewKeeper(
 		corpRef:        &corpKeeperRef{K: StubCorporationKeeper{}},
 		feegrantRef:    &feegrantKeeperRef{},
 		participantRef: &participantKeeperRef{K: StubParticipantKeeper{}},
+		gfRef:          &gfKeeperRef{K: StubGovernanceFrameworkKeeper{}},
+		vsBudgetRef:    &vsAccountBudgetStoreRef{S: StubVsAccountBudgetStore{}},
 		vsRef:          &vsKeeperRef{K: StubVerifiableServiceKeeper{}},
 
-		OperatorAuthorizations: collections.NewMap(sb, types.OperatorAuthorizationKey, "operator_authorization",
-			collections.Uint64Key, codec.CollValue[types.OperatorAuthorization](cdc)),
-		OperatorAuthorizationByCorpOp: collections.NewMap(sb, types.OperatorAuthorizationByCorpOpKey, "operator_authorization_by_corp_op",
+		DelegateAuthorizations: collections.NewMap(sb, types.DelegateAuthorizationKey, "delegate_authorization",
+			collections.Uint64Key, codec.CollValue[types.DelegateAuthorization](cdc)),
+		DelegateAuthorizationByCorpDelegate: collections.NewMap(sb, types.DelegateAuthorizationByCorpDelegateKey, "delegate_authorization_by_corp_delegate",
 			corpOpKeyCodec, collections.Uint64Value),
-		OperatorAuthorizationSeq: collections.NewSequence(sb, types.OperatorAuthorizationSeqKey, "operator_authorization_seq"),
+		DelegateAuthorizationSeq: collections.NewSequence(sb, types.DelegateAuthorizationSeqKey, "delegate_authorization_seq"),
 
 		FeeGrants: collections.NewMap(sb, types.FeeGrantKey, "fee_grant",
 			corpOpKeyCodec, codec.CollValue[types.FeeGrant](cdc)),
@@ -145,6 +153,16 @@ func (k Keeper) SetParticipantKeeper(p types.ParticipantKeeper) {
 	k.participantRef.K = p
 }
 
+// SetGovernanceFrameworkKeeper wires the MOD-GF keeper that runs GF-CHECK-2.
+func (k Keeper) SetGovernanceFrameworkKeeper(g types.GovernanceFrameworkKeeper) {
+	k.gfRef.K = g
+}
+
+// SetVsAccountBudgetStore wires the VsAccountBudget store read by AUTHZ-CHECK-3.
+func (k Keeper) SetVsAccountBudgetStore(s types.VsAccountBudgetStore) {
+	k.vsBudgetRef.S = s
+}
+
 // SetVerifiableServiceKeeper wires the MOD-VS keeper after both keepers exist.
 func (k Keeper) SetVerifiableServiceKeeper(v types.VerifiableServiceKeeper) {
 	k.vsRef.K = v
@@ -161,9 +179,9 @@ func (k Keeper) corporationKeeper() types.CorporationKeeper {
 	return k.corpRef.K
 }
 
-// nextOperatorAuthorizationID returns a fresh, 1-based OperatorAuthorization id.
-func (k Keeper) nextOperatorAuthorizationID(ctx context.Context) (uint64, error) {
-	n, err := k.OperatorAuthorizationSeq.Next(ctx)
+// nextDelegateAuthorizationID returns a fresh, 1-based DelegateAuthorization id.
+func (k Keeper) nextDelegateAuthorizationID(ctx context.Context) (uint64, error) {
+	n, err := k.DelegateAuthorizationSeq.Next(ctx)
 	if err != nil {
 		return 0, err
 	}
@@ -179,22 +197,22 @@ func (k Keeper) nextVSOAID(ctx context.Context) (uint64, error) {
 	return n + 1, nil
 }
 
-// getOperatorAuthorizationByCorpOp loads the OperatorAuthorization indexed by
-// the (corporation_id, operator) secondary index. Returns found=false when no
+// getDelegateAuthorizationByCorpDelegate loads the DelegateAuthorization indexed by
+// the (corporation_id, delegate) secondary index. Returns found=false when no
 // entry exists.
-func (k Keeper) getOperatorAuthorizationByCorpOp(ctx context.Context, corporationID uint64, operator string) (types.OperatorAuthorization, bool, error) {
-	id, err := k.OperatorAuthorizationByCorpOp.Get(ctx, collections.Join(corporationID, operator))
+func (k Keeper) getDelegateAuthorizationByCorpDelegate(ctx context.Context, corporationID uint64, delegate string) (types.DelegateAuthorization, bool, error) {
+	id, err := k.DelegateAuthorizationByCorpDelegate.Get(ctx, collections.Join(corporationID, delegate))
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
-			return types.OperatorAuthorization{}, false, nil
+			return types.DelegateAuthorization{}, false, nil
 		}
-		return types.OperatorAuthorization{}, false, err
+		return types.DelegateAuthorization{}, false, err
 	}
-	oa, err := k.OperatorAuthorizations.Get(ctx, id)
+	da, err := k.DelegateAuthorizations.Get(ctx, id)
 	if err != nil {
-		return types.OperatorAuthorization{}, false, err
+		return types.DelegateAuthorization{}, false, err
 	}
-	return oa, true, nil
+	return da, true, nil
 }
 
 // getVSOAByCorpOp loads the VSOperatorAuthorization indexed by the

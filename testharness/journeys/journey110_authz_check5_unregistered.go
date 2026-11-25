@@ -21,8 +21,8 @@ const authzCheck5UnregName = "authz5_unregistered"
 // account is NOT the policy_address of a registered Corporation MUST abort with
 // ErrCorporationNotRegistered (see MOD-CO-MSG-1).
 //
-// MsgGrantOperatorAuthorization with operator="" is the cleanest live probe:
-// AUTHZ-CHECK-1 short-circuits for the empty operator (corporation acting alone),
+// MsgGrantDelegateAuthorization with delegate="" is the cleanest live probe:
+// AUTHZ-CHECK-1 short-circuits for the empty delegate (corporation acting alone),
 // so AUTHZ-CHECK-5 is the primary gate. The message's signer IS `corporation`,
 // so a brand-new account that was never registered via MOD-CO-MSG-1 can sign it
 // directly (no group proposal needed) and MUST be rejected.
@@ -46,11 +46,11 @@ func RunAuthzCheck5UnregisteredJourney(ctx context.Context, client cosmosclient.
 	// Step 2: self-grant from the unregistered account → expect AUTHZ-CHECK-5 abort.
 	// =========================================================================
 	fmt.Println("\n--- Step 2: Self-grant from unregistered corporation (expect ErrCorporationNotRegistered) ---")
-	msg := &detypes.MsgGrantOperatorAuthorization{
+	msg := &detypes.MsgGrantDelegateAuthorization{
 		Corporation: addr,
-		Operator:    addr, // self-grant (operator == corporation): AUTHZ-CHECK-1 is skipped, AUTHZ-CHECK-5 is the gate
+		Delegate:    addr, // self-grant (delegate == corporation): AUTHZ-CHECK-1 is skipped, AUTHZ-CHECK-5 is the gate
 		Grantee:     addr,
-		MsgTypes:    []string{"/verana.di.v1.MsgStoreDigest"},
+		MsgTypes:    []detypes.MsgType{detypes.MsgType_MSG_TYPE_STORE_DIGEST},
 	}
 
 	txResp, err := client.BroadcastTx(ctx, unregistered, msg)

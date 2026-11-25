@@ -37,7 +37,7 @@ function buildCreateCredentialSchemaMsg(): AminoMsg {
   const address = "verana16mzeyu9l6kua2cdg9x0jk5g6e7h0kk8q6uadu4";
   const protoMsg = MsgCreateCredentialSchema.fromPartial({
     corporation: address,
-    operator: address,
+    delegate: address,
     trId: Long.fromNumber(1),
     jsonSchema: JSON_SCHEMA,
     issuerGrantorValidationValidityPeriod: { value: 0 } as OptionalUInt32,

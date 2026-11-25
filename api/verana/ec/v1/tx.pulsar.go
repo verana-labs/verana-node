@@ -874,7 +874,7 @@ func (x *fastReflection_MsgUpdateParamsResponse) ProtoMethods() *protoiface.Meth
 var (
 	md_MsgCreateEcosystem                protoreflect.MessageDescriptor
 	fd_MsgCreateEcosystem_corporation    protoreflect.FieldDescriptor
-	fd_MsgCreateEcosystem_operator       protoreflect.FieldDescriptor
+	fd_MsgCreateEcosystem_delegate       protoreflect.FieldDescriptor
 	fd_MsgCreateEcosystem_did            protoreflect.FieldDescriptor
 	fd_MsgCreateEcosystem_language       protoreflect.FieldDescriptor
 	fd_MsgCreateEcosystem_doc_url        protoreflect.FieldDescriptor
@@ -885,7 +885,7 @@ func init() {
 	file_verana_ec_v1_tx_proto_init()
 	md_MsgCreateEcosystem = File_verana_ec_v1_tx_proto.Messages().ByName("MsgCreateEcosystem")
 	fd_MsgCreateEcosystem_corporation = md_MsgCreateEcosystem.Fields().ByName("corporation")
-	fd_MsgCreateEcosystem_operator = md_MsgCreateEcosystem.Fields().ByName("operator")
+	fd_MsgCreateEcosystem_delegate = md_MsgCreateEcosystem.Fields().ByName("delegate")
 	fd_MsgCreateEcosystem_did = md_MsgCreateEcosystem.Fields().ByName("did")
 	fd_MsgCreateEcosystem_language = md_MsgCreateEcosystem.Fields().ByName("language")
 	fd_MsgCreateEcosystem_doc_url = md_MsgCreateEcosystem.Fields().ByName("doc_url")
@@ -963,9 +963,9 @@ func (x *fastReflection_MsgCreateEcosystem) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgCreateEcosystem_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgCreateEcosystem_delegate, value) {
 			return
 		}
 	}
@@ -1010,8 +1010,8 @@ func (x *fastReflection_MsgCreateEcosystem) Has(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgCreateEcosystem.corporation":
 		return x.Corporation != ""
-	case "verana.ec.v1.MsgCreateEcosystem.operator":
-		return x.Operator != ""
+	case "verana.ec.v1.MsgCreateEcosystem.delegate":
+		return x.Delegate != ""
 	case "verana.ec.v1.MsgCreateEcosystem.did":
 		return x.Did != ""
 	case "verana.ec.v1.MsgCreateEcosystem.language":
@@ -1038,8 +1038,8 @@ func (x *fastReflection_MsgCreateEcosystem) Clear(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgCreateEcosystem.corporation":
 		x.Corporation = ""
-	case "verana.ec.v1.MsgCreateEcosystem.operator":
-		x.Operator = ""
+	case "verana.ec.v1.MsgCreateEcosystem.delegate":
+		x.Delegate = ""
 	case "verana.ec.v1.MsgCreateEcosystem.did":
 		x.Did = ""
 	case "verana.ec.v1.MsgCreateEcosystem.language":
@@ -1067,8 +1067,8 @@ func (x *fastReflection_MsgCreateEcosystem) Get(descriptor protoreflect.FieldDes
 	case "verana.ec.v1.MsgCreateEcosystem.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.ec.v1.MsgCreateEcosystem.operator":
-		value := x.Operator
+	case "verana.ec.v1.MsgCreateEcosystem.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
 	case "verana.ec.v1.MsgCreateEcosystem.did":
 		value := x.Did
@@ -1104,8 +1104,8 @@ func (x *fastReflection_MsgCreateEcosystem) Set(fd protoreflect.FieldDescriptor,
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgCreateEcosystem.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.ec.v1.MsgCreateEcosystem.operator":
-		x.Operator = value.Interface().(string)
+	case "verana.ec.v1.MsgCreateEcosystem.delegate":
+		x.Delegate = value.Interface().(string)
 	case "verana.ec.v1.MsgCreateEcosystem.did":
 		x.Did = value.Interface().(string)
 	case "verana.ec.v1.MsgCreateEcosystem.language":
@@ -1136,8 +1136,8 @@ func (x *fastReflection_MsgCreateEcosystem) Mutable(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgCreateEcosystem.corporation":
 		panic(fmt.Errorf("field corporation of message verana.ec.v1.MsgCreateEcosystem is not mutable"))
-	case "verana.ec.v1.MsgCreateEcosystem.operator":
-		panic(fmt.Errorf("field operator of message verana.ec.v1.MsgCreateEcosystem is not mutable"))
+	case "verana.ec.v1.MsgCreateEcosystem.delegate":
+		panic(fmt.Errorf("field delegate of message verana.ec.v1.MsgCreateEcosystem is not mutable"))
 	case "verana.ec.v1.MsgCreateEcosystem.did":
 		panic(fmt.Errorf("field did of message verana.ec.v1.MsgCreateEcosystem is not mutable"))
 	case "verana.ec.v1.MsgCreateEcosystem.language":
@@ -1161,7 +1161,7 @@ func (x *fastReflection_MsgCreateEcosystem) NewField(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgCreateEcosystem.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.ec.v1.MsgCreateEcosystem.operator":
+	case "verana.ec.v1.MsgCreateEcosystem.delegate":
 		return protoreflect.ValueOfString("")
 	case "verana.ec.v1.MsgCreateEcosystem.did":
 		return protoreflect.ValueOfString("")
@@ -1244,7 +1244,7 @@ func (x *fastReflection_MsgCreateEcosystem) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -1321,10 +1321,10 @@ func (x *fastReflection_MsgCreateEcosystem) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -1418,7 +1418,7 @@ func (x *fastReflection_MsgCreateEcosystem) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1446,7 +1446,7 @@ func (x *fastReflection_MsgCreateEcosystem) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -2018,7 +2018,7 @@ func (x *fastReflection_MsgCreateEcosystemResponse) ProtoMethods() *protoiface.M
 var (
 	md_MsgUpdateEcosystem             protoreflect.MessageDescriptor
 	fd_MsgUpdateEcosystem_corporation protoreflect.FieldDescriptor
-	fd_MsgUpdateEcosystem_operator    protoreflect.FieldDescriptor
+	fd_MsgUpdateEcosystem_delegate    protoreflect.FieldDescriptor
 	fd_MsgUpdateEcosystem_id          protoreflect.FieldDescriptor
 	fd_MsgUpdateEcosystem_did         protoreflect.FieldDescriptor
 )
@@ -2027,7 +2027,7 @@ func init() {
 	file_verana_ec_v1_tx_proto_init()
 	md_MsgUpdateEcosystem = File_verana_ec_v1_tx_proto.Messages().ByName("MsgUpdateEcosystem")
 	fd_MsgUpdateEcosystem_corporation = md_MsgUpdateEcosystem.Fields().ByName("corporation")
-	fd_MsgUpdateEcosystem_operator = md_MsgUpdateEcosystem.Fields().ByName("operator")
+	fd_MsgUpdateEcosystem_delegate = md_MsgUpdateEcosystem.Fields().ByName("delegate")
 	fd_MsgUpdateEcosystem_id = md_MsgUpdateEcosystem.Fields().ByName("id")
 	fd_MsgUpdateEcosystem_did = md_MsgUpdateEcosystem.Fields().ByName("did")
 }
@@ -2103,9 +2103,9 @@ func (x *fastReflection_MsgUpdateEcosystem) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgUpdateEcosystem_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgUpdateEcosystem_delegate, value) {
 			return
 		}
 	}
@@ -2138,8 +2138,8 @@ func (x *fastReflection_MsgUpdateEcosystem) Has(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgUpdateEcosystem.corporation":
 		return x.Corporation != ""
-	case "verana.ec.v1.MsgUpdateEcosystem.operator":
-		return x.Operator != ""
+	case "verana.ec.v1.MsgUpdateEcosystem.delegate":
+		return x.Delegate != ""
 	case "verana.ec.v1.MsgUpdateEcosystem.id":
 		return x.Id != uint64(0)
 	case "verana.ec.v1.MsgUpdateEcosystem.did":
@@ -2162,8 +2162,8 @@ func (x *fastReflection_MsgUpdateEcosystem) Clear(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgUpdateEcosystem.corporation":
 		x.Corporation = ""
-	case "verana.ec.v1.MsgUpdateEcosystem.operator":
-		x.Operator = ""
+	case "verana.ec.v1.MsgUpdateEcosystem.delegate":
+		x.Delegate = ""
 	case "verana.ec.v1.MsgUpdateEcosystem.id":
 		x.Id = uint64(0)
 	case "verana.ec.v1.MsgUpdateEcosystem.did":
@@ -2187,8 +2187,8 @@ func (x *fastReflection_MsgUpdateEcosystem) Get(descriptor protoreflect.FieldDes
 	case "verana.ec.v1.MsgUpdateEcosystem.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.ec.v1.MsgUpdateEcosystem.operator":
-		value := x.Operator
+	case "verana.ec.v1.MsgUpdateEcosystem.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
 	case "verana.ec.v1.MsgUpdateEcosystem.id":
 		value := x.Id
@@ -2218,8 +2218,8 @@ func (x *fastReflection_MsgUpdateEcosystem) Set(fd protoreflect.FieldDescriptor,
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgUpdateEcosystem.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.ec.v1.MsgUpdateEcosystem.operator":
-		x.Operator = value.Interface().(string)
+	case "verana.ec.v1.MsgUpdateEcosystem.delegate":
+		x.Delegate = value.Interface().(string)
 	case "verana.ec.v1.MsgUpdateEcosystem.id":
 		x.Id = value.Uint()
 	case "verana.ec.v1.MsgUpdateEcosystem.did":
@@ -2246,8 +2246,8 @@ func (x *fastReflection_MsgUpdateEcosystem) Mutable(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgUpdateEcosystem.corporation":
 		panic(fmt.Errorf("field corporation of message verana.ec.v1.MsgUpdateEcosystem is not mutable"))
-	case "verana.ec.v1.MsgUpdateEcosystem.operator":
-		panic(fmt.Errorf("field operator of message verana.ec.v1.MsgUpdateEcosystem is not mutable"))
+	case "verana.ec.v1.MsgUpdateEcosystem.delegate":
+		panic(fmt.Errorf("field delegate of message verana.ec.v1.MsgUpdateEcosystem is not mutable"))
 	case "verana.ec.v1.MsgUpdateEcosystem.id":
 		panic(fmt.Errorf("field id of message verana.ec.v1.MsgUpdateEcosystem is not mutable"))
 	case "verana.ec.v1.MsgUpdateEcosystem.did":
@@ -2267,7 +2267,7 @@ func (x *fastReflection_MsgUpdateEcosystem) NewField(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgUpdateEcosystem.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.ec.v1.MsgUpdateEcosystem.operator":
+	case "verana.ec.v1.MsgUpdateEcosystem.delegate":
 		return protoreflect.ValueOfString("")
 	case "verana.ec.v1.MsgUpdateEcosystem.id":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -2346,7 +2346,7 @@ func (x *fastReflection_MsgUpdateEcosystem) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -2398,10 +2398,10 @@ func (x *fastReflection_MsgUpdateEcosystem) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x18
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -2495,7 +2495,7 @@ func (x *fastReflection_MsgUpdateEcosystem) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -2523,7 +2523,7 @@ func (x *fastReflection_MsgUpdateEcosystem) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 0 {
@@ -2970,7 +2970,7 @@ func (x *fastReflection_MsgUpdateEcosystemResponse) ProtoMethods() *protoiface.M
 var (
 	md_MsgArchiveEcosystem             protoreflect.MessageDescriptor
 	fd_MsgArchiveEcosystem_corporation protoreflect.FieldDescriptor
-	fd_MsgArchiveEcosystem_operator    protoreflect.FieldDescriptor
+	fd_MsgArchiveEcosystem_delegate    protoreflect.FieldDescriptor
 	fd_MsgArchiveEcosystem_id          protoreflect.FieldDescriptor
 	fd_MsgArchiveEcosystem_archive     protoreflect.FieldDescriptor
 )
@@ -2979,7 +2979,7 @@ func init() {
 	file_verana_ec_v1_tx_proto_init()
 	md_MsgArchiveEcosystem = File_verana_ec_v1_tx_proto.Messages().ByName("MsgArchiveEcosystem")
 	fd_MsgArchiveEcosystem_corporation = md_MsgArchiveEcosystem.Fields().ByName("corporation")
-	fd_MsgArchiveEcosystem_operator = md_MsgArchiveEcosystem.Fields().ByName("operator")
+	fd_MsgArchiveEcosystem_delegate = md_MsgArchiveEcosystem.Fields().ByName("delegate")
 	fd_MsgArchiveEcosystem_id = md_MsgArchiveEcosystem.Fields().ByName("id")
 	fd_MsgArchiveEcosystem_archive = md_MsgArchiveEcosystem.Fields().ByName("archive")
 }
@@ -3055,9 +3055,9 @@ func (x *fastReflection_MsgArchiveEcosystem) Range(f func(protoreflect.FieldDesc
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgArchiveEcosystem_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgArchiveEcosystem_delegate, value) {
 			return
 		}
 	}
@@ -3090,8 +3090,8 @@ func (x *fastReflection_MsgArchiveEcosystem) Has(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgArchiveEcosystem.corporation":
 		return x.Corporation != ""
-	case "verana.ec.v1.MsgArchiveEcosystem.operator":
-		return x.Operator != ""
+	case "verana.ec.v1.MsgArchiveEcosystem.delegate":
+		return x.Delegate != ""
 	case "verana.ec.v1.MsgArchiveEcosystem.id":
 		return x.Id != uint64(0)
 	case "verana.ec.v1.MsgArchiveEcosystem.archive":
@@ -3114,8 +3114,8 @@ func (x *fastReflection_MsgArchiveEcosystem) Clear(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgArchiveEcosystem.corporation":
 		x.Corporation = ""
-	case "verana.ec.v1.MsgArchiveEcosystem.operator":
-		x.Operator = ""
+	case "verana.ec.v1.MsgArchiveEcosystem.delegate":
+		x.Delegate = ""
 	case "verana.ec.v1.MsgArchiveEcosystem.id":
 		x.Id = uint64(0)
 	case "verana.ec.v1.MsgArchiveEcosystem.archive":
@@ -3139,8 +3139,8 @@ func (x *fastReflection_MsgArchiveEcosystem) Get(descriptor protoreflect.FieldDe
 	case "verana.ec.v1.MsgArchiveEcosystem.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.ec.v1.MsgArchiveEcosystem.operator":
-		value := x.Operator
+	case "verana.ec.v1.MsgArchiveEcosystem.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
 	case "verana.ec.v1.MsgArchiveEcosystem.id":
 		value := x.Id
@@ -3170,8 +3170,8 @@ func (x *fastReflection_MsgArchiveEcosystem) Set(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgArchiveEcosystem.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.ec.v1.MsgArchiveEcosystem.operator":
-		x.Operator = value.Interface().(string)
+	case "verana.ec.v1.MsgArchiveEcosystem.delegate":
+		x.Delegate = value.Interface().(string)
 	case "verana.ec.v1.MsgArchiveEcosystem.id":
 		x.Id = value.Uint()
 	case "verana.ec.v1.MsgArchiveEcosystem.archive":
@@ -3198,8 +3198,8 @@ func (x *fastReflection_MsgArchiveEcosystem) Mutable(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgArchiveEcosystem.corporation":
 		panic(fmt.Errorf("field corporation of message verana.ec.v1.MsgArchiveEcosystem is not mutable"))
-	case "verana.ec.v1.MsgArchiveEcosystem.operator":
-		panic(fmt.Errorf("field operator of message verana.ec.v1.MsgArchiveEcosystem is not mutable"))
+	case "verana.ec.v1.MsgArchiveEcosystem.delegate":
+		panic(fmt.Errorf("field delegate of message verana.ec.v1.MsgArchiveEcosystem is not mutable"))
 	case "verana.ec.v1.MsgArchiveEcosystem.id":
 		panic(fmt.Errorf("field id of message verana.ec.v1.MsgArchiveEcosystem is not mutable"))
 	case "verana.ec.v1.MsgArchiveEcosystem.archive":
@@ -3219,7 +3219,7 @@ func (x *fastReflection_MsgArchiveEcosystem) NewField(fd protoreflect.FieldDescr
 	switch fd.FullName() {
 	case "verana.ec.v1.MsgArchiveEcosystem.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.ec.v1.MsgArchiveEcosystem.operator":
+	case "verana.ec.v1.MsgArchiveEcosystem.delegate":
 		return protoreflect.ValueOfString("")
 	case "verana.ec.v1.MsgArchiveEcosystem.id":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -3298,7 +3298,7 @@ func (x *fastReflection_MsgArchiveEcosystem) ProtoMethods() *protoiface.Methods 
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -3352,10 +3352,10 @@ func (x *fastReflection_MsgArchiveEcosystem) ProtoMethods() *protoiface.Methods 
 			i--
 			dAtA[i] = 0x18
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -3449,7 +3449,7 @@ func (x *fastReflection_MsgArchiveEcosystem) ProtoMethods() *protoiface.Methods 
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -3477,7 +3477,7 @@ func (x *fastReflection_MsgArchiveEcosystem) ProtoMethods() *protoiface.Methods 
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 0 {
@@ -3992,7 +3992,7 @@ func (*MsgUpdateParamsResponse) Descriptor() ([]byte, []int) {
 	return file_verana_ec_v1_tx_proto_rawDescGZIP(), []int{1}
 }
 
-// MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `operator`;
+// MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `delegate`;
 // AUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the
 // controlling Corporation entry. Seeds v1 of the Ecosystem's Governance
 // Framework via MOD-GF.
@@ -4002,7 +4002,7 @@ type MsgCreateEcosystem struct {
 	unknownFields protoimpl.UnknownFields
 
 	Corporation  string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	Operator     string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	Delegate     string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Did          string `protobuf:"bytes,3,opt,name=did,proto3" json:"did,omitempty"`
 	Language     string `protobuf:"bytes,4,opt,name=language,proto3" json:"language,omitempty"`
 	DocUrl       string `protobuf:"bytes,5,opt,name=doc_url,json=docUrl,proto3" json:"doc_url,omitempty"`
@@ -4036,9 +4036,9 @@ func (x *MsgCreateEcosystem) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgCreateEcosystem) GetOperator() string {
+func (x *MsgCreateEcosystem) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
@@ -4113,7 +4113,7 @@ type MsgUpdateEcosystem struct {
 	unknownFields protoimpl.UnknownFields
 
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	Operator    string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	Delegate    string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Id          uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
 	Did         string `protobuf:"bytes,4,opt,name=did,proto3" json:"did,omitempty"`
 }
@@ -4145,9 +4145,9 @@ func (x *MsgUpdateEcosystem) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgUpdateEcosystem) GetOperator() string {
+func (x *MsgUpdateEcosystem) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
@@ -4200,7 +4200,7 @@ type MsgArchiveEcosystem struct {
 	unknownFields protoimpl.UnknownFields
 
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	Operator    string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	Delegate    string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Id          uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
 	Archive     bool   `protobuf:"varint,4,opt,name=archive,proto3" json:"archive,omitempty"`
 }
@@ -4232,9 +4232,9 @@ func (x *MsgArchiveEcosystem) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgArchiveEcosystem) GetOperator() string {
+func (x *MsgArchiveEcosystem) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
@@ -4310,18 +4310,18 @@ var file_verana_ec_v1_tx_proto_rawDesc = []byte{
 	0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63,
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72,
 	0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x12, 0x34, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01,
+	0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x64, 0x69, 0x64, 0x18, 0x03, 0x20,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x64, 0x69, 0x64, 0x18, 0x03, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x03, 0x64, 0x69, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x61, 0x6e, 0x67,
 	0x75, 0x61, 0x67, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x6e, 0x67,
 	0x75, 0x61, 0x67, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x64, 0x6f, 0x63, 0x5f, 0x75, 0x72, 0x6c, 0x18,
 	0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x64, 0x6f, 0x63, 0x55, 0x72, 0x6c, 0x12, 0x24, 0x0a,
 	0x0e, 0x64, 0x6f, 0x63, 0x5f, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x5f, 0x73, 0x72, 0x69, 0x18,
 	0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x64, 0x6f, 0x63, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74,
-	0x53, 0x72, 0x69, 0x3a, 0x30, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74,
-	0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x1e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f,
+	0x53, 0x72, 0x69, 0x3a, 0x30, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x65, 0x8a, 0xe7, 0xb0, 0x2a, 0x1e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f,
 	0x65, 0x63, 0x2f, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x63, 0x6f, 0x73,
 	0x79, 0x73, 0x74, 0x65, 0x6d, 0x22, 0x3f, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61,
 	0x74, 0x65, 0x45, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f,
@@ -4332,13 +4332,13 @@ var file_verana_ec_v1_tx_proto_rawDesc = []byte{
 	0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41,
 	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f,
-	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x6f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d,
+	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d,
 	0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53,
-	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12,
+	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12,
 	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12,
 	0x10, 0x0a, 0x03, 0x64, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x64, 0x69,
-	0x64, 0x3a, 0x30, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72,
+	0x64, 0x3a, 0x30, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65,
 	0x8a, 0xe7, 0xb0, 0x2a, 0x1e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x65, 0x63,
 	0x2f, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x63, 0x6f, 0x73, 0x79, 0x73,
 	0x74, 0x65, 0x6d, 0x22, 0x1c, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
@@ -4348,14 +4348,14 @@ var file_verana_ec_v1_tx_proto_rawDesc = []byte{
 	0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18,
 	0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65,
 	0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f,
-	0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73,
 	0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e,
-	0x67, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69,
+	0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69,
 	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x61,
 	0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x61, 0x72,
-	0x63, 0x68, 0x69, 0x76, 0x65, 0x3a, 0x31, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x1f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f,
+	0x63, 0x68, 0x69, 0x76, 0x65, 0x3a, 0x31, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x8a, 0xe7, 0xb0, 0x2a, 0x1f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f,
 	0x78, 0x2f, 0x65, 0x63, 0x2f, 0x4d, 0x73, 0x67, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x45,
 	0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x22, 0x1d, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x41,
 	0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x45, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52,

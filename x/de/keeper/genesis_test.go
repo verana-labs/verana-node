@@ -27,12 +27,12 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, uint64(7), got.WindowEndQueue[0].ParticipantId)
 }
 
-func TestGenesis_RebuildsOperatorIndex(t *testing.T) {
+func TestGenesis_RebuildsDelegateIndex(t *testing.T) {
 	vsOp := acc("vsop_genesis________")
 	genesisState := types.GenesisState{
 		VsOperatorAuthorizations: []types.VSOperatorAuthorization{{
 			Id: 1, CorporationId: 4, VsOperator: vsOp,
-			Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 9, MsgTypes: []string{mtValidated}}},
+			Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 9, MsgTypes: []types.MsgType{mtValidated}}},
 		}},
 		VsoaSeq: 1,
 	}

@@ -18,6 +18,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 	ectypes "github.com/verana-labs/verana-node/x/ec/types"
 	"github.com/verana-labs/verana-node/x/pp/keeper"
@@ -153,6 +154,8 @@ type MockParticipantCorporationKeeper struct {
 	corporationByPolicyAddr map[string]types.CorporationView
 	policyAddrByID          map[uint64]string
 	corpDIDs                map[string]uint64 // Corporation.did -> corp id
+	// Unregistered lists the accounts AUTHZ-CHECK-5 rejects.
+	Unregistered map[string]bool
 }
 
 func NewMockParticipantCorporationKeeper(ekKeeper *MockParticipantEcosystemKeeper) *MockParticipantCorporationKeeper {
@@ -160,6 +163,7 @@ func NewMockParticipantCorporationKeeper(ekKeeper *MockParticipantEcosystemKeepe
 		corporationByPolicyAddr: ekKeeper.corporationByPolicyAddr,
 		policyAddrByID:          make(map[uint64]string),
 		corpDIDs:                make(map[string]uint64),
+		Unregistered:            make(map[string]bool),
 	}
 }
 
@@ -168,10 +172,13 @@ func (k *MockParticipantCorporationKeeper) RegisterCorpDID(did string, corpID ui
 	k.corpDIDs[did] = corpID
 }
 
-func (k *MockParticipantCorporationKeeper) ResolveByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, bool) {
+func (k *MockParticipantCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context, policyAddress string) (types.CorporationView, error) {
+	if k.Unregistered[policyAddress] {
+		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
+	}
 	if v, ok := k.corporationByPolicyAddr[policyAddress]; ok {
 		k.policyAddrByID[v.Id] = policyAddress
-		return v, true
+		return v, nil
 	}
 	// Distinct, deterministic sentinel id per unknown address — never matches a
 	// CreateMockEcosystem row (which uses small ids starting at 1) thanks to the
@@ -183,7 +190,7 @@ func (k *MockParticipantCorporationKeeper) ResolveByPolicyAddress(ctx context.Co
 	id := h.Sum64() | (uint64(1) << 62)
 	v := types.CorporationView{Id: id, PolicyAddress: policyAddress}
 	k.policyAddrByID[v.Id] = policyAddress
-	return v, true
+	return v, nil
 }
 
 // ResolveDIDOwner reports the corporation whose own did equals `did`, for the

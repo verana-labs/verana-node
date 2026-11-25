@@ -1,12 +1,12 @@
 # Verana Test Harness
 
-This directory contains the end-to-end test harness for the Verana blockchain. The test harness validates all Verana modules through operator-authorization journeys that test the v4 authority/operator pattern with AUTHZ-CHECK delegation.
+This directory contains the end-to-end test harness for the Verana blockchain. The test harness validates all Verana modules through delegate-authorization journeys that test the v4 authority/delegate pattern with AUTHZ-CHECK delegation.
 
 ## Overview
 
 The test harness provides:
 
-- **10 Journey Tests**: End-to-end tests covering Trust Registry, Credential Schema, and Permission module operations with operator authorization
+- **10 Journey Tests**: End-to-end tests covering Trust Registry, Credential Schema, and Permission module operations with delegate authorization
 - **Automated Test Execution**: Scripts to run individual journeys or all journeys sequentially
 
 ## Prerequisites
@@ -80,7 +80,7 @@ export FEES="750000uvna"
 go run cmd/main.go [journey_id]
 
 # Examples:
-go run cmd/main.go 101  # TR Operator Authorization Setup
+go run cmd/main.go 101  # TR Delegate Authorization Setup
 go run cmd/main.go 304  # Permission Create Root Permission
 ```
 
@@ -95,16 +95,16 @@ go run cmd/main.go 304  # Permission Create Root Permission
 
 | ID  | Journey Name | Description |
 |-----|--------------|-------------|
-| 101 | TR Operator Authorization Setup | Create group, add members, fund group policy for TR operations |
-| 102 | TR Operations with Operator Auth | Test all 5 TR operations: fail without auth, grant auth, succeed with auth |
-| 201 | CS Operator Authorization Setup | Create group, add members, fund group policy for CS operations |
-| 202 | CS Operations with Operator Auth | Test all 3 CS operations: fail without auth, grant auth, succeed with auth |
-| 301 | Perm Operator Authorization Setup | Create group, add members, fund group policy for Permission operations |
-| 302 | Perm Operations with Operator Auth | Test CancelVPLastRequest and CreateRootPermission: fail without auth, grant auth, succeed |
-| 303 | Perm Cancel VP Last Request | Cancel VP last request with operator authorization |
-| 304 | Perm Create Root Permission | Create root permission with operator authorization |
-| 305 | Perm Adjust Permission | Adjust permission with operator authorization |
-| 306 | Perm Revoke Permission | Revoke permission with operator authorization |
+| 101 | TR Delegate Authorization Setup | Create group, add members, fund group policy for TR operations |
+| 102 | TR Operations with Delegate Auth | Test all 5 TR operations: fail without auth, grant auth, succeed with auth |
+| 201 | CS Delegate Authorization Setup | Create group, add members, fund group policy for CS operations |
+| 202 | CS Operations with Delegate Auth | Test all 3 CS operations: fail without auth, grant auth, succeed with auth |
+| 301 | Perm Delegate Authorization Setup | Create group, add members, fund group policy for Permission operations |
+| 302 | Perm Operations with Delegate Auth | Test CancelVPLastRequest and CreateRootPermission: fail without auth, grant auth, succeed |
+| 303 | Perm Cancel VP Last Request | Cancel VP last request with delegate authorization |
+| 304 | Perm Create Root Permission | Create root permission with delegate authorization |
+| 305 | Perm Adjust Permission | Adjust permission with delegate authorization |
+| 306 | Perm Revoke Permission | Revoke permission with delegate authorization |
 
 ### Journey Dependencies
 
@@ -114,17 +114,17 @@ Journeys must be run in order within each module group:
 - **CS**: 201 -> 202
 - **Perm**: 301 -> 302 -> 303, 304, 305, 306
 
-Each permission journey (303-306) depends on 301 and 302 for group/operator setup. Journeys 304-306 also share results between them (e.g., 306 uses the trust registry from 304).
+Each permission journey (303-306) depends on 301 and 302 for group/delegate setup. Journeys 304-306 also share results between them (e.g., 306 uses the trust registry from 304).
 
 ### Journey Pattern
 
 All journeys follow the same authorization test pattern:
 
-1. **Fail without auth**: Operator tries the operation without delegation authorization (expect failure)
-2. **Grant auth**: Admin proposes and members vote to grant operator authorization via group policy
-3. **Succeed with auth**: Operator retries the operation with authorization (expect success)
+1. **Fail without auth**: Delegate tries the operation without delegation authorization (expect failure)
+2. **Grant auth**: Admin proposes and members vote to grant delegate authorization via group policy
+3. **Succeed with auth**: Delegate retries the operation with authorization (expect success)
 4. **Verify**: Check the on-chain state matches expectations
-5. **Unauthorized operator**: A different operator tries the same operation (expect failure)
+5. **Unauthorized delegate**: A different delegate tries the same operation (expect failure)
 
 ## Project Structure
 
@@ -174,7 +174,7 @@ testharness/
 **"Transaction failed"**
 - Check the transaction logs for specific error messages. Common issues include:
   - Invalid parameters
-  - Insufficient permissions / missing operator authorization
+  - Insufficient permissions / missing delegate authorization
   - Invalid state transitions
 
 ## Notes
@@ -182,7 +182,7 @@ testharness/
 - Journeys within a module group must be run in order (e.g., 301 before 302)
 - The `run_all.sh` script runs all 10 journeys in the correct order
 - Journey results are saved to `journey_results/` directory as JSON files
-- Results from earlier journeys are loaded by later journeys (group policy address, operator address, trust registry ID, etc.)
+- Results from earlier journeys are loaded by later journeys (group policy address, delegate address, trust registry ID, etc.)
 
 ## Contributing
 

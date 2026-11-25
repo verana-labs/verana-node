@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Query_ListOperatorAuthorizations_FullMethodName   = "/verana.de.v1.Query/ListOperatorAuthorizations"
+	Query_ListDelegateAuthorizations_FullMethodName   = "/verana.de.v1.Query/ListDelegateAuthorizations"
 	Query_ListVSOperatorAuthorizations_FullMethodName = "/verana.de.v1.Query/ListVSOperatorAuthorizations"
-	Query_GetOperatorAuthorization_FullMethodName     = "/verana.de.v1.Query/GetOperatorAuthorization"
+	Query_GetDelegateAuthorization_FullMethodName     = "/verana.de.v1.Query/GetDelegateAuthorization"
 	Query_GetVSOperatorAuthorization_FullMethodName   = "/verana.de.v1.Query/GetVSOperatorAuthorization"
 )
 
@@ -31,12 +31,12 @@ const (
 //
 // Query defines the gRPC querier service.
 type QueryClient interface {
-	// ListOperatorAuthorizations returns operator authorizations matching optional filters.
-	ListOperatorAuthorizations(ctx context.Context, in *QueryListOperatorAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListOperatorAuthorizationsResponse, error)
+	// [MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters.
+	ListDelegateAuthorizations(ctx context.Context, in *QueryListDelegateAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListDelegateAuthorizationsResponse, error)
 	// ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.
 	ListVSOperatorAuthorizations(ctx context.Context, in *QueryListVSOperatorAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListVSOperatorAuthorizationsResponse, error)
-	// [MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.
-	GetOperatorAuthorization(ctx context.Context, in *QueryGetOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetOperatorAuthorizationResponse, error)
+	// [MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id.
+	GetDelegateAuthorization(ctx context.Context, in *QueryGetDelegateAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(ctx context.Context, in *QueryGetVSOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetVSOperatorAuthorizationResponse, error)
 }
@@ -49,10 +49,10 @@ func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) ListOperatorAuthorizations(ctx context.Context, in *QueryListOperatorAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListOperatorAuthorizationsResponse, error) {
+func (c *queryClient) ListDelegateAuthorizations(ctx context.Context, in *QueryListDelegateAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListDelegateAuthorizationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryListOperatorAuthorizationsResponse)
-	err := c.cc.Invoke(ctx, Query_ListOperatorAuthorizations_FullMethodName, in, out, cOpts...)
+	out := new(QueryListDelegateAuthorizationsResponse)
+	err := c.cc.Invoke(ctx, Query_ListDelegateAuthorizations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +69,10 @@ func (c *queryClient) ListVSOperatorAuthorizations(ctx context.Context, in *Quer
 	return out, nil
 }
 
-func (c *queryClient) GetOperatorAuthorization(ctx context.Context, in *QueryGetOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetOperatorAuthorizationResponse, error) {
+func (c *queryClient) GetDelegateAuthorization(ctx context.Context, in *QueryGetDelegateAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetDelegateAuthorizationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryGetOperatorAuthorizationResponse)
-	err := c.cc.Invoke(ctx, Query_GetOperatorAuthorization_FullMethodName, in, out, cOpts...)
+	out := new(QueryGetDelegateAuthorizationResponse)
+	err := c.cc.Invoke(ctx, Query_GetDelegateAuthorization_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,12 +95,12 @@ func (c *queryClient) GetVSOperatorAuthorization(ctx context.Context, in *QueryG
 //
 // Query defines the gRPC querier service.
 type QueryServer interface {
-	// ListOperatorAuthorizations returns operator authorizations matching optional filters.
-	ListOperatorAuthorizations(context.Context, *QueryListOperatorAuthorizationsRequest) (*QueryListOperatorAuthorizationsResponse, error)
+	// [MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters.
+	ListDelegateAuthorizations(context.Context, *QueryListDelegateAuthorizationsRequest) (*QueryListDelegateAuthorizationsResponse, error)
 	// ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.
 	ListVSOperatorAuthorizations(context.Context, *QueryListVSOperatorAuthorizationsRequest) (*QueryListVSOperatorAuthorizationsResponse, error)
-	// [MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.
-	GetOperatorAuthorization(context.Context, *QueryGetOperatorAuthorizationRequest) (*QueryGetOperatorAuthorizationResponse, error)
+	// [MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id.
+	GetDelegateAuthorization(context.Context, *QueryGetDelegateAuthorizationRequest) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(context.Context, *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error)
 	mustEmbedUnimplementedQueryServer()
@@ -113,14 +113,14 @@ type QueryServer interface {
 // pointer dereference when methods are called.
 type UnimplementedQueryServer struct{}
 
-func (UnimplementedQueryServer) ListOperatorAuthorizations(context.Context, *QueryListOperatorAuthorizationsRequest) (*QueryListOperatorAuthorizationsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListOperatorAuthorizations not implemented")
+func (UnimplementedQueryServer) ListDelegateAuthorizations(context.Context, *QueryListDelegateAuthorizationsRequest) (*QueryListDelegateAuthorizationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDelegateAuthorizations not implemented")
 }
 func (UnimplementedQueryServer) ListVSOperatorAuthorizations(context.Context, *QueryListVSOperatorAuthorizationsRequest) (*QueryListVSOperatorAuthorizationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListVSOperatorAuthorizations not implemented")
 }
-func (UnimplementedQueryServer) GetOperatorAuthorization(context.Context, *QueryGetOperatorAuthorizationRequest) (*QueryGetOperatorAuthorizationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOperatorAuthorization not implemented")
+func (UnimplementedQueryServer) GetDelegateAuthorization(context.Context, *QueryGetDelegateAuthorizationRequest) (*QueryGetDelegateAuthorizationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDelegateAuthorization not implemented")
 }
 func (UnimplementedQueryServer) GetVSOperatorAuthorization(context.Context, *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVSOperatorAuthorization not implemented")
@@ -146,20 +146,20 @@ func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
 	s.RegisterService(&Query_ServiceDesc, srv)
 }
 
-func _Query_ListOperatorAuthorizations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryListOperatorAuthorizationsRequest)
+func _Query_ListDelegateAuthorizations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryListDelegateAuthorizationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ListOperatorAuthorizations(ctx, in)
+		return srv.(QueryServer).ListDelegateAuthorizations(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Query_ListOperatorAuthorizations_FullMethodName,
+		FullMethod: Query_ListDelegateAuthorizations_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListOperatorAuthorizations(ctx, req.(*QueryListOperatorAuthorizationsRequest))
+		return srv.(QueryServer).ListDelegateAuthorizations(ctx, req.(*QueryListDelegateAuthorizationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -182,20 +182,20 @@ func _Query_ListVSOperatorAuthorizations_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_GetOperatorAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetOperatorAuthorizationRequest)
+func _Query_GetDelegateAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetDelegateAuthorizationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).GetOperatorAuthorization(ctx, in)
+		return srv.(QueryServer).GetDelegateAuthorization(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Query_GetOperatorAuthorization_FullMethodName,
+		FullMethod: Query_GetDelegateAuthorization_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GetOperatorAuthorization(ctx, req.(*QueryGetOperatorAuthorizationRequest))
+		return srv.(QueryServer).GetDelegateAuthorization(ctx, req.(*QueryGetDelegateAuthorizationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -226,16 +226,16 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListOperatorAuthorizations",
-			Handler:    _Query_ListOperatorAuthorizations_Handler,
+			MethodName: "ListDelegateAuthorizations",
+			Handler:    _Query_ListDelegateAuthorizations_Handler,
 		},
 		{
 			MethodName: "ListVSOperatorAuthorizations",
 			Handler:    _Query_ListVSOperatorAuthorizations_Handler,
 		},
 		{
-			MethodName: "GetOperatorAuthorization",
-			Handler:    _Query_GetOperatorAuthorization_Handler,
+			MethodName: "GetDelegateAuthorization",
+			Handler:    _Query_GetDelegateAuthorization_Handler,
 		},
 		{
 			MethodName: "GetVSOperatorAuthorization",

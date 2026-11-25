@@ -2,12 +2,12 @@
  * Journey: TD Repay Slashed Trust Deposit
  *
  * Repays the outstanding slashed amount on the ecosystem trust deposit for the
- * authority (group policy address), executed by an authorized operator.
+ * authority (group policy address), executed by an authorized delegate.
  *
  * Queries the trust deposit on-chain to determine the outstanding slash amount,
  * then submits MsgRepaySlashedTrustDeposit.
  *
- * Requires: test:de-grant-perm-auth must be run first (provides authority + operator).
+ * Requires: test:de-grant-perm-auth must be run first (provides authority + delegate).
  * Requires: The authority's trust deposit must have been slashed previously.
  *
  * Usage:
@@ -30,7 +30,7 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 15;
+const DELEGATE_INDEX = 15;
 
 /**
  * Queries the trust deposit for the given account via LCD to get the outstanding slash amount.
@@ -81,12 +81,12 @@ async function main() {
     process.exit(1);
   }
   console.log(`  Authority: ${setup.authorityAddress}`);
-  console.log(`  Operator:  ${setup.operatorAddress}`);
+  console.log(`  Delegate:  ${setup.delegateAddress}`);
   console.log();
 
-  // Step 2: Connect operator wallet
-  console.log("Step 2: Setting up operator wallet...");
-  const wallet = await createDirectAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Connect delegate wallet
+  console.log("Step 2: Setting up delegate wallet...");
+  const wallet = await createDirectAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
   const client = await createSigningClient(wallet);
   console.log(`  Connected as ${account.address}`);
@@ -116,7 +116,7 @@ async function main() {
       typeUrl: typeUrls.MsgRepaySlashedTrustDeposit,
       value: MsgRepaySlashedTrustDeposit.fromPartial({
         corporation: setup.authorityAddress,
-        operator: setup.operatorAddress,
+        delegate: setup.delegateAddress,
         deposit: outstandingSlash,
       }),
     };

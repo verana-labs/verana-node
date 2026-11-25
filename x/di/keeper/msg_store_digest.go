@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/di/types"
 )
 
@@ -20,18 +21,18 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, err
 	}
 
-	// [AUTHZ-CHECK-5] Resolve the corporation first: AUTHZ-CHECK-1 consumes the
-	// co it resolves, and an unregistered corporation must surface as such.
-	if _, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority); err != nil {
+	// [AUTHZ-CHECK-5] (with GF-CHECK-1): AUTHZ-CHECK-1 consumes the co it resolves.
+	co, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority)
+	if err != nil {
 		return nil, err
 	}
 
-	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK-1] Verify operator authorization.
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK-1] Verify delegate authorization.
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
-		msg.Authority,
-		msg.Operator,
-		"/verana.di.v1.MsgStoreDigest",
+		co.Id,
+		msg.Delegate,
+		detypes.MsgType_MSG_TYPE_STORE_DIGEST,
 		now,
 	); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
@@ -54,7 +55,7 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, fmt.Errorf("failed to store digest: %w", err)
 	}
 
-	emitStoreDigestEvent(ctx, msg.Authority, msg.Operator, msg.Digest, types.AttributeValueSourceMsg, now)
+	emitStoreDigestEvent(ctx, msg.Authority, msg.Delegate, msg.Digest, types.AttributeValueSourceMsg, now)
 
 	return &types.MsgStoreDigestResponse{}, nil
 }
@@ -90,15 +91,15 @@ func (k Keeper) StoreDigestModuleCall(ctx context.Context, authority, digest str
 	return nil
 }
 
-func emitStoreDigestEvent(ctx sdk.Context, corporation, operator, digest, source string, now time.Time) {
+func emitStoreDigestEvent(ctx sdk.Context, corporation, delegate, digest, source string, now time.Time) {
 	attrs := []sdk.Attribute{
 		sdk.NewAttribute(types.AttributeKeyCorporation, corporation),
 		sdk.NewAttribute(types.AttributeKeyDigest, digest),
 		sdk.NewAttribute(types.AttributeKeySource, source),
 		sdk.NewAttribute(types.AttributeKeyTimestamp, now.UTC().Format(time.RFC3339Nano)),
 	}
-	if operator != "" {
-		attrs = append(attrs, sdk.NewAttribute(types.AttributeKeyOperator, operator))
+	if delegate != "" {
+		attrs = append(attrs, sdk.NewAttribute(types.AttributeKeyDelegate, delegate))
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(types.EventTypeStoreDigest, attrs...))
 }
