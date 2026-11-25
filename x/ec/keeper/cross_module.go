@@ -68,21 +68,17 @@ func NewCoAsECCorporationKeeper(k cokeeper.Keeper) types.CorporationKeeper {
 	return CoAsECCorporationKeeper{k: k}
 }
 
-func (a CoAsECCorporationKeeper) ResolveByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, bool) {
-	coID, err := a.k.CorporationByPolicyAddr.Get(ctx, policyAddress)
+func (a CoAsECCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, error) {
+	co, err := a.k.ResolveCorporationByPolicyAddress(ctx, policyAddress)
 	if err != nil {
-		return types.CorporationView{}, false
-	}
-	co, err := a.k.Corporation.Get(ctx, coID)
-	if err != nil {
-		return types.CorporationView{}, false
+		return types.CorporationView{}, err
 	}
 	return types.CorporationView{
 		Id:            co.Id,
 		PolicyAddress: co.PolicyAddress,
 		Language:      co.Language,
 		ActiveVersion: co.ActiveVersion,
-	}, true
+	}, nil
 }
 
 func (a CoAsECCorporationKeeper) GetByID(ctx context.Context, corporationID uint64) (types.CorporationView, bool) {

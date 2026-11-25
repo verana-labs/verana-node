@@ -18,7 +18,7 @@ interface TestResult {
 
 const tests = [
   { name: "CO: Create Corporation",                script: "test:co-create" },
-  { name: "DE: Grant Operator Authorization",      script: "test:de-grant-auth" },
+  { name: "DE: Grant Delegate Authorization",      script: "test:de-grant-auth" },
   { name: "DE: AUTHZ-CHECK-5 negative (unregistered)", script: "test:authz-check5" },
   { name: "EC: Create Ecosystem",                  script: "test:ec-create" },
   { name: "GF: Add Governance Framework Document", script: "test:gf-add-doc" },

@@ -22,7 +22,7 @@ func TestCheckVSOFeeGrant_NotEnabled(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, acc("vsop________________"), types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: false,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: false,
 	}))
 
 	err := k.CheckVSOperatorFeeGrant(ctx, 10)
@@ -33,7 +33,7 @@ func TestCheckVSOFeeGrant_Enabled(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, acc("vsop________________"), types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true,
 		FeeSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", 80)),
 	}))
 

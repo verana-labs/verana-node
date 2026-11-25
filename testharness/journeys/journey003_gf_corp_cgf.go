@@ -20,8 +20,8 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 
 	setup := lib.LoadJourneyResult("journey001")
 	policyAddr := setup.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, corpAOperator)
-	operatorAddr := setup.OperatorAddr
+	delegateAccount := lib.GetAccount(client, corpADelegate)
+	delegateAddr := setup.DelegateAddr
 
 	corpIDStr := setup.EcosystemID
 	var corpID uint64
@@ -29,7 +29,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 
 	fmt.Printf("  Corp ID:  %d\n", corpID)
 	fmt.Printf("  Policy:   %s\n", policyAddr)
-	fmt.Printf("  Operator: %s\n", operatorAddr)
+	fmt.Printf("  Delegate: %s\n", delegateAddr)
 
 	// Corp A was created with one CGF GFD (v1) inside CreateCorporation.
 	// Active version starts at 1. We will add a v2 document and then increase.
@@ -39,7 +39,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	// =========================================================================
 	fmt.Println("\n--- Step 1: AddGFD v2 for Corp CGF (ecosystemID=0) ---")
 	err := lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		0, // ecosystemID=0 → corporation subject
 		"en",
 		"https://example.com/corp-a-cgf-v2-en.pdf",
@@ -55,7 +55,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	// Step 1b: Try to add GFD for version 4 (skip v3 — must abort) [MOD-GF-MSG-1]
 	fmt.Println("\n--- Step 1b: AddGFD v4 (skip v3, expect failure) ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		0, "en",
 		"https://example.com/corp-a-cgf-v4-en.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -69,7 +69,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	// Step 1c: Add GFD French translation for v2
 	fmt.Println("\n--- Step 1c: AddGFD v2 French translation ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		0, "fr",
 		"https://example.com/corp-a-cgf-v2-fr.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -86,7 +86,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	// =========================================================================
 	fmt.Println("\n--- Step 2: IncreaseActiveGFVersion → v2 ---")
 	err = lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		0, // ecosystemID=0 → corporation subject
 	)
 	if err != nil {
@@ -98,7 +98,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	// Step 2b: Try IncreaseGFV again without adding a v3 doc (must abort) [MOD-GF-MSG-2]
 	fmt.Println("\n--- Step 2b: IncreaseGFV without v3 doc (expect failure) ---")
 	err = lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr, 0,
+		client, ctx, delegateAccount, policyAddr, 0,
 	)
 	if err == nil {
 		return fmt.Errorf("step 2b failed: expected rejection when no next-version doc exists")
@@ -110,7 +110,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	// =========================================================================
 	fmt.Println("\n--- Step 3: AddGFD v3 + IncreaseGFV → v3 ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		0, "en",
 		"https://example.com/corp-a-cgf-v3-en.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -122,7 +122,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	waitForTx("AddGFD v3 corp CGF")
 
 	err = lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr, 0,
+		client, ctx, delegateAccount, policyAddr, 0,
 	)
 	if err != nil {
 		return fmt.Errorf("step 3 IncreaseGFV v3 failed: %w", err)

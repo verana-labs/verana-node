@@ -17,7 +17,7 @@ const (
 	groupAdminName   = "group_admin"
 	groupMember1Name = "group_member1"
 	groupMember2Name = "group_member2"
-	ecOperatorName   = "ec_operator"
+	ecDelegateName   = "ec_delegate"
 )
 
 // Mnemonics for reproducible key generation (same as scripts/setup_group.sh)
@@ -59,9 +59,9 @@ func waitForTx(description string) {
 
 // RunEcosystemAuthzSetupJourney implements Journey 101: Setup group and fund accounts
 // Creates group with 3 members, threshold=2, 60s voting period. Funds all accounts.
-// Does NOT grant any operator authorizations — that's tested in Journey 102.
+// Does NOT grant any delegate authorizations — that's tested in Journey 102.
 func RunEcosystemAuthzSetupJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 101: EC Operator Authorization Setup")
+	fmt.Println("Starting Journey 101: EC Delegate Authorization Setup")
 
 	// =========================================================================
 	// Step 1: Create accounts and fund them
@@ -71,17 +71,17 @@ func RunEcosystemAuthzSetupJourney(ctx context.Context, client cosmosclient.Clie
 	adminAccount := getOrCreateAccount(client, groupAdminName)
 	member1Account := getOrCreateAccount(client, groupMember1Name)
 	member2Account := getOrCreateAccount(client, groupMember2Name)
-	operatorAccount := getOrCreateAccount(client, ecOperatorName)
+	delegateAccount := getOrCreateAccount(client, ecDelegateName)
 
 	adminAddr, _ := adminAccount.Address(lib.GetAddressPrefix())
 	member1Addr, _ := member1Account.Address(lib.GetAddressPrefix())
 	member2Addr, _ := member2Account.Address(lib.GetAddressPrefix())
-	operatorAddr, _ := operatorAccount.Address(lib.GetAddressPrefix())
+	delegateAddr, _ := delegateAccount.Address(lib.GetAddressPrefix())
 
 	fmt.Printf("  Admin:    %s\n", adminAddr)
 	fmt.Printf("  Member1:  %s\n", member1Addr)
 	fmt.Printf("  Member2:  %s\n", member2Addr)
-	fmt.Printf("  Operator: %s\n", operatorAddr)
+	fmt.Printf("  Delegate: %s\n", delegateAddr)
 
 	// Fund all accounts from cooluser (sequential sends from same account need waits)
 	fundAmount := math.NewInt(50000000) // 50 VNA each
@@ -91,8 +91,8 @@ func RunEcosystemAuthzSetupJourney(ctx context.Context, client cosmosclient.Clie
 	waitForTx("member1 funding")
 	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, member2Addr, fundAmount)
 	waitForTx("member2 funding")
-	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, operatorAddr, fundAmount)
-	waitForTx("operator funding")
+	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, delegateAddr, fundAmount)
+	waitForTx("delegate funding")
 	fmt.Println("✅ Step 1: Funded all accounts with 50 VNA each")
 
 	// =========================================================================
@@ -136,7 +136,7 @@ func RunEcosystemAuthzSetupJourney(ctx context.Context, client cosmosclient.Clie
 	result := lib.JourneyResult{
 		GroupID:         strconv.FormatUint(groupID, 10),
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 		AdminAddr:       adminAddr,
 		Member1Addr:     member1Addr,
 		Member2Addr:     member2Addr,

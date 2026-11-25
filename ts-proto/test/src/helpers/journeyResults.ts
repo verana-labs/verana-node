@@ -42,7 +42,7 @@ export interface JourneyResult {
 
   // DE + EC authz setup
   authorityAddress?: string;
-  operatorAddress?: string;
+  delegateAddress?: string;
 
   // MOD-CO Corporation setup
   corporationId?: string;
@@ -269,28 +269,28 @@ export function getPermissionId(journeyName: string): number | null {
 }
 
 /**
- * Saves the EC authz setup (authority/corporation policy_address + operator).
+ * Saves the EC authz setup (authority/corporation policy_address + delegate).
  *
  * In v4-rc2 the "authority" is the policy_address of a registered Corporation
  * (see AUTHZ-CHECK-5). We persist it under the legacy `authorityAddress` key
  * for compatibility with existing consumers.
  */
-export function saveEcAuthzSetup(authorityAddress: string, operatorAddress: string): void {
+export function saveEcAuthzSetup(authorityAddress: string, delegateAddress: string): void {
   saveJourneyResult("ec-authz-setup", {
     authorityAddress,
-    operatorAddress,
+    delegateAddress,
   });
 }
 
 /**
- * Gets the EC authz setup (corporation policy_address + operator address).
+ * Gets the EC authz setup (corporation policy_address + delegate address).
  */
-export function getEcAuthzSetup(): { authorityAddress: string; operatorAddress: string } | null {
+export function getEcAuthzSetup(): { authorityAddress: string; delegateAddress: string } | null {
   const result = loadJourneyResult("ec-authz-setup");
-  if (result?.authorityAddress && result?.operatorAddress) {
+  if (result?.authorityAddress && result?.delegateAddress) {
     return {
       authorityAddress: result.authorityAddress,
-      operatorAddress: result.operatorAddress,
+      delegateAddress: result.delegateAddress,
     };
   }
   return null;
@@ -323,24 +323,24 @@ export function getActiveCorporation(): { corporationId: number; policyAddress: 
 }
 
 /**
- * Saves the CS authz setup (authority + operator addresses)
+ * Saves the CS authz setup (authority + delegate addresses)
  */
-export function saveCsAuthzSetup(authorityAddress: string, operatorAddress: string): void {
+export function saveCsAuthzSetup(authorityAddress: string, delegateAddress: string): void {
   saveJourneyResult("cs-authz-setup", {
     authorityAddress,
-    operatorAddress,
+    delegateAddress,
   });
 }
 
 /**
- * Gets the CS authz setup (authority + operator addresses)
+ * Gets the CS authz setup (authority + delegate addresses)
  */
-export function getCsAuthzSetup(): { authorityAddress: string; operatorAddress: string } | null {
+export function getCsAuthzSetup(): { authorityAddress: string; delegateAddress: string } | null {
   const result = loadJourneyResult("cs-authz-setup");
-  if (result?.authorityAddress && result?.operatorAddress) {
+  if (result?.authorityAddress && result?.delegateAddress) {
     return {
       authorityAddress: result.authorityAddress,
-      operatorAddress: result.operatorAddress,
+      delegateAddress: result.delegateAddress,
     };
   }
   return null;
@@ -373,24 +373,24 @@ export function getCsActiveEC(): { ecosystemId: number } | null {
 // ============================================================
 
 /**
- * Saves the PERM authz setup (authority + operator addresses)
+ * Saves the PERM authz setup (authority + delegate addresses)
  */
-export function savePermAuthzSetup(authorityAddress: string, operatorAddress: string): void {
+export function savePermAuthzSetup(authorityAddress: string, delegateAddress: string): void {
   saveJourneyResult("perm-authz-setup", {
     authorityAddress,
-    operatorAddress,
+    delegateAddress,
   });
 }
 
 /**
  * Gets the PERM authz setup
  */
-export function getPermAuthzSetup(): { authorityAddress: string; operatorAddress: string } | null {
+export function getPermAuthzSetup(): { authorityAddress: string; delegateAddress: string } | null {
   const result = loadJourneyResult("perm-authz-setup");
-  if (result?.authorityAddress && result?.operatorAddress) {
+  if (result?.authorityAddress && result?.delegateAddress) {
     return {
       authorityAddress: result.authorityAddress,
-      operatorAddress: result.operatorAddress,
+      delegateAddress: result.delegateAddress,
     };
   }
   return null;

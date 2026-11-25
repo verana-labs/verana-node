@@ -1,5 +1,5 @@
 /**
- * Journey: GF Add Governance Framework Document (Operator-signed)
+ * Journey: GF Add Governance Framework Document (Delegate-signed)
  *
  * Adds a GFD to an existing Ecosystem. Moved from `verana.tr.v1` to
  * `verana.gf.v1` in v4-rc2 and now uses `ecosystem_id` (replacing `tr_id`).
@@ -28,11 +28,11 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 11;
+const DELEGATE_INDEX = 11;
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: GF Add Governance Framework Document (Operator-signed)");
+  console.log("Journey: GF Add Governance Framework Document (Delegate-signed)");
   console.log("=".repeat(60));
   console.log();
 
@@ -52,11 +52,11 @@ async function main() {
   console.log(`  EC ID:       ${activeEC.ecosystemId}`);
   console.log();
 
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
   const client = await createSigningClient(wallet);
 
-  console.log(`  Operator:  ${account.address}`);
+  console.log(`  Delegate:  ${account.address}`);
   console.log();
 
   // Add GFD for version 2
@@ -65,7 +65,7 @@ async function main() {
     typeUrl: typeUrls.MsgAddGovernanceFrameworkDocument,
     value: MsgAddGovernanceFrameworkDocument.fromPartial({
       corporation: setup.authorityAddress,
-      operator: account.address,
+      delegate: account.address,
       ecosystemId: activeEC.ecosystemId,
       docLanguage: "en",
       docUrl: "https://example.com/governance-framework-v2.pdf",
@@ -77,12 +77,12 @@ async function main() {
   try {
     const fee = await calculateFeeWithSimulation(
       client, account.address, [msg],
-      "Adding GFD via operator",
+      "Adding GFD via delegate",
     );
 
     const result = await signAndBroadcastWithRetry(
       client, account.address, [msg], fee,
-      "Adding GFD via operator",
+      "Adding GFD via delegate",
     );
 
     if (result.code === 0) {

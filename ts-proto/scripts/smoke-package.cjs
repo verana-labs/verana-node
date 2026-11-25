@@ -16,7 +16,7 @@ const requiredRegistry = [
   "MsgCreateCredentialSchema",
   "MsgSelfCreateParticipant",
   "MsgReclaimTrustDepositYield",
-  "MsgGrantOperatorAuthorization",
+  "MsgGrantDelegateAuthorization",
   "MsgStoreDigest",
   "MsgCreateExchangeRate",
 ];

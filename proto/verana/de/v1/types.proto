@@ -6,23 +6,23 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
+import "verana/de/v1/msg_type.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/de/types";
 
-// OperatorAuthorization is the operator-delegation record. Per spec it is
-// keyed by its own uint64 id; (corporation_id, operator) is a unique secondary
-// index.
-message OperatorAuthorization {
+// DelegateAuthorization is the delegate authorization record. It is keyed by
+// its own uint64 id; (corporation_id, delegate) is a unique secondary index.
+message DelegateAuthorization {
 
-  // id is the own uint64 key of this OperatorAuthorization.
+  // id is the own uint64 key of this DelegateAuthorization.
   uint64 id = 1;
   // corporation_id is the id of the corporation granting the authorization. The
-  // (corporation_id, operator) tuple MUST be unique.
+  // (corporation_id, delegate) tuple MUST be unique.
   uint64 corporation_id = 2;
-  // operator is the account receiving the authorization.
-  string operator = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // msg_types is the list of module message types this authorization applies to.
-  repeated string msg_types = 4;
+  // delegate is the account receiving the authorization.
+  string delegate = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // msg_types is the list of message types this authorization applies to.
+  repeated MsgType msg_types = 4;
   // spend_limit is the maximum amount of funds the grantee is allowed to spend.
   repeated cosmos.base.v1beta1.Coin spend_limit = 5 [
     (gogoproto.nullable) = false,
@@ -52,7 +52,7 @@ message FeeGrant {
   string grantee = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // msg_types is the list of VPR delegable message types for which the fee
   // allowance applies.
-  repeated string msg_types = 3;
+  repeated MsgType msg_types = 3;
   // spend_limit is the maximum amount of fees that can be spent using this grant.
   repeated cosmos.base.v1beta1.Coin spend_limit = 4 [
     (gogoproto.nullable) = false,
@@ -80,7 +80,7 @@ message ParticipantAuthorizationRecord {
   uint64 participant_id = 1;
   // msg_types is the list of delegable message types the vs_operator is
   // authorized for on behalf of corporation. Mandatory, frozen at create.
-  repeated string msg_types = 2;
+  repeated MsgType msg_types = 2;
   // spend_limit is the maximum amount the vs_operator is allowed to spend.
   repeated cosmos.base.v1beta1.Coin spend_limit = 3 [
     (gogoproto.nullable) = false,

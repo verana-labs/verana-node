@@ -114,7 +114,7 @@ var _ sdk.Msg = &MsgCreateCredentialSchema{}
 // NewMsgCreateCredentialSchema creates a new MsgCreateCredentialSchema instance
 func NewMsgCreateCredentialSchema(
 	authority string,
-	operator string,
+	delegate string,
 	ecosystemId uint64,
 	jsonSchema string,
 	issuerGrantorValidationValidityPeriod uint32,
@@ -131,7 +131,7 @@ func NewMsgCreateCredentialSchema(
 ) *MsgCreateCredentialSchema {
 	msg := &MsgCreateCredentialSchema{
 		Corporation:                             authority,
-		Operator:                                operator,
+		Delegate:                                delegate,
 		EcosystemId:                             ecosystemId,
 		JsonSchema:                              jsonSchema,
 		IssuerGrantorValidationValidityPeriod:   &OptionalUInt32{Value: issuerGrantorValidationValidityPeriod},
@@ -162,11 +162,11 @@ func (msg *MsgCreateCredentialSchema) Type() string {
 
 // GetSigners implements sdk.Msg
 func (msg *MsgCreateCredentialSchema) GetSigners() []sdk.AccAddress {
-	operator, err := sdk.AccAddressFromBech32(msg.Operator)
+	delegate, err := sdk.AccAddressFromBech32(msg.Delegate)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{operator}
+	return []sdk.AccAddress{delegate}
 }
 
 // ValidateBasic implements sdk.Msg
@@ -177,10 +177,10 @@ func (msg *MsgCreateCredentialSchema) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
 
-	// Validate operator address
-	_, err = sdk.AccAddressFromBech32(msg.Operator)
+	// Validate delegate address
+	_, err = sdk.AccAddressFromBech32(msg.Delegate)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
 	}
 
 	// Check mandatory parameters
@@ -718,10 +718,10 @@ func (msg *MsgUpdateCredentialSchema) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
 
-	// Validate operator address
-	_, err = sdk.AccAddressFromBech32(msg.Operator)
+	// Validate delegate address
+	_, err = sdk.AccAddressFromBech32(msg.Delegate)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
 	}
 
 	if msg.Id == 0 {
@@ -754,10 +754,10 @@ func (msg *MsgArchiveCredentialSchema) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
 
-	// Validate operator address
-	_, err = sdk.AccAddressFromBech32(msg.Operator)
+	// Validate delegate address
+	_, err = sdk.AccAddressFromBech32(msg.Delegate)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
 	}
 
 	if msg.Id == 0 {

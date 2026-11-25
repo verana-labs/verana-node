@@ -10,7 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
-	"github.com/verana-labs/verana-node/x/pp/keeper"
+	dekeeper "github.com/verana-labs/verana-node/x/de/keeper"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -27,7 +28,7 @@ type plainTxStub struct{ sdk.Tx }
 func anteCtx(t *testing.T, ctx sdk.Context, tx sdk.Tx) sdk.Context {
 	t.Helper()
 	var got sdk.Context
-	_, err := keeper.NewFeeGranterAnteHandler(func(c sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
+	_, err := dekeeper.NewFeeGranterAnteHandler(func(c sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
 		got = c
 		return c, nil
 	})(ctx, tx, false)
@@ -35,30 +36,9 @@ func anteCtx(t *testing.T, ctx sdk.Context, tx sdk.Tx) sdk.Context {
 	return got
 }
 
-func TestFeeGranterAnteHandler_CallsNextOnce(t *testing.T) {
-	_, _, ctx, _, _ := setupTriggerResolver(t)
-	tx := feeTxStub{granter: sdk.AccAddress([]byte("corp_trigger________"))}
-	nextErr := errors.New("next failed")
-
-	var calls int
-	var gotTx sdk.Tx
-	var gotSimulate bool
-	out, err := keeper.NewFeeGranterAnteHandler(func(c sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
-		calls++
-		gotTx, gotSimulate = tx, simulate
-		return c.WithBlockHeight(7), nextErr
-	})(ctx, tx, true)
-
-	require.ErrorIs(t, err, nextErr)
-	require.Equal(t, 1, calls)
-	require.Equal(t, tx, gotTx)
-	require.True(t, gotSimulate)
-	require.EqualValues(t, 7, out.BlockHeight())
-}
-
 func TestTriggerResolver_FeeGrantCheck(t *testing.T) {
 	corporation := sdk.AccAddress([]byte("corp_trigger________"))
-	operator := sdk.AccAddress([]byte("op_trigger__________")).String()
+	delegate := sdk.AccAddress([]byte("op_trigger__________")).String()
 	other := sdk.AccAddress([]byte("other_granter_______"))
 
 	cases := []struct {
@@ -79,7 +59,7 @@ func TestTriggerResolver_FeeGrantCheck(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			k, ms, ctx, trk, del := setupTriggerResolver(t)
 			corpID := trk.RegisterCorp(corporation.String())
-			pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, operator, "did:example:holder", 0, ctx.BlockTime().Add(-time.Hour)))
+			pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, delegate, "did:example:holder", 0, ctx.BlockTime().Add(-time.Hour)))
 			require.NoError(t, err)
 			del.ErrToReturn = nil
 			del.FeeGrantErr = tc.feeErr
@@ -87,7 +67,7 @@ func TestTriggerResolver_FeeGrantCheck(t *testing.T) {
 			if tc.tx != nil {
 				ctx = anteCtx(t, ctx, tc.tx)
 			}
-			_, err = ms.TriggerResolver(ctx, &types.MsgTriggerResolver{Corporation: corporation.String(), Operator: operator, Id: pid})
+			_, err = ms.TriggerResolver(ctx, &types.MsgTriggerResolver{Corporation: corporation.String(), Delegate: delegate, Id: pid})
 			if tc.wantErr != "" {
 				require.ErrorContains(t, err, tc.wantErr)
 			} else {
@@ -101,11 +81,11 @@ func TestTriggerResolver_FeeGrantCheck(t *testing.T) {
 	}
 }
 
-// Path 2 (ancestor operator) has no VS-operator record, so the check never runs.
+// Path 2 (ancestor delegate) has no VS-operator record, so the check never runs.
 func TestTriggerResolver_FeeGrantCheckSkippedOnPath2(t *testing.T) {
 	k, ms, ctx, trk, del := setupTriggerResolver(t)
 	corporation := sdk.AccAddress([]byte("corp_trigger________"))
-	operator := sdk.AccAddress([]byte("op_trigger__________")).String()
+	delegate := sdk.AccAddress([]byte("op_trigger__________")).String()
 	corpID := trk.RegisterCorp(corporation.String())
 	past := ctx.BlockTime().Add(-time.Hour)
 	ancestorID, err := k.CreateParticipant(ctx, activeParticipant(corpID, "other_vsop", "did:example:anc", 0, past))
@@ -116,7 +96,7 @@ func TestTriggerResolver_FeeGrantCheckSkippedOnPath2(t *testing.T) {
 	del.FeeGrantErr = errors.New("unused")
 
 	ctx = anteCtx(t, ctx, feeTxStub{granter: corporation})
-	_, err = ms.TriggerResolver(ctx, &types.MsgTriggerResolver{Corporation: corporation.String(), Operator: operator, Id: pid})
+	_, err = ms.TriggerResolver(ctx, &types.MsgTriggerResolver{Corporation: corporation.String(), Delegate: delegate, Id: pid})
 	require.NoError(t, err)
 	require.Empty(t, del.FeeGrantCheckCalls)
 }
@@ -135,7 +115,7 @@ func TestSetParticipantOPToValidated_FeeGrantCheck(t *testing.T) {
 	}{
 		{name: "vs operator, corp pays", viaVS: true, wantCalls: 1},
 		{name: "vs operator, record without with_feegrant", viaVS: true, feeErr: errors.New("feegrant not enabled"), wantCalls: 1, wantErr: "fee grant not authorized"},
-		{name: "operator path, corp pays", feeErr: errors.New("unused")},
+		{name: "delegate path, corp pays", feeErr: errors.New("unused")},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -161,12 +141,12 @@ func TestSetParticipantOPToValidated_FeeGrantCheck(t *testing.T) {
 			require.NoError(t, err)
 
 			if tc.viaVS {
-				del.OperatorAuthErr = errors.New("operator not authorized")
+				del.DelegateAuthErr = errors.New("delegate not authorized")
 			}
 			del.FeeGrantErr = tc.feeErr
 			ctx = anteCtx(t, ctx, feeTxStub{granter: validatorCorp})
 			_, err = ms.SetParticipantOPToValidated(ctx, &types.MsgSetParticipantOPToValidated{
-				Corporation: validatorCorp.String(), Operator: vsOperator, Id: applicantID,
+				Corporation: validatorCorp.String(), Delegate: vsOperator, Id: applicantID,
 				ValidationFees: 10, IssuanceFees: 5, VerificationFees: 3,
 				EffectiveUntil: &future, OpSummaryDigest: "sha384-validDigest",
 			})
@@ -190,7 +170,7 @@ func TestSetParticipantOPToValidated_FeeGrantCheck(t *testing.T) {
 
 func TestCreateOrUpdateParticipantSession_FeeGrantCheck(t *testing.T) {
 	corporation := sdk.AccAddress([]byte("csps_corporation____"))
-	operator := sdk.AccAddress([]byte("csps_operator_______")).String()
+	delegate := sdk.AccAddress([]byte("csps_delegate_______")).String()
 	other := sdk.AccAddress([]byte("csps_other_granter__"))
 
 	cases := []struct {
@@ -207,7 +187,7 @@ func TestCreateOrUpdateParticipantSession_FeeGrantCheck(t *testing.T) {
 		{name: "verifier with another corporation's issuer, corp pays", verifier: true, foreignIssuer: true, granter: corporation, wantCalls: 1},
 		{name: "corp pays, record without with_feegrant", granter: corporation, feeErr: errors.New("feegrant not enabled"), wantCalls: 1, wantErr: "fee grant not authorized"},
 		{name: "other granter", granter: other, feeErr: errors.New("unused")},
-		{name: "operator pays", feeErr: errors.New("unused")},
+		{name: "delegate pays", feeErr: errors.New("unused")},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -228,14 +208,14 @@ func TestCreateOrUpdateParticipantSession_FeeGrantCheck(t *testing.T) {
 			require.NoError(t, err)
 			newVS := func(role types.ParticipantRole) uint64 {
 				id, err := k.CreateParticipant(ctx, types.Participant{
-					SchemaId: 1, Role: role, CorporationId: corpID, VsOperator: operator,
+					SchemaId: 1, Role: role, CorporationId: corpID, VsOperator: delegate,
 					Created: &now, Adjusted: &now, Modified: &now, ValidatorParticipantId: ecosystemID,
 					OpState: types.OnboardingState_VALIDATED, EffectiveFrom: &past,
 				})
 				require.NoError(t, err)
 				return id
 			}
-			msg := &types.MsgCreateOrUpdateParticipantSession{Corporation: corporation.String(), Operator: operator, Id: uuid.New().String()}
+			msg := &types.MsgCreateOrUpdateParticipantSession{Corporation: corporation.String(), VsAccount: delegate, Id: uuid.New().String()}
 			wantID := newVS(types.ParticipantRole_ISSUER)
 			msg.IssuerParticipantId = wantID
 			if tc.verifier {
@@ -270,6 +250,11 @@ func TestCreateOrUpdateParticipantSession_FeeGrantCheck(t *testing.T) {
 			for _, id := range del.FeeGrantCheckCalls {
 				require.Equal(t, wantID, id)
 			}
+			wantMsgType := detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE
+			if tc.verifier {
+				wantMsgType = detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION
+			}
+			require.Equal(t, []detypes.MsgType{wantMsgType}, del.VSOACheckMsgTypes)
 		})
 	}
 }

@@ -6,13 +6,13 @@ export const MsgStoreDigestAminoConverter: AminoConverter = {
   aminoType: "verana/x/di/MsgStoreDigest",
   toAmino: (m: MsgStoreDigest) => clean({
     authority: m.authority || undefined,
-    operator: m.operator || undefined,
+    delegate: m.delegate || undefined,
     digest: m.digest || undefined,
   }),
   fromAmino: (a: any): MsgStoreDigest =>
     MsgStoreDigest.fromPartial({
       authority: a.authority ?? "",
-      operator: a.operator ?? "",
+      delegate: a.delegate ?? "",
       digest: a.digest ?? "",
     }),
 };

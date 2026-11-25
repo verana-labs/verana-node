@@ -186,9 +186,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "id": {
           "type": "string",
@@ -210,9 +210,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "json_schema": {
           "type": "string"
@@ -278,9 +278,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "id": {
           "type": "string",

@@ -2912,7 +2912,7 @@ func (x *fastReflection_MsgCreateCorporationResponse) ProtoMethods() *protoiface
 var (
 	md_MsgUpdateCorporation             protoreflect.MessageDescriptor
 	fd_MsgUpdateCorporation_corporation protoreflect.FieldDescriptor
-	fd_MsgUpdateCorporation_operator    protoreflect.FieldDescriptor
+	fd_MsgUpdateCorporation_delegate    protoreflect.FieldDescriptor
 	fd_MsgUpdateCorporation_did         protoreflect.FieldDescriptor
 )
 
@@ -2920,7 +2920,7 @@ func init() {
 	file_verana_co_v1_tx_proto_init()
 	md_MsgUpdateCorporation = File_verana_co_v1_tx_proto.Messages().ByName("MsgUpdateCorporation")
 	fd_MsgUpdateCorporation_corporation = md_MsgUpdateCorporation.Fields().ByName("corporation")
-	fd_MsgUpdateCorporation_operator = md_MsgUpdateCorporation.Fields().ByName("operator")
+	fd_MsgUpdateCorporation_delegate = md_MsgUpdateCorporation.Fields().ByName("delegate")
 	fd_MsgUpdateCorporation_did = md_MsgUpdateCorporation.Fields().ByName("did")
 }
 
@@ -2995,9 +2995,9 @@ func (x *fastReflection_MsgUpdateCorporation) Range(f func(protoreflect.FieldDes
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgUpdateCorporation_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgUpdateCorporation_delegate, value) {
 			return
 		}
 	}
@@ -3024,8 +3024,8 @@ func (x *fastReflection_MsgUpdateCorporation) Has(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "verana.co.v1.MsgUpdateCorporation.corporation":
 		return x.Corporation != ""
-	case "verana.co.v1.MsgUpdateCorporation.operator":
-		return x.Operator != ""
+	case "verana.co.v1.MsgUpdateCorporation.delegate":
+		return x.Delegate != ""
 	case "verana.co.v1.MsgUpdateCorporation.did":
 		return x.Did != ""
 	default:
@@ -3046,8 +3046,8 @@ func (x *fastReflection_MsgUpdateCorporation) Clear(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	case "verana.co.v1.MsgUpdateCorporation.corporation":
 		x.Corporation = ""
-	case "verana.co.v1.MsgUpdateCorporation.operator":
-		x.Operator = ""
+	case "verana.co.v1.MsgUpdateCorporation.delegate":
+		x.Delegate = ""
 	case "verana.co.v1.MsgUpdateCorporation.did":
 		x.Did = ""
 	default:
@@ -3069,8 +3069,8 @@ func (x *fastReflection_MsgUpdateCorporation) Get(descriptor protoreflect.FieldD
 	case "verana.co.v1.MsgUpdateCorporation.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.co.v1.MsgUpdateCorporation.operator":
-		value := x.Operator
+	case "verana.co.v1.MsgUpdateCorporation.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
 	case "verana.co.v1.MsgUpdateCorporation.did":
 		value := x.Did
@@ -3097,8 +3097,8 @@ func (x *fastReflection_MsgUpdateCorporation) Set(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "verana.co.v1.MsgUpdateCorporation.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.co.v1.MsgUpdateCorporation.operator":
-		x.Operator = value.Interface().(string)
+	case "verana.co.v1.MsgUpdateCorporation.delegate":
+		x.Delegate = value.Interface().(string)
 	case "verana.co.v1.MsgUpdateCorporation.did":
 		x.Did = value.Interface().(string)
 	default:
@@ -3123,8 +3123,8 @@ func (x *fastReflection_MsgUpdateCorporation) Mutable(fd protoreflect.FieldDescr
 	switch fd.FullName() {
 	case "verana.co.v1.MsgUpdateCorporation.corporation":
 		panic(fmt.Errorf("field corporation of message verana.co.v1.MsgUpdateCorporation is not mutable"))
-	case "verana.co.v1.MsgUpdateCorporation.operator":
-		panic(fmt.Errorf("field operator of message verana.co.v1.MsgUpdateCorporation is not mutable"))
+	case "verana.co.v1.MsgUpdateCorporation.delegate":
+		panic(fmt.Errorf("field delegate of message verana.co.v1.MsgUpdateCorporation is not mutable"))
 	case "verana.co.v1.MsgUpdateCorporation.did":
 		panic(fmt.Errorf("field did of message verana.co.v1.MsgUpdateCorporation is not mutable"))
 	default:
@@ -3142,7 +3142,7 @@ func (x *fastReflection_MsgUpdateCorporation) NewField(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	case "verana.co.v1.MsgUpdateCorporation.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.co.v1.MsgUpdateCorporation.operator":
+	case "verana.co.v1.MsgUpdateCorporation.delegate":
 		return protoreflect.ValueOfString("")
 	case "verana.co.v1.MsgUpdateCorporation.did":
 		return protoreflect.ValueOfString("")
@@ -3219,7 +3219,7 @@ func (x *fastReflection_MsgUpdateCorporation) ProtoMethods() *protoiface.Methods
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -3263,10 +3263,10 @@ func (x *fastReflection_MsgUpdateCorporation) ProtoMethods() *protoiface.Methods
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -3360,7 +3360,7 @@ func (x *fastReflection_MsgUpdateCorporation) ProtoMethods() *protoiface.Methods
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -3388,7 +3388,7 @@ func (x *fastReflection_MsgUpdateCorporation) ProtoMethods() *protoiface.Methods
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -4119,7 +4119,7 @@ type MsgUpdateCorporation struct {
 	unknownFields protoimpl.UnknownFields
 
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	Operator    string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	Delegate    string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Did         string `protobuf:"bytes,3,opt,name=did,proto3" json:"did,omitempty"`
 }
 
@@ -4150,9 +4150,9 @@ func (x *MsgUpdateCorporation) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgUpdateCorporation) GetOperator() string {
+func (x *MsgUpdateCorporation) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
@@ -4268,13 +4268,13 @@ var file_verana_co_v1_tx_proto_rawDesc = []byte{
 	0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
 	0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b,
-	0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x6f,
-	0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2,
+	0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x64,
+	0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2,
 	0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f,
-	0x72, 0x12, 0x10, 0x0a, 0x03, 0x64, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
-	0x64, 0x69, 0x64, 0x3a, 0x32, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74,
-	0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x20, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f,
+	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74,
+	0x65, 0x12, 0x10, 0x0a, 0x03, 0x64, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
+	0x64, 0x69, 0x64, 0x3a, 0x32, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x65, 0x8a, 0xe7, 0xb0, 0x2a, 0x20, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f,
 	0x63, 0x6f, 0x2f, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6f, 0x72, 0x70,
 	0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x1e, 0x0a, 0x1c, 0x4d, 0x73, 0x67, 0x55, 0x70,
 	0x64, 0x61, 0x74, 0x65, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,

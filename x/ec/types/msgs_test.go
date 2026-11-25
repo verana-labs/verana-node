@@ -11,7 +11,7 @@ import (
 
 const (
 	tSigner    = "cosmos1hfyt5r4f3rnu5gqrgfwr4446zgn00gdj0nn7dx"
-	tOperator  = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn"
+	tDelegate  = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn"
 	tCorp      = "cosmos14wcc52lpsxwuxxhqjxrhvuumhm0xr6z247un93"
 	tAuthority = "cosmos1z39xu0w27yfq58dmqyk7efuyqt43kvfc0jdte2"
 )
@@ -26,7 +26,7 @@ func TestMsgCreateEcosystem_ValidateBasic(t *testing.T) {
 	base := func() *types.MsgCreateEcosystem {
 		return &types.MsgCreateEcosystem{
 			Corporation:  tCorp,
-			Operator:     tOperator,
+			Delegate:     tDelegate,
 			Did:          "did:example:1",
 			Language:     "en",
 			DocUrl:       "https://example.com/ec.pdf",
@@ -42,8 +42,8 @@ func TestMsgCreateEcosystem_ValidateBasic(t *testing.T) {
 	}{
 		{"empty corp", func(m *types.MsgCreateEcosystem) { m.Corporation = "" }, sdkerrors.ErrInvalidAddress},
 		{"bad bech32 corp", func(m *types.MsgCreateEcosystem) { m.Corporation = "cosmos1corp" }, sdkerrors.ErrInvalidAddress},
-		{"empty operator", func(m *types.MsgCreateEcosystem) { m.Operator = "" }, sdkerrors.ErrInvalidAddress},
-		{"bad bech32 operator", func(m *types.MsgCreateEcosystem) { m.Operator = "cosmos1op" }, sdkerrors.ErrInvalidAddress},
+		{"empty delegate", func(m *types.MsgCreateEcosystem) { m.Delegate = "" }, sdkerrors.ErrInvalidAddress},
+		{"bad bech32 delegate", func(m *types.MsgCreateEcosystem) { m.Delegate = "cosmos1op" }, sdkerrors.ErrInvalidAddress},
 		{"empty did", func(m *types.MsgCreateEcosystem) { m.Did = "" }, types.ErrInvalidDID},
 		{"bad did", func(m *types.MsgCreateEcosystem) { m.Did = "not-a-did" }, types.ErrInvalidDID},
 		{"empty lang", func(m *types.MsgCreateEcosystem) { m.Language = "" }, types.ErrInvalidLanguage},
@@ -66,7 +66,7 @@ func TestMsgCreateEcosystem_ValidateBasic(t *testing.T) {
 
 func TestMsgUpdateEcosystem_ValidateBasic(t *testing.T) {
 	base := func() *types.MsgUpdateEcosystem {
-		return &types.MsgUpdateEcosystem{Corporation: tCorp, Operator: tOperator, Id: 1, Did: "did:example:rotated"}
+		return &types.MsgUpdateEcosystem{Corporation: tCorp, Delegate: tDelegate, Id: 1, Did: "did:example:rotated"}
 	}
 	require.NoError(t, base().ValidateBasic())
 
@@ -77,7 +77,7 @@ func TestMsgUpdateEcosystem_ValidateBasic(t *testing.T) {
 	}{
 		{"empty corp", func(m *types.MsgUpdateEcosystem) { m.Corporation = "" }, sdkerrors.ErrInvalidAddress},
 		{"bad bech32 corp", func(m *types.MsgUpdateEcosystem) { m.Corporation = "cosmos1corp" }, sdkerrors.ErrInvalidAddress},
-		{"empty operator", func(m *types.MsgUpdateEcosystem) { m.Operator = "" }, sdkerrors.ErrInvalidAddress},
+		{"empty delegate", func(m *types.MsgUpdateEcosystem) { m.Delegate = "" }, sdkerrors.ErrInvalidAddress},
 		{"id zero", func(m *types.MsgUpdateEcosystem) { m.Id = 0 }, types.ErrInvalidSubject},
 		{"empty did", func(m *types.MsgUpdateEcosystem) { m.Did = "" }, types.ErrInvalidDID},
 		{"bad did", func(m *types.MsgUpdateEcosystem) { m.Did = "not-a-did" }, types.ErrInvalidDID},
@@ -95,7 +95,7 @@ func TestMsgUpdateEcosystem_ValidateBasic(t *testing.T) {
 
 func TestMsgArchiveEcosystem_ValidateBasic(t *testing.T) {
 	base := func() *types.MsgArchiveEcosystem {
-		return &types.MsgArchiveEcosystem{Corporation: tCorp, Operator: tOperator, Id: 1, Archive: true}
+		return &types.MsgArchiveEcosystem{Corporation: tCorp, Delegate: tDelegate, Id: 1, Archive: true}
 	}
 	require.NoError(t, base().ValidateBasic())
 
@@ -106,7 +106,7 @@ func TestMsgArchiveEcosystem_ValidateBasic(t *testing.T) {
 	}{
 		{"empty corp", func(m *types.MsgArchiveEcosystem) { m.Corporation = "" }, sdkerrors.ErrInvalidAddress},
 		{"bad bech32 corp", func(m *types.MsgArchiveEcosystem) { m.Corporation = "cosmos1corp" }, sdkerrors.ErrInvalidAddress},
-		{"empty operator", func(m *types.MsgArchiveEcosystem) { m.Operator = "" }, sdkerrors.ErrInvalidAddress},
+		{"empty delegate", func(m *types.MsgArchiveEcosystem) { m.Delegate = "" }, sdkerrors.ErrInvalidAddress},
 		{"id zero", func(m *types.MsgArchiveEcosystem) { m.Id = 0 }, types.ErrInvalidSubject},
 	}
 	for _, tc := range cases {

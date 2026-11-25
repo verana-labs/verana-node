@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -31,9 +32,9 @@ func (k Keeper) emitVSOperatorAuthzUpdated(ctx context.Context, vsoaID, particip
 func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 	ctx context.Context,
 	corporationID uint64,
-	operator string,
+	vsOperator string,
 	participantID uint64,
-	msgType string,
+	msgType types.MsgType,
 ) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	now := sdkCtx.BlockTime()
@@ -54,8 +55,8 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		return fmt.Errorf("failed to load VSOperatorAuthorization %d: %w", vsoaID, err)
 	}
 
-	// 3. Record MUST belong to VSOperatorAuthorization[corporationID, operator].
-	if vsoa.CorporationId != corporationID || vsoa.VsOperator != operator {
+	// 3. Record MUST belong to VSOperatorAuthorization[corporationID, vsOperator].
+	if vsoa.CorporationId != corporationID || vsoa.VsOperator != vsOperator {
 		return types.ErrVSOperatorAuthzNotFound
 	}
 
@@ -72,14 +73,7 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 	rec := &vsoa.Records[idx]
 
 	// 4. msg_type MUST be in record.msg_types.
-	authorized := false
-	for _, mt := range rec.MsgTypes {
-		if mt == msgType {
-			authorized = true
-			break
-		}
-	}
-	if !authorized {
+	if !slices.Contains(rec.MsgTypes, msgType) {
 		return fmt.Errorf("%w: %s", types.ErrAuthzMsgTypeNotFound, msgType)
 	}
 
@@ -106,7 +100,7 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 func (k Keeper) ConsumeRecordSpend(
 	ctx context.Context,
 	corporationID uint64,
-	operator string,
+	vsOperator string,
 	participantID uint64,
 	amount sdk.Coins,
 ) error {
@@ -121,7 +115,7 @@ func (k Keeper) ConsumeRecordSpend(
 	if err != nil {
 		return fmt.Errorf("failed to load VSOperatorAuthorization %d: %w", vsoaID, err)
 	}
-	if vsoa.CorporationId != corporationID || vsoa.VsOperator != operator {
+	if vsoa.CorporationId != corporationID || vsoa.VsOperator != vsOperator {
 		return types.ErrVSOperatorAuthzNotFound
 	}
 	idx := -1

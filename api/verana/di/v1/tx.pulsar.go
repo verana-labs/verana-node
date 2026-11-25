@@ -20,7 +20,7 @@ import (
 var (
 	md_MsgStoreDigest           protoreflect.MessageDescriptor
 	fd_MsgStoreDigest_authority protoreflect.FieldDescriptor
-	fd_MsgStoreDigest_operator  protoreflect.FieldDescriptor
+	fd_MsgStoreDigest_delegate  protoreflect.FieldDescriptor
 	fd_MsgStoreDigest_digest    protoreflect.FieldDescriptor
 )
 
@@ -28,7 +28,7 @@ func init() {
 	file_verana_di_v1_tx_proto_init()
 	md_MsgStoreDigest = File_verana_di_v1_tx_proto.Messages().ByName("MsgStoreDigest")
 	fd_MsgStoreDigest_authority = md_MsgStoreDigest.Fields().ByName("authority")
-	fd_MsgStoreDigest_operator = md_MsgStoreDigest.Fields().ByName("operator")
+	fd_MsgStoreDigest_delegate = md_MsgStoreDigest.Fields().ByName("delegate")
 	fd_MsgStoreDigest_digest = md_MsgStoreDigest.Fields().ByName("digest")
 }
 
@@ -103,9 +103,9 @@ func (x *fastReflection_MsgStoreDigest) Range(f func(protoreflect.FieldDescripto
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgStoreDigest_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgStoreDigest_delegate, value) {
 			return
 		}
 	}
@@ -132,8 +132,8 @@ func (x *fastReflection_MsgStoreDigest) Has(fd protoreflect.FieldDescriptor) boo
 	switch fd.FullName() {
 	case "verana.di.v1.MsgStoreDigest.authority":
 		return x.Authority != ""
-	case "verana.di.v1.MsgStoreDigest.operator":
-		return x.Operator != ""
+	case "verana.di.v1.MsgStoreDigest.delegate":
+		return x.Delegate != ""
 	case "verana.di.v1.MsgStoreDigest.digest":
 		return x.Digest != ""
 	default:
@@ -154,8 +154,8 @@ func (x *fastReflection_MsgStoreDigest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "verana.di.v1.MsgStoreDigest.authority":
 		x.Authority = ""
-	case "verana.di.v1.MsgStoreDigest.operator":
-		x.Operator = ""
+	case "verana.di.v1.MsgStoreDigest.delegate":
+		x.Delegate = ""
 	case "verana.di.v1.MsgStoreDigest.digest":
 		x.Digest = ""
 	default:
@@ -177,8 +177,8 @@ func (x *fastReflection_MsgStoreDigest) Get(descriptor protoreflect.FieldDescrip
 	case "verana.di.v1.MsgStoreDigest.authority":
 		value := x.Authority
 		return protoreflect.ValueOfString(value)
-	case "verana.di.v1.MsgStoreDigest.operator":
-		value := x.Operator
+	case "verana.di.v1.MsgStoreDigest.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
 	case "verana.di.v1.MsgStoreDigest.digest":
 		value := x.Digest
@@ -205,8 +205,8 @@ func (x *fastReflection_MsgStoreDigest) Set(fd protoreflect.FieldDescriptor, val
 	switch fd.FullName() {
 	case "verana.di.v1.MsgStoreDigest.authority":
 		x.Authority = value.Interface().(string)
-	case "verana.di.v1.MsgStoreDigest.operator":
-		x.Operator = value.Interface().(string)
+	case "verana.di.v1.MsgStoreDigest.delegate":
+		x.Delegate = value.Interface().(string)
 	case "verana.di.v1.MsgStoreDigest.digest":
 		x.Digest = value.Interface().(string)
 	default:
@@ -231,8 +231,8 @@ func (x *fastReflection_MsgStoreDigest) Mutable(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	case "verana.di.v1.MsgStoreDigest.authority":
 		panic(fmt.Errorf("field authority of message verana.di.v1.MsgStoreDigest is not mutable"))
-	case "verana.di.v1.MsgStoreDigest.operator":
-		panic(fmt.Errorf("field operator of message verana.di.v1.MsgStoreDigest is not mutable"))
+	case "verana.di.v1.MsgStoreDigest.delegate":
+		panic(fmt.Errorf("field delegate of message verana.di.v1.MsgStoreDigest is not mutable"))
 	case "verana.di.v1.MsgStoreDigest.digest":
 		panic(fmt.Errorf("field digest of message verana.di.v1.MsgStoreDigest is not mutable"))
 	default:
@@ -250,7 +250,7 @@ func (x *fastReflection_MsgStoreDigest) NewField(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	case "verana.di.v1.MsgStoreDigest.authority":
 		return protoreflect.ValueOfString("")
-	case "verana.di.v1.MsgStoreDigest.operator":
+	case "verana.di.v1.MsgStoreDigest.delegate":
 		return protoreflect.ValueOfString("")
 	case "verana.di.v1.MsgStoreDigest.digest":
 		return protoreflect.ValueOfString("")
@@ -327,7 +327,7 @@ func (x *fastReflection_MsgStoreDigest) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -371,10 +371,10 @@ func (x *fastReflection_MsgStoreDigest) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -468,7 +468,7 @@ func (x *fastReflection_MsgStoreDigest) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -496,7 +496,7 @@ func (x *fastReflection_MsgStoreDigest) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -1442,8 +1442,8 @@ type MsgStoreDigest struct {
 	// authority is the corporation (group account) on whose behalf this message
 	// is executed.
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// operator is the account authorized by the corporation to run this Msg.
-	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	// delegate is the account authorized by the corporation to run this Msg.
+	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	// digest is the digest string to store. It is opaque to the chain: bounded at
 	// 256 bytes, but no format is imposed and it is never recomputed against any
 	// content. For a credential digest this is the digestJCS; the algorithm is
@@ -1478,9 +1478,9 @@ func (x *MsgStoreDigest) GetAuthority() string {
 	return ""
 }
 
-func (x *MsgStoreDigest) GetOperator() string {
+func (x *MsgStoreDigest) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
@@ -1583,12 +1583,12 @@ var file_verana_di_v1_tx_proto_rawDesc = []byte{
 	0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63,
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72,
 	0x69, 0x6e, 0x67, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x34,
-	0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
 	0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x6f, 0x72, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x18, 0x03,
+	0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x18, 0x03,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x3a, 0x2c, 0x82, 0xe7,
-	0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x1a,
+	0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x8a, 0xe7, 0xb0, 0x2a, 0x1a,
 	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x64, 0x69, 0x2f, 0x4d, 0x73, 0x67, 0x53,
 	0x74, 0x6f, 0x72, 0x65, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x22, 0x18, 0x0a, 0x16, 0x4d, 0x73,
 	0x67, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70,

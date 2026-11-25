@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/verana-labs/verana-node/x/co/types"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
@@ -21,22 +22,13 @@ func NewCoAsGFCorporationKeeper(k Keeper) gftypes.CorporationKeeper {
 	return CoAsGFCorporationKeeper{k: k}
 }
 
-// ResolveByPolicyAddress backs MOD-GF AUTHZ-CHECK-5.
-func (a CoAsGFCorporationKeeper) ResolveByPolicyAddress(ctx context.Context, policyAddress string) (gftypes.CorporationView, bool) {
-	coID, err := a.k.CorporationByPolicyAddr.Get(ctx, policyAddress)
+// ResolveCorporationByPolicyAddress backs MOD-GF AUTHZ-CHECK-5.
+func (a CoAsGFCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (gftypes.CorporationView, error) {
+	co, err := a.k.ResolveCorporationByPolicyAddress(ctx, policyAddress)
 	if err != nil {
-		return gftypes.CorporationView{}, false
+		return gftypes.CorporationView{}, err
 	}
-	co, err := a.k.Corporation.Get(ctx, coID)
-	if err != nil {
-		return gftypes.CorporationView{}, false
-	}
-	return gftypes.CorporationView{
-		Id:            co.Id,
-		PolicyAddress: co.PolicyAddress,
-		Language:      co.Language,
-		ActiveVersion: co.ActiveVersion,
-	}, true
+	return gfCorporationView(&co), nil
 }
 
 func (a CoAsGFCorporationKeeper) GetByID(ctx context.Context, corporationID uint64) (gftypes.CorporationView, bool) {
@@ -44,12 +36,16 @@ func (a CoAsGFCorporationKeeper) GetByID(ctx context.Context, corporationID uint
 	if err != nil {
 		return gftypes.CorporationView{}, false
 	}
+	return gfCorporationView(&co), true
+}
+
+func gfCorporationView(co *types.Corporation) gftypes.CorporationView {
 	return gftypes.CorporationView{
 		Id:            co.Id,
 		PolicyAddress: co.PolicyAddress,
 		Language:      co.Language,
 		ActiveVersion: co.ActiveVersion,
-	}, true
+	}
 }
 
 // CoAsDeCorporationKeeper adapts the MOD-CO keeper to MOD-DE's CorporationKeeper

@@ -13,31 +13,32 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionSlashTDJourney implements Journey 308: Test SlashPermissionTrustDeposit
-// with operator authorization (authority/operator pattern).
+// with delegate authorization (authority/delegate pattern).
 //
 // TEST 1: SlashPermissionTrustDeposit (fail without auth, grant auth, succeed)
 // TEST 2: Verify slashed permission fields
-// TEST 3: Unauthorized operator (negative test)
+// TEST 3: Unauthorized delegate (negative test)
 // TEST 4: Wrong authority (negative test)
-// Depends on Journey 301 (setup), 302 (group/operator), 304 (root permission).
+// Depends on Journey 301 (setup), 302 (group/delegate), 304 (root permission).
 func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 308: SlashPermissionTrustDeposit with Operator Authorization")
+	fmt.Println("Starting Journey 308: SlashPermissionTrustDeposit with Delegate Authorization")
 
 	// Load results from prior journeys
 	setup301 := lib.LoadJourneyResult("journey301")
 	setup302 := lib.LoadJourneyResult("journey302")
 	setup304 := lib.LoadJourneyResult("journey304")
 	policyAddr := setup302.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
-	operatorAddr := setup302.OperatorAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
+	delegateAddr := setup302.DelegateAddr
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	fmt.Printf("  Group Policy: %s\n", policyAddr)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 
 	trID, _ := strconv.ParseUint(setup304.EcosystemID, 10, 64)
 
@@ -49,10 +50,10 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 
 	// Re-grant CreateCredentialSchema auth (may have been overwritten by prior journeys)
 	fmt.Println("\n--- Prerequisite 1: Re-grant CreateCredentialSchema auth ---")
-	err := lib.GrantOperatorAuthorizationViaGroup(
+	err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgCreateCredentialSchema"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 1 failed: could not grant CS auth: %w", err)
@@ -64,7 +65,7 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	fmt.Println("\n--- Prerequisite 2: Create new Credential Schema ---")
 	schemaData := lib.GenerateSimpleSchema(setup304.EcosystemID)
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, schemaData,
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
@@ -78,10 +79,10 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 
 	// Re-grant CreateRootPermission auth
 	fmt.Println("\n--- Prerequisite 3: Re-grant CreateRootPermission auth ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgCreateRootParticipant"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 3 failed: could not grant CreateRootPermission auth: %w", err)
@@ -95,7 +96,7 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	effectiveFrom := time.Now().Add(5 * time.Second)
 	effectiveUntil := effectiveFrom.Add(360 * 24 * time.Hour)
 	rootPermID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, rootPermDID, &effectiveFrom, &effectiveUntil,
 		100, 50, 25,
 	)
@@ -111,12 +112,12 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 
 	// Re-grant StartPermissionVP + SetPermissionVPToValidated auth for creating the ISSUER child
 	fmt.Println("\n--- Prerequisite 5: Grant StartPermissionVP + SetPermissionVPToValidated auth ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{
-			"/verana.pp.v1.MsgStartParticipantOP",
-			"/verana.pp.v1.MsgSetParticipantOPToValidated",
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{
+			detypes.MsgType_MSG_TYPE_START_ONBOARDING,
+			detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
 		},
 	)
 	if err != nil {
@@ -138,7 +139,7 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	// Create ISSUER child permission (via start VP + validate)
 	fmt.Println("\n--- Prerequisite 6: Start ISSUER permission VP ---")
 	issuerDID := lib.GenerateUniqueDID(client, ctx)
-	issuerPermIDStr, err := lib.StartPermissionVP(client, ctx, operatorAccount, permtypes.MsgStartParticipantOP{
+	issuerPermIDStr, err := lib.StartPermissionVP(client, ctx, delegateAccount, permtypes.MsgStartParticipantOP{
 		Corporation:            policyAddr,
 		Role:                   permtypes.ParticipantRole_ISSUER,
 		ValidatorParticipantId: rootPermID,
@@ -153,7 +154,7 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 
 	// Validate the ISSUER perm
 	fmt.Println("\n--- Prerequisite 7: Validate ISSUER permission ---")
-	_, err = lib.SetPermissionVPToValidated(client, ctx, operatorAccount, permtypes.MsgSetParticipantOPToValidated{
+	_, err = lib.SetPermissionVPToValidated(client, ctx, delegateAccount, permtypes.MsgSetParticipantOPToValidated{
 		Corporation: policyAddr,
 		Id:          issuerPermID,
 	})
@@ -179,8 +180,8 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	slashAmount := uint64(10) // small amount to keep the perm deposit positive
 
 	// 1a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries SlashPermissionTrustDeposit without auth (expect failure) ---")
-	err = lib.SlashPermissionTrustDeposit(client, ctx, operatorAccount, policyAddr, issuerPermID, slashAmount, "journey 308 test slash")
+	fmt.Println("\n--- Step 1a: Delegate tries SlashPermissionTrustDeposit without auth (expect failure) ---")
+	err = lib.SlashPermissionTrustDeposit(client, ctx, delegateAccount, policyAddr, issuerPermID, slashAmount, "journey 308 test slash")
 	if err := expectAuthorizationError("Step 1a", err); err != nil {
 		return err
 	}
@@ -188,11 +189,11 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	waitForTx("slash rejection")
 
 	// 1b: Grant authorization for SlashPermissionTrustDeposit
-	fmt.Println("\n--- Step 1b: Grant operator auth for SlashPermissionTrustDeposit ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1b: Grant delegate auth for SlashPermissionTrustDeposit ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgSlashParticipantTrustDeposit"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)
@@ -201,8 +202,8 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	waitForTx("grant slash auth")
 
 	// 1c: Try WITH authorization (expect success - validator ancestor)
-	fmt.Println("\n--- Step 1c: Operator slashes perm trust deposit with auth (expect success) ---")
-	err = lib.SlashPermissionTrustDeposit(client, ctx, operatorAccount, policyAddr, issuerPermID, slashAmount, "journey 308 test slash")
+	fmt.Println("\n--- Step 1c: Delegate slashes perm trust deposit with auth (expect success) ---")
+	err = lib.SlashPermissionTrustDeposit(client, ctx, delegateAccount, policyAddr, issuerPermID, slashAmount, "journey 308 test slash")
 	if err != nil {
 		return fmt.Errorf("step 1c failed: %w", err)
 	}
@@ -239,27 +240,27 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 	fmt.Printf("OK Step 2: Verified slashed fields (slashed_deposit=%d)\n", slashedPerm.SlashedDeposit)
 
 	// =========================================================================
-	// TEST 3: Unauthorized operator (negative test)
+	// TEST 3: Unauthorized delegate (negative test)
 	// =========================================================================
-	fmt.Println("\n=== TEST 3: Unauthorized operator (negative test) ===")
+	fmt.Println("\n=== TEST 3: Unauthorized delegate (negative test) ===")
 
-	fmt.Println("\n--- Step 3a: Unauthorized operator tries SlashPermissionTrustDeposit (expect failure) ---")
+	fmt.Println("\n--- Step 3a: Unauthorized delegate tries SlashPermissionTrustDeposit (expect failure) ---")
 	coolusrAcct := lib.GetAccount(client, lib.COOLUSER_NAME)
 	err = lib.SlashPermissionTrustDeposit(client, ctx, coolusrAcct, policyAddr, issuerPermID, slashAmount, "journey 308 test slash")
 	if err := expectAuthorizationError("Step 3a", err); err != nil {
 		return err
 	}
-	fmt.Println("OK Step 3a: Unauthorized operator correctly rejected")
+	fmt.Println("OK Step 3a: Unauthorized delegate correctly rejected")
 
 	// =========================================================================
 	// TEST 4: Wrong authority (negative test)
 	// =========================================================================
 	fmt.Println("\n=== TEST 4: Wrong authority (negative test) ===")
 
-	fmt.Println("\n--- Step 4a: Correct operator but wrong authority (expect failure) ---")
-	// The operator has a self-delegation but the self-delegation authority is operatorAddr,
+	fmt.Println("\n--- Step 4a: Correct delegate but wrong authority (expect failure) ---")
+	// The delegate has a self-delegation but the self-delegation authority is delegateAddr,
 	// not an ancestor validator or TR controller for the issuer perm
-	err = lib.SlashPermissionTrustDeposit(client, ctx, operatorAccount, operatorAddr, issuerPermID, slashAmount, "journey 308 test slash")
+	err = lib.SlashPermissionTrustDeposit(client, ctx, delegateAccount, delegateAddr, issuerPermID, slashAmount, "journey 308 test slash")
 	if err == nil {
 		return fmt.Errorf("step 4a failed: expected error for wrong authority, got nil")
 	}
@@ -273,17 +274,17 @@ func RunPermissionSlashTDJourney(ctx context.Context, client cosmosclient.Client
 		PermissionID:    strconv.FormatUint(issuerPermID, 10),
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey308", result)
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 308 completed successfully!")
 	fmt.Println("SlashPermissionTrustDeposit tested:")
-	fmt.Println("  - Unauthorized operator rejected")
-	fmt.Println("  - Authorized operator succeeded (validator ancestor)")
+	fmt.Println("  - Unauthorized delegate rejected")
+	fmt.Println("  - Authorized delegate succeeded (validator ancestor)")
 	fmt.Println("  - Slashed fields verified")
-	fmt.Println("  - Unauthorized operator rejected")
+	fmt.Println("  - Unauthorized delegate rejected")
 	fmt.Println("  - Wrong authority rejected")
 	fmt.Println("========================================")
 

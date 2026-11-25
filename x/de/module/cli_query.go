@@ -14,28 +14,28 @@ import (
 // GetQueryCmd implements the autocli.HasCustomQueryCommand interface.
 // This is needed because autocli's amino JSON encoder cannot properly render
 // gogo proto types with extensions (stdtime, stdduration, castrepeated) used
-// in OperatorAuthorization. The custom command uses the gogo proto codec directly.
+// in DelegateAuthorization. The custom command uses the gogo proto codec directly.
 func (am AppModule) GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   types.ModuleName,
 		Short: fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
 	}
 
-	cmd.AddCommand(CmdListOperatorAuthorizations())
+	cmd.AddCommand(CmdListDelegateAuthorizations())
 	cmd.AddCommand(CmdListVSOperatorAuthorizations())
-	cmd.AddCommand(CmdGetOperatorAuthorization())
+	cmd.AddCommand(CmdGetDelegateAuthorization())
 	cmd.AddCommand(CmdGetVSOperatorAuthorization())
 
 	return cmd
 }
 
-// CmdGetOperatorAuthorization returns a cobra command for the
-// [MOD-DE-QRY-3] GetOperatorAuthorization query.
-func CmdGetOperatorAuthorization() *cobra.Command {
+// CmdGetDelegateAuthorization returns a cobra command for the
+// [MOD-DE-QRY-3] GetDelegateAuthorization query.
+func CmdGetDelegateAuthorization() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get-operator-authorization [id]",
-		Short: "Get an operator authorization by id",
-		Long:  "[MOD-DE-QRY-3] Get a single operator authorization by its id.",
+		Use:   "get-delegate-authorization [id]",
+		Short: "Get a delegate authorization by id",
+		Long:  "[MOD-DE-QRY-3] Get a single delegate authorization by its id.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -49,7 +49,7 @@ func CmdGetOperatorAuthorization() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.GetOperatorAuthorization(cmd.Context(), &types.QueryGetOperatorAuthorizationRequest{Id: id})
+			res, err := queryClient.GetDelegateAuthorization(cmd.Context(), &types.QueryGetDelegateAuthorizationRequest{Id: id})
 			if err != nil {
 				return err
 			}
@@ -91,13 +91,13 @@ func CmdGetVSOperatorAuthorization() *cobra.Command {
 	return cmd
 }
 
-// CmdListOperatorAuthorizations returns a cobra command for the
-// [MOD-DE-QRY-1] ListOperatorAuthorizations query.
-func CmdListOperatorAuthorizations() *cobra.Command {
+// CmdListDelegateAuthorizations returns a cobra command for the
+// [MOD-DE-QRY-1] ListDelegateAuthorizations query.
+func CmdListDelegateAuthorizations() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-operator-authorizations",
-		Short: "List operator authorizations with optional filters",
-		Long:  "[MOD-DE-QRY-1] List operator authorizations. Optionally filter by corporation and/or operator address.",
+		Use:   "list-delegate-authorizations",
+		Short: "List delegate authorizations with optional filters",
+		Long:  "[MOD-DE-QRY-1] List delegate authorizations. Optionally filter by corporation and/or delegate address.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -105,14 +105,14 @@ func CmdListOperatorAuthorizations() *cobra.Command {
 			}
 
 			corporationID, _ := cmd.Flags().GetUint64("corporation-id")
-			operator, _ := cmd.Flags().GetString("operator")
+			delegate, _ := cmd.Flags().GetString("delegate")
 			limit, _ := cmd.Flags().GetUint32("limit")
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.ListOperatorAuthorizations(cmd.Context(), &types.QueryListOperatorAuthorizationsRequest{
+			res, err := queryClient.ListDelegateAuthorizations(cmd.Context(), &types.QueryListDelegateAuthorizationsRequest{
 				CorporationId:   corporationID,
-				Operator:        operator,
+				Delegate:        delegate,
 				ResponseMaxSize: limit,
 			})
 			if err != nil {
@@ -124,7 +124,7 @@ func CmdListOperatorAuthorizations() *cobra.Command {
 	}
 
 	cmd.Flags().Uint64("corporation-id", 0, "filter by the corporation id that granted the authorization")
-	cmd.Flags().String("operator", "", "filter by the operator account that received the authorization")
+	cmd.Flags().String("delegate", "", "filter by the delegate account that received the authorization")
 	cmd.Flags().Uint32("limit", 64, "maximum number of results (1-1024, default 64)")
 
 	flags.AddQueryFlagsToCmd(cmd)

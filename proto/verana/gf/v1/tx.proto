@@ -45,16 +45,14 @@ message MsgUpdateParamsResponse {}
 // [MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft
 // version owned by an Ecosystem or a Corporation.
 message MsgAddGovernanceFrameworkDocument {
-  // Only `operator` signs — `corporation` is the addressed subject resolved
-  // via AUTHZ-CHECK-5 (matches MOD-CO / MOD-EC convention; operator must be
-  // pre-authorized by corporation via x/de delegation).
-  option (cosmos.msg.v1.signer) = "operator";
+  // No signer annotation: a custom signer function returns `authority` (the
+  // council account) on the network path, else `delegate`.
   option (amino.name) = "verana/x/gf/MsgAddGovernanceFrameworkDocument";
 
   // corporation is the signing corporation (group_policy_address).
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by corporation to run this Msg.
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by corporation to run this Msg.
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // ecosystem_id is optional. If set, the GF target is an Ecosystem owned by
   // `corporation`. If zero, the GF target is the signing Corporation's own CGF.
   uint64 ecosystem_id = 3;
@@ -66,6 +64,8 @@ message MsgAddGovernanceFrameworkDocument {
   string doc_digest_sri = 6;
   // version is the target governance framework version.
   uint32 version = 7;
+  // authority is the council account, set on the network path only.
+  string authority = 8 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 message MsgAddGovernanceFrameworkDocumentResponse {}
@@ -73,17 +73,19 @@ message MsgAddGovernanceFrameworkDocumentResponse {}
 // [MOD-GF-MSG-2] Activates the next governance framework version for an
 // Ecosystem or Corporation owned by the signing corporation.
 message MsgIncreaseActiveGovernanceFrameworkVersion {
-  // Only `operator` signs (matches MOD-CO / MOD-EC convention).
-  option (cosmos.msg.v1.signer) = "operator";
+  // No signer annotation: a custom signer function returns `authority` (the
+  // council account) on the network path, else `delegate`.
   option (amino.name) = "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion";
 
   // corporation is the signing corporation (group_policy_address).
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by corporation to run this Msg.
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by corporation to run this Msg.
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // ecosystem_id is optional. If set, target is the Ecosystem; otherwise the
   // signing Corporation's own CGF.
   uint64 ecosystem_id = 3;
+  // authority is the council account, set on the network path only.
+  string authority = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 message MsgIncreaseActiveGovernanceFrameworkVersionResponse {}

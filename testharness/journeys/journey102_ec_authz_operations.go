@@ -9,6 +9,7 @@ import (
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // expectAuthorizationError checks that an error contains an authorization-related message.
@@ -27,22 +28,22 @@ func expectAuthorizationError(stepName string, err error) error {
 	return fmt.Errorf("%s: unexpected error: %w", stepName, err)
 }
 
-// RunEcosystemAuthzOperationsJourney implements Journey 102: Test all ecosystem operations with operator authorization.
+// RunEcosystemAuthzOperationsJourney implements Journey 102: Test all ecosystem operations with delegate authorization.
 // For each of the 5 EC message types: (a) try without auth → fail, (b) grant auth, (c) try with auth → succeed.
 // Depends on Journey 101 (setup) having been run first.
 func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 102: EC Operations with Operator Authorization (fail-then-pass)")
+	fmt.Println("Starting Journey 102: EC Operations with Delegate Authorization (fail-then-pass)")
 
 	// Load results from Journey 101
 	setup := lib.LoadJourneyResult("journey101")
 	policyAddr := setup.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, ecOperatorName)
-	operatorAddr := setup.OperatorAddr
+	delegateAccount := lib.GetAccount(client, ecDelegateName)
+	delegateAddr := setup.DelegateAddr
 	adminAccount := lib.GetAccount(client, groupAdminName)
 	member1Account := lib.GetAccount(client, groupMember1Name)
 
 	fmt.Printf("  Group Policy: %s\n", policyAddr)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 
 	// =========================================================================
 	// TEST 1: CreateEcosystem
@@ -50,10 +51,10 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	fmt.Println("\n=== TEST 1: CreateEcosystem ===")
 
 	// 1a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries CreateEcosystem without auth (expect failure) ---")
+	fmt.Println("\n--- Step 1a: Delegate tries CreateEcosystem without auth (expect failure) ---")
 	did := lib.GenerateUniqueDID(client, ctx)
 	_, err := lib.CreateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		did,
 		"https://example.com/governance-framework.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -65,11 +66,11 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("CreateEcosystem rejection")
 
 	// 1b: Grant authorization for CreateEcosystem
-	fmt.Println("\n--- Step 1b: Grant operator auth for CreateEcosystem ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1b: Grant delegate auth for CreateEcosystem ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgCreateEcosystem"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)
@@ -78,10 +79,10 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("grant CreateEcosystem auth")
 
 	// 1c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 1c: Operator creates ecosystem with auth (expect success) ---")
+	fmt.Println("\n--- Step 1c: Delegate creates ecosystem with auth (expect success) ---")
 	did = lib.GenerateUniqueDID(client, ctx)
 	trIDStr, err := lib.CreateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		did,
 		"https://example.com/governance-framework.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -106,9 +107,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	fmt.Println("\n=== TEST 2: AddGovernanceFrameworkDocument ===")
 
 	// 2a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 2a: Operator tries AddGFD without auth (expect failure) ---")
+	fmt.Println("\n--- Step 2a: Delegate tries AddGFD without auth (expect failure) ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, "en",
 		"https://example.com/gf-v2-en.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -120,11 +121,11 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("AddGFD rejection")
 
 	// 2b: Grant authorization for AddGFD
-	fmt.Println("\n--- Step 2b: Grant operator auth for AddGFD ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 2b: Grant delegate auth for AddGFD ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.gf.v1.MsgAddGovernanceFrameworkDocument"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT},
 	)
 	if err != nil {
 		return fmt.Errorf("step 2b failed: %w", err)
@@ -133,9 +134,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("grant AddGFD auth")
 
 	// 2c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 2c: Operator adds GFD with auth (expect success) ---")
+	fmt.Println("\n--- Step 2c: Delegate adds GFD with auth (expect success) ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, "en",
 		"https://example.com/gf-v2-en.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -153,9 +154,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	fmt.Println("\n=== TEST 3: IncreaseActiveGovernanceFrameworkVersion ===")
 
 	// 3a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 3a: Operator tries IncreaseActiveGFVersion without auth (expect failure) ---")
+	fmt.Println("\n--- Step 3a: Delegate tries IncreaseActiveGFVersion without auth (expect failure) ---")
 	err = lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr, trID,
+		client, ctx, delegateAccount, policyAddr, trID,
 	)
 	if err := expectAuthorizationError("Step 3a", err); err != nil {
 		return err
@@ -163,11 +164,11 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("IncreaseGFV rejection")
 
 	// 3b: Grant authorization for IncreaseActiveGFVersion
-	fmt.Println("\n--- Step 3b: Grant operator auth for IncreaseActiveGFVersion ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 3b: Grant delegate auth for IncreaseActiveGFVersion ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.gf.v1.MsgIncreaseActiveGovernanceFrameworkVersion"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION},
 	)
 	if err != nil {
 		return fmt.Errorf("step 3b failed: %w", err)
@@ -176,9 +177,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("grant IncreaseGFV auth")
 
 	// 3c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 3c: Operator increases active GF version with auth (expect success) ---")
+	fmt.Println("\n--- Step 3c: Delegate increases active GF version with auth (expect success) ---")
 	err = lib.IncreaseActiveGFVersionWithAuthority(
-		client, ctx, operatorAccount, policyAddr, trID,
+		client, ctx, delegateAccount, policyAddr, trID,
 	)
 	if err != nil {
 		return fmt.Errorf("step 3c failed: %w", err)
@@ -200,9 +201,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	updatedDid := fmt.Sprintf("%s-updated", did)
 
 	// 4a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 4a: Operator tries UpdateEcosystem without auth (expect failure) ---")
+	fmt.Println("\n--- Step 4a: Delegate tries UpdateEcosystem without auth (expect failure) ---")
 	err = lib.UpdateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, updatedDid,
 	)
 	if err := expectAuthorizationError("Step 4a", err); err != nil {
@@ -211,11 +212,11 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("UpdateEcosystem rejection")
 
 	// 4b: Grant authorization for UpdateEcosystem
-	fmt.Println("\n--- Step 4b: Grant operator auth for UpdateEcosystem ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 4b: Grant delegate auth for UpdateEcosystem ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgUpdateEcosystem"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("step 4b failed: %w", err)
@@ -224,9 +225,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("grant UpdateEcosystem auth")
 
 	// 4c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 4c: Operator updates ecosystem with auth (expect success) ---")
+	fmt.Println("\n--- Step 4c: Delegate updates ecosystem with auth (expect success) ---")
 	err = lib.UpdateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, updatedDid,
 	)
 	if err != nil {
@@ -247,9 +248,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	fmt.Println("\n=== TEST 5: ArchiveEcosystem ===")
 
 	// 5a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 5a: Operator tries ArchiveEcosystem without auth (expect failure) ---")
+	fmt.Println("\n--- Step 5a: Delegate tries ArchiveEcosystem without auth (expect failure) ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, true,
 	)
 	if err := expectAuthorizationError("Step 5a", err); err != nil {
@@ -258,11 +259,11 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("ArchiveEcosystem rejection")
 
 	// 5b: Grant authorization for ArchiveEcosystem
-	fmt.Println("\n--- Step 5b: Grant operator auth for ArchiveEcosystem ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 5b: Grant delegate auth for ArchiveEcosystem ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgArchiveEcosystem"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("step 5b failed: %w", err)
@@ -271,9 +272,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	waitForTx("grant ArchiveEcosystem auth")
 
 	// 5c: Try WITH authorization — archive (expect success)
-	fmt.Println("\n--- Step 5c: Operator archives ecosystem with auth (expect success) ---")
+	fmt.Println("\n--- Step 5c: Delegate archives ecosystem with auth (expect success) ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, true,
 	)
 	if err != nil {
@@ -293,9 +294,9 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	fmt.Println("✅ Step 5c: Verified ecosystem is archived")
 
 	// 5d: [MOD-EC-MSG-5] archive is bidirectional; archive=false unarchives.
-	fmt.Println("\n--- Step 5d: Operator unarchives ecosystem (expect success) ---")
+	fmt.Println("\n--- Step 5d: Delegate unarchives ecosystem (expect success) ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, false,
 	)
 	if err != nil {
@@ -313,7 +314,7 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	// 5e: [MOD-EC-MSG-5] unarchiving a non-archived ecosystem must abort.
 	fmt.Println("\n--- Step 5e: Unarchive a non-archived ecosystem (expect failure) ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, false,
 	)
 	if err == nil {
@@ -322,12 +323,12 @@ func RunEcosystemAuthzOperationsJourney(ctx context.Context, client cosmosclient
 	fmt.Printf("✅ Step 5e: Correctly rejected unarchive on non-archived ecosystem: %v\n", err)
 
 	// =========================================================================
-	// TEST 6: Unauthorized operator (negative test)
+	// TEST 6: Unauthorized delegate (negative test)
 	// =========================================================================
-	fmt.Println("\n=== TEST 6: Unauthorized operator (negative test) ===")
-	fmt.Println("\n--- Step 6: Unauthorized operator tries CreateEcosystem (expect failure) ---")
+	fmt.Println("\n=== TEST 6: Unauthorized delegate (negative test) ===")
+	fmt.Println("\n--- Step 6: Unauthorized delegate tries CreateEcosystem (expect failure) ---")
 
-	// Use cooluser as an unauthorized operator (has funds but no DE authorization)
+	// Use cooluser as an unauthorized delegate (has funds but no DE authorization)
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
 
 	unauthorizedDID := lib.GenerateUniqueDID(client, ctx)

@@ -8,13 +8,28 @@ import (
 	"github.com/verana-labs/verana-node/util/validation"
 )
 
-// validateCorpOperator checks the corporation and operator are valid bech32 addresses.
-func validateCorpOperator(corporation, operator string) error {
+// validateCorpDelegate checks the corporation and delegate are valid bech32 addresses.
+func validateCorpDelegate(corporation, delegate string) error {
 	if _, err := sdk.AccAddressFromBech32(corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(operator); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "operator: %s", err)
+	if _, err := sdk.AccAddressFromBech32(delegate); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
+	}
+	return nil
+}
+
+// validateSigner checks the delegate path (corporation + delegate) or the
+// network path (authority alone).
+func validateSigner(corporation, delegate, authority string, ecosystemID uint64) error {
+	if authority == "" {
+		return validateCorpDelegate(corporation, delegate)
+	}
+	if _, err := sdk.AccAddressFromBech32(authority); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "authority: %s", err)
+	}
+	if corporation != "" || delegate != "" || ecosystemID != 0 {
+		return errors.Wrap(ErrInvalidSubject, "network path: corporation, delegate and ecosystem_id must be absent")
 	}
 	return nil
 }
@@ -29,7 +44,7 @@ func (m *MsgUpdateParams) ValidateBasic() error {
 
 // ValidateBasic on MsgAddGovernanceFrameworkDocument.
 func (m *MsgAddGovernanceFrameworkDocument) ValidateBasic() error {
-	if err := validateCorpOperator(m.Corporation, m.Operator); err != nil {
+	if err := validateSigner(m.Corporation, m.Delegate, m.Authority, m.EcosystemId); err != nil {
 		return err
 	}
 	if m.DocLanguage == "" {
@@ -58,5 +73,5 @@ func (m *MsgAddGovernanceFrameworkDocument) ValidateBasic() error {
 
 // ValidateBasic on MsgIncreaseActiveGovernanceFrameworkVersion.
 func (m *MsgIncreaseActiveGovernanceFrameworkVersion) ValidateBasic() error {
-	return validateCorpOperator(m.Corporation, m.Operator)
+	return validateSigner(m.Corporation, m.Delegate, m.Authority, m.EcosystemId)
 }

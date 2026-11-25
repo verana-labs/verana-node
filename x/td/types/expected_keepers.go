@@ -5,6 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // AccountKeeper defines the expected interface for the Account module.
@@ -31,10 +32,10 @@ type ParamSubspace interface {
 }
 
 // DelegationKeeper defines the expected interface for the Delegation (DE) module.
-// Used to perform [AUTHZ-CHECK] for (authority, operator) pairs.
+// Used to perform [AUTHZ-CHECK] for (authority, delegate) pairs.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgTypeURL string, now time.Time) error
-	ConsumeOperatorSpend(ctx context.Context, corporation, operator, msgTypeURL string, now time.Time, amount sdk.Coins) error
+	CheckDelegateAuthorization(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time) error
+	ConsumeDelegateSpend(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time, amount sdk.Coins) error
 }
 
 // CorporationView is the read shape MOD-TD needs about a Corporation subject
@@ -44,11 +45,13 @@ type CorporationView struct {
 	PolicyAddress string
 }
 
-// CorporationKeeper backs AUTHZ-CHECK-5 for MOD-TD delegable messages: resolve
-// the signing `corporation` policy_address to its registered Corporation, or
-// abort with ErrCorporationNotRegistered (referencing MOD-CO-MSG-1).
+// CorporationKeeper backs AUTHZ-CHECK-5 (with GF-CHECK-1) for MOD-TD delegable
+// messages, and the plain account lookup of the trust deposit adjustments other
+// modules call for any corporation. Both abort with ErrCorporationNotRegistered
+// (referencing MOD-CO-MSG-1) for an unregistered account.
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+	GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 }
 
 // ExchangeRateKeeper reads the genesis exchange rate entry of [XRG].

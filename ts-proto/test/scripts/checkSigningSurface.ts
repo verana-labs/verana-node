@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createVeranaAminoTypes, createVeranaRegistry, veranaTypeUrls } from "../../src/signing";
-import { MsgGrantOperatorAuthorization } from "../../src/codec/verana/de/v1/tx";
+import { MsgGrantDelegateAuthorization } from "../../src/codec/verana/de/v1/tx";
 import { MsgStoreDigest } from "../../src/codec/verana/di/v1/tx";
 import { MsgSelfCreateParticipant, MsgStartParticipantOP } from "../../src/codec/verana/pp/v1/tx";
 import { ParticipantRole } from "../../src/codec/verana/pp/v1/types";
@@ -11,6 +11,7 @@ import {
   MsgSetExchangeRateState,
   MsgUpdateExchangeRate,
 } from "../../src/codec/verana/xr/v1/tx";
+import { MsgType } from "../../src/codec/verana/de/v1/msg_type";
 
 const registry = createVeranaRegistry();
 const amino = createVeranaAminoTypes() as any;
@@ -22,7 +23,7 @@ const requiredMappings = [
   "MsgCreateCredentialSchema",
   "MsgSelfCreateParticipant",
   "MsgReclaimTrustDepositYield",
-  "MsgGrantOperatorAuthorization",
+  "MsgGrantDelegateAuthorization",
   "MsgStoreDigest",
   "MsgCreateExchangeRate",
   "MsgUpdateExchangeRate",
@@ -36,12 +37,12 @@ for (const key of requiredMappings) {
   assert.ok(amino.register[veranaTypeUrls[key]], `missing amino mapping for ${key}`);
 }
 
-const deConverter = amino.register[veranaTypeUrls.MsgGrantOperatorAuthorization];
-const deMsg = MsgGrantOperatorAuthorization.fromPartial({
+const deConverter = amino.register[veranaTypeUrls.MsgGrantDelegateAuthorization];
+const deMsg = MsgGrantDelegateAuthorization.fromPartial({
   corporation: "verana1authority0000000000000000000000000000000",
-  operator: "verana1operator0000000000000000000000000000000",
+  delegate: "verana1delegate0000000000000000000000000000000",
   grantee: "verana1grantee00000000000000000000000000000000",
-  msgTypes: [veranaTypeUrls.MsgCreateEcosystem, veranaTypeUrls.MsgSelfCreateParticipant],
+  msgTypes: [MsgType.MSG_TYPE_CREATE_ECOSYSTEM, MsgType.MSG_TYPE_SELF_CREATE_ACCREDITATION],
   expiration: new Date("2026-04-01T12:00:00.123Z"),
   authzSpendLimit: [{ denom: "uvna", amount: "42" }],
   authzSpendLimitPeriod: { seconds: 3600, nanos: 5 },
@@ -67,7 +68,7 @@ assert.equal(deAmino.feegrant_spend_limit_period, "7200000000000");
 // A one-year period is past 2^53 nanoseconds, so the conversion has to keep
 // 64-bit precision instead of going through a JS number.
 const deLongPeriod = deConverter.toAmino(
-  MsgGrantOperatorAuthorization.fromPartial({
+  MsgGrantDelegateAuthorization.fromPartial({
     authzSpendLimitPeriod: { seconds: 31536000, nanos: 0 },
   }),
 );
@@ -75,18 +76,18 @@ assert.equal(deLongPeriod.authz_spend_limit_period, "31536000000000000");
 
 // A period that is set but zero is still written; only an absent one is omitted.
 const deZeroPeriod = deConverter.toAmino(
-  MsgGrantOperatorAuthorization.fromPartial({ authzSpendLimitPeriod: { seconds: 0, nanos: 0 } }),
+  MsgGrantDelegateAuthorization.fromPartial({ authzSpendLimitPeriod: { seconds: 0, nanos: 0 } }),
 );
 assert.equal(deZeroPeriod.authz_spend_limit_period, "0");
 assert.ok(
-  !("authz_spend_limit_period" in deConverter.toAmino(MsgGrantOperatorAuthorization.fromPartial({}))),
+  !("authz_spend_limit_period" in deConverter.toAmino(MsgGrantDelegateAuthorization.fromPartial({}))),
   "an absent period must not be written",
 );
 
 const diConverter = amino.register[veranaTypeUrls.MsgStoreDigest];
 const diMsg = MsgStoreDigest.fromPartial({
   corporation: "verana1corp0000000000000000000000000000000000",
-  operator: "verana1operator0000000000000000000000000000000",
+  delegate: "verana1delegate0000000000000000000000000000000",
   digest: "sha256-abc123",
 });
 const diRoundTrip = diConverter.fromAmino(diConverter.toAmino(diMsg));
@@ -165,28 +166,28 @@ assert.equal(xrRevokeRoundTrip.feeder, "verana1feeder000000000000000000000000000
 const permConverter = amino.register[veranaTypeUrls.MsgSelfCreateParticipant];
 const permMsg = MsgSelfCreateParticipant.fromPartial({
   corporation: "verana1authority0000000000000000000000000000000",
-  operator: "verana1operator0000000000000000000000000000000",
+  delegate: "verana1delegate0000000000000000000000000000000",
   role: ParticipantRole.VERIFIER,
   validatorParticipantId: 17,
   did: "did:verana:test:perm",
   verificationFees: 0,
   validationFees: 0,
   vsOperator: "verana1vsoperator0000000000000000000000000000",
-  vsOperatorAuthzMsgTypes: ["/verana.pp.v1.MsgCreateOrUpdateParticipantSession"],
+  vsOperatorAuthzMsgTypes: [MsgType.MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION],
   vsOperatorAuthzSpendLimit: [{ denom: "uvna", amount: "15" }],
   vsOperatorAuthzWithFeegrant: true,
   vsOperatorAuthzFeeSpendLimit: [{ denom: "uvna", amount: "5" }],
   vsOperatorAuthzPeriod: { seconds: 5400, nanos: 11 },
 });
 const permRoundTrip = permConverter.fromAmino(permConverter.toAmino(permMsg));
-assert.equal(permRoundTrip.vsOperatorAuthzMsgTypes?.[0], "/verana.pp.v1.MsgCreateOrUpdateParticipantSession");
+assert.equal(permRoundTrip.vsOperatorAuthzMsgTypes?.[0], MsgType.MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION);
 assert.equal(permRoundTrip.vsOperatorAuthzPeriod?.seconds, 5400);
 assert.equal(permRoundTrip.vsOperatorAuthzPeriod?.nanos, 11);
 
 const startVpConverter = amino.register[veranaTypeUrls.MsgStartParticipantOP];
 const startVpMsg = MsgStartParticipantOP.fromPartial({
   corporation: "verana1authority0000000000000000000000000000000",
-  operator: "verana1operator0000000000000000000000000000000",
+  delegate: "verana1delegate0000000000000000000000000000000",
   role: ParticipantRole.VALIDATOR,
   validatorParticipantId: 21,
   did: "did:verana:test:vp",

@@ -18,8 +18,8 @@ func NewStubCorporationKeeper() gftypes.CorporationKeeper {
 	return StubCorporationKeeper{}
 }
 
-func (StubCorporationKeeper) ResolveByPolicyAddress(_ context.Context, _ string) (gftypes.CorporationView, bool) {
-	return gftypes.CorporationView{}, false
+func (StubCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context, policyAddress string) (gftypes.CorporationView, error) {
+	return gftypes.CorporationView{}, errors.New("corporation keeper not wired: cannot resolve " + policyAddress)
 }
 
 func (StubCorporationKeeper) GetByID(_ context.Context, _ uint64) (gftypes.CorporationView, bool) {

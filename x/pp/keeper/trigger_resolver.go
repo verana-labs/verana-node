@@ -8,6 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -19,7 +20,13 @@ func (ms msgServer) TriggerResolver(goCtx context.Context, msg *types.MsgTrigger
 	now := ctx.BlockTime()
 
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
+	}
+
+	// [AUTHZ-CHECK-5]
+	corpID, err := ms.corpIDFromAccount(ctx, msg.Corporation)
+	if err != nil {
+		return nil, err
 	}
 
 	// [MOD-PP-MSG-15-2-1] Basic checks.
@@ -31,14 +38,8 @@ func (ms msgServer) TriggerResolver(goCtx context.Context, msg *types.MsgTrigger
 		return nil, fmt.Errorf("participant %d is not active: %w", msg.Id, err)
 	}
 
-	// [AUTHZ-CHECK-5] Resolve the signing corporation account to its co.id.
-	corpID, err := ms.corpIDFromAccount(ctx, msg.Corporation)
-	if err != nil {
-		return nil, err
-	}
-
 	// [MOD-PP-MSG-15-2-2] Authorization (at least one path MUST pass).
-	if err := ms.authorizeTriggerResolver(ctx, msg.Corporation, corpID, msg.Operator, perm, now); err != nil {
+	if err := ms.authorizeTriggerResolver(ctx, msg.Corporation, corpID, msg.Delegate, perm, now); err != nil {
 		return nil, fmt.Errorf("authorization check failed: %w", err)
 	}
 
@@ -48,7 +49,7 @@ func (ms msgServer) TriggerResolver(goCtx context.Context, msg *types.MsgTrigger
 			types.EventTypeTriggerResolver,
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.String()),
 		),
 	})
@@ -63,14 +64,14 @@ func (ms msgServer) TriggerResolver(goCtx context.Context, msg *types.MsgTrigger
 // Path 1 enforces AUTHZ-CHECK-3 plus the with_feegrant gate (AUTHZ-CHECK-4);
 // Path 2 enforces AUTHZ-CHECK-1.
 func (ms msgServer) authorizeTriggerResolver(
-	ctx sdk.Context, corpAccount string, corpID uint64, operator string, perm types.Participant, now time.Time,
+	ctx sdk.Context, corpAccount string, corpID uint64, delegate string, perm types.Participant, now time.Time,
 ) error {
-	const msgType = types.MsgTriggerResolverTypeURL
+	const msgType = detypes.MsgType_MSG_TYPE_TRIGGER_RESOLVER
 
 	// Path 1 — vs_operator of the target participant (AUTHZ-CHECK-3).
-	if corpID == perm.CorporationId && operator == perm.VsOperator {
+	if corpID == perm.CorporationId && delegate == perm.VsOperator {
 		if err := ms.delegationKeeper.CheckVSOperatorAuthorizationOnParticipant(
-			ctx, corpID, operator, perm.Id, msgType); err == nil {
+			ctx, corpID, delegate, perm.Id, msgType); err == nil {
 			// [AUTHZ-CHECK-4] with_feegrant gate when the corporation pays the tx fee.
 			if err := ms.checkVSOperatorFeeGrant(ctx, perm.Id, corpAccount); err != nil {
 				return err
@@ -103,11 +104,11 @@ func (ms msgServer) authorizeTriggerResolver(
 		if corpID != v.CorporationId {
 			continue
 		}
-		if err := ms.delegationKeeper.CheckOperatorAuthorization(
-			ctx, corpAccount, operator, msgType, now); err == nil {
+		if err := ms.delegationKeeper.CheckDelegateAuthorization(
+			ctx, corpID, delegate, msgType, now); err == nil {
 			return nil
 		}
 	}
 
-	return fmt.Errorf("no authorization path matched for operator %s on participant %d", operator, perm.Id)
+	return fmt.Errorf("no authorization path matched for delegate %s on participant %d", delegate, perm.Id)
 }

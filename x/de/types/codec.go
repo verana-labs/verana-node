@@ -9,14 +9,14 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	legacy.RegisterAminoMsg(cdc, &MsgGrantOperatorAuthorization{}, "verana/x/de/MsgGrantOpAuthorization")
-	legacy.RegisterAminoMsg(cdc, &MsgRevokeOperatorAuthorization{}, "verana/x/de/MsgRevokeOpAuthorization")
+	legacy.RegisterAminoMsg(cdc, &MsgGrantDelegateAuthorization{}, "verana/x/de/MsgGrantDelegateAuthz")
+	legacy.RegisterAminoMsg(cdc, &MsgRevokeDelegateAuthorization{}, "verana/x/de/MsgRevokeDelegateAuthz")
 }
 
 func RegisterInterfaces(registrar codectypes.InterfaceRegistry) {
 	registrar.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgGrantOperatorAuthorization{},
-		&MsgRevokeOperatorAuthorization{},
+		&MsgGrantDelegateAuthorization{},
+		&MsgRevokeDelegateAuthorization{},
 	)
 	msgservice.RegisterMsgServiceDesc(registrar, &_Msg_serviceDesc)
 }
