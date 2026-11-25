@@ -69,7 +69,7 @@ type MockGenesisRateKeeper struct {
 	Err   error
 }
 
-func (m *MockGenesisRateKeeper) GetGenesisRate(_ context.Context, _, _ string) (uint64, uint32, error) {
+func (m *MockGenesisRateKeeper) GenesisRate(context.Context) (uint64, uint32, error) {
 	return m.Rate, m.Scale, m.Err
 }
 

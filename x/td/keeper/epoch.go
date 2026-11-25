@@ -71,7 +71,7 @@ func (k Keeper) closeEpoch(ctx sdk.Context, epoch uint64) error {
 // NativeDenomPrice returns P(now), the price of one base unit of native denom in minor units of the
 // main fiat currency, from the genesis exchange rate entry, rounded down to the ledger precision.
 func (k Keeper) NativeDenomPrice(ctx context.Context) (math.LegacyDec, error) {
-	rate, scale, err := k.xrKeeper.GetGenesisRate(ctx, k.GetParams(ctx).MainFiatCurrency, types.BondDenom)
+	rate, scale, err := k.xrKeeper.GenesisRate(ctx)
 	if err != nil {
 		return math.LegacyDec{}, err
 	}

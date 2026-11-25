@@ -53,8 +53,8 @@ type CorporationKeeper interface {
 
 // ExchangeRateKeeper reads the genesis exchange rate entry of [XRG].
 type ExchangeRateKeeper interface {
-	// GetGenesisRate returns rate and rate_scale of the entry from the main fiat currency to the native denom; it fails if the entry is disabled or expired.
-	GetGenesisRate(ctx context.Context, mainFiatCurrency, nativeDenom string) (uint64, uint32, error)
+	// GenesisRate returns rate and rate_scale of the entry; it fails while the entry is disabled or expired.
+	GenesisRate(ctx context.Context) (uint64, uint32, error)
 }
 
 // DistributionKeeper performs steps (1) and (2) of an epoch boundary: the signed-block ratios and the payout or its skip.
