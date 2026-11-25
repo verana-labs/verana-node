@@ -24,8 +24,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		return &types.GenesisState{Params: types.DefaultParams(), DelegateAuthorizations: das}
 	}
 	limit := sdk.NewCoins(sdk.NewInt64Coin("uvna", 10))
-	exp := time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)
-	day := 24 * time.Hour
 	withFG := func(mts ...types.MsgType) *types.GenesisState {
 		return &types.GenesisState{Params: types.DefaultParams(), FeeGrants: []types.FeeGrant{
 			{GrantorCorporationId: 1, Grantee: addr, MsgTypes: mts},
@@ -35,6 +33,10 @@ func TestGenesisState_Validate(t *testing.T) {
 		return &types.GenesisState{Params: types.DefaultParams(), VsOperatorAuthorizations: []types.VSOperatorAuthorization{
 			{Id: 1, CorporationId: 1, VsOperator: addr, Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 1, MsgTypes: mts}}},
 		}}
+	}
+	period, exp := time.Hour, time.Unix(100, 0)
+	withSp := func(s ...types.Sponsorship) *types.GenesisState {
+		return &types.GenesisState{Params: types.DefaultParams(), Sponsorships: s}
 	}
 	tests := []struct {
 		desc     string
@@ -78,10 +80,10 @@ func TestGenesisState_Validate(t *testing.T) {
 			types.DelegateAuthorization{CorporationId: 1, Delegate: strings.ToUpper(addr)},
 		), valid: false},
 		{desc: "delegate authorization cycle", genState: withDAs(types.DelegateAuthorization{
-			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Expiration: &exp, Period: &day,
+			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Expiration: &exp, Period: &period,
 		}), valid: true},
 		{desc: "delegate authorization period without expiration", genState: withDAs(types.DelegateAuthorization{
-			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Period: &day,
+			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Period: &period,
 		}), valid: false},
 		{desc: "delegate authorization remaining without limit", genState: withDAs(types.DelegateAuthorization{
 			CorporationId: 1, Delegate: addr, RemainingSpend: limit,
@@ -96,7 +98,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			CorporationId: 1, Delegate: addr, SpendLimit: sdk.Coins{sdk.NewInt64Coin("uvna", 1), sdk.NewInt64Coin("uatom", 1)},
 		}), valid: false},
 		{desc: "delegate authorization period without limit", genState: withDAs(types.DelegateAuthorization{
-			CorporationId: 1, Delegate: addr, Expiration: &exp, Period: &day,
+			CorporationId: 1, Delegate: addr, Expiration: &exp, Period: &period,
 		}), valid: false},
 		{desc: "delegate authorization zero period", genState: withDAs(types.DelegateAuthorization{
 			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Expiration: &exp, Period: new(time.Duration),
@@ -105,6 +107,22 @@ func TestGenesisState_Validate(t *testing.T) {
 		{desc: "fee grant unspecified value", genState: withFG(types.MsgType_MSG_TYPE_UNSPECIFIED), valid: false},
 		{desc: "record vs value", genState: withRecord(types.MsgType_MSG_TYPE_VALIDATE_ONBOARDING), valid: true},
 		{desc: "record non-vs value", genState: withRecord(types.MsgType_MSG_TYPE_CREATE_ECOSYSTEM), valid: false},
+		{desc: "sponsorship", genState: withSp(types.Sponsorship{SponsorCorporationId: 1, SponsoredCorporationId: 2}), valid: true},
+		{desc: "sponsorship of itself", genState: withSp(types.Sponsorship{SponsorCorporationId: 1, SponsoredCorporationId: 1}), valid: false},
+		{desc: "sponsorship without sponsor", genState: withSp(types.Sponsorship{SponsoredCorporationId: 1}), valid: false},
+		{desc: "duplicate sponsorship", genState: withSp(
+			types.Sponsorship{SponsorCorporationId: 1, SponsoredCorporationId: 2},
+			types.Sponsorship{SponsorCorporationId: 1, SponsoredCorporationId: 2},
+		), valid: false},
+		{desc: "sponsorship value outside its list", genState: withSp(types.Sponsorship{
+			SponsorCorporationId: 1, SponsoredCorporationId: 2, MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_STORE_DIGEST},
+		}), valid: false},
+		{desc: "cycling sponsorship without expiration", genState: withSp(types.Sponsorship{
+			SponsorCorporationId: 1, SponsoredCorporationId: 2, Period: &period,
+		}), valid: false},
+		{desc: "cycling sponsorship", genState: withSp(types.Sponsorship{
+			SponsorCorporationId: 1, SponsoredCorporationId: 2, Period: &period, Expiration: &exp,
+		}), valid: true},
 	}
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {

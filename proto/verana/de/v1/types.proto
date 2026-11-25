@@ -70,6 +70,49 @@ message FeeGrant {
   google.protobuf.Duration period = 7 [(gogoproto.stdduration) = true];
 }
 
+// Sponsorship records a sponsor corporation's agreement to fund another
+// corporation, keyed by (sponsor_corporation_id, sponsored_corporation_id).
+message Sponsorship {
+  // sponsor_corporation_id is the id of the corporation that pays.
+  uint64 sponsor_corporation_id = 1;
+  // sponsored_corporation_id is the id of the corporation whose fund movements
+  // are paid.
+  uint64 sponsored_corporation_id = 2;
+  // msg_types are the covered paying message types; empty means all of them.
+  repeated MsgType msg_types = 3;
+  // spend_limit is the maximum the sponsor pays per cycle for the operation
+  // fund movements of the sponsored corporation.
+  repeated cosmos.base.v1beta1.Coin spend_limit = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  // remaining_spend is the runtime balance for spend_limit. Present iff
+  // spend_limit is set.
+  repeated cosmos.base.v1beta1.Coin remaining_spend = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  // expiration is the end of the sponsorship, or the end of the current cycle
+  // when period is set.
+  google.protobuf.Timestamp expiration = 6 [(gogoproto.stdtime) = true];
+  // period is the reset period for spend_limit.
+  google.protobuf.Duration period = 7 [(gogoproto.stdduration) = true];
+  // covers_fees indicates the sponsor also pays the network fees of the
+  // sponsored corporation.
+  bool covers_fees = 8;
+  // fee_spend_limit is the maximum network fees paid per period, or in total
+  // when period is unset; unlimited when empty.
+  repeated cosmos.base.v1beta1.Coin fee_spend_limit = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  // created is the creation timestamp.
+  google.protobuf.Timestamp created = 10 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false
+  ];
+}
+
 // ParticipantAuthorizationRecord is a per-participant VS-operator authorization
 // nested inside a VSOperatorAuthorization. Keyed by participant_id, which is
 // globally unique across all records of all VSOperatorAuthorizations.

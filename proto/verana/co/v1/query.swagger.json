@@ -200,6 +200,11 @@
             "type": "object",
             "$ref": "#/definitions/verana.gf.v1.GovernanceFrameworkVersionWithDocs"
           }
+        },
+        "sponsor_corporation_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "sponsor_corporation_id is the elected sponsor; 0 when the corporation\nfunds itself."
         }
       },
       "description": "CorporationWithGF is the query response shape including nested governance\nframework versions (each with its documents). Returned by MOD-CO-QRY-1\n(Get Corporation) and MOD-CO-QRY-2 (List Corporations)."

@@ -45,3 +45,33 @@ func TestCoAsGFCorporationKeeper(t *testing.T) {
 	// SetActiveVersion on missing corp returns error.
 	require.Error(t, adapter.SetActiveVersion(ctx, 999, 5))
 }
+
+func TestCoAsDeCorporationKeeper_Sponsor(t *testing.T) {
+	grp := &mockGroup{policy: "cosmos1corp"}
+	k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, grp, &mockGF{})
+	_, err := keeper.NewMsgServerImpl(k).CreateCorporation(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+	co, err := k.Corporation.Get(ctx, 1)
+	require.NoError(t, err)
+	co.SponsorCorporationId = 7
+	require.NoError(t, k.Corporation.Set(ctx, 1, co))
+
+	adapter := keeper.NewCoAsDeCorporationKeeper(k)
+	view, found, err := adapter.GetCorporationByPolicyAddress(ctx, "cosmos1corp")
+	require.NoError(t, err)
+	require.True(t, found)
+	require.Equal(t, uint64(7), view.SponsorCorporationId)
+	_, found, err = adapter.GetCorporationByPolicyAddress(ctx, "cosmos1nobody")
+	require.NoError(t, err)
+	require.False(t, found)
+
+	cleared, err := adapter.ClearSponsor(ctx, 1, 8)
+	require.NoError(t, err)
+	require.False(t, cleared)
+	cleared, err = adapter.ClearSponsor(ctx, 1, 7)
+	require.NoError(t, err)
+	require.True(t, cleared)
+	view, err = adapter.ResolveCorporationByID(ctx, 1)
+	require.NoError(t, err)
+	require.Zero(t, view.SponsorCorporationId)
+}

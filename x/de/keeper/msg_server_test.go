@@ -87,14 +87,12 @@ func TestGrantFeeAllowance_TypeURLs(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, mts, fg.MsgTypes)
 
-	granter, _ := sdk.AccAddressFromBech32(corpPolicyAddr(7))
-	granteeAddr, _ := sdk.AccAddressFromBech32(grantee)
-	a, err := f.feegrants.GetAllowance(ctx, granter, granteeAddr)
-	require.NoError(t, err)
+	a, ok := slot(f, 7, grantee).(*feegrant.AllowedMsgAllowance)
+	require.True(t, ok)
 	require.Equal(t, []string{
 		"/verana.pp.v1.MsgCreateOrUpdateParticipantSession",
 		"/verana.ec.v1.MsgCreateEcosystem",
-	}, a.(*feegrant.AllowedMsgAllowance).AllowedMessages)
+	}, a.AllowedMessages)
 }
 
 func TestFeeAllowance_Validation(t *testing.T) {
@@ -104,6 +102,17 @@ func TestFeeAllowance_Validation(t *testing.T) {
 
 	require.ErrorIs(t, k.GrantFeeAllowance(ctx, 1, grantee, []types.MsgType{types.MsgType_MSG_TYPE_UNSPECIFIED}, nil, nil, nil), types.ErrInvalidMsgType)
 	require.ErrorIs(t, k.GrantFeeAllowance(ctx, 1, grantee, nil, nil, nil, nil), types.ErrInvalidMsgType)
+
+	mts := []types.MsgType{mtEcosystem}
+	now := ctx.BlockTime()
+	exp := now.Add(time.Hour)
+	period, zero := time.Hour, time.Duration(0)
+	require.ErrorIs(t, k.GrantFeeAllowance(ctx, 1, grantee, mts, &now, nil, nil), types.ErrExpirationInPast)
+	require.ErrorIs(t, k.GrantFeeAllowance(ctx, 1, grantee, mts, nil, sdk.Coins{sdk.NewInt64Coin("uvna", 0)}, nil), types.ErrInvalidSpendLimit)
+	require.ErrorContains(t, k.GrantFeeAllowance(ctx, 1, grantee, mts, &exp, uvna(1), &zero), "positive duration")
+	require.ErrorContains(t, k.GrantFeeAllowance(ctx, 1, grantee, mts, nil, uvna(1), &period), "expiration must be specified")
+	require.False(t, hasFeeGrant(t, f, ctx, 1, grantee))
+	require.Nil(t, slot(f, 1, grantee))
 
 	require.ErrorContains(t, k.RevokeFeeAllowance(ctx, 0, grantee), "grantor_corporation_id")
 	require.ErrorContains(t, k.RevokeFeeAllowance(ctx, 1, ""), "grantee")

@@ -14,6 +14,7 @@ func DefaultGenesis() *GenesisState {
 		FeeGrants:                []FeeGrant{},
 		VsOperatorAuthorizations: []VSOperatorAuthorization{},
 		WindowEndQueue:           []WindowEndQueueEntry{},
+		Sponsorships:             []Sponsorship{},
 	}
 }
 
@@ -114,6 +115,29 @@ func (gs GenesisState) Validate() error {
 	for i, e := range gs.WindowEndQueue {
 		if e.ParticipantId == 0 {
 			return fmt.Errorf("window_end_queue[%d]: participant_id cannot be 0", i)
+		}
+	}
+
+	spKeys := make(map[[2]uint64]bool)
+	for i, s := range gs.Sponsorships {
+		if s.SponsorCorporationId == 0 || s.SponsoredCorporationId == 0 {
+			return fmt.Errorf("sponsorships[%d]: corporation ids cannot be 0", i)
+		}
+		if s.SponsorCorporationId == s.SponsoredCorporationId {
+			return fmt.Errorf("sponsorships[%d]: a corporation cannot sponsor itself", i)
+		}
+		key := [2]uint64{s.SponsorCorporationId, s.SponsoredCorporationId}
+		if spKeys[key] {
+			return fmt.Errorf("sponsorships[%d]: duplicate (sponsor_corporation_id, sponsored_corporation_id) %v", i, key)
+		}
+		spKeys[key] = true
+		if len(s.MsgTypes) > 0 {
+			if err := ValidateMsgTypes(s.MsgTypes, SponsorshipMsgTypes); err != nil {
+				return fmt.Errorf("sponsorships[%d]: %w", i, err)
+			}
+		}
+		if s.Period != nil && s.Expiration == nil {
+			return fmt.Errorf("sponsorships[%d]: period requires expiration", i)
 		}
 	}
 

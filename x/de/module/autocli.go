@@ -29,6 +29,8 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "ListVSOperatorAuthorizations",
 					Skip:      true,
 				},
+				{RpcMethod: "GetSponsorship", Skip: true},
+				{RpcMethod: "ListSponsorships", Skip: true},
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},
@@ -92,6 +94,36 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 							Name:  "corporation",
 							Usage: "policy_address of the corporation on whose behalf the revoke is made",
 						},
+					},
+				},
+				{
+					RpcMethod: "GrantSponsorship",
+					Use:       "grant-sponsorship [sponsored-corporation-id]",
+					Short:     "Grant a sponsorship to another corporation",
+					Long:      "[MOD-DE-MSG-10] Grant or raise a sponsorship. Not delegable: the signer (--from) is the sponsor's policy_address, so the message runs through a group proposal (--generate-only). Re-grants may only raise the terms.",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "sponsored_corporation_id"},
+					},
+					FlagOptions: map[string]*autocliv1.FlagOptions{
+						"corporation":     {Name: "corporation", Usage: "policy_address of the sponsor corporation"},
+						"msg_types":       {Name: "msg-types", Usage: "covered paying MsgType values, one per flag; all of them when absent"},
+						"spend_limit":     {Name: "spend-limit", Usage: "maximum operation funds paid per cycle (e.g. 1000uvna)"},
+						"period":          {Name: "period", Usage: "cycle length for spend-limit"},
+						"expiration":      {Name: "expiration", Usage: "end of the sponsorship, or of its first cycle with --period (RFC3339)"},
+						"covers_fees":     {Name: "covers-fees", Usage: "the sponsor also pays the network fees"},
+						"fee_spend_limit": {Name: "fee-spend-limit", Usage: "maximum network fees per period, or in total; unlimited when absent"},
+					},
+				},
+				{
+					RpcMethod: "RevokeSponsorship",
+					Use:       "revoke-sponsorship [sponsored-corporation-id]",
+					Short:     "Revoke a sponsorship",
+					Long:      "[MOD-DE-MSG-11] Revoke a sponsorship and clear the sponsored corporation's election of this sponsor. The signer (--from) is the delegate: the sponsor's policy_address on the group-proposal path, or an authorized delegate.",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "sponsored_corporation_id"},
+					},
+					FlagOptions: map[string]*autocliv1.FlagOptions{
+						"corporation": {Name: "corporation", Usage: "policy_address of the sponsor corporation"},
 					},
 				},
 				// this line is used by ignite scaffolding # autocli/tx

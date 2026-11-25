@@ -50,6 +50,40 @@
         ]
       }
     },
+    "/verana.de.v1.Msg/GrantSponsorship": {
+      "post": {
+        "summary": "[MOD-DE-MSG-10] Grant Sponsorship",
+        "operationId": "Msg_GrantSponsorship",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.MsgGrantSponsorshipResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "[MOD-DE-MSG-10] MsgGrantSponsorship declares the budget a sponsor corporation\npays for another corporation. Executed by the sponsor's policy account\nthrough a group proposal.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.MsgGrantSponsorship"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
     "/verana.de.v1.Msg/RevokeDelegateAuthorization": {
       "post": {
         "summary": "[MOD-DE-MSG-4] Revoke Delegate Authorization",
@@ -76,6 +110,40 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/verana.de.v1.MsgRevokeDelegateAuthorization"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    },
+    "/verana.de.v1.Msg/RevokeSponsorship": {
+      "post": {
+        "summary": "[MOD-DE-MSG-11] Revoke Sponsorship",
+        "operationId": "Msg_RevokeSponsorship",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.MsgRevokeSponsorshipResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "[MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the\nsponsor corporation. On the group-proposal path `delegate` equals\n`corporation`.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/verana.de.v1.MsgRevokeSponsorship"
             }
           }
         ],
@@ -218,6 +286,61 @@
       "type": "object",
       "description": "MsgGrantDelegateAuthorizationResponse defines the response for\nMsgGrantDelegateAuthorization."
     },
+    "verana.de.v1.MsgGrantSponsorship": {
+      "type": "object",
+      "properties": {
+        "corporation": {
+          "type": "string",
+          "description": "corporation is the policy_address of the sponsor corporation."
+        },
+        "sponsored_corporation_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "sponsored_corporation_id is the id of the corporation to sponsor."
+        },
+        "msg_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/verana.de.v1.MsgType"
+          },
+          "description": "msg_types are the covered paying message types; empty means all of them."
+        },
+        "spend_limit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "spend_limit is the maximum operation funds paid per cycle."
+        },
+        "period": {
+          "type": "string",
+          "description": "period is the cycle length for spend_limit."
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time",
+          "description": "expiration is the end of the sponsorship, or the end of the first cycle\nwhen period is set."
+        },
+        "covers_fees": {
+          "type": "boolean",
+          "description": "covers_fees indicates the sponsor also pays the network fees of the\nsponsored corporation."
+        },
+        "fee_spend_limit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/cosmos.base.v1beta1.Coin"
+          },
+          "description": "fee_spend_limit is the maximum network fees paid per period, or in total\nwhen period is unset. Ignored if covers_fees is false."
+        }
+      },
+      "description": "[MOD-DE-MSG-10] MsgGrantSponsorship declares the budget a sponsor corporation\npays for another corporation. Executed by the sponsor's policy account\nthrough a group proposal."
+    },
+    "verana.de.v1.MsgGrantSponsorshipResponse": {
+      "type": "object",
+      "description": "MsgGrantSponsorshipResponse defines the response for MsgGrantSponsorship."
+    },
     "verana.de.v1.MsgRevokeDelegateAuthorization": {
       "type": "object",
       "properties": {
@@ -239,6 +362,29 @@
     "verana.de.v1.MsgRevokeDelegateAuthorizationResponse": {
       "type": "object",
       "description": "MsgRevokeDelegateAuthorizationResponse defines the response for\nMsgRevokeDelegateAuthorization."
+    },
+    "verana.de.v1.MsgRevokeSponsorship": {
+      "type": "object",
+      "properties": {
+        "corporation": {
+          "type": "string",
+          "description": "corporation is the policy_address of the sponsor corporation."
+        },
+        "delegate": {
+          "type": "string",
+          "description": "delegate is the signer: an authorized delegate, or the corporation's\npolicy_address itself on the group-proposal path."
+        },
+        "sponsored_corporation_id": {
+          "type": "string",
+          "format": "uint64",
+          "description": "sponsored_corporation_id is the id of the sponsored corporation."
+        }
+      },
+      "description": "[MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the\nsponsor corporation. On the group-proposal path `delegate` equals\n`corporation`."
+    },
+    "verana.de.v1.MsgRevokeSponsorshipResponse": {
+      "type": "object",
+      "description": "MsgRevokeSponsorshipResponse defines the response for MsgRevokeSponsorship."
     },
     "verana.de.v1.MsgType": {
       "type": "string",

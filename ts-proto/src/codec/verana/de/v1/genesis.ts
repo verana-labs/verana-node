@@ -7,7 +7,7 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
-import { DelegateAuthorization, FeeGrant, VSOperatorAuthorization, WindowEndQueueEntry } from "./types";
+import { DelegateAuthorization, FeeGrant, Sponsorship, VSOperatorAuthorization, WindowEndQueueEntry } from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
@@ -28,6 +28,8 @@ export interface GenesisState {
   vsoaSeq: number;
   /** window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5. */
   windowEndQueue: WindowEndQueueEntry[];
+  /** sponsorships is a list of all Sponsorship objects */
+  sponsorships: Sponsorship[];
 }
 
 function createBaseGenesisState(): GenesisState {
@@ -38,6 +40,7 @@ function createBaseGenesisState(): GenesisState {
     vsOperatorAuthorizations: [],
     vsoaSeq: 0,
     windowEndQueue: [],
+    sponsorships: [],
   };
 }
 
@@ -60,6 +63,9 @@ export const GenesisState = {
     }
     for (const v of message.windowEndQueue) {
       WindowEndQueueEntry.encode(v!, writer.uint32(66).fork()).ldelim();
+    }
+    for (const v of message.sponsorships) {
+      Sponsorship.encode(v!, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -113,6 +119,13 @@ export const GenesisState = {
 
           message.windowEndQueue.push(WindowEndQueueEntry.decode(reader, reader.uint32()));
           continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.sponsorships.push(Sponsorship.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -138,6 +151,9 @@ export const GenesisState = {
       windowEndQueue: globalThis.Array.isArray(object?.windowEndQueue)
         ? object.windowEndQueue.map((e: any) => WindowEndQueueEntry.fromJSON(e))
         : [],
+      sponsorships: globalThis.Array.isArray(object?.sponsorships)
+        ? object.sponsorships.map((e: any) => Sponsorship.fromJSON(e))
+        : [],
     };
   },
 
@@ -161,6 +177,9 @@ export const GenesisState = {
     if (message.windowEndQueue?.length) {
       obj.windowEndQueue = message.windowEndQueue.map((e) => WindowEndQueueEntry.toJSON(e));
     }
+    if (message.sponsorships?.length) {
+      obj.sponsorships = message.sponsorships.map((e) => Sponsorship.toJSON(e));
+    }
     return obj;
   },
 
@@ -179,6 +198,7 @@ export const GenesisState = {
       object.vsOperatorAuthorizations?.map((e) => VSOperatorAuthorization.fromPartial(e)) || [];
     message.vsoaSeq = object.vsoaSeq ?? 0;
     message.windowEndQueue = object.windowEndQueue?.map((e) => WindowEndQueueEntry.fromPartial(e)) || [];
+    message.sponsorships = object.sponsorships?.map((e) => Sponsorship.fromPartial(e)) || [];
     return message;
   },
 };

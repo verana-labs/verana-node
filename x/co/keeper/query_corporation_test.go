@@ -22,6 +22,10 @@ func TestQueryGetCorporation_Happy(t *testing.T) {
 
 	_, err := ms.CreateCorporation(ctx, validCreateMsg(t))
 	require.NoError(t, err)
+	co, err := k.Corporation.Get(ctx, 1)
+	require.NoError(t, err)
+	co.SponsorCorporationId = 4
+	require.NoError(t, k.Corporation.Set(ctx, 1, co))
 
 	resp, err := qs.GetCorporation(ctx, &types.QueryGetCorporationRequest{
 		CorporationId:     1,
@@ -31,6 +35,7 @@ func TestQueryGetCorporation_Happy(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), resp.Corporation.Id)
 	require.Equal(t, "cosmos1corp", resp.Corporation.PolicyAddress)
+	require.Equal(t, uint64(4), resp.Corporation.SponsorCorporationId)
 	require.Len(t, resp.Corporation.Versions, 1)
 	require.Equal(t, uint64(7), resp.Corporation.Versions[0].Id)
 

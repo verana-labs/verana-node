@@ -29,6 +29,23 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, uint64(7), got.WindowEndQueue[0].ParticipantId)
 }
 
+func TestGenesis_Sponsorships(t *testing.T) {
+	exp := time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+		Sponsorships: []types.Sponsorship{
+			{SponsorCorporationId: 1, SponsoredCorporationId: 2, CoversFees: true, Expiration: &exp, Created: exp.AddDate(-1, 0, 0)},
+			{SponsorCorporationId: 3, SponsoredCorporationId: 1, SpendLimit: uvna(10), RemainingSpend: uvna(4), Created: exp.AddDate(-2, 0, 0)},
+		},
+	}
+
+	f := initFixture(t)
+	require.NoError(t, f.keeper.InitGenesis(f.ctx, genesisState))
+	got, err := f.keeper.ExportGenesis(f.ctx)
+	require.NoError(t, err)
+	require.Equal(t, genesisState.Sponsorships, got.Sponsorships)
+}
+
 func TestGenesis_RebuildsDelegateIndex(t *testing.T) {
 	vsOp := acc("vsop_genesis________")
 	genesisState := types.GenesisState{

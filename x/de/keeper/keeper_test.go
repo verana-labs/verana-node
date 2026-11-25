@@ -25,24 +25,65 @@ import (
 
 // mockCorpKeeper backs AUTHZ-CHECK-5 in MOD-DE tests. It resolves any signing
 // account by default (permissive); add an address to unregistered to exercise
-// the ErrCorporationNotRegistered abort path.
+// the ErrCorporationNotRegistered abort path. Every id exists unless listed in
+// missing; sponsors holds the elections.
 type mockCorpKeeper struct {
 	unregistered map[string]bool
+	missing      map[uint64]bool
+	sponsors     map[uint64]uint64
 }
 
 func newMockCorpKeeper() *mockCorpKeeper {
-	return &mockCorpKeeper{unregistered: map[string]bool{}}
+	return &mockCorpKeeper{unregistered: map[string]bool{}, missing: map[uint64]bool{}, sponsors: map[uint64]uint64{}}
 }
 
 func (m *mockCorpKeeper) ResolveCorporationByPolicyAddress(_ context.Context, addr string) (types.CorporationView, error) {
 	if m.unregistered[addr] {
 		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
 	}
-	return types.CorporationView{Id: 1, PolicyAddress: addr}, nil
+	return types.CorporationView{Id: 1, PolicyAddress: addr, SponsorCorporationId: m.sponsors[1]}, nil
 }
 
 func (m *mockCorpKeeper) ResolveCorporationByID(_ context.Context, id uint64) (types.CorporationView, error) {
-	return types.CorporationView{Id: id, PolicyAddress: corpPolicyAddr(id)}, nil
+	if m.missing[id] {
+		return types.CorporationView{}, collections.ErrNotFound
+	}
+	return types.CorporationView{Id: id, PolicyAddress: corpPolicyAddr(id), SponsorCorporationId: m.sponsors[id]}, nil
+}
+
+func (m *mockCorpKeeper) GetCorporationByPolicyAddress(ctx context.Context, addr string) (types.CorporationView, bool, error) {
+	bz, err := sdk.AccAddressFromBech32(addr)
+	if err != nil {
+		return types.CorporationView{}, false, err
+	}
+	var id uint64
+	if _, err := fmt.Sscanf(string(bz), "corp_policy_%08d", &id); err != nil || m.missing[id] {
+		return types.CorporationView{}, false, nil
+	}
+	co, err := m.ResolveCorporationByID(ctx, id)
+	return co, true, err
+}
+
+func (m *mockCorpKeeper) ClearSponsor(_ context.Context, corporationID, sponsorID uint64) (bool, error) {
+	if m.sponsors[corporationID] != sponsorID {
+		return false, nil
+	}
+	delete(m.sponsors, corporationID)
+	return true, nil
+}
+
+// testMaxGasURLs stands for the keys of max_gas_per_msg_type.
+var testMaxGasURLs = []string{"/verana.ec.v1.MsgCreateEcosystem", "/cosmos.group.v1.MsgVote"}
+
+type stubNetworkFee []string
+
+func (s stubNetworkFee) MaxGasMsgTypeURLs(context.Context) ([]string, error) { return s, nil }
+
+// memBank is an in-memory spendable balance per account.
+type memBank map[string]sdk.Coins
+
+func (m memBank) SpendableCoins(_ context.Context, addr sdk.AccAddress) sdk.Coins {
+	return m[addr.String()]
 }
 
 // corpPolicyAddr is the deterministic policy_address of corporation id in tests.
@@ -152,6 +193,7 @@ type fixture struct {
 	feegrants    *memFeegrantKeeper
 	gf           *mockGFKeeper
 	budgets      memVsAccountBudgets
+	bank         memBank
 }
 
 func initFixture(t *testing.T) *fixture {
@@ -166,11 +208,13 @@ func initFixture(t *testing.T) *fixture {
 
 	authority := authtypes.NewModuleAddress(types.GovModuleName)
 
+	bank := memBank{}
 	k := keeper.NewKeeper(
 		storeService,
 		encCfg.Codec,
 		addressCodec,
 		authority,
+		bank,
 	)
 
 	// AUTHZ-CHECK-5: wire a permissive corporation keeper (the app wires the real
@@ -185,6 +229,7 @@ func initFixture(t *testing.T) *fixture {
 	k.SetGovernanceFrameworkKeeper(gf)
 	budgets := memVsAccountBudgets{}
 	k.SetVsAccountBudgetStore(budgets)
+	k.SetNetworkFeeKeeper(stubNetworkFee(testMaxGasURLs))
 
 	// Initialize params
 	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
@@ -200,5 +245,6 @@ func initFixture(t *testing.T) *fixture {
 		feegrants:    feegrants,
 		gf:           gf,
 		budgets:      budgets,
+		bank:         bank,
 	}
 }

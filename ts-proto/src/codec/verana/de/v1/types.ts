@@ -86,6 +86,55 @@ export interface FeeGrant {
 }
 
 /**
+ * Sponsorship records a sponsor corporation's agreement to fund another
+ * corporation, keyed by (sponsor_corporation_id, sponsored_corporation_id).
+ */
+export interface Sponsorship {
+  /** sponsor_corporation_id is the id of the corporation that pays. */
+  sponsorCorporationId: number;
+  /**
+   * sponsored_corporation_id is the id of the corporation whose fund movements
+   * are paid.
+   */
+  sponsoredCorporationId: number;
+  /** msg_types are the covered paying message types; empty means all of them. */
+  msgTypes: MsgType[];
+  /**
+   * spend_limit is the maximum the sponsor pays per cycle for the operation
+   * fund movements of the sponsored corporation.
+   */
+  spendLimit: Coin[];
+  /**
+   * remaining_spend is the runtime balance for spend_limit. Present iff
+   * spend_limit is set.
+   */
+  remainingSpend: Coin[];
+  /**
+   * expiration is the end of the sponsorship, or the end of the current cycle
+   * when period is set.
+   */
+  expiration:
+    | Date
+    | undefined;
+  /** period is the reset period for spend_limit. */
+  period:
+    | Duration
+    | undefined;
+  /**
+   * covers_fees indicates the sponsor also pays the network fees of the
+   * sponsored corporation.
+   */
+  coversFees: boolean;
+  /**
+   * fee_spend_limit is the maximum network fees paid per period, or in total
+   * when period is unset; unlimited when empty.
+   */
+  feeSpendLimit: Coin[];
+  /** created is the creation timestamp. */
+  created: Date | undefined;
+}
+
+/**
  * ParticipantAuthorizationRecord is a per-participant VS-operator authorization
  * nested inside a VSOperatorAuthorization. Keyed by participant_id, which is
  * globally unique across all records of all VSOperatorAuthorizations.
@@ -524,6 +573,233 @@ export const FeeGrant = {
     message.period = (object.period !== undefined && object.period !== null)
       ? Duration.fromPartial(object.period)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseSponsorship(): Sponsorship {
+  return {
+    sponsorCorporationId: 0,
+    sponsoredCorporationId: 0,
+    msgTypes: [],
+    spendLimit: [],
+    remainingSpend: [],
+    expiration: undefined,
+    period: undefined,
+    coversFees: false,
+    feeSpendLimit: [],
+    created: undefined,
+  };
+}
+
+export const Sponsorship = {
+  encode(message: Sponsorship, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.sponsorCorporationId !== 0) {
+      writer.uint32(8).uint64(message.sponsorCorporationId);
+    }
+    if (message.sponsoredCorporationId !== 0) {
+      writer.uint32(16).uint64(message.sponsoredCorporationId);
+    }
+    writer.uint32(26).fork();
+    for (const v of message.msgTypes) {
+      writer.int32(v);
+    }
+    writer.ldelim();
+    for (const v of message.spendLimit) {
+      Coin.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    for (const v of message.remainingSpend) {
+      Coin.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.expiration !== undefined) {
+      Timestamp.encode(toTimestamp(message.expiration), writer.uint32(50).fork()).ldelim();
+    }
+    if (message.period !== undefined) {
+      Duration.encode(message.period, writer.uint32(58).fork()).ldelim();
+    }
+    if (message.coversFees !== false) {
+      writer.uint32(64).bool(message.coversFees);
+    }
+    for (const v of message.feeSpendLimit) {
+      Coin.encode(v!, writer.uint32(74).fork()).ldelim();
+    }
+    if (message.created !== undefined) {
+      Timestamp.encode(toTimestamp(message.created), writer.uint32(82).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Sponsorship {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSponsorship();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.sponsorCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.sponsoredCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 3:
+          if (tag === 24) {
+            message.msgTypes.push(reader.int32() as any);
+
+            continue;
+          }
+
+          if (tag === 26) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.msgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.spendLimit.push(Coin.decode(reader, reader.uint32()));
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.remainingSpend.push(Coin.decode(reader, reader.uint32()));
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.expiration = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.period = Duration.decode(reader, reader.uint32());
+          continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.coversFees = reader.bool();
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.feeSpendLimit.push(Coin.decode(reader, reader.uint32()));
+          continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.created = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Sponsorship {
+    return {
+      sponsorCorporationId: isSet(object.sponsorCorporationId) ? globalThis.Number(object.sponsorCorporationId) : 0,
+      sponsoredCorporationId: isSet(object.sponsoredCorporationId)
+        ? globalThis.Number(object.sponsoredCorporationId)
+        : 0,
+      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
+      spendLimit: globalThis.Array.isArray(object?.spendLimit)
+        ? object.spendLimit.map((e: any) => Coin.fromJSON(e))
+        : [],
+      remainingSpend: globalThis.Array.isArray(object?.remainingSpend)
+        ? object.remainingSpend.map((e: any) => Coin.fromJSON(e))
+        : [],
+      expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
+      period: isSet(object.period) ? Duration.fromJSON(object.period) : undefined,
+      coversFees: isSet(object.coversFees) ? globalThis.Boolean(object.coversFees) : false,
+      feeSpendLimit: globalThis.Array.isArray(object?.feeSpendLimit)
+        ? object.feeSpendLimit.map((e: any) => Coin.fromJSON(e))
+        : [],
+      created: isSet(object.created) ? fromJsonTimestamp(object.created) : undefined,
+    };
+  },
+
+  toJSON(message: Sponsorship): unknown {
+    const obj: any = {};
+    if (message.sponsorCorporationId !== 0) {
+      obj.sponsorCorporationId = Math.round(message.sponsorCorporationId);
+    }
+    if (message.sponsoredCorporationId !== 0) {
+      obj.sponsoredCorporationId = Math.round(message.sponsoredCorporationId);
+    }
+    if (message.msgTypes?.length) {
+      obj.msgTypes = message.msgTypes.map((e) => msgTypeToJSON(e));
+    }
+    if (message.spendLimit?.length) {
+      obj.spendLimit = message.spendLimit.map((e) => Coin.toJSON(e));
+    }
+    if (message.remainingSpend?.length) {
+      obj.remainingSpend = message.remainingSpend.map((e) => Coin.toJSON(e));
+    }
+    if (message.expiration !== undefined) {
+      obj.expiration = message.expiration.toISOString();
+    }
+    if (message.period !== undefined) {
+      obj.period = Duration.toJSON(message.period);
+    }
+    if (message.coversFees !== false) {
+      obj.coversFees = message.coversFees;
+    }
+    if (message.feeSpendLimit?.length) {
+      obj.feeSpendLimit = message.feeSpendLimit.map((e) => Coin.toJSON(e));
+    }
+    if (message.created !== undefined) {
+      obj.created = message.created.toISOString();
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Sponsorship>, I>>(base?: I): Sponsorship {
+    return Sponsorship.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Sponsorship>, I>>(object: I): Sponsorship {
+    const message = createBaseSponsorship();
+    message.sponsorCorporationId = object.sponsorCorporationId ?? 0;
+    message.sponsoredCorporationId = object.sponsoredCorporationId ?? 0;
+    message.msgTypes = object.msgTypes?.map((e) => e) || [];
+    message.spendLimit = object.spendLimit?.map((e) => Coin.fromPartial(e)) || [];
+    message.remainingSpend = object.remainingSpend?.map((e) => Coin.fromPartial(e)) || [];
+    message.expiration = object.expiration ?? undefined;
+    message.period = (object.period !== undefined && object.period !== null)
+      ? Duration.fromPartial(object.period)
+      : undefined;
+    message.coversFees = object.coversFees ?? false;
+    message.feeSpendLimit = object.feeSpendLimit?.map((e) => Coin.fromPartial(e)) || [];
+    message.created = object.created ?? undefined;
     return message;
   },
 };

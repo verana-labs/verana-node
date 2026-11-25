@@ -25,6 +25,8 @@ func (am AppModule) GetQueryCmd() *cobra.Command {
 	cmd.AddCommand(CmdListVSOperatorAuthorizations())
 	cmd.AddCommand(CmdGetDelegateAuthorization())
 	cmd.AddCommand(CmdGetVSOperatorAuthorization())
+	cmd.AddCommand(CmdGetSponsorship())
+	cmd.AddCommand(CmdListSponsorships())
 
 	return cmd
 }
@@ -173,5 +175,71 @@ func CmdListVSOperatorAuthorizations() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 
+	return cmd
+}
+
+// CmdGetSponsorship returns a cobra command for the [MOD-DE-QRY-5]
+// GetSponsorship query.
+func CmdGetSponsorship() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "get-sponsorship [sponsor-corporation-id] [sponsored-corporation-id]",
+		Short: "Get the sponsorship of a sponsor and a sponsored corporation",
+		Long:  "[MOD-DE-QRY-5] Get the Sponsorship entry keyed by the sponsor and the sponsored corporation ids.",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			sponsor, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid sponsor corporation id: %w", err)
+			}
+			sponsored, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid sponsored corporation id: %w", err)
+			}
+			res, err := types.NewQueryClient(clientCtx).GetSponsorship(cmd.Context(), &types.QueryGetSponsorshipRequest{
+				SponsorCorporationId: sponsor, SponsoredCorporationId: sponsored,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// CmdListSponsorships returns a cobra command for the [MOD-DE-QRY-6]
+// ListSponsorships query.
+func CmdListSponsorships() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "list-sponsorships [sponsor-corporation-id]",
+		Short: "List the sponsorships of a sponsor",
+		Long:  "[MOD-DE-QRY-6] List the sponsorships granted by a sponsor corporation, each with whether it is active.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			sponsor, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid sponsor corporation id: %w", err)
+			}
+			limit, _ := cmd.Flags().GetUint32("limit")
+			res, err := types.NewQueryClient(clientCtx).ListSponsorships(cmd.Context(), &types.QueryListSponsorshipsRequest{
+				SponsorCorporationId: sponsor, ResponseMaxSize: limit,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(res)
+		},
+	}
+	cmd.Flags().Uint32("limit", 64, "maximum number of results (1-1024, default 64)")
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

@@ -29,6 +29,7 @@ var msgTypeURLs = map[MsgType][]string{
 	MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION:                 {"/verana.de.v1.MsgGrantDelegateAuthorization"},
 	MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION:                {"/verana.de.v1.MsgRevokeDelegateAuthorization"},
 	MsgType_MSG_TYPE_STORE_DIGEST:                                 {"/verana.di.v1.MsgStoreDigest"},
+	MsgType_MSG_TYPE_REVOKE_SPONSORSHIP:                           {"/verana.de.v1.MsgRevokeSponsorship"},
 	MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION:               {"/verana.pp.v1.MsgCreateOrUpdateParticipantSession"},
 }
 

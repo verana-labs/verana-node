@@ -65,6 +65,12 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 		}
 	}
 
+	for _, s := range genState.Sponsorships {
+		if err := k.Sponsorships.Set(ctx, collections.Join(s.SponsorCorporationId, s.SponsoredCorporationId), s); err != nil {
+			return fmt.Errorf("failed to set sponsorship: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -127,6 +133,15 @@ func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) 
 		return nil, fmt.Errorf("failed to export window-end queue: %w", err)
 	}
 	genesis.WindowEndQueue = queue
+
+	sponsorships := []types.Sponsorship{}
+	if err := k.Sponsorships.Walk(ctx, nil, func(_ collections.Pair[uint64, uint64], s types.Sponsorship) (bool, error) {
+		sponsorships = append(sponsorships, s)
+		return false, nil
+	}); err != nil {
+		return nil, fmt.Errorf("failed to export sponsorships: %w", err)
+	}
+	genesis.Sponsorships = sponsorships
 
 	return genesis, nil
 }

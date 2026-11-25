@@ -38,6 +38,8 @@ func TestGenesis_Validate(t *testing.T) {
 		CorporationCounter: 2,
 	}
 	require.NoError(t, good.Validate())
+	good.Corporations[1].SponsorCorporationId = 1
+	require.NoError(t, good.Validate())
 
 	cases := map[string]types.GenesisState{
 		"id zero": {Params: types.DefaultParams(), Corporations: []types.Corporation{validCorp(0, "cosmos1a", "did:example:1")}},
@@ -63,10 +65,32 @@ func TestGenesis_Validate(t *testing.T) {
 			func() types.Corporation { c := validCorp(1, "cosmos1a", "did:example:1"); c.Language = "!!"; return c }(),
 		}},
 		"zero created": {Params: types.DefaultParams(), Corporations: []types.Corporation{
-			func() types.Corporation { c := validCorp(1, "cosmos1a", "did:example:1"); c.Created = time.Time{}; return c }(),
+			func() types.Corporation {
+				c := validCorp(1, "cosmos1a", "did:example:1")
+				c.Created = time.Time{}
+				return c
+			}(),
 		}},
 		"zero modified": {Params: types.DefaultParams(), Corporations: []types.Corporation{
-			func() types.Corporation { c := validCorp(1, "cosmos1a", "did:example:1"); c.Modified = time.Time{}; return c }(),
+			func() types.Corporation {
+				c := validCorp(1, "cosmos1a", "did:example:1")
+				c.Modified = time.Time{}
+				return c
+			}(),
+		}},
+		"sponsor of itself": {Params: types.DefaultParams(), Corporations: []types.Corporation{
+			func() types.Corporation {
+				c := validCorp(1, "cosmos1a", "did:example:1")
+				c.SponsorCorporationId = 1
+				return c
+			}(),
+		}},
+		"unknown sponsor": {Params: types.DefaultParams(), Corporations: []types.Corporation{
+			func() types.Corporation {
+				c := validCorp(1, "cosmos1a", "did:example:1")
+				c.SponsorCorporationId = 2
+				return c
+			}(),
 		}},
 		"modified before created": {Params: types.DefaultParams(), Corporations: []types.Corporation{
 			func() types.Corporation {
