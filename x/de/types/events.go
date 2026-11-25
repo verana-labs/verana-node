@@ -17,7 +17,6 @@ const (
 
 	AttributeKeyCorporation   = "corporation"
 	AttributeKeyCorporationID = "corporation_id"
-	AttributeKeyDelegate      = "delegate"
 	AttributeKeyGrantee       = "grantee"
 	AttributeKeyWithFeegrant  = "with_feegrant"
 	AttributeKeyTimestamp     = "timestamp"

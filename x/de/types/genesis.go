@@ -26,16 +26,16 @@ func (gs GenesisState) Validate() error {
 
 	// DelegateAuthorization: id (key) non-zero + unique; (corporation_id,
 	// delegate) secondary index unique.
-	oaIDs := make(map[uint64]bool)
-	oaCorpOp := make(map[string]bool)
+	daIDs := make(map[uint64]bool)
+	daCorpDelegate := make(map[string]bool)
 	for i, da := range gs.DelegateAuthorizations {
 		if da.Id == 0 {
 			return fmt.Errorf("delegate_authorizations[%d]: id cannot be 0", i)
 		}
-		if oaIDs[da.Id] {
+		if daIDs[da.Id] {
 			return fmt.Errorf("delegate_authorizations[%d]: duplicate id %d", i, da.Id)
 		}
-		oaIDs[da.Id] = true
+		daIDs[da.Id] = true
 		if da.CorporationId == 0 {
 			return fmt.Errorf("delegate_authorizations[%d]: corporation_id cannot be 0", i)
 		}
@@ -46,10 +46,10 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("delegate_authorizations[%d]: %w", i, err)
 		}
 		idx := fmt.Sprintf("%d/%s", da.CorporationId, da.Delegate)
-		if oaCorpOp[idx] {
+		if daCorpDelegate[idx] {
 			return fmt.Errorf("delegate_authorizations[%d]: duplicate (corporation_id, delegate) %s", i, idx)
 		}
-		oaCorpOp[idx] = true
+		daCorpDelegate[idx] = true
 	}
 
 	// FeeGrant: composite key (grantor_corporation_id, grantee) unique.
