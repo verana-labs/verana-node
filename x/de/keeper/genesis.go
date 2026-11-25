@@ -17,7 +17,7 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 		return err
 	}
 
-	var maxOAID uint64
+	var maxDAID uint64
 	for _, da := range genState.DelegateAuthorizations {
 		if err := k.DelegateAuthorizations.Set(ctx, da.Id, da); err != nil {
 			return fmt.Errorf("failed to set delegate authorization: %w", err)
@@ -25,15 +25,15 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 		if err := k.DelegateAuthorizationByCorpDelegate.Set(ctx, collections.Join(da.CorporationId, da.Delegate), da.Id); err != nil {
 			return fmt.Errorf("failed to set delegate authorization index: %w", err)
 		}
-		if da.Id > maxOAID {
-			maxOAID = da.Id
+		if da.Id > maxDAID {
+			maxDAID = da.Id
 		}
 	}
-	oaSeq := genState.DelegateAuthorizationSeq
-	if maxOAID > oaSeq {
-		oaSeq = maxOAID
+	daSeq := genState.DelegateAuthorizationSeq
+	if maxDAID > daSeq {
+		daSeq = maxDAID
 	}
-	if err := k.DelegateAuthorizationSeq.Set(ctx, oaSeq); err != nil {
+	if err := k.DelegateAuthorizationSeq.Set(ctx, daSeq); err != nil {
 		return fmt.Errorf("failed to seed delegate authorization sequence: %w", err)
 	}
 

@@ -2209,7 +2209,7 @@ func GrantDelegateAuthorizationWithSpendViaGroup(
 	authzSpendLimit sdk.Coins,
 	authzSpendLimitPeriod *time.Duration,
 ) error {
-	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
+	return submitGrantDelegateAuthorizationViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
 		Corporation:           policyAddr,
 		Delegate:              policyAddr, // group-proposal path: delegate == corporation policy_address
 		Grantee:               granteeAddr,
@@ -2232,7 +2232,7 @@ func GrantDelegateAuthorizationWithFeegrantViaGroup(
 	feegrantSpendLimitPeriod *time.Duration,
 	expiration *time.Time,
 ) error {
-	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
+	return submitGrantDelegateAuthorizationViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
 		Corporation:              policyAddr,
 		Delegate:                 policyAddr, // group-proposal path: delegate == corporation policy_address
 		Grantee:                  granteeAddr,
@@ -2244,8 +2244,8 @@ func GrantDelegateAuthorizationWithFeegrantViaGroup(
 	})
 }
 
-// submitGrantOpAuthzViaGroup submits the grant via a group proposal and votes it through.
-func submitGrantOpAuthzViaGroup(
+// submitGrantDelegateAuthorizationViaGroup submits the grant via a group proposal and votes it through.
+func submitGrantDelegateAuthorizationViaGroup(
 	client cosmosclient.Client,
 	ctx context.Context,
 	admin cosmosaccount.Account,
@@ -2276,41 +2276,6 @@ func submitGrantOpAuthzViaGroup(
 	fmt.Println("    - Waiting for proposal execution to complete...")
 	time.Sleep(1 * time.Second)
 	fmt.Printf("✅ Granted delegate authorization for %s via group proposal\n", grantMsg.Grantee)
-	return nil
-}
-
-// GrantSelfDelegation grants a delegate self-delegation so they can execute messages
-// with corporation=delegate (same address). MsgGrantDelegateAuthorization has signer="delegate";
-// delegate == corporation bypasses AUTHZ-CHECK-1 (corporation acting alone).
-func GrantSelfDelegation(
-	client cosmosclient.Client,
-	ctx context.Context,
-	account cosmosaccount.Account,
-	msgTypes []detypes.MsgType,
-) error {
-	addr, err := account.Address(addressPrefix)
-	if err != nil {
-		return fmt.Errorf("failed to get account address: %w", err)
-	}
-
-	msg := &detypes.MsgGrantDelegateAuthorization{
-		Corporation: addr,
-		Delegate:    addr,
-		Grantee:     addr,
-		MsgTypes:    msgTypes,
-	}
-
-	txResp, err := client.BroadcastTx(ctx, account, msg)
-	if err != nil {
-		return fmt.Errorf("failed to broadcast self-delegation: %w", err)
-	}
-
-	if txResp.TxResponse.Code != 0 {
-		return fmt.Errorf("self-delegation failed with code %d: %s",
-			txResp.TxResponse.Code, txResp.TxResponse.RawLog)
-	}
-
-	fmt.Printf("✅ Granted self-delegation for %s\n", addr)
 	return nil
 }
 
