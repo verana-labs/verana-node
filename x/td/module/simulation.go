@@ -33,7 +33,8 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		accs[i] = acc.Address.String()
 	}
 	trustdepositGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
+		Params:     types.DefaultParams(),
+		TuPegValue: types.DefaultTuPegValueGenesis,
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&trustdepositGenesis)

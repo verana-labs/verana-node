@@ -3,7 +3,6 @@ package xrv1
 
 import (
 	_ "cosmossdk.io/api/amino"
-	_ "cosmossdk.io/api/cosmos/base/query/v1beta1"
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
 	_ "github.com/cosmos/gogoproto/gogoproto"
@@ -817,7 +816,7 @@ var (
 	fd_QueryGetExchangeRateRequest_quote_asset_type protoreflect.FieldDescriptor
 	fd_QueryGetExchangeRateRequest_quote_asset      protoreflect.FieldDescriptor
 	fd_QueryGetExchangeRateRequest_state            protoreflect.FieldDescriptor
-	fd_QueryGetExchangeRateRequest_expire_ts        protoreflect.FieldDescriptor
+	fd_QueryGetExchangeRateRequest_expires          protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -829,7 +828,7 @@ func init() {
 	fd_QueryGetExchangeRateRequest_quote_asset_type = md_QueryGetExchangeRateRequest.Fields().ByName("quote_asset_type")
 	fd_QueryGetExchangeRateRequest_quote_asset = md_QueryGetExchangeRateRequest.Fields().ByName("quote_asset")
 	fd_QueryGetExchangeRateRequest_state = md_QueryGetExchangeRateRequest.Fields().ByName("state")
-	fd_QueryGetExchangeRateRequest_expire_ts = md_QueryGetExchangeRateRequest.Fields().ByName("expire_ts")
+	fd_QueryGetExchangeRateRequest_expires = md_QueryGetExchangeRateRequest.Fields().ByName("expires")
 }
 
 var _ protoreflect.Message = (*fastReflection_QueryGetExchangeRateRequest)(nil)
@@ -933,9 +932,9 @@ func (x *fastReflection_QueryGetExchangeRateRequest) Range(f func(protoreflect.F
 			return
 		}
 	}
-	if x.ExpireTs != nil {
-		value := protoreflect.ValueOfMessage(x.ExpireTs.ProtoReflect())
-		if !f(fd_QueryGetExchangeRateRequest_expire_ts, value) {
+	if x.Expires != nil {
+		value := protoreflect.ValueOfMessage(x.Expires.ProtoReflect())
+		if !f(fd_QueryGetExchangeRateRequest_expires, value) {
 			return
 		}
 	}
@@ -966,8 +965,8 @@ func (x *fastReflection_QueryGetExchangeRateRequest) Has(fd protoreflect.FieldDe
 		return x.QuoteAsset != ""
 	case "verana.xr.v1.QueryGetExchangeRateRequest.state":
 		return x.State != 0
-	case "verana.xr.v1.QueryGetExchangeRateRequest.expire_ts":
-		return x.ExpireTs != nil
+	case "verana.xr.v1.QueryGetExchangeRateRequest.expires":
+		return x.Expires != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryGetExchangeRateRequest"))
@@ -996,8 +995,8 @@ func (x *fastReflection_QueryGetExchangeRateRequest) Clear(fd protoreflect.Field
 		x.QuoteAsset = ""
 	case "verana.xr.v1.QueryGetExchangeRateRequest.state":
 		x.State = 0
-	case "verana.xr.v1.QueryGetExchangeRateRequest.expire_ts":
-		x.ExpireTs = nil
+	case "verana.xr.v1.QueryGetExchangeRateRequest.expires":
+		x.Expires = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryGetExchangeRateRequest"))
@@ -1032,8 +1031,8 @@ func (x *fastReflection_QueryGetExchangeRateRequest) Get(descriptor protoreflect
 	case "verana.xr.v1.QueryGetExchangeRateRequest.state":
 		value := x.State
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "verana.xr.v1.QueryGetExchangeRateRequest.expire_ts":
-		value := x.ExpireTs
+	case "verana.xr.v1.QueryGetExchangeRateRequest.expires":
+		value := x.Expires
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
@@ -1067,8 +1066,8 @@ func (x *fastReflection_QueryGetExchangeRateRequest) Set(fd protoreflect.FieldDe
 		x.QuoteAsset = value.Interface().(string)
 	case "verana.xr.v1.QueryGetExchangeRateRequest.state":
 		x.State = (StateFilter)(value.Enum())
-	case "verana.xr.v1.QueryGetExchangeRateRequest.expire_ts":
-		x.ExpireTs = value.Message().Interface().(*timestamppb.Timestamp)
+	case "verana.xr.v1.QueryGetExchangeRateRequest.expires":
+		x.Expires = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryGetExchangeRateRequest"))
@@ -1089,11 +1088,11 @@ func (x *fastReflection_QueryGetExchangeRateRequest) Set(fd protoreflect.FieldDe
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetExchangeRateRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.xr.v1.QueryGetExchangeRateRequest.expire_ts":
-		if x.ExpireTs == nil {
-			x.ExpireTs = new(timestamppb.Timestamp)
+	case "verana.xr.v1.QueryGetExchangeRateRequest.expires":
+		if x.Expires == nil {
+			x.Expires = new(timestamppb.Timestamp)
 		}
-		return protoreflect.ValueOfMessage(x.ExpireTs.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.Expires.ProtoReflect())
 	case "verana.xr.v1.QueryGetExchangeRateRequest.id":
 		panic(fmt.Errorf("field id of message verana.xr.v1.QueryGetExchangeRateRequest is not mutable"))
 	case "verana.xr.v1.QueryGetExchangeRateRequest.base_asset_type":
@@ -1131,7 +1130,7 @@ func (x *fastReflection_QueryGetExchangeRateRequest) NewField(fd protoreflect.Fi
 		return protoreflect.ValueOfString("")
 	case "verana.xr.v1.QueryGetExchangeRateRequest.state":
 		return protoreflect.ValueOfEnum(0)
-	case "verana.xr.v1.QueryGetExchangeRateRequest.expire_ts":
+	case "verana.xr.v1.QueryGetExchangeRateRequest.expires":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
@@ -1223,8 +1222,8 @@ func (x *fastReflection_QueryGetExchangeRateRequest) ProtoMethods() *protoiface.
 		if x.State != 0 {
 			n += 1 + runtime.Sov(uint64(x.State))
 		}
-		if x.ExpireTs != nil {
-			l = options.Size(x.ExpireTs)
+		if x.Expires != nil {
+			l = options.Size(x.Expires)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
@@ -1256,8 +1255,8 @@ func (x *fastReflection_QueryGetExchangeRateRequest) ProtoMethods() *protoiface.
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.ExpireTs != nil {
-			encoded, err := options.Marshal(x.ExpireTs)
+		if x.Expires != nil {
+			encoded, err := options.Marshal(x.Expires)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1495,7 +1494,7 @@ func (x *fastReflection_QueryGetExchangeRateRequest) ProtoMethods() *protoiface.
 				}
 			case 7:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ExpireTs", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Expires", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -1522,10 +1521,10 @@ func (x *fastReflection_QueryGetExchangeRateRequest) ProtoMethods() *protoiface.
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.ExpireTs == nil {
-					x.ExpireTs = &timestamppb.Timestamp{}
+				if x.Expires == nil {
+					x.Expires = &timestamppb.Timestamp{}
 				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ExpireTs); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Expires); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -2138,1255 +2137,6 @@ func (x *fastReflection_QueryGetExchangeRateResponse) ProtoMethods() *protoiface
 }
 
 var (
-	md_QueryListExchangeRatesRequest                   protoreflect.MessageDescriptor
-	fd_QueryListExchangeRatesRequest_base_asset_type   protoreflect.FieldDescriptor
-	fd_QueryListExchangeRatesRequest_base_asset        protoreflect.FieldDescriptor
-	fd_QueryListExchangeRatesRequest_quote_asset_type  protoreflect.FieldDescriptor
-	fd_QueryListExchangeRatesRequest_quote_asset       protoreflect.FieldDescriptor
-	fd_QueryListExchangeRatesRequest_state             protoreflect.FieldDescriptor
-	fd_QueryListExchangeRatesRequest_expire            protoreflect.FieldDescriptor
-	fd_QueryListExchangeRatesRequest_response_max_size protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_verana_xr_v1_query_proto_init()
-	md_QueryListExchangeRatesRequest = File_verana_xr_v1_query_proto.Messages().ByName("QueryListExchangeRatesRequest")
-	fd_QueryListExchangeRatesRequest_base_asset_type = md_QueryListExchangeRatesRequest.Fields().ByName("base_asset_type")
-	fd_QueryListExchangeRatesRequest_base_asset = md_QueryListExchangeRatesRequest.Fields().ByName("base_asset")
-	fd_QueryListExchangeRatesRequest_quote_asset_type = md_QueryListExchangeRatesRequest.Fields().ByName("quote_asset_type")
-	fd_QueryListExchangeRatesRequest_quote_asset = md_QueryListExchangeRatesRequest.Fields().ByName("quote_asset")
-	fd_QueryListExchangeRatesRequest_state = md_QueryListExchangeRatesRequest.Fields().ByName("state")
-	fd_QueryListExchangeRatesRequest_expire = md_QueryListExchangeRatesRequest.Fields().ByName("expire")
-	fd_QueryListExchangeRatesRequest_response_max_size = md_QueryListExchangeRatesRequest.Fields().ByName("response_max_size")
-}
-
-var _ protoreflect.Message = (*fastReflection_QueryListExchangeRatesRequest)(nil)
-
-type fastReflection_QueryListExchangeRatesRequest QueryListExchangeRatesRequest
-
-func (x *QueryListExchangeRatesRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryListExchangeRatesRequest)(x)
-}
-
-func (x *QueryListExchangeRatesRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_xr_v1_query_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_QueryListExchangeRatesRequest_messageType fastReflection_QueryListExchangeRatesRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QueryListExchangeRatesRequest_messageType{}
-
-type fastReflection_QueryListExchangeRatesRequest_messageType struct{}
-
-func (x fastReflection_QueryListExchangeRatesRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryListExchangeRatesRequest)(nil)
-}
-func (x fastReflection_QueryListExchangeRatesRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryListExchangeRatesRequest)
-}
-func (x fastReflection_QueryListExchangeRatesRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListExchangeRatesRequest
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_QueryListExchangeRatesRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListExchangeRatesRequest
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryListExchangeRatesRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QueryListExchangeRatesRequest_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryListExchangeRatesRequest) New() protoreflect.Message {
-	return new(fastReflection_QueryListExchangeRatesRequest)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryListExchangeRatesRequest) Interface() protoreflect.ProtoMessage {
-	return (*QueryListExchangeRatesRequest)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_QueryListExchangeRatesRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.BaseAssetType != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.BaseAssetType))
-		if !f(fd_QueryListExchangeRatesRequest_base_asset_type, value) {
-			return
-		}
-	}
-	if x.BaseAsset != "" {
-		value := protoreflect.ValueOfString(x.BaseAsset)
-		if !f(fd_QueryListExchangeRatesRequest_base_asset, value) {
-			return
-		}
-	}
-	if x.QuoteAssetType != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.QuoteAssetType))
-		if !f(fd_QueryListExchangeRatesRequest_quote_asset_type, value) {
-			return
-		}
-	}
-	if x.QuoteAsset != "" {
-		value := protoreflect.ValueOfString(x.QuoteAsset)
-		if !f(fd_QueryListExchangeRatesRequest_quote_asset, value) {
-			return
-		}
-	}
-	if x.State != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.State))
-		if !f(fd_QueryListExchangeRatesRequest_state, value) {
-			return
-		}
-	}
-	if x.Expire != nil {
-		value := protoreflect.ValueOfMessage(x.Expire.ProtoReflect())
-		if !f(fd_QueryListExchangeRatesRequest_expire, value) {
-			return
-		}
-	}
-	if x.ResponseMaxSize != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.ResponseMaxSize)
-		if !f(fd_QueryListExchangeRatesRequest_response_max_size, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryListExchangeRatesRequest) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset_type":
-		return x.BaseAssetType != 0
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset":
-		return x.BaseAsset != ""
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset_type":
-		return x.QuoteAssetType != 0
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset":
-		return x.QuoteAsset != ""
-	case "verana.xr.v1.QueryListExchangeRatesRequest.state":
-		return x.State != 0
-	case "verana.xr.v1.QueryListExchangeRatesRequest.expire":
-		return x.Expire != nil
-	case "verana.xr.v1.QueryListExchangeRatesRequest.response_max_size":
-		return x.ResponseMaxSize != uint32(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesRequest"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListExchangeRatesRequest) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset_type":
-		x.BaseAssetType = 0
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset":
-		x.BaseAsset = ""
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset_type":
-		x.QuoteAssetType = 0
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset":
-		x.QuoteAsset = ""
-	case "verana.xr.v1.QueryListExchangeRatesRequest.state":
-		x.State = 0
-	case "verana.xr.v1.QueryListExchangeRatesRequest.expire":
-		x.Expire = nil
-	case "verana.xr.v1.QueryListExchangeRatesRequest.response_max_size":
-		x.ResponseMaxSize = uint32(0)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesRequest"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryListExchangeRatesRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset_type":
-		value := x.BaseAssetType
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset":
-		value := x.BaseAsset
-		return protoreflect.ValueOfString(value)
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset_type":
-		value := x.QuoteAssetType
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset":
-		value := x.QuoteAsset
-		return protoreflect.ValueOfString(value)
-	case "verana.xr.v1.QueryListExchangeRatesRequest.state":
-		value := x.State
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "verana.xr.v1.QueryListExchangeRatesRequest.expire":
-		value := x.Expire
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "verana.xr.v1.QueryListExchangeRatesRequest.response_max_size":
-		value := x.ResponseMaxSize
-		return protoreflect.ValueOfUint32(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesRequest"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesRequest does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListExchangeRatesRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset_type":
-		x.BaseAssetType = (v1.PricingAssetType)(value.Enum())
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset":
-		x.BaseAsset = value.Interface().(string)
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset_type":
-		x.QuoteAssetType = (v1.PricingAssetType)(value.Enum())
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset":
-		x.QuoteAsset = value.Interface().(string)
-	case "verana.xr.v1.QueryListExchangeRatesRequest.state":
-		x.State = (StateFilter)(value.Enum())
-	case "verana.xr.v1.QueryListExchangeRatesRequest.expire":
-		x.Expire = value.Message().Interface().(*timestamppb.Timestamp)
-	case "verana.xr.v1.QueryListExchangeRatesRequest.response_max_size":
-		x.ResponseMaxSize = uint32(value.Uint())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesRequest"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListExchangeRatesRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesRequest.expire":
-		if x.Expire == nil {
-			x.Expire = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.Expire.ProtoReflect())
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset_type":
-		panic(fmt.Errorf("field base_asset_type of message verana.xr.v1.QueryListExchangeRatesRequest is not mutable"))
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset":
-		panic(fmt.Errorf("field base_asset of message verana.xr.v1.QueryListExchangeRatesRequest is not mutable"))
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset_type":
-		panic(fmt.Errorf("field quote_asset_type of message verana.xr.v1.QueryListExchangeRatesRequest is not mutable"))
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset":
-		panic(fmt.Errorf("field quote_asset of message verana.xr.v1.QueryListExchangeRatesRequest is not mutable"))
-	case "verana.xr.v1.QueryListExchangeRatesRequest.state":
-		panic(fmt.Errorf("field state of message verana.xr.v1.QueryListExchangeRatesRequest is not mutable"))
-	case "verana.xr.v1.QueryListExchangeRatesRequest.response_max_size":
-		panic(fmt.Errorf("field response_max_size of message verana.xr.v1.QueryListExchangeRatesRequest is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesRequest"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryListExchangeRatesRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset_type":
-		return protoreflect.ValueOfEnum(0)
-	case "verana.xr.v1.QueryListExchangeRatesRequest.base_asset":
-		return protoreflect.ValueOfString("")
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset_type":
-		return protoreflect.ValueOfEnum(0)
-	case "verana.xr.v1.QueryListExchangeRatesRequest.quote_asset":
-		return protoreflect.ValueOfString("")
-	case "verana.xr.v1.QueryListExchangeRatesRequest.state":
-		return protoreflect.ValueOfEnum(0)
-	case "verana.xr.v1.QueryListExchangeRatesRequest.expire":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "verana.xr.v1.QueryListExchangeRatesRequest.response_max_size":
-		return protoreflect.ValueOfUint32(uint32(0))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesRequest"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesRequest does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryListExchangeRatesRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.xr.v1.QueryListExchangeRatesRequest", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryListExchangeRatesRequest) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListExchangeRatesRequest) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_QueryListExchangeRatesRequest) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryListExchangeRatesRequest) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryListExchangeRatesRequest)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.BaseAssetType != 0 {
-			n += 1 + runtime.Sov(uint64(x.BaseAssetType))
-		}
-		l = len(x.BaseAsset)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.QuoteAssetType != 0 {
-			n += 1 + runtime.Sov(uint64(x.QuoteAssetType))
-		}
-		l = len(x.QuoteAsset)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.State != 0 {
-			n += 1 + runtime.Sov(uint64(x.State))
-		}
-		if x.Expire != nil {
-			l = options.Size(x.Expire)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.ResponseMaxSize != 0 {
-			n += 1 + runtime.Sov(uint64(x.ResponseMaxSize))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListExchangeRatesRequest)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.ResponseMaxSize != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ResponseMaxSize))
-			i--
-			dAtA[i] = 0x38
-		}
-		if x.Expire != nil {
-			encoded, err := options.Marshal(x.Expire)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x32
-		}
-		if x.State != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.State))
-			i--
-			dAtA[i] = 0x28
-		}
-		if len(x.QuoteAsset) > 0 {
-			i -= len(x.QuoteAsset)
-			copy(dAtA[i:], x.QuoteAsset)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.QuoteAsset)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if x.QuoteAssetType != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.QuoteAssetType))
-			i--
-			dAtA[i] = 0x18
-		}
-		if len(x.BaseAsset) > 0 {
-			i -= len(x.BaseAsset)
-			copy(dAtA[i:], x.BaseAsset)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BaseAsset)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if x.BaseAssetType != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.BaseAssetType))
-			i--
-			dAtA[i] = 0x8
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListExchangeRatesRequest)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListExchangeRatesRequest: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListExchangeRatesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BaseAssetType", wireType)
-				}
-				x.BaseAssetType = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.BaseAssetType |= v1.PricingAssetType(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BaseAsset", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.BaseAsset = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field QuoteAssetType", wireType)
-				}
-				x.QuoteAssetType = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.QuoteAssetType |= v1.PricingAssetType(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field QuoteAsset", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.QuoteAsset = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 5:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field State", wireType)
-				}
-				x.State = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.State |= StateFilter(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 6:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Expire", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Expire == nil {
-					x.Expire = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Expire); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 7:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ResponseMaxSize", wireType)
-				}
-				x.ResponseMaxSize = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.ResponseMaxSize |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var _ protoreflect.List = (*_QueryListExchangeRatesResponse_1_list)(nil)
-
-type _QueryListExchangeRatesResponse_1_list struct {
-	list *[]*ExchangeRate
-}
-
-func (x *_QueryListExchangeRatesResponse_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_QueryListExchangeRatesResponse_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_QueryListExchangeRatesResponse_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ExchangeRate)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_QueryListExchangeRatesResponse_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*ExchangeRate)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_QueryListExchangeRatesResponse_1_list) AppendMutable() protoreflect.Value {
-	v := new(ExchangeRate)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_QueryListExchangeRatesResponse_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_QueryListExchangeRatesResponse_1_list) NewElement() protoreflect.Value {
-	v := new(ExchangeRate)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_QueryListExchangeRatesResponse_1_list) IsValid() bool {
-	return x.list != nil
-}
-
-var (
-	md_QueryListExchangeRatesResponse                protoreflect.MessageDescriptor
-	fd_QueryListExchangeRatesResponse_exchange_rates protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_verana_xr_v1_query_proto_init()
-	md_QueryListExchangeRatesResponse = File_verana_xr_v1_query_proto.Messages().ByName("QueryListExchangeRatesResponse")
-	fd_QueryListExchangeRatesResponse_exchange_rates = md_QueryListExchangeRatesResponse.Fields().ByName("exchange_rates")
-}
-
-var _ protoreflect.Message = (*fastReflection_QueryListExchangeRatesResponse)(nil)
-
-type fastReflection_QueryListExchangeRatesResponse QueryListExchangeRatesResponse
-
-func (x *QueryListExchangeRatesResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryListExchangeRatesResponse)(x)
-}
-
-func (x *QueryListExchangeRatesResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_xr_v1_query_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_QueryListExchangeRatesResponse_messageType fastReflection_QueryListExchangeRatesResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QueryListExchangeRatesResponse_messageType{}
-
-type fastReflection_QueryListExchangeRatesResponse_messageType struct{}
-
-func (x fastReflection_QueryListExchangeRatesResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryListExchangeRatesResponse)(nil)
-}
-func (x fastReflection_QueryListExchangeRatesResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryListExchangeRatesResponse)
-}
-func (x fastReflection_QueryListExchangeRatesResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListExchangeRatesResponse
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_QueryListExchangeRatesResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListExchangeRatesResponse
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryListExchangeRatesResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QueryListExchangeRatesResponse_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryListExchangeRatesResponse) New() protoreflect.Message {
-	return new(fastReflection_QueryListExchangeRatesResponse)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryListExchangeRatesResponse) Interface() protoreflect.ProtoMessage {
-	return (*QueryListExchangeRatesResponse)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_QueryListExchangeRatesResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.ExchangeRates) != 0 {
-		value := protoreflect.ValueOfList(&_QueryListExchangeRatesResponse_1_list{list: &x.ExchangeRates})
-		if !f(fd_QueryListExchangeRatesResponse_exchange_rates, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryListExchangeRatesResponse) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesResponse.exchange_rates":
-		return len(x.ExchangeRates) != 0
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesResponse"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListExchangeRatesResponse) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesResponse.exchange_rates":
-		x.ExchangeRates = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesResponse"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryListExchangeRatesResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesResponse.exchange_rates":
-		if len(x.ExchangeRates) == 0 {
-			return protoreflect.ValueOfList(&_QueryListExchangeRatesResponse_1_list{})
-		}
-		listValue := &_QueryListExchangeRatesResponse_1_list{list: &x.ExchangeRates}
-		return protoreflect.ValueOfList(listValue)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesResponse"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesResponse does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListExchangeRatesResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesResponse.exchange_rates":
-		lv := value.List()
-		clv := lv.(*_QueryListExchangeRatesResponse_1_list)
-		x.ExchangeRates = *clv.list
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesResponse"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListExchangeRatesResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesResponse.exchange_rates":
-		if x.ExchangeRates == nil {
-			x.ExchangeRates = []*ExchangeRate{}
-		}
-		value := &_QueryListExchangeRatesResponse_1_list{list: &x.ExchangeRates}
-		return protoreflect.ValueOfList(value)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesResponse"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryListExchangeRatesResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.xr.v1.QueryListExchangeRatesResponse.exchange_rates":
-		list := []*ExchangeRate{}
-		return protoreflect.ValueOfList(&_QueryListExchangeRatesResponse_1_list{list: &list})
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.xr.v1.QueryListExchangeRatesResponse"))
-		}
-		panic(fmt.Errorf("message verana.xr.v1.QueryListExchangeRatesResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryListExchangeRatesResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.xr.v1.QueryListExchangeRatesResponse", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryListExchangeRatesResponse) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListExchangeRatesResponse) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_QueryListExchangeRatesResponse) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryListExchangeRatesResponse) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryListExchangeRatesResponse)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if len(x.ExchangeRates) > 0 {
-			for _, e := range x.ExchangeRates {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListExchangeRatesResponse)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.ExchangeRates) > 0 {
-			for iNdEx := len(x.ExchangeRates) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.ExchangeRates[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
-			}
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListExchangeRatesResponse)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListExchangeRatesResponse: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListExchangeRatesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ExchangeRates", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.ExchangeRates = append(x.ExchangeRates, &ExchangeRate{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ExchangeRates[len(x.ExchangeRates)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
 	md_QueryGetPriceRequest                  protoreflect.MessageDescriptor
 	fd_QueryGetPriceRequest_base_asset_type  protoreflect.FieldDescriptor
 	fd_QueryGetPriceRequest_base_asset       protoreflect.FieldDescriptor
@@ -3414,7 +2164,7 @@ func (x *QueryGetPriceRequest) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryGetPriceRequest) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_xr_v1_query_proto_msgTypes[6]
+	mi := &file_verana_xr_v1_query_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4050,7 +2800,7 @@ func (x *QueryGetPriceResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *QueryGetPriceResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_xr_v1_query_proto_msgTypes[7]
+	mi := &file_verana_xr_v1_query_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4463,7 +3213,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// StateFilter is used for optional bool filtering: 0=unset, 1=active, 2=inactive.
+// StateFilter is an optional state: 0=unset, 1=enabled, 2=disabled.
 type StateFilter int32
 
 const (
@@ -4583,13 +3333,14 @@ type QueryGetExchangeRateRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id             uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	BaseAssetType  v1.PricingAssetType    `protobuf:"varint,2,opt,name=base_asset_type,json=baseAssetType,proto3,enum=verana.cs.v1.PricingAssetType" json:"base_asset_type,omitempty"`
-	BaseAsset      string                 `protobuf:"bytes,3,opt,name=base_asset,json=baseAsset,proto3" json:"base_asset,omitempty"`
-	QuoteAssetType v1.PricingAssetType    `protobuf:"varint,4,opt,name=quote_asset_type,json=quoteAssetType,proto3,enum=verana.cs.v1.PricingAssetType" json:"quote_asset_type,omitempty"`
-	QuoteAsset     string                 `protobuf:"bytes,5,opt,name=quote_asset,json=quoteAsset,proto3" json:"quote_asset,omitempty"`
-	State          StateFilter            `protobuf:"varint,6,opt,name=state,proto3,enum=verana.xr.v1.StateFilter" json:"state,omitempty"`
-	ExpireTs       *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expire_ts,json=expireTs,proto3" json:"expire_ts,omitempty"`
+	Id             uint64              `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	BaseAssetType  v1.PricingAssetType `protobuf:"varint,2,opt,name=base_asset_type,json=baseAssetType,proto3,enum=verana.cs.v1.PricingAssetType" json:"base_asset_type,omitempty"`
+	BaseAsset      string              `protobuf:"bytes,3,opt,name=base_asset,json=baseAsset,proto3" json:"base_asset,omitempty"`
+	QuoteAssetType v1.PricingAssetType `protobuf:"varint,4,opt,name=quote_asset_type,json=quoteAssetType,proto3,enum=verana.cs.v1.PricingAssetType" json:"quote_asset_type,omitempty"`
+	QuoteAsset     string              `protobuf:"bytes,5,opt,name=quote_asset,json=quoteAsset,proto3" json:"quote_asset,omitempty"`
+	State          StateFilter         `protobuf:"varint,6,opt,name=state,proto3,enum=verana.xr.v1.StateFilter" json:"state,omitempty"`
+	// expires, if set, keeps only an entry whose expires is strictly later.
+	Expires *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expires,proto3" json:"expires,omitempty"`
 }
 
 func (x *QueryGetExchangeRateRequest) Reset() {
@@ -4654,9 +3405,9 @@ func (x *QueryGetExchangeRateRequest) GetState() StateFilter {
 	return StateFilter_STATE_FILTER_UNSPECIFIED
 }
 
-func (x *QueryGetExchangeRateRequest) GetExpireTs() *timestamppb.Timestamp {
+func (x *QueryGetExchangeRateRequest) GetExpires() *timestamppb.Timestamp {
 	if x != nil {
-		return x.ExpireTs
+		return x.Expires
 	}
 	return nil
 }
@@ -4668,7 +3419,7 @@ type QueryGetExchangeRateResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	ExchangeRate *ExchangeRate `protobuf:"bytes,1,opt,name=exchange_rate,json=exchangeRate,proto3" json:"exchange_rate,omitempty"`
-	// authorizations lists the operators authorized to update this exchange rate. [MOD-XR-QRY-1]
+	// authorizations lists the feeders authorized to update this exchange rate.
 	Authorizations []*ExchangeRateAuthorization `protobuf:"bytes,2,rep,name=authorizations,proto3" json:"authorizations,omitempty"`
 }
 
@@ -4706,127 +3457,6 @@ func (x *QueryGetExchangeRateResponse) GetAuthorizations() []*ExchangeRateAuthor
 	return nil
 }
 
-// QueryListExchangeRatesRequest is the request type for Query/ListExchangeRates.
-type QueryListExchangeRatesRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	BaseAssetType  v1.PricingAssetType    `protobuf:"varint,1,opt,name=base_asset_type,json=baseAssetType,proto3,enum=verana.cs.v1.PricingAssetType" json:"base_asset_type,omitempty"`
-	BaseAsset      string                 `protobuf:"bytes,2,opt,name=base_asset,json=baseAsset,proto3" json:"base_asset,omitempty"`
-	QuoteAssetType v1.PricingAssetType    `protobuf:"varint,3,opt,name=quote_asset_type,json=quoteAssetType,proto3,enum=verana.cs.v1.PricingAssetType" json:"quote_asset_type,omitempty"`
-	QuoteAsset     string                 `protobuf:"bytes,4,opt,name=quote_asset,json=quoteAsset,proto3" json:"quote_asset,omitempty"`
-	State          StateFilter            `protobuf:"varint,5,opt,name=state,proto3,enum=verana.xr.v1.StateFilter" json:"state,omitempty"`
-	Expire         *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=expire,proto3" json:"expire,omitempty"`
-	// response_max_size caps the number of returned entries (default 64, max 1024). [MOD-XR-QRY-2]
-	ResponseMaxSize uint32 `protobuf:"varint,7,opt,name=response_max_size,json=responseMaxSize,proto3" json:"response_max_size,omitempty"`
-}
-
-func (x *QueryListExchangeRatesRequest) Reset() {
-	*x = QueryListExchangeRatesRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_xr_v1_query_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *QueryListExchangeRatesRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QueryListExchangeRatesRequest) ProtoMessage() {}
-
-// Deprecated: Use QueryListExchangeRatesRequest.ProtoReflect.Descriptor instead.
-func (*QueryListExchangeRatesRequest) Descriptor() ([]byte, []int) {
-	return file_verana_xr_v1_query_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *QueryListExchangeRatesRequest) GetBaseAssetType() v1.PricingAssetType {
-	if x != nil {
-		return x.BaseAssetType
-	}
-	return v1.PricingAssetType(0)
-}
-
-func (x *QueryListExchangeRatesRequest) GetBaseAsset() string {
-	if x != nil {
-		return x.BaseAsset
-	}
-	return ""
-}
-
-func (x *QueryListExchangeRatesRequest) GetQuoteAssetType() v1.PricingAssetType {
-	if x != nil {
-		return x.QuoteAssetType
-	}
-	return v1.PricingAssetType(0)
-}
-
-func (x *QueryListExchangeRatesRequest) GetQuoteAsset() string {
-	if x != nil {
-		return x.QuoteAsset
-	}
-	return ""
-}
-
-func (x *QueryListExchangeRatesRequest) GetState() StateFilter {
-	if x != nil {
-		return x.State
-	}
-	return StateFilter_STATE_FILTER_UNSPECIFIED
-}
-
-func (x *QueryListExchangeRatesRequest) GetExpire() *timestamppb.Timestamp {
-	if x != nil {
-		return x.Expire
-	}
-	return nil
-}
-
-func (x *QueryListExchangeRatesRequest) GetResponseMaxSize() uint32 {
-	if x != nil {
-		return x.ResponseMaxSize
-	}
-	return 0
-}
-
-// QueryListExchangeRatesResponse is the response type for Query/ListExchangeRates.
-type QueryListExchangeRatesResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ExchangeRates []*ExchangeRate `protobuf:"bytes,1,rep,name=exchange_rates,json=exchangeRates,proto3" json:"exchange_rates,omitempty"`
-}
-
-func (x *QueryListExchangeRatesResponse) Reset() {
-	*x = QueryListExchangeRatesResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_xr_v1_query_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *QueryListExchangeRatesResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QueryListExchangeRatesResponse) ProtoMessage() {}
-
-// Deprecated: Use QueryListExchangeRatesResponse.ProtoReflect.Descriptor instead.
-func (*QueryListExchangeRatesResponse) Descriptor() ([]byte, []int) {
-	return file_verana_xr_v1_query_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *QueryListExchangeRatesResponse) GetExchangeRates() []*ExchangeRate {
-	if x != nil {
-		return x.ExchangeRates
-	}
-	return nil
-}
-
 // QueryGetPriceRequest is the request type for Query/GetPrice.
 type QueryGetPriceRequest struct {
 	state         protoimpl.MessageState
@@ -4843,7 +3473,7 @@ type QueryGetPriceRequest struct {
 func (x *QueryGetPriceRequest) Reset() {
 	*x = QueryGetPriceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_xr_v1_query_proto_msgTypes[6]
+		mi := &file_verana_xr_v1_query_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4857,7 +3487,7 @@ func (*QueryGetPriceRequest) ProtoMessage() {}
 
 // Deprecated: Use QueryGetPriceRequest.ProtoReflect.Descriptor instead.
 func (*QueryGetPriceRequest) Descriptor() ([]byte, []int) {
-	return file_verana_xr_v1_query_proto_rawDescGZIP(), []int{6}
+	return file_verana_xr_v1_query_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *QueryGetPriceRequest) GetBaseAssetType() v1.PricingAssetType {
@@ -4907,7 +3537,7 @@ type QueryGetPriceResponse struct {
 func (x *QueryGetPriceResponse) Reset() {
 	*x = QueryGetPriceResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_xr_v1_query_proto_msgTypes[7]
+		mi := &file_verana_xr_v1_query_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4921,7 +3551,7 @@ func (*QueryGetPriceResponse) ProtoMessage() {}
 
 // Deprecated: Use QueryGetPriceResponse.ProtoReflect.Descriptor instead.
 func (*QueryGetPriceResponse) Descriptor() ([]byte, []int) {
-	return file_verana_xr_v1_query_proto_rawDescGZIP(), []int{7}
+	return file_verana_xr_v1_query_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *QueryGetPriceResponse) GetPrice() string {
@@ -4937,160 +3567,117 @@ var file_verana_xr_v1_query_proto_rawDesc = []byte{
 	0x0a, 0x18, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x71,
 	0x75, 0x65, 0x72, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0c, 0x76, 0x65, 0x72, 0x61,
 	0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f,
-	0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2a, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61, 0x73, 0x65, 0x2f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d,
-	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x76, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d,
-	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x15, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f,
-	0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x78, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x63, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x14, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x4e,
-	0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78,
-	0x72, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f,
-	0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0xf3,
-	0x02, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45, 0x78, 0x63, 0x68, 0x61,
-	0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e,
-	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x46,
-	0x0a, 0x0f, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
-	0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x69, 0x63, 0x69, 0x6e, 0x67, 0x41, 0x73,
-	0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0d, 0x62, 0x61, 0x73, 0x65, 0x41, 0x73, 0x73,
-	0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61,
-	0x73, 0x73, 0x65, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x62, 0x61, 0x73, 0x65,
-	0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x48, 0x0a, 0x10, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x5f, 0x61,
-	0x73, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32,
-	0x1e, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50,
-	0x72, 0x69, 0x63, 0x69, 0x6e, 0x67, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52,
-	0x0e, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12,
-	0x1f, 0x0a, 0x0b, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x05,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74,
-	0x12, 0x2f, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e, 0x32,
-	0x19, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x53,
-	0x74, 0x61, 0x74, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74,
-	0x65, 0x12, 0x41, 0x0a, 0x09, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x5f, 0x74, 0x73, 0x18, 0x07,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
-	0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x08, 0x65, 0x78, 0x70, 0x69,
-	0x72, 0x65, 0x54, 0x73, 0x22, 0xbc, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
-	0x74, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x45, 0x0a, 0x0d, 0x65, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67,
-	0x65, 0x5f, 0x72, 0x61, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x78, 0x63, 0x68,
-	0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c,
-	0x65, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x12, 0x55, 0x0a, 0x0e,
-	0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72,
-	0x2e, 0x76, 0x31, 0x2e, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65,
-	0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8,
-	0xde, 0x1f, 0x00, 0x52, 0x0e, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x73, 0x22, 0x8c, 0x03, 0x0a, 0x1d, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73,
-	0x74, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0f, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61, 0x73,
-	0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e,
-	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72,
-	0x69, 0x63, 0x69, 0x6e, 0x67, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0d,
-	0x62, 0x61, 0x73, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1d, 0x0a,
-	0x0a, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x09, 0x62, 0x61, 0x73, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x48, 0x0a, 0x10,
-	0x71, 0x75, 0x6f, 0x74, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
+	0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67,
+	0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e,
+	0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x1a, 0x19, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x70,
+	0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x15, 0x76, 0x65, 0x72,
+	0x61, 0x6e, 0x61, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x78, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x1a, 0x18, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x63, 0x73, 0x2f, 0x76, 0x31,
+	0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x14, 0x0a, 0x12,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x22, 0x4e, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x61, 0x72,
+	0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42,
+	0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61,
+	0x6d, 0x73, 0x22, 0xf0, 0x02, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45,
+	0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02,
+	0x69, 0x64, 0x12, 0x46, 0x0a, 0x0f, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74,
+	0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x69, 0x63, 0x69,
+	0x6e, 0x67, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0d, 0x62, 0x61, 0x73,
+	0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x62, 0x61,
+	0x73, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09,
+	0x62, 0x61, 0x73, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x48, 0x0a, 0x10, 0x71, 0x75, 0x6f,
+	0x74, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x63, 0x73, 0x2e,
+	0x76, 0x31, 0x2e, 0x50, 0x72, 0x69, 0x63, 0x69, 0x6e, 0x67, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54,
+	0x79, 0x70, 0x65, 0x52, 0x0e, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54,
+	0x79, 0x70, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x5f, 0x61, 0x73, 0x73,
+	0x65, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x41,
+	0x73, 0x73, 0x65, 0x74, 0x12, 0x2f, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x19, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e,
+	0x76, 0x31, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x05,
+	0x73, 0x74, 0x61, 0x74, 0x65, 0x12, 0x3e, 0x0a, 0x07, 0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x73,
+	0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x07, 0x65, 0x78,
+	0x70, 0x69, 0x72, 0x65, 0x73, 0x22, 0xbc, 0x01, 0x0a, 0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47,
+	0x65, 0x74, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x45, 0x0a, 0x0d, 0x65, 0x78, 0x63, 0x68, 0x61, 0x6e,
+	0x67, 0x65, 0x5f, 0x72, 0x61, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
+	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x78, 0x63,
+	0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
+	0x0c, 0x65, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x12, 0x55, 0x0a,
+	0x0e, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18,
+	0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78,
+	0x72, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74,
+	0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04,
+	0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0e, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x22, 0x80, 0x02, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
+	0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a,
+	0x0f, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
 	0x63, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x69, 0x63, 0x69, 0x6e, 0x67, 0x41, 0x73, 0x73,
-	0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0e, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x41, 0x73, 0x73,
-	0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x5f,
-	0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x71, 0x75, 0x6f,
-	0x74, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x2f, 0x0a, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65,
-	0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x19, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
-	0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65,
-	0x72, 0x52, 0x05, 0x73, 0x74, 0x61, 0x74, 0x65, 0x12, 0x3c, 0x0a, 0x06, 0x65, 0x78, 0x70, 0x69,
-	0x72, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
-	0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x06,
-	0x65, 0x78, 0x70, 0x69, 0x72, 0x65, 0x12, 0x2a, 0x0a, 0x11, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28,
-	0x0d, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x4d, 0x61, 0x78, 0x53, 0x69,
-	0x7a, 0x65, 0x22, 0x69, 0x0a, 0x1e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x45,
-	0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x47, 0x0a, 0x0e, 0x65, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65,
-	0x5f, 0x72, 0x61, 0x74, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x78, 0x63, 0x68,
-	0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0d,
-	0x65, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x73, 0x22, 0x80, 0x02,
-	0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0f, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61,
-	0x73, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32,
-	0x1e, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50,
-	0x72, 0x69, 0x63, 0x69, 0x6e, 0x67, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52,
-	0x0d, 0x62, 0x61, 0x73, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1d,
-	0x0a, 0x0a, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x09, 0x62, 0x61, 0x73, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x48, 0x0a,
-	0x10, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70,
-	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
-	0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x69, 0x63, 0x69, 0x6e, 0x67, 0x41, 0x73,
-	0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0e, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x41, 0x73,
-	0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x71, 0x75, 0x6f, 0x74, 0x65,
-	0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x71, 0x75,
-	0x6f, 0x74, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
-	0x22, 0x2d, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x72, 0x69,
-	0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x2a,
-	0x5f, 0x0a, 0x0b, 0x53, 0x74, 0x61, 0x74, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x1c,
-	0x0a, 0x18, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x46, 0x49, 0x4c, 0x54, 0x45, 0x52, 0x5f, 0x55,
-	0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x17, 0x0a, 0x13,
-	0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x46, 0x49, 0x4c, 0x54, 0x45, 0x52, 0x5f, 0x41, 0x43, 0x54,
-	0x49, 0x56, 0x45, 0x10, 0x01, 0x12, 0x19, 0x0a, 0x15, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x46,
-	0x49, 0x4c, 0x54, 0x45, 0x52, 0x5f, 0x49, 0x4e, 0x41, 0x43, 0x54, 0x49, 0x56, 0x45, 0x10, 0x02,
-	0x32, 0xdc, 0x03, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x64, 0x0a, 0x06, 0x50, 0x61,
-	0x72, 0x61, 0x6d, 0x73, 0x12, 0x20, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
-	0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d,
-	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x15, 0x82, 0xd3, 0xe4, 0x93, 0x02,
-	0x0f, 0x12, 0x0d, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x12, 0x7c, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52,
-	0x61, 0x74, 0x65, 0x12, 0x29, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e,
-	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45, 0x78, 0x63, 0x68, 0x61,
-	0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a,
-	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x12, 0x82, 0xd3, 0xe4, 0x93,
-	0x02, 0x0c, 0x12, 0x0a, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x74, 0x12, 0x83,
-	0x01, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52,
-	0x61, 0x74, 0x65, 0x73, 0x12, 0x2b, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x63,
-	0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x2c, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31,
-	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e,
-	0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x13, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0d, 0x12, 0x0b, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f,
-	0x6c, 0x69, 0x73, 0x74, 0x12, 0x69, 0x0a, 0x08, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65,
-	0x12, 0x22, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x14, 0x82, 0xd3, 0xe4, 0x93, 0x02,
-	0x0e, 0x12, 0x0c, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x42,
-	0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78,
-	0x72, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x3b, 0x78, 0x72, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56,
-	0x58, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x58, 0x72, 0x2e, 0x56,
-	0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x58, 0x72, 0x5c, 0x56, 0x31,
-	0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x58, 0x72, 0x5c, 0x56, 0x31, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x58, 0x72, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0d, 0x62, 0x61, 0x73, 0x65, 0x41, 0x73, 0x73, 0x65,
+	0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x62, 0x61, 0x73, 0x65, 0x5f, 0x61, 0x73,
+	0x73, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x62, 0x61, 0x73, 0x65, 0x41,
+	0x73, 0x73, 0x65, 0x74, 0x12, 0x48, 0x0a, 0x10, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x5f, 0x61, 0x73,
+	0x73, 0x65, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e,
+	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72,
+	0x69, 0x63, 0x69, 0x6e, 0x67, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0e,
+	0x71, 0x75, 0x6f, 0x74, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1f,
+	0x0a, 0x0b, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0a, 0x71, 0x75, 0x6f, 0x74, 0x65, 0x41, 0x73, 0x73, 0x65, 0x74, 0x12,
+	0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x2d, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x14, 0x0a, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x2a, 0x5f, 0x0a, 0x0b, 0x53, 0x74, 0x61, 0x74, 0x65, 0x46,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x1c, 0x0a, 0x18, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x46,
+	0x49, 0x4c, 0x54, 0x45, 0x52, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
+	0x44, 0x10, 0x00, 0x12, 0x17, 0x0a, 0x13, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x46, 0x49, 0x4c,
+	0x54, 0x45, 0x52, 0x5f, 0x41, 0x43, 0x54, 0x49, 0x56, 0x45, 0x10, 0x01, 0x12, 0x19, 0x0a, 0x15,
+	0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x46, 0x49, 0x4c, 0x54, 0x45, 0x52, 0x5f, 0x49, 0x4e, 0x41,
+	0x43, 0x54, 0x49, 0x56, 0x45, 0x10, 0x02, 0x32, 0xd6, 0x02, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x12, 0x64, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x20, 0x2e, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e,
+	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x15, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0f, 0x12, 0x0d, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31,
+	0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x7c, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x45, 0x78,
+	0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x12, 0x29, 0x2e, 0x76, 0x65, 0x72,
+	0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47,
+	0x65, 0x74, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78,
+	0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45, 0x78, 0x63,
+	0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x12, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0c, 0x12, 0x0a, 0x2f, 0x78, 0x72, 0x2f, 0x76,
+	0x31, 0x2f, 0x67, 0x65, 0x74, 0x12, 0x69, 0x0a, 0x08, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63,
+	0x65, 0x12, 0x22, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78, 0x72, 0x2e, 0x76, 0x31,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69, 0x63, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x78,
+	0x72, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x72, 0x69,
+	0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x14, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x0e, 0x12, 0x0c, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x72, 0x69, 0x63, 0x65,
+	0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
+	0x78, 0x72, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2f, 0x78, 0x72, 0x2f, 0x76, 0x31, 0x3b, 0x78, 0x72, 0x76, 0x31, 0xa2, 0x02, 0x03,
+	0x56, 0x58, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x58, 0x72, 0x2e,
+	0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x58, 0x72, 0x5c, 0x56,
+	0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x58, 0x72, 0x5c, 0x56, 0x31,
+	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x58, 0x72, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -5106,51 +3693,42 @@ func file_verana_xr_v1_query_proto_rawDescGZIP() []byte {
 }
 
 var file_verana_xr_v1_query_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_verana_xr_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_verana_xr_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_verana_xr_v1_query_proto_goTypes = []interface{}{
-	(StateFilter)(0),                       // 0: verana.xr.v1.StateFilter
-	(*QueryParamsRequest)(nil),             // 1: verana.xr.v1.QueryParamsRequest
-	(*QueryParamsResponse)(nil),            // 2: verana.xr.v1.QueryParamsResponse
-	(*QueryGetExchangeRateRequest)(nil),    // 3: verana.xr.v1.QueryGetExchangeRateRequest
-	(*QueryGetExchangeRateResponse)(nil),   // 4: verana.xr.v1.QueryGetExchangeRateResponse
-	(*QueryListExchangeRatesRequest)(nil),  // 5: verana.xr.v1.QueryListExchangeRatesRequest
-	(*QueryListExchangeRatesResponse)(nil), // 6: verana.xr.v1.QueryListExchangeRatesResponse
-	(*QueryGetPriceRequest)(nil),           // 7: verana.xr.v1.QueryGetPriceRequest
-	(*QueryGetPriceResponse)(nil),          // 8: verana.xr.v1.QueryGetPriceResponse
-	(*Params)(nil),                         // 9: verana.xr.v1.Params
-	(v1.PricingAssetType)(0),               // 10: verana.cs.v1.PricingAssetType
-	(*timestamppb.Timestamp)(nil),          // 11: google.protobuf.Timestamp
-	(*ExchangeRate)(nil),                   // 12: verana.xr.v1.ExchangeRate
-	(*ExchangeRateAuthorization)(nil),      // 13: verana.xr.v1.ExchangeRateAuthorization
+	(StateFilter)(0),                     // 0: verana.xr.v1.StateFilter
+	(*QueryParamsRequest)(nil),           // 1: verana.xr.v1.QueryParamsRequest
+	(*QueryParamsResponse)(nil),          // 2: verana.xr.v1.QueryParamsResponse
+	(*QueryGetExchangeRateRequest)(nil),  // 3: verana.xr.v1.QueryGetExchangeRateRequest
+	(*QueryGetExchangeRateResponse)(nil), // 4: verana.xr.v1.QueryGetExchangeRateResponse
+	(*QueryGetPriceRequest)(nil),         // 5: verana.xr.v1.QueryGetPriceRequest
+	(*QueryGetPriceResponse)(nil),        // 6: verana.xr.v1.QueryGetPriceResponse
+	(*Params)(nil),                       // 7: verana.xr.v1.Params
+	(v1.PricingAssetType)(0),             // 8: verana.cs.v1.PricingAssetType
+	(*timestamppb.Timestamp)(nil),        // 9: google.protobuf.Timestamp
+	(*ExchangeRate)(nil),                 // 10: verana.xr.v1.ExchangeRate
+	(*ExchangeRateAuthorization)(nil),    // 11: verana.xr.v1.ExchangeRateAuthorization
 }
 var file_verana_xr_v1_query_proto_depIdxs = []int32{
-	9,  // 0: verana.xr.v1.QueryParamsResponse.params:type_name -> verana.xr.v1.Params
-	10, // 1: verana.xr.v1.QueryGetExchangeRateRequest.base_asset_type:type_name -> verana.cs.v1.PricingAssetType
-	10, // 2: verana.xr.v1.QueryGetExchangeRateRequest.quote_asset_type:type_name -> verana.cs.v1.PricingAssetType
+	7,  // 0: verana.xr.v1.QueryParamsResponse.params:type_name -> verana.xr.v1.Params
+	8,  // 1: verana.xr.v1.QueryGetExchangeRateRequest.base_asset_type:type_name -> verana.cs.v1.PricingAssetType
+	8,  // 2: verana.xr.v1.QueryGetExchangeRateRequest.quote_asset_type:type_name -> verana.cs.v1.PricingAssetType
 	0,  // 3: verana.xr.v1.QueryGetExchangeRateRequest.state:type_name -> verana.xr.v1.StateFilter
-	11, // 4: verana.xr.v1.QueryGetExchangeRateRequest.expire_ts:type_name -> google.protobuf.Timestamp
-	12, // 5: verana.xr.v1.QueryGetExchangeRateResponse.exchange_rate:type_name -> verana.xr.v1.ExchangeRate
-	13, // 6: verana.xr.v1.QueryGetExchangeRateResponse.authorizations:type_name -> verana.xr.v1.ExchangeRateAuthorization
-	10, // 7: verana.xr.v1.QueryListExchangeRatesRequest.base_asset_type:type_name -> verana.cs.v1.PricingAssetType
-	10, // 8: verana.xr.v1.QueryListExchangeRatesRequest.quote_asset_type:type_name -> verana.cs.v1.PricingAssetType
-	0,  // 9: verana.xr.v1.QueryListExchangeRatesRequest.state:type_name -> verana.xr.v1.StateFilter
-	11, // 10: verana.xr.v1.QueryListExchangeRatesRequest.expire:type_name -> google.protobuf.Timestamp
-	12, // 11: verana.xr.v1.QueryListExchangeRatesResponse.exchange_rates:type_name -> verana.xr.v1.ExchangeRate
-	10, // 12: verana.xr.v1.QueryGetPriceRequest.base_asset_type:type_name -> verana.cs.v1.PricingAssetType
-	10, // 13: verana.xr.v1.QueryGetPriceRequest.quote_asset_type:type_name -> verana.cs.v1.PricingAssetType
-	1,  // 14: verana.xr.v1.Query.Params:input_type -> verana.xr.v1.QueryParamsRequest
-	3,  // 15: verana.xr.v1.Query.GetExchangeRate:input_type -> verana.xr.v1.QueryGetExchangeRateRequest
-	5,  // 16: verana.xr.v1.Query.ListExchangeRates:input_type -> verana.xr.v1.QueryListExchangeRatesRequest
-	7,  // 17: verana.xr.v1.Query.GetPrice:input_type -> verana.xr.v1.QueryGetPriceRequest
-	2,  // 18: verana.xr.v1.Query.Params:output_type -> verana.xr.v1.QueryParamsResponse
-	4,  // 19: verana.xr.v1.Query.GetExchangeRate:output_type -> verana.xr.v1.QueryGetExchangeRateResponse
-	6,  // 20: verana.xr.v1.Query.ListExchangeRates:output_type -> verana.xr.v1.QueryListExchangeRatesResponse
-	8,  // 21: verana.xr.v1.Query.GetPrice:output_type -> verana.xr.v1.QueryGetPriceResponse
-	18, // [18:22] is the sub-list for method output_type
-	14, // [14:18] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	9,  // 4: verana.xr.v1.QueryGetExchangeRateRequest.expires:type_name -> google.protobuf.Timestamp
+	10, // 5: verana.xr.v1.QueryGetExchangeRateResponse.exchange_rate:type_name -> verana.xr.v1.ExchangeRate
+	11, // 6: verana.xr.v1.QueryGetExchangeRateResponse.authorizations:type_name -> verana.xr.v1.ExchangeRateAuthorization
+	8,  // 7: verana.xr.v1.QueryGetPriceRequest.base_asset_type:type_name -> verana.cs.v1.PricingAssetType
+	8,  // 8: verana.xr.v1.QueryGetPriceRequest.quote_asset_type:type_name -> verana.cs.v1.PricingAssetType
+	1,  // 9: verana.xr.v1.Query.Params:input_type -> verana.xr.v1.QueryParamsRequest
+	3,  // 10: verana.xr.v1.Query.GetExchangeRate:input_type -> verana.xr.v1.QueryGetExchangeRateRequest
+	5,  // 11: verana.xr.v1.Query.GetPrice:input_type -> verana.xr.v1.QueryGetPriceRequest
+	2,  // 12: verana.xr.v1.Query.Params:output_type -> verana.xr.v1.QueryParamsResponse
+	4,  // 13: verana.xr.v1.Query.GetExchangeRate:output_type -> verana.xr.v1.QueryGetExchangeRateResponse
+	6,  // 14: verana.xr.v1.Query.GetPrice:output_type -> verana.xr.v1.QueryGetPriceResponse
+	12, // [12:15] is the sub-list for method output_type
+	9,  // [9:12] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_verana_xr_v1_query_proto_init() }
@@ -5210,30 +3788,6 @@ func file_verana_xr_v1_query_proto_init() {
 			}
 		}
 		file_verana_xr_v1_query_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryListExchangeRatesRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_verana_xr_v1_query_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryListExchangeRatesResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_verana_xr_v1_query_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QueryGetPriceRequest); i {
 			case 0:
 				return &v.state
@@ -5245,7 +3799,7 @@ func file_verana_xr_v1_query_proto_init() {
 				return nil
 			}
 		}
-		file_verana_xr_v1_query_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_xr_v1_query_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QueryGetPriceResponse); i {
 			case 0:
 				return &v.state
@@ -5264,7 +3818,7 @@ func file_verana_xr_v1_query_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_verana_xr_v1_query_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   8,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

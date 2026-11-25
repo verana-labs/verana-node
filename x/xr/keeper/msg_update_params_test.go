@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/verana-labs/verana-node/x/xr/keeper"
@@ -62,22 +61,14 @@ func TestMsgUpdateParams(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
+func TestMsgUpdateParams_EmitsMsg(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
+
+	_, err := ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Authority: f.authority(t), Params: types.NewParams(15 * time.Minute)})
 	require.NoError(t, err)
 
-	_, err = ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Authority: authorityStr, Params: types.NewParams(15 * time.Minute)})
-	require.NoError(t, err)
-
-	attrs := map[string]string{}
-	for _, ev := range sdk.UnwrapSDKContext(f.ctx).EventManager().Events() {
-		if ev.Type == types.EventTypeUpdateParams {
-			for _, a := range ev.Attributes {
-				attrs[a.Key] = a.Value
-			}
-		}
-	}
-	require.Equal(t, map[string]string{types.AttributeKeyAuthority: authorityStr, "twap_window": "15m0s"}, attrs)
+	attrs := eventAttrs(t, f, types.EventTypeUpdateModuleParameters)
+	require.Equal(t, types.ModuleName, attrs["module"])
+	require.Contains(t, attrs["msg"], `"twap_window":"900s"`)
 }

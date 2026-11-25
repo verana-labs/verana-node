@@ -50,3 +50,14 @@ type CorporationView struct {
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 }
+
+// ExchangeRateKeeper reads the genesis exchange rate entry of [XRG].
+type ExchangeRateKeeper interface {
+	// GenesisRate returns rate and rate_scale of the entry; it fails while the entry is disabled or expired.
+	GenesisRate(ctx context.Context) (uint64, uint32, error)
+}
+
+// DistributionKeeper performs steps (1) and (2) of an epoch boundary: the signed-block ratios and the payout or its skip.
+type DistributionKeeper interface {
+	PayoutEpoch(ctx context.Context, epoch uint64) error
+}

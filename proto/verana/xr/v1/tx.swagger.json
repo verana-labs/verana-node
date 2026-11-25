@@ -52,7 +52,7 @@
     },
     "/verana.xr.v1.Msg/GrantExchangeRateAuthorization": {
       "post": {
-        "summary": "GrantExchangeRateAuthorization defines a governance operation authorizing an\noperator to update a given exchange rate. [MOD-XR-MSG-4]",
+        "summary": "GrantExchangeRateAuthorization defines a governance operation authorizing a\nfeeder to update a given exchange rate. [MOD-XR-MSG-4]",
         "operationId": "Msg_GrantExchangeRateAuthorization",
         "responses": {
           "200": {
@@ -85,7 +85,7 @@
     },
     "/verana.xr.v1.Msg/RevokeExchangeRateAuthorization": {
       "post": {
-        "summary": "RevokeExchangeRateAuthorization defines a governance operation revoking an\noperator's authorization for a given exchange rate. [MOD-XR-MSG-5]",
+        "summary": "RevokeExchangeRateAuthorization defines a governance operation revoking a\nfeeder's authorization for a given exchange rate. [MOD-XR-MSG-5]",
         "operationId": "Msg_RevokeExchangeRateAuthorization",
         "responses": {
           "200": {
@@ -152,7 +152,7 @@
     },
     "/verana.xr.v1.Msg/UpdateExchangeRate": {
       "post": {
-        "summary": "UpdateExchangeRate defines an operator operation for updating an exchange rate.",
+        "summary": "UpdateExchangeRate defines a feeder operation for updating an exchange rate.",
         "operationId": "Msg_UpdateExchangeRate",
         "responses": {
           "200": {
@@ -279,7 +279,8 @@
           "type": "string"
         },
         "rate": {
-          "type": "string"
+          "type": "string",
+          "format": "uint64"
         },
         "rate_scale": {
           "type": "integer",
@@ -287,9 +288,6 @@
         },
         "validity_duration": {
           "type": "string"
-        },
-        "state": {
-          "type": "boolean"
         }
       },
       "description": "MsgCreateExchangeRate is the Msg/CreateExchangeRate request type."
@@ -314,11 +312,11 @@
         "xr_id": {
           "type": "string",
           "format": "uint64",
-          "description": "xr_id is the exchange rate the operator is authorized to update."
+          "description": "xr_id is the exchange rate the feeder is authorized to update."
         },
-        "operator": {
+        "feeder": {
           "type": "string",
-          "description": "operator is the account authorized to update the exchange rate."
+          "description": "feeder is the account authorized to update the exchange rate."
         },
         "expiration": {
           "type": "string",
@@ -332,7 +330,7 @@
         "max_deviation_bps": {
           "type": "integer",
           "format": "int64",
-          "description": "max_deviation_bps is the max allowed rate change in basis points, (0, 10000] (optional circuit breaker)."
+          "description": "max_deviation_bps is the max rate change in basis points, (0, 10000]; mandatory on the genesis exchange rate."
         }
       },
       "title": "MsgGrantExchangeRateAuthorization is the Msg/GrantExchangeRateAuthorization request type. [MOD-XR-MSG-4]"
@@ -353,9 +351,9 @@
           "format": "uint64",
           "description": "xr_id is the exchange rate the authorization is for."
         },
-        "operator": {
+        "feeder": {
           "type": "string",
-          "description": "operator is the account whose authorization is revoked."
+          "description": "feeder is the account whose authorization is revoked."
         }
       },
       "title": "MsgRevokeExchangeRateAuthorization is the Msg/RevokeExchangeRateAuthorization request type. [MOD-XR-MSG-5]"
@@ -390,9 +388,9 @@
     "verana.xr.v1.MsgUpdateExchangeRate": {
       "type": "object",
       "properties": {
-        "operator": {
+        "feeder": {
           "type": "string",
-          "description": "operator is the authorized operator executing this message."
+          "description": "feeder is the authorized feeder executing this message."
         },
         "id": {
           "type": "string",
@@ -401,6 +399,7 @@
         },
         "rate": {
           "type": "string",
+          "format": "uint64",
           "description": "rate is the new exchange rate value."
         }
       },

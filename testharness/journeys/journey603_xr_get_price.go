@@ -13,7 +13,7 @@ import (
 )
 
 // RunXrGetPriceJourney implements Journey 603: XR Get Price
-// Queries the GetPrice endpoint for the TU->uvna exchange rate created in journey 601.
+// Queries the GetPrice endpoint for the EUR->uvna exchange rate created in journey 601.
 // Depends on Journey 601 (exchange rate creation and activation).
 func RunXrGetPriceJourney(ctx context.Context, client cosmosclient.Client) error {
 	fmt.Println("Starting Journey 603: XR Get Price Query")
@@ -28,16 +28,16 @@ func RunXrGetPriceJourney(ctx context.Context, client cosmosclient.Client) error
 	fmt.Println("✅ Step 1: Loaded journey 601 results")
 
 	// =========================================================================
-	// Step 2: Query GetPrice with amount=1000000 for the TU->uvna pair
+	// Step 2: Query GetPrice with amount=1000000 for the EUR->uvna pair
 	// =========================================================================
-	fmt.Println("\n--- Step 2: Query GetPrice for TU->uvna ---")
+	fmt.Println("\n--- Step 2: Query GetPrice for EUR->uvna ---")
 
 	xrQueryClient := xrtypes.NewQueryClient(client.Context())
 	testAmount := "1000000"
 
 	priceResp, err := xrQueryClient.GetPrice(ctx, &xrtypes.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_TU,
-		BaseAsset:      "tu",
+		BaseAssetType:  cstypes.PricingAssetType_FIAT,
+		BaseAsset:      "EUR",
 		QuoteAssetType: cstypes.PricingAssetType_COIN,
 		QuoteAsset:     "uvna",
 		Amount:         testAmount,
@@ -46,7 +46,7 @@ func RunXrGetPriceJourney(ctx context.Context, client cosmosclient.Client) error
 		return fmt.Errorf("step 2 failed: could not query price: %w", err)
 	}
 
-	fmt.Printf("  Amount: %s TU\n", testAmount)
+	fmt.Printf("  Amount: %s EUR cents\n", testAmount)
 	fmt.Printf("  Price:  %s uvna\n", priceResp.Price)
 	fmt.Println("✅ Step 2: GetPrice query succeeded")
 
@@ -61,13 +61,13 @@ func RunXrGetPriceJourney(ctx context.Context, client cosmosclient.Client) error
 		return fmt.Errorf("step 3 failed: expected non-zero price, got %s", priceResp.Price)
 	}
 
-	fmt.Printf("  Price calculation verified: %s TU = %s uvna\n", testAmount, priceResp.Price)
+	fmt.Printf("  Price calculation verified: %s EUR cents = %s uvna\n", testAmount, priceResp.Price)
 	fmt.Println("✅ Step 3: Price calculation is correct")
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 603 completed successfully!")
 	fmt.Println("XR GetPrice tested:")
-	fmt.Printf("  - GetPrice: %s TU = %s uvna\n", testAmount, priceResp.Price)
+	fmt.Printf("  - GetPrice: %s EUR cents = %s uvna\n", testAmount, priceResp.Price)
 	fmt.Println("========================================")
 
 	return nil

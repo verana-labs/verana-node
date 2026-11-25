@@ -50,9 +50,9 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	fmt.Println("\n--- Step 2: Operator tries UpdateExchangeRate without auth (expect failure) ---")
 
 	updateMsg := &xrtypes.MsgUpdateExchangeRate{
-		Operator: operatorAddr,
-		Id:        exchangeRateID,
-		Rate:      "2000000",
+		Feeder: operatorAddr,
+		Id:     exchangeRateID,
+		Rate:   2_000_000,
 	}
 
 	txResp, err := client.BroadcastTx(ctx, operatorAccount, updateMsg)
@@ -86,11 +86,11 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	// =========================================================================
 	fmt.Println("\n--- Step 4: Operator updates exchange rate with auth ---")
 
-	newRate := "2000000"
+	newRate := uint64(2_000_000)
 	updateMsg = &xrtypes.MsgUpdateExchangeRate{
-		Operator: operatorAddr,
-		Id:        exchangeRateID,
-		Rate:      newRate,
+		Feeder: operatorAddr,
+		Id:     exchangeRateID,
+		Rate:   newRate,
 	}
 
 	txResp, err = client.BroadcastTx(ctx, operatorAccount, updateMsg)
@@ -100,7 +100,7 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	if txResp.TxResponse.Code != 0 {
 		return fmt.Errorf("step 4 failed with code %d: %s", txResp.TxResponse.Code, txResp.TxResponse.RawLog)
 	}
-	fmt.Printf("✅ Step 4: UpdateExchangeRate succeeded (new rate: %s)\n", newRate)
+	fmt.Printf("✅ Step 4: UpdateExchangeRate succeeded (new rate: %d)\n", newRate)
 	waitForTx("update exchange rate success")
 
 	// =========================================================================
@@ -117,10 +117,10 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	}
 
 	if getResp.ExchangeRate.Rate != newRate {
-		return fmt.Errorf("step 5 failed: expected rate=%s, got rate=%s", newRate, getResp.ExchangeRate.Rate)
+		return fmt.Errorf("step 5 failed: expected rate=%d, got rate=%d", newRate, getResp.ExchangeRate.Rate)
 	}
 
-	fmt.Printf("  Rate:    %s (expected: %s)\n", getResp.ExchangeRate.Rate, newRate)
+	fmt.Printf("  Rate:    %d (expected: %d)\n", getResp.ExchangeRate.Rate, newRate)
 	fmt.Printf("  State:   %v\n", getResp.ExchangeRate.State)
 	fmt.Printf("  Updated: %s\n", getResp.ExchangeRate.Updated.Format(time.RFC3339))
 	fmt.Println("✅ Step 5: Exchange rate updated successfully")

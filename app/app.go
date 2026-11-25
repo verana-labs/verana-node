@@ -296,6 +296,8 @@ func New(
 	app.DeKeeper.SetParticipantKeeper(ppkeeper.NewPpAsDeParticipantKeeper(app.ParticipantKeeper))
 	// Wire MOD-VS into MOD-DE (vs_account_fee_period, MOD-DE-MSG-5-5).
 	app.DeKeeper.SetVerifiableServiceKeeper(app.VsKeeper)
+	// MOD-XR reads main_fiat_currency from MOD-TD.
+	app.XrKeeper.SetTrustDepositKeeper(app.TrustdepositKeeper)
 	// Wire MOD-TD into the distribution module (main_fiat_currency); x/td calls its epoch payout.
 	app.DsKeeper.SetTrustDepositKeeper(app.TrustdepositKeeper)
 

@@ -177,26 +177,6 @@ func TestMsgUpdateParams_PendingTuDecayRate(t *testing.T) {
 	requirePending("0.003")
 }
 
-func TestApplyPendingTuDecayRate(t *testing.T) {
-	k, ms, ctx, _ := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
-	require.NoError(t, k.SetParams(wctx, types.DefaultParams()))
-
-	require.NoError(t, k.ApplyPendingTuDecayRate(wctx))
-	require.Equal(t, types.DefaultParams(), k.GetParams(wctx))
-
-	p := types.DefaultParams()
-	p.TuDecayRate = math.LegacyMustNewDecFromStr("0.004")
-	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: p})
-	require.NoError(t, err)
-
-	require.NoError(t, k.ApplyPendingTuDecayRate(wctx))
-	require.Equal(t, p.TuDecayRate, k.GetParams(wctx).TuDecayRate)
-	_, found, err := k.GetPendingTuDecayRate(wctx)
-	require.NoError(t, err)
-	require.False(t, found)
-}
-
 func lastEvent(t *testing.T, ctx sdk.Context, eventType string) sdk.Event {
 	t.Helper()
 	events := ctx.EventManager().Events()

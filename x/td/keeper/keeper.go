@@ -30,10 +30,16 @@ type (
 		Dust               collections.Item[string] // Accumulated fractional yield (stored as string)
 		PendingTuDecayRate collections.Item[math.LegacyDec]
 		ShareValue         collections.Item[math.LegacyDec]
+		TuPegValue         collections.Item[math.LegacyDec]
+		// Unix seconds
+		EpochOrigin     collections.Item[int64]
+		LastClosedEpoch collections.Item[uint64]
 		// external keeper
-		bankKeeper       types.BankKeeper
-		delegationKeeper types.DelegationKeeper
-		coKeeper         types.CorporationKeeper
+		bankKeeper         types.BankKeeper
+		delegationKeeper   types.DelegationKeeper
+		coKeeper           types.CorporationKeeper
+		xrKeeper           types.ExchangeRateKeeper
+		distributionKeeper types.DistributionKeeper
 	}
 )
 
@@ -45,6 +51,8 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	delegationKeeper types.DelegationKeeper,
 	coKeeper types.CorporationKeeper,
+	xrKeeper types.ExchangeRateKeeper,
+	distributionKeeper types.DistributionKeeper,
 ) Keeper {
 	sb := collections.NewSchemaBuilder(storeService)
 
@@ -61,9 +69,14 @@ func NewKeeper(
 		Dust:               collections.NewItem(sb, types.DustKey, "dust", collections.StringValue),
 		PendingTuDecayRate: collections.NewItem(sb, types.PendingTuDecayRateKey, "pending_tu_decay_rate", sdk.LegacyDecValue),
 		ShareValue:         collections.NewItem(sb, types.ShareValueKey, "share_value", sdk.LegacyDecValue),
+		TuPegValue:         collections.NewItem(sb, types.TuPegValueKey, "tu_peg_value", types.TuValue),
+		EpochOrigin:        collections.NewItem(sb, types.EpochOriginKey, "epoch_origin", types.TsValue),
+		LastClosedEpoch:    collections.NewItem(sb, types.LastClosedEpochKey, "last_closed_epoch", types.U64Value),
 		bankKeeper:         bankKeeper,
 		delegationKeeper:   delegationKeeper,
 		coKeeper:           coKeeper,
+		xrKeeper:           xrKeeper,
+		distributionKeeper: distributionKeeper,
 	}
 }
 
