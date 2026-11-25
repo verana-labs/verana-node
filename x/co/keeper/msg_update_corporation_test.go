@@ -24,7 +24,7 @@ func TestUpdateCorporation_Happy(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Did:         "did:example:rotated",
 	})
 	require.NoError(t, err)
@@ -46,7 +46,7 @@ func TestUpdateCorporation_UnregisteredAccount(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkCorp, // valid bech32 but not registered
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Did:         "did:example:rotated",
 	})
 	require.ErrorIs(t, err, types.ErrCorporationNotRegistered)
@@ -63,10 +63,45 @@ func TestUpdateCorporation_DEDenies(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Did:         "did:example:rotated",
 	})
 	require.ErrorIs(t, err, errAuthDenied)
+}
+
+func TestUpdateCorporation_GFCheck1BeforeAuthzCheck1(t *testing.T) {
+	del := &mockDelegation{}
+	gf := &mockGF{}
+	k, ctx := keepertest.CoKeeper(t, del, &mockGroup{policy: tkPolicy}, gf)
+	ms := keeper.NewMsgServerImpl(k)
+	_, err := ms.CreateCorporation(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+	gf.ngfErr = errAuthDenied
+
+	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
+		Corporation: tkPolicy,
+		Delegate:    tkOp,
+		Did:         "did:example:rotated",
+	})
+	require.ErrorIs(t, err, errAuthDenied)
+	require.Zero(t, del.calls)
+}
+
+func TestUpdateCorporation_AuthzCheck1GetsResolvedID(t *testing.T) {
+	del := &mockDelegation{}
+	k, ctx := keepertest.CoKeeper(t, del, &mockGroup{policy: tkPolicy}, &mockGF{})
+	ms := keeper.NewMsgServerImpl(k)
+	_, err := ms.CreateCorporation(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+
+	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
+		Corporation: tkPolicy,
+		Delegate:    tkOp,
+		Did:         "did:example:rotated",
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, del.calls)
+	require.Equal(t, uint64(1), del.gotCorpID)
 }
 
 func TestUpdateCorporation_NoopOnSameDID(t *testing.T) {
@@ -80,11 +115,11 @@ func TestUpdateCorporation_NoopOnSameDID(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Did:         "did:example:1", // unchanged
 	})
 	require.NoError(t, err)
-	// AUTHZ-CHECK-1 runs even on no-op: an unauthorized operator must not be
+	// AUTHZ-CHECK-1 runs even on no-op: an unauthorized delegate must not be
 	// able to even attempt a write, regardless of whether the body mutates.
 	require.Equal(t, 1, del.calls)
 	// Modified must NOT advance and no update event emitted.
@@ -114,7 +149,7 @@ func TestUpdateCorporation_RejectsDIDAlreadyBoundElsewhere(t *testing.T) {
 	// Try to rotate corp_a → corp_b's DID.
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Did:         "did:example:2",
 	})
 	require.ErrorIs(t, err, types.ErrDIDAlreadyExists)

@@ -8,11 +8,11 @@ import (
 	"github.com/verana-labs/verana-node/x/cs/types"
 )
 
-func (ms msgServer) validateCreateCredentialSchemaParams(ctx sdk.Context, msg *types.MsgCreateCredentialSchema) error {
+func (ms msgServer) validateCreateCredentialSchemaParams(ctx sdk.Context, msg *types.MsgCreateCredentialSchema, corporationID uint64) error {
 	params := ms.GetParams(ctx)
 
 	// Validate ecosystem ownership - signing corporation must control the ecosystem
-	if err := ms.checkCreateSchemaOwnership(ctx, msg.EcosystemId, msg.Corporation); err != nil {
+	if err := ms.checkCreateSchemaOwnership(ctx, msg.EcosystemId, corporationID); err != nil {
 		return err
 	}
 
@@ -124,7 +124,7 @@ func (ms msgServer) executeCreateCredentialSchema(ctx sdk.Context, schemaID uint
 			sdk.NewAttribute(types.AttributeKeyId, fmt.Sprintf("%d", schemaID)),
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, fmt.Sprintf("%d", msg.EcosystemId)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyIssuerGrantorValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.IssuerGrantorValidationValidityPeriod)),
 			sdk.NewAttribute(types.AttributeKeyVerifierGrantorValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.VerifierGrantorValidationValidityPeriod)),
 			sdk.NewAttribute(types.AttributeKeyIssuerValidationValidityPeriod, fmt.Sprintf("%d", credentialSchema.IssuerValidationValidityPeriod)),

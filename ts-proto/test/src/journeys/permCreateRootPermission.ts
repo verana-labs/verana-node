@@ -24,7 +24,7 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 15;
+const DELEGATE_INDEX = 15;
 
 async function main() {
   console.log("=".repeat(60));
@@ -40,15 +40,15 @@ async function main() {
     process.exit(1);
   }
   console.log(`  Authority: ${setup.authorityAddress}`);
-  console.log(`  Operator:  ${setup.operatorAddress}`);
+  console.log(`  Delegate:  ${setup.delegateAddress}`);
   console.log();
 
-  // Step 2: Connect operator
-  console.log("Step 2: Setting up operator wallet...");
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Connect delegate
+  console.log("Step 2: Setting up delegate wallet...");
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
-  if (account.address !== setup.operatorAddress) {
-    console.log("  Operator address mismatch!");
+  if (account.address !== setup.delegateAddress) {
+    console.log("  Delegate address mismatch!");
     process.exit(1);
   }
   const client = await createSigningClient(wallet);
@@ -64,7 +64,7 @@ async function main() {
     const { ecId, schemaId, rootPermId, did, effectiveFrom } = await createPermPrerequisites(
       client,
       setup.authorityAddress,
-      setup.operatorAddress,
+      setup.delegateAddress,
       IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
     );
 

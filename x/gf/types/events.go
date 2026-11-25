@@ -12,7 +12,7 @@ const (
 	AttributeKeyGFDocID       = "gfd_id"
 	AttributeKeyVersion       = "version"
 	AttributeKeyLanguage      = "language"
-	AttributeKeyOperator      = "operator"
+	AttributeKeyDelegate      = "delegate"
 	AttributeKeyDocURL        = "doc_url"
 	AttributeKeyDocDigestSRI  = "doc_digest_sri"
 	AttributeKeyActiveSince   = "active_since"

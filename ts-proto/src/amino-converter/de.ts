@@ -1,7 +1,7 @@
 import type { AminoConverter } from "@cosmjs/stargate";
 import {
-  MsgGrantOperatorAuthorization,
-  MsgRevokeOperatorAuthorization,
+  MsgGrantDelegateAuthorization,
+  MsgRevokeDelegateAuthorization,
 } from "../codec/verana/de/v1/tx";
 import {
   aminoToDuration,
@@ -11,11 +11,11 @@ import {
   isoToDate,
 } from "./util/helpers";
 
-export const MsgGrantOperatorAuthorizationAminoConverter: AminoConverter = {
-  aminoType: "verana/x/de/MsgGrantOpAuthorization",
-  toAmino: (m: MsgGrantOperatorAuthorization) => clean({
+export const MsgGrantDelegateAuthorizationAminoConverter: AminoConverter = {
+  aminoType: "verana/x/de/MsgGrantDelegateAuthz",
+  toAmino: (m: MsgGrantDelegateAuthorization) => clean({
     corporation: m.corporation || undefined,
-    operator: m.operator || undefined,
+    delegate: m.delegate || undefined,
     grantee: m.grantee || undefined,
     msg_types: m.msgTypes?.length ? m.msgTypes : undefined,
     expiration: dateToIsoAmino(m.expiration),
@@ -25,10 +25,10 @@ export const MsgGrantOperatorAuthorizationAminoConverter: AminoConverter = {
     feegrant_spend_limit: m.feegrantSpendLimit?.length ? m.feegrantSpendLimit : undefined,
     feegrant_spend_limit_period: durationToAmino(m.feegrantSpendLimitPeriod),
   }),
-  fromAmino: (a: any): MsgGrantOperatorAuthorization =>
-    MsgGrantOperatorAuthorization.fromPartial({
+  fromAmino: (a: any): MsgGrantDelegateAuthorization =>
+    MsgGrantDelegateAuthorization.fromPartial({
       corporation: a.corporation ?? "",
-      operator: a.operator ?? "",
+      delegate: a.delegate ?? "",
       grantee: a.grantee ?? "",
       msgTypes: a.msg_types ?? [],
       expiration: isoToDate(a.expiration),
@@ -40,17 +40,17 @@ export const MsgGrantOperatorAuthorizationAminoConverter: AminoConverter = {
     }),
 };
 
-export const MsgRevokeOperatorAuthorizationAminoConverter: AminoConverter = {
-  aminoType: "verana/x/de/MsgRevokeOpAuthorization",
-  toAmino: ({ corporation, operator, grantee }: MsgRevokeOperatorAuthorization) => clean({
+export const MsgRevokeDelegateAuthorizationAminoConverter: AminoConverter = {
+  aminoType: "verana/x/de/MsgRevokeDelegateAuthz",
+  toAmino: ({ corporation, delegate, grantee }: MsgRevokeDelegateAuthorization) => clean({
     corporation: corporation || undefined,
-    operator: operator || undefined,
+    delegate: delegate || undefined,
     grantee: grantee || undefined,
   }),
   fromAmino: (value: any) =>
-    MsgRevokeOperatorAuthorization.fromPartial({
+    MsgRevokeDelegateAuthorization.fromPartial({
       corporation: value.corporation,
-      operator: value.operator,
+      delegate: value.delegate,
       grantee: value.grantee,
     }),
 };

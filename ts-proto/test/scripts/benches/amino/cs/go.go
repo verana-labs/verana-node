@@ -30,7 +30,7 @@ func main() {
 	address := "verana16mzeyu9l6kua2cdg9x0jk5g6e7h0kk8q6uadu4"
 	msg := &cstypes.MsgCreateCredentialSchema{
 		Corporation:                             address,
-		Operator:                                address,
+		Delegate:                                address,
 		EcosystemId:                             1,
 		JsonSchema:                              jsonSchema,
 		IssuerGrantorValidationValidityPeriod:   &cstypes.OptionalUInt32{Value: 0},

@@ -32,9 +32,9 @@ func TestQueryGetGovernanceFrameworkVersion_PreferredLanguageFallbackWhenNoMatch
 	}
 	k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, corp)
 	ms := keeper.NewMsgServerImpl(k)
-	_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+	_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 	require.NoError(t, err)
-	frMsg := validMsg(testCorp, testOperator, 0, 1)
+	frMsg := validMsg(testCorp, testDelegate, 0, 1)
 	frMsg.DocLanguage = "fr"
 	frMsg.DocUrl = "https://example.com/gf-v1-fr.html"
 	_, err = ms.AddGovernanceFrameworkDocument(ctx, frMsg)
@@ -88,7 +88,7 @@ func TestQueryListGovernanceFrameworkVersions_EcosystemPath(t *testing.T) {
 	}
 	k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
 	ms := keeper.NewMsgServerImpl(k)
-	_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 7, 1))
+	_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 7, 1))
 	require.NoError(t, err)
 
 	qs := keeper.NewQueryServerImpl(k)
@@ -132,9 +132,9 @@ func TestQueryGetGovernanceFrameworkVersion(t *testing.T) {
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, corp)
 		ms := keeper.NewMsgServerImpl(k)
 		// Setup: add 2 docs (en, fr) under v1.
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.NoError(t, err)
-		frMsg := validMsg(testCorp, testOperator, 0, 1)
+		frMsg := validMsg(testCorp, testDelegate, 0, 1)
 		frMsg.DocLanguage = "fr"
 		frMsg.DocUrl = "https://example.com/gf-v1-fr.html"
 		_, err = ms.AddGovernanceFrameworkDocument(ctx, frMsg)
@@ -177,15 +177,15 @@ func TestQueryListGovernanceFrameworkVersions(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 
 		// Add v1 + activate, then add v2 (not activated).
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.NoError(t, err)
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Operator:    testOperator,
+			Delegate:    testDelegate,
 		})
 		require.NoError(t, err)
 		corp.view.ActiveVersion = 1 // simulate ecosystem-side bump
-		_, err = ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 2))
+		_, err = ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 2))
 		require.NoError(t, err)
 
 		qs := keeper.NewQueryServerImpl(k)

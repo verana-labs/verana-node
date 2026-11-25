@@ -12,17 +12,17 @@ import (
 
 // RunEcosystemCreateJourney implements Journey 020: CreateEcosystem (ec-alpha) for Corp A.
 // [MOD-EC-MSG-1] CreateEcosystem — fail-then-pass pattern plus query verification.
-// Depends on Journey 001 (Corp A + operator authz).
+// Depends on Journey 001 (Corp A + delegate authz).
 func RunEcosystemCreateJourney(ctx context.Context, client cosmosclient.Client) error {
 	fmt.Println("Starting Journey 020: CreateEcosystem (ec-alpha for Corp A)")
 
 	setup := lib.LoadJourneyResult("journey001")
 	policyAddr := setup.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, corpAOperator)
-	operatorAddr := setup.OperatorAddr
+	delegateAccount := lib.GetAccount(client, corpADelegate)
+	delegateAddr := setup.DelegateAddr
 
 	fmt.Printf("  Policy Addr: %s\n", policyAddr)
-	fmt.Printf("  Operator:    %s\n", operatorAddr)
+	fmt.Printf("  Delegate:    %s\n", delegateAddr)
 
 	// =========================================================================
 	// Step 1: CreateEcosystem without authorization (expect failure)
@@ -43,12 +43,12 @@ func RunEcosystemCreateJourney(ctx context.Context, client cosmosclient.Client) 
 	fmt.Printf("✅ Step 1: Correctly rejected unauthorized CreateEcosystem: %v\n", err)
 
 	// =========================================================================
-	// Step 2: CreateEcosystem with authorized operator [MOD-EC-MSG-1]
+	// Step 2: CreateEcosystem with authorized delegate [MOD-EC-MSG-1]
 	// =========================================================================
-	fmt.Println("\n--- Step 2: Authorized operator creates ec-alpha ---")
+	fmt.Println("\n--- Step 2: Authorized delegate creates ec-alpha ---")
 	ecAlphaDID := lib.GenerateUniqueDID(client, ctx)
 	ecIDStr, err := lib.CreateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecAlphaDID,
 		"https://example.com/ec-alpha-v1.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",

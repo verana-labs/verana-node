@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
@@ -13,7 +14,7 @@ import (
 
 type stubDelegationKeeper struct{}
 
-func (stubDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (stubDelegationKeeper) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 
@@ -28,8 +29,8 @@ func (*stubEcosystemKeeper) SetEcosystemActiveVersion(_ context.Context, _ uint6
 
 type stubCorporationKeeper struct{}
 
-func (*stubCorporationKeeper) ResolveByPolicyAddress(_ context.Context, _ string) (types.CorporationView, bool) {
-	return types.CorporationView{}, false
+func (*stubCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
+	return types.CorporationView{}, types.ErrSubjectNotFound
 }
 func (*stubCorporationKeeper) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool) {
 	return types.CorporationView{}, false

@@ -138,10 +138,10 @@ func (k Keeper) GetNextID(ctx sdk.Context, entityType string) (uint64, error) {
 	return nextID, nil
 }
 
-func CreateMsgWithValidityPeriods(authority string, operator string, ecosystemID uint64, jsonSchema string, issuerGrantor, verifierGrantor, issuer, verifier, holder uint32, issuerMode, verifierMode, holderMode uint32, pricingAssetType uint32, pricingAsset string, digestAlgorithm string) *types.MsgCreateCredentialSchema {
+func CreateMsgWithValidityPeriods(authority string, delegate string, ecosystemID uint64, jsonSchema string, issuerGrantor, verifierGrantor, issuer, verifier, holder uint32, issuerMode, verifierMode, holderMode uint32, pricingAssetType uint32, pricingAsset string, digestAlgorithm string) *types.MsgCreateCredentialSchema {
 	msg := &types.MsgCreateCredentialSchema{
 		Corporation:                             authority,
-		Operator:                                operator,
+		Delegate:                                delegate,
 		EcosystemId:                             ecosystemID,
 		JsonSchema:                              jsonSchema,
 		IssuerGrantorValidationValidityPeriod:   &types.OptionalUInt32{Value: issuerGrantor},
@@ -160,10 +160,10 @@ func CreateMsgWithValidityPeriods(authority string, operator string, ecosystemID
 	return msg
 }
 
-func CreateUpdateMsgWithValidityPeriods(authority string, operator string, id uint64, issuerGrantor, verifierGrantor, issuer, verifier, holder uint32) *types.MsgUpdateCredentialSchema {
+func CreateUpdateMsgWithValidityPeriods(authority string, delegate string, id uint64, issuerGrantor, verifierGrantor, issuer, verifier, holder uint32) *types.MsgUpdateCredentialSchema {
 	msg := &types.MsgUpdateCredentialSchema{
 		Corporation: authority,
-		Operator:    operator,
+		Delegate:    delegate,
 		Id:          id,
 	}
 

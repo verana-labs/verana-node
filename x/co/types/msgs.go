@@ -105,11 +105,11 @@ func (m *MsgUpdateCorporation) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if m.Operator == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "operator is required")
+	if m.Delegate == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "delegate is required")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Operator); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "operator: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
 	}
 	if m.Did == "" {
 		return errors.Wrap(ErrInvalidDID, "did is required")

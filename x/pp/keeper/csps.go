@@ -12,6 +12,7 @@ import (
 	"cosmossdk.io/collections"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -47,7 +48,7 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 	}
 
 	// id MUST be a valid uuid (already validated in ValidateBasic)
-	// If an entry with id already exists, existing_entry.authority MUST equal authority AND existing_entry.vs_operator MUST equal operator
+	// If an entry with id already exists, existing_entry.authority MUST equal authority AND existing_entry.vs_operator MUST equal vs_account
 	if err := ms.validateSessionAccess(ctx, msg); err != nil {
 		return err
 	}
@@ -106,13 +107,15 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 	// Define the primary participant: verifier_participant in a Credential Verification, else issuer_participant.
 	// The vs_operator and corporation checks apply to it only.
 	primaryParticipant, primaryRole := issuerParticipant, "issuer"
+	primaryMsgType := detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE
 	if hasVerifier {
 		primaryParticipant, primaryRole = verifierParticipant, "verifier"
+		primaryMsgType = detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION
 	}
 
-	// if participant.vs_operator is not equal to operator, abort
-	if primaryParticipant.VsOperator != msg.Operator {
-		return fmt.Errorf("%s participant vs_operator does not match operator", primaryRole)
+	// if participant.vs_operator is not equal to vs_account, abort
+	if primaryParticipant.VsOperator != msg.VsAccount {
+		return fmt.Errorf("%s participant vs_operator does not match vs_account", primaryRole)
 	}
 
 	// if participant.corporation_id is not the signing corporation, abort
@@ -137,9 +140,9 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 	if err := ms.delegationKeeper.CheckVSOperatorAuthorizationOnParticipant(
 		ctx,
 		primaryCorpID,
-		msg.Operator,
+		msg.VsAccount,
 		primaryParticipant.Id,
-		types.MsgCreateOrUpdateParticipantSessionTypeURL,
+		primaryMsgType,
 	); err != nil {
 		return fmt.Errorf("VS operator authorization check failed: %w", err)
 	}
@@ -539,9 +542,9 @@ func (ms msgServer) validateSessionAccess(ctx sdk.Context, msg *types.MsgCreateO
 		return fmt.Errorf("session corporation does not match: expected %d, got %s", existingSession.CorporationId, msg.Corporation)
 	}
 
-	// existing_entry.vs_operator MUST be equal to operator
-	if existingSession.VsOperator != msg.Operator {
-		return fmt.Errorf("session vs_operator does not match: expected %s, got %s", existingSession.VsOperator, msg.Operator)
+	// existing_entry.vs_operator MUST be equal to vs_account
+	if existingSession.VsOperator != msg.VsAccount {
+		return fmt.Errorf("session vs_operator does not match: expected %s, got %s", existingSession.VsOperator, msg.VsAccount)
 	}
 
 	return nil
@@ -555,7 +558,7 @@ func (ms msgServer) createOrUpdateSession(ctx sdk.Context, msg *types.MsgCreateO
 	session := &types.ParticipantSession{
 		Id:            msg.Id,
 		CorporationId: corporationId,
-		VsOperator:    msg.Operator,
+		VsOperator:    msg.VsAccount,
 		Modified:      &now,
 	}
 

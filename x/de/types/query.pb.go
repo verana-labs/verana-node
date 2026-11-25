@@ -115,31 +115,31 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-// QueryListOperatorAuthorizationsRequest is the request type for the
-// Query/ListOperatorAuthorizations RPC method.
-type QueryListOperatorAuthorizationsRequest struct {
+// QueryListDelegateAuthorizationsRequest is the request type for the
+// Query/ListDelegateAuthorizations RPC method.
+type QueryListDelegateAuthorizationsRequest struct {
 	// corporation_id filters by the corporation that granted the authorization.
 	CorporationId uint64 `protobuf:"varint,1,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
-	// operator filters by the operator account that received the authorization.
-	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	// delegate filters by the delegate account that received the authorization.
+	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	// response_max_size limits the number of results. Must be 1-1024, defaults to 64.
 	ResponseMaxSize uint32 `protobuf:"varint,3,opt,name=response_max_size,json=responseMaxSize,proto3" json:"response_max_size,omitempty"`
 }
 
-func (m *QueryListOperatorAuthorizationsRequest) Reset() {
-	*m = QueryListOperatorAuthorizationsRequest{}
+func (m *QueryListDelegateAuthorizationsRequest) Reset() {
+	*m = QueryListDelegateAuthorizationsRequest{}
 }
-func (m *QueryListOperatorAuthorizationsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryListOperatorAuthorizationsRequest) ProtoMessage()    {}
-func (*QueryListOperatorAuthorizationsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryListDelegateAuthorizationsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryListDelegateAuthorizationsRequest) ProtoMessage()    {}
+func (*QueryListDelegateAuthorizationsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_41e9e1468cb47da6, []int{2}
 }
-func (m *QueryListOperatorAuthorizationsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryListDelegateAuthorizationsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListOperatorAuthorizationsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryListDelegateAuthorizationsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListOperatorAuthorizationsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryListDelegateAuthorizationsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -149,59 +149,59 @@ func (m *QueryListOperatorAuthorizationsRequest) XXX_Marshal(b []byte, determini
 		return b[:n], nil
 	}
 }
-func (m *QueryListOperatorAuthorizationsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListOperatorAuthorizationsRequest.Merge(m, src)
+func (m *QueryListDelegateAuthorizationsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryListDelegateAuthorizationsRequest.Merge(m, src)
 }
-func (m *QueryListOperatorAuthorizationsRequest) XXX_Size() int {
+func (m *QueryListDelegateAuthorizationsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListOperatorAuthorizationsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListOperatorAuthorizationsRequest.DiscardUnknown(m)
+func (m *QueryListDelegateAuthorizationsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryListDelegateAuthorizationsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListOperatorAuthorizationsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryListDelegateAuthorizationsRequest proto.InternalMessageInfo
 
-func (m *QueryListOperatorAuthorizationsRequest) GetCorporationId() uint64 {
+func (m *QueryListDelegateAuthorizationsRequest) GetCorporationId() uint64 {
 	if m != nil {
 		return m.CorporationId
 	}
 	return 0
 }
 
-func (m *QueryListOperatorAuthorizationsRequest) GetOperator() string {
+func (m *QueryListDelegateAuthorizationsRequest) GetDelegate() string {
 	if m != nil {
-		return m.Operator
+		return m.Delegate
 	}
 	return ""
 }
 
-func (m *QueryListOperatorAuthorizationsRequest) GetResponseMaxSize() uint32 {
+func (m *QueryListDelegateAuthorizationsRequest) GetResponseMaxSize() uint32 {
 	if m != nil {
 		return m.ResponseMaxSize
 	}
 	return 0
 }
 
-// QueryListOperatorAuthorizationsResponse is the response type for the
-// Query/ListOperatorAuthorizations RPC method.
-type QueryListOperatorAuthorizationsResponse struct {
-	OperatorAuthorizations []OperatorAuthorization `protobuf:"bytes,1,rep,name=operator_authorizations,json=operatorAuthorizations,proto3" json:"operator_authorizations"`
+// QueryListDelegateAuthorizationsResponse is the response type for the
+// Query/ListDelegateAuthorizations RPC method.
+type QueryListDelegateAuthorizationsResponse struct {
+	DelegateAuthorizations []DelegateAuthorization `protobuf:"bytes,1,rep,name=delegate_authorizations,json=delegateAuthorizations,proto3" json:"delegate_authorizations"`
 }
 
-func (m *QueryListOperatorAuthorizationsResponse) Reset() {
-	*m = QueryListOperatorAuthorizationsResponse{}
+func (m *QueryListDelegateAuthorizationsResponse) Reset() {
+	*m = QueryListDelegateAuthorizationsResponse{}
 }
-func (m *QueryListOperatorAuthorizationsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryListOperatorAuthorizationsResponse) ProtoMessage()    {}
-func (*QueryListOperatorAuthorizationsResponse) Descriptor() ([]byte, []int) {
+func (m *QueryListDelegateAuthorizationsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryListDelegateAuthorizationsResponse) ProtoMessage()    {}
+func (*QueryListDelegateAuthorizationsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_41e9e1468cb47da6, []int{3}
 }
-func (m *QueryListOperatorAuthorizationsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryListDelegateAuthorizationsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListOperatorAuthorizationsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryListDelegateAuthorizationsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListOperatorAuthorizationsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryListDelegateAuthorizationsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -211,21 +211,21 @@ func (m *QueryListOperatorAuthorizationsResponse) XXX_Marshal(b []byte, determin
 		return b[:n], nil
 	}
 }
-func (m *QueryListOperatorAuthorizationsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListOperatorAuthorizationsResponse.Merge(m, src)
+func (m *QueryListDelegateAuthorizationsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryListDelegateAuthorizationsResponse.Merge(m, src)
 }
-func (m *QueryListOperatorAuthorizationsResponse) XXX_Size() int {
+func (m *QueryListDelegateAuthorizationsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListOperatorAuthorizationsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListOperatorAuthorizationsResponse.DiscardUnknown(m)
+func (m *QueryListDelegateAuthorizationsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryListDelegateAuthorizationsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListOperatorAuthorizationsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryListDelegateAuthorizationsResponse proto.InternalMessageInfo
 
-func (m *QueryListOperatorAuthorizationsResponse) GetOperatorAuthorizations() []OperatorAuthorization {
+func (m *QueryListDelegateAuthorizationsResponse) GetDelegateAuthorizations() []DelegateAuthorization {
 	if m != nil {
-		return m.OperatorAuthorizations
+		return m.DelegateAuthorizations
 	}
 	return nil
 }
@@ -347,25 +347,25 @@ func (m *QueryListVSOperatorAuthorizationsResponse) GetVsOperatorAuthorizations(
 	return nil
 }
 
-// QueryGetOperatorAuthorizationRequest is the request type for the
-// Query/GetOperatorAuthorization RPC method.
-type QueryGetOperatorAuthorizationRequest struct {
-	// id is the OperatorAuthorization id to fetch.
+// QueryGetDelegateAuthorizationRequest is the request type for the
+// Query/GetDelegateAuthorization RPC method.
+type QueryGetDelegateAuthorizationRequest struct {
+	// id is the DelegateAuthorization id to fetch.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *QueryGetOperatorAuthorizationRequest) Reset()         { *m = QueryGetOperatorAuthorizationRequest{} }
-func (m *QueryGetOperatorAuthorizationRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetOperatorAuthorizationRequest) ProtoMessage()    {}
-func (*QueryGetOperatorAuthorizationRequest) Descriptor() ([]byte, []int) {
+func (m *QueryGetDelegateAuthorizationRequest) Reset()         { *m = QueryGetDelegateAuthorizationRequest{} }
+func (m *QueryGetDelegateAuthorizationRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetDelegateAuthorizationRequest) ProtoMessage()    {}
+func (*QueryGetDelegateAuthorizationRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_41e9e1468cb47da6, []int{6}
 }
-func (m *QueryGetOperatorAuthorizationRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryGetDelegateAuthorizationRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetOperatorAuthorizationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryGetDelegateAuthorizationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetOperatorAuthorizationRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryGetDelegateAuthorizationRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -375,43 +375,43 @@ func (m *QueryGetOperatorAuthorizationRequest) XXX_Marshal(b []byte, determinist
 		return b[:n], nil
 	}
 }
-func (m *QueryGetOperatorAuthorizationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetOperatorAuthorizationRequest.Merge(m, src)
+func (m *QueryGetDelegateAuthorizationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetDelegateAuthorizationRequest.Merge(m, src)
 }
-func (m *QueryGetOperatorAuthorizationRequest) XXX_Size() int {
+func (m *QueryGetDelegateAuthorizationRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetOperatorAuthorizationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetOperatorAuthorizationRequest.DiscardUnknown(m)
+func (m *QueryGetDelegateAuthorizationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetDelegateAuthorizationRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetOperatorAuthorizationRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryGetDelegateAuthorizationRequest proto.InternalMessageInfo
 
-func (m *QueryGetOperatorAuthorizationRequest) GetId() uint64 {
+func (m *QueryGetDelegateAuthorizationRequest) GetId() uint64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-// QueryGetOperatorAuthorizationResponse is the response type for the
-// Query/GetOperatorAuthorization RPC method.
-type QueryGetOperatorAuthorizationResponse struct {
-	OperatorAuthorization OperatorAuthorization `protobuf:"bytes,1,opt,name=operator_authorization,json=operatorAuthorization,proto3" json:"operator_authorization"`
+// QueryGetDelegateAuthorizationResponse is the response type for the
+// Query/GetDelegateAuthorization RPC method.
+type QueryGetDelegateAuthorizationResponse struct {
+	DelegateAuthorization DelegateAuthorization `protobuf:"bytes,1,opt,name=delegate_authorization,json=delegateAuthorization,proto3" json:"delegate_authorization"`
 }
 
-func (m *QueryGetOperatorAuthorizationResponse) Reset()         { *m = QueryGetOperatorAuthorizationResponse{} }
-func (m *QueryGetOperatorAuthorizationResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetOperatorAuthorizationResponse) ProtoMessage()    {}
-func (*QueryGetOperatorAuthorizationResponse) Descriptor() ([]byte, []int) {
+func (m *QueryGetDelegateAuthorizationResponse) Reset()         { *m = QueryGetDelegateAuthorizationResponse{} }
+func (m *QueryGetDelegateAuthorizationResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetDelegateAuthorizationResponse) ProtoMessage()    {}
+func (*QueryGetDelegateAuthorizationResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_41e9e1468cb47da6, []int{7}
 }
-func (m *QueryGetOperatorAuthorizationResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryGetDelegateAuthorizationResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetOperatorAuthorizationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryGetDelegateAuthorizationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetOperatorAuthorizationResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryGetDelegateAuthorizationResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -421,23 +421,23 @@ func (m *QueryGetOperatorAuthorizationResponse) XXX_Marshal(b []byte, determinis
 		return b[:n], nil
 	}
 }
-func (m *QueryGetOperatorAuthorizationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetOperatorAuthorizationResponse.Merge(m, src)
+func (m *QueryGetDelegateAuthorizationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetDelegateAuthorizationResponse.Merge(m, src)
 }
-func (m *QueryGetOperatorAuthorizationResponse) XXX_Size() int {
+func (m *QueryGetDelegateAuthorizationResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetOperatorAuthorizationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetOperatorAuthorizationResponse.DiscardUnknown(m)
+func (m *QueryGetDelegateAuthorizationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetDelegateAuthorizationResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetOperatorAuthorizationResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryGetDelegateAuthorizationResponse proto.InternalMessageInfo
 
-func (m *QueryGetOperatorAuthorizationResponse) GetOperatorAuthorization() OperatorAuthorization {
+func (m *QueryGetDelegateAuthorizationResponse) GetDelegateAuthorization() DelegateAuthorization {
 	if m != nil {
-		return m.OperatorAuthorization
+		return m.DelegateAuthorization
 	}
-	return OperatorAuthorization{}
+	return DelegateAuthorization{}
 }
 
 // QueryGetVSOperatorAuthorizationRequest is the request type for the
@@ -540,12 +540,12 @@ func (m *QueryGetVSOperatorAuthorizationResponse) GetVsOperatorAuthorization() V
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "verana.de.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "verana.de.v1.QueryParamsResponse")
-	proto.RegisterType((*QueryListOperatorAuthorizationsRequest)(nil), "verana.de.v1.QueryListOperatorAuthorizationsRequest")
-	proto.RegisterType((*QueryListOperatorAuthorizationsResponse)(nil), "verana.de.v1.QueryListOperatorAuthorizationsResponse")
+	proto.RegisterType((*QueryListDelegateAuthorizationsRequest)(nil), "verana.de.v1.QueryListDelegateAuthorizationsRequest")
+	proto.RegisterType((*QueryListDelegateAuthorizationsResponse)(nil), "verana.de.v1.QueryListDelegateAuthorizationsResponse")
 	proto.RegisterType((*QueryListVSOperatorAuthorizationsRequest)(nil), "verana.de.v1.QueryListVSOperatorAuthorizationsRequest")
 	proto.RegisterType((*QueryListVSOperatorAuthorizationsResponse)(nil), "verana.de.v1.QueryListVSOperatorAuthorizationsResponse")
-	proto.RegisterType((*QueryGetOperatorAuthorizationRequest)(nil), "verana.de.v1.QueryGetOperatorAuthorizationRequest")
-	proto.RegisterType((*QueryGetOperatorAuthorizationResponse)(nil), "verana.de.v1.QueryGetOperatorAuthorizationResponse")
+	proto.RegisterType((*QueryGetDelegateAuthorizationRequest)(nil), "verana.de.v1.QueryGetDelegateAuthorizationRequest")
+	proto.RegisterType((*QueryGetDelegateAuthorizationResponse)(nil), "verana.de.v1.QueryGetDelegateAuthorizationResponse")
 	proto.RegisterType((*QueryGetVSOperatorAuthorizationRequest)(nil), "verana.de.v1.QueryGetVSOperatorAuthorizationRequest")
 	proto.RegisterType((*QueryGetVSOperatorAuthorizationResponse)(nil), "verana.de.v1.QueryGetVSOperatorAuthorizationResponse")
 }
@@ -553,55 +553,55 @@ func init() {
 func init() { proto.RegisterFile("verana/de/v1/query.proto", fileDescriptor_41e9e1468cb47da6) }
 
 var fileDescriptor_41e9e1468cb47da6 = []byte{
-	// 754 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0xcf, 0x4f, 0x13, 0x41,
-	0x14, 0xc7, 0x3b, 0x05, 0x1b, 0x19, 0x04, 0xc2, 0x50, 0x60, 0xbb, 0xc1, 0x5a, 0x57, 0xd1, 0x4a,
-	0xd2, 0x4e, 0x5a, 0x10, 0xf4, 0x48, 0x2f, 0xc4, 0x44, 0x45, 0x4b, 0xe2, 0xc1, 0x4b, 0x9d, 0xb2,
-	0x93, 0x65, 0x12, 0xba, 0xb3, 0xec, 0x6c, 0x1b, 0xa8, 0xf1, 0xe2, 0xcd, 0x83, 0x89, 0xd1, 0x44,
-	0xef, 0xc6, 0x83, 0x89, 0x31, 0xd1, 0xc4, 0x83, 0x7f, 0x02, 0x47, 0xa2, 0x17, 0x4f, 0xc6, 0x80,
-	0x89, 0xff, 0x86, 0xe9, 0xec, 0x2c, 0x76, 0x71, 0x97, 0x52, 0xe3, 0x65, 0xb3, 0x3b, 0xf3, 0x7e,
-	0x7c, 0xde, 0xf7, 0xcd, 0x9b, 0x85, 0x5a, 0x8b, 0xba, 0xc4, 0x26, 0xd8, 0xa4, 0xb8, 0x55, 0xc2,
-	0x5b, 0x4d, 0xea, 0xee, 0x14, 0x1d, 0x97, 0x7b, 0x1c, 0x9d, 0xf1, 0x77, 0x8a, 0x26, 0x2d, 0xb6,
-	0x4a, 0xfa, 0x38, 0x69, 0x30, 0x9b, 0x63, 0xf9, 0xf4, 0x0d, 0xf4, 0xb9, 0x75, 0x2e, 0x1a, 0x5c,
-	0xe0, 0x3a, 0x11, 0xd4, 0xf7, 0xc4, 0xad, 0x52, 0x9d, 0x7a, 0xa4, 0x84, 0x1d, 0x62, 0x31, 0x9b,
-	0x78, 0x8c, 0xdb, 0xca, 0x36, 0xe3, 0xdb, 0xd6, 0xe4, 0x17, 0xf6, 0x3f, 0xd4, 0x56, 0xda, 0xe2,
-	0x16, 0xf7, 0xd7, 0x3b, 0x6f, 0x6a, 0x75, 0xc6, 0xe2, 0xdc, 0xda, 0xa4, 0x98, 0x38, 0x0c, 0x13,
-	0xdb, 0xe6, 0x9e, 0x8c, 0x16, 0xf8, 0x64, 0x42, 0xd4, 0x0e, 0x71, 0x49, 0x23, 0xd8, 0x0a, 0x17,
-	0xe4, 0xed, 0x38, 0x54, 0xed, 0x18, 0x69, 0x88, 0xee, 0x76, 0x28, 0xef, 0x48, 0xf3, 0x2a, 0xdd,
-	0x6a, 0x52, 0xe1, 0x19, 0xb7, 0xe1, 0x44, 0x68, 0x55, 0x38, 0xdc, 0x16, 0x14, 0x2d, 0xc1, 0x94,
-	0x1f, 0x56, 0x03, 0x39, 0x90, 0x1f, 0x2e, 0xa7, 0x8b, 0xdd, 0x72, 0x14, 0x7d, 0xeb, 0xca, 0xd0,
-	0xee, 0xf7, 0x73, 0x89, 0xb7, 0xbf, 0x3e, 0xcc, 0x81, 0xaa, 0x32, 0x37, 0x3e, 0x02, 0x78, 0x49,
-	0x06, 0xbc, 0xc9, 0x84, 0xb7, 0xea, 0x50, 0x97, 0x78, 0xdc, 0x5d, 0x6e, 0x7a, 0x1b, 0xdc, 0x65,
-	0x6d, 0xbf, 0x08, 0x95, 0x1a, 0xcd, 0xc2, 0xd1, 0x75, 0xee, 0x3a, 0xdc, 0x95, 0xcb, 0x35, 0x66,
-	0xca, 0x5c, 0x83, 0xd5, 0x91, 0xae, 0xd5, 0x1b, 0x26, 0x5a, 0x80, 0xa7, 0xb9, 0x8a, 0xa3, 0x25,
-	0x73, 0x20, 0x3f, 0x54, 0xd1, 0xbe, 0x7c, 0x2a, 0xa4, 0x95, 0x88, 0xcb, 0xa6, 0xe9, 0x52, 0x21,
-	0xd6, 0x3c, 0x97, 0xd9, 0x56, 0xf5, 0xd0, 0x12, 0xcd, 0xc1, 0x71, 0x57, 0x15, 0x53, 0x6b, 0x90,
-	0xed, 0x9a, 0x60, 0x6d, 0xaa, 0x0d, 0xe4, 0x40, 0x7e, 0xa4, 0x3a, 0x16, 0x6c, 0xdc, 0x22, 0xdb,
-	0x6b, 0xac, 0x4d, 0x8d, 0xa7, 0x00, 0x5e, 0xee, 0xc9, 0xac, 0x84, 0xa9, 0xc3, 0xe9, 0x20, 0x47,
-	0x8d, 0x84, 0x4c, 0x34, 0x90, 0x1b, 0xc8, 0x0f, 0x97, 0x2f, 0x84, 0x95, 0x8a, 0x0c, 0x57, 0x19,
-	0xec, 0x08, 0x57, 0x9d, 0xe2, 0x91, 0xb9, 0x8c, 0xcf, 0x00, 0xe6, 0x0f, 0x79, 0xee, 0xad, 0xfd,
-	0x17, 0x15, 0xaf, 0xc3, 0xe1, 0x96, 0xa8, 0x9d, 0x58, 0x48, 0xd8, 0x12, 0xab, 0xff, 0x22, 0xe5,
-	0x4b, 0x00, 0xaf, 0x9c, 0x00, 0x5d, 0x89, 0xc9, 0xa0, 0xde, 0x05, 0x15, 0xad, 0xe7, 0x6c, 0x58,
-	0xcf, 0x98, 0x98, 0x4a, 0x51, 0xed, 0x0f, 0xf6, 0x11, 0x4d, 0x17, 0xe1, 0x45, 0xc9, 0xb5, 0x42,
-	0xa3, 0x3b, 0x1c, 0xc8, 0x39, 0x0a, 0x93, 0x87, 0x12, 0x26, 0x99, 0x69, 0x3c, 0x01, 0x70, 0xb6,
-	0x87, 0xa3, 0x2a, 0xe6, 0x01, 0x9c, 0x8a, 0xae, 0x44, 0x8d, 0x50, 0x1f, 0x07, 0x63, 0x32, 0xf2,
-	0x60, 0x18, 0xd7, 0xd4, 0x68, 0xad, 0xd0, 0x38, 0x69, 0xe3, 0xaa, 0x78, 0x1e, 0x9c, 0xf0, 0xe3,
-	0x5c, 0x55, 0x1d, 0x16, 0xcc, 0xc4, 0x36, 0x45, 0x95, 0xd2, 0x57, 0x4f, 0xa6, 0x63, 0x7a, 0x52,
-	0x7e, 0x95, 0x82, 0xa7, 0x24, 0x14, 0x32, 0x61, 0xca, 0xbf, 0x51, 0x50, 0x2e, 0x1c, 0xf9, 0xef,
-	0x0b, 0x4b, 0x3f, 0x7f, 0x8c, 0x85, 0x5f, 0x81, 0x31, 0xf9, 0xf8, 0xeb, 0xcf, 0x17, 0xc9, 0x31,
-	0x34, 0x12, 0xba, 0x20, 0xd1, 0x1b, 0x00, 0xf5, 0xf8, 0x09, 0x47, 0x0b, 0x11, 0x81, 0x7b, 0x5e,
-	0x62, 0xfa, 0xd5, 0x3e, 0xbd, 0x14, 0x62, 0x46, 0x22, 0x4e, 0xa0, 0x71, 0x85, 0xd8, 0x51, 0xb9,
-	0x8d, 0x37, 0x99, 0xf0, 0xd0, 0x7b, 0x00, 0x67, 0x8e, 0x9b, 0x1e, 0xb4, 0x18, 0x93, 0xb2, 0xc7,
-	0x4d, 0xa1, 0x2f, 0xf5, 0xed, 0xa7, 0x60, 0x67, 0x24, 0xec, 0x14, 0x4a, 0x2b, 0xd8, 0x96, 0x28,
-	0x74, 0xf1, 0xbe, 0x06, 0x50, 0x8b, 0x1b, 0x0e, 0x54, 0x8e, 0xc8, 0xd9, 0x63, 0x04, 0xf5, 0xf9,
-	0xbe, 0x7c, 0x14, 0xe3, 0x59, 0xc9, 0x38, 0x8d, 0x26, 0x43, 0x82, 0x5a, 0xd4, 0xc3, 0x0f, 0x99,
-	0xf9, 0x08, 0xbd, 0x03, 0x50, 0x8f, 0x3f, 0xfb, 0x91, 0xbd, 0xef, 0x39, 0x65, 0x91, 0xbd, 0xef,
-	0x3d, 0x60, 0x46, 0x4e, 0xa2, 0xea, 0x48, 0x3b, 0x2a, 0x67, 0x40, 0x5b, 0x59, 0xd9, 0xdd, 0xcf,
-	0x82, 0xbd, 0xfd, 0x2c, 0xf8, 0xb1, 0x9f, 0x05, 0xcf, 0x0e, 0xb2, 0x89, 0xbd, 0x83, 0x6c, 0xe2,
-	0xdb, 0x41, 0x36, 0x71, 0xbf, 0x60, 0x31, 0x6f, 0xa3, 0x59, 0x2f, 0xae, 0xf3, 0x06, 0xf6, 0x93,
-	0x17, 0x36, 0x49, 0x5d, 0x04, 0xef, 0x36, 0x37, 0x29, 0xde, 0xee, 0xc4, 0x95, 0x7f, 0xfe, 0x7a,
-	0x4a, 0xfe, 0xfa, 0xe7, 0x7f, 0x07, 0x00, 0x00, 0xff, 0xff, 0x7c, 0x84, 0x0b, 0x82, 0xe7, 0x08,
-	0x00, 0x00,
+	// 763 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x95, 0xcf, 0x6b, 0x13, 0x41,
+	0x14, 0xc7, 0x33, 0x69, 0x0d, 0x76, 0x6a, 0x5b, 0x3a, 0x4d, 0xdb, 0xcd, 0x52, 0x63, 0x5c, 0xad,
+	0xc6, 0x42, 0xb2, 0x24, 0xad, 0xad, 0x1e, 0x1b, 0x84, 0x22, 0xf8, 0x33, 0x05, 0x0f, 0x5e, 0xe2,
+	0xa4, 0x3b, 0x6c, 0x07, 0x92, 0x9d, 0xed, 0xce, 0x66, 0x69, 0x23, 0x5e, 0xbc, 0x79, 0x10, 0x44,
+	0x41, 0xef, 0xe2, 0x41, 0x10, 0x41, 0xc1, 0x83, 0x7f, 0x42, 0x8f, 0x45, 0x2f, 0x9e, 0x44, 0x5a,
+	0xc1, 0x7f, 0x43, 0x32, 0x3b, 0x5b, 0xb3, 0x75, 0xb7, 0x6b, 0xf0, 0xb2, 0xec, 0xce, 0xbc, 0x1f,
+	0x9f, 0xf7, 0x7d, 0xf3, 0x66, 0xa1, 0xe2, 0x11, 0x07, 0x5b, 0x58, 0x37, 0x88, 0xee, 0x55, 0xf4,
+	0xad, 0x0e, 0x71, 0x76, 0xca, 0xb6, 0xc3, 0x5c, 0x86, 0x4e, 0xf9, 0x3b, 0x65, 0x83, 0x94, 0xbd,
+	0x8a, 0x3a, 0x89, 0xdb, 0xd4, 0x62, 0xba, 0x78, 0xfa, 0x06, 0xea, 0xc2, 0x06, 0xe3, 0x6d, 0xc6,
+	0xf5, 0x26, 0xe6, 0xc4, 0xf7, 0xd4, 0xbd, 0x4a, 0x93, 0xb8, 0xb8, 0xa2, 0xdb, 0xd8, 0xa4, 0x16,
+	0x76, 0x29, 0xb3, 0xa4, 0x6d, 0xce, 0xb7, 0x6d, 0x88, 0x2f, 0xdd, 0xff, 0x90, 0x5b, 0x59, 0x93,
+	0x99, 0xcc, 0x5f, 0xef, 0xbd, 0xc9, 0xd5, 0x39, 0x93, 0x31, 0xb3, 0x45, 0x74, 0x6c, 0x53, 0x1d,
+	0x5b, 0x16, 0x73, 0x45, 0xb4, 0xc0, 0x27, 0x17, 0xa2, 0xb6, 0xb1, 0x83, 0xdb, 0xc1, 0x56, 0xb8,
+	0x20, 0x77, 0xc7, 0x26, 0x72, 0x47, 0xcb, 0x42, 0x74, 0xb7, 0x47, 0x79, 0x47, 0x98, 0xd7, 0xc9,
+	0x56, 0x87, 0x70, 0x57, 0xbb, 0x05, 0xa7, 0x42, 0xab, 0xdc, 0x66, 0x16, 0x27, 0x68, 0x05, 0x66,
+	0xfc, 0xb0, 0x0a, 0x28, 0x80, 0xe2, 0x68, 0x35, 0x5b, 0xee, 0x97, 0xa3, 0xec, 0x5b, 0xd7, 0x46,
+	0x76, 0xbf, 0x9f, 0x49, 0xbd, 0xfd, 0xf5, 0x61, 0x01, 0xd4, 0xa5, 0xb9, 0xf6, 0x11, 0xc0, 0x0b,
+	0x22, 0xe0, 0x0d, 0xca, 0xdd, 0x6b, 0xa4, 0x45, 0x4c, 0xec, 0x92, 0xd5, 0x8e, 0xbb, 0xc9, 0x1c,
+	0xda, 0xf5, 0x8b, 0x90, 0xa9, 0xd1, 0x3c, 0x1c, 0xdf, 0x60, 0x8e, 0xcd, 0x1c, 0xb1, 0xdc, 0xa0,
+	0x86, 0xc8, 0x35, 0x5c, 0x1f, 0xeb, 0x5b, 0xbd, 0x6e, 0xa0, 0x25, 0x78, 0xd2, 0x90, 0x71, 0x94,
+	0x74, 0x01, 0x14, 0x47, 0x6a, 0xca, 0x97, 0x4f, 0xa5, 0xac, 0x14, 0x71, 0xd5, 0x30, 0x1c, 0xc2,
+	0xf9, 0xba, 0xeb, 0x50, 0xcb, 0xac, 0x1f, 0x5a, 0xa2, 0x05, 0x38, 0xe9, 0xc8, 0x62, 0x1a, 0x6d,
+	0xbc, 0xdd, 0xe0, 0xb4, 0x4b, 0x94, 0xa1, 0x02, 0x28, 0x8e, 0xd5, 0x27, 0x82, 0x8d, 0x9b, 0x78,
+	0x7b, 0x9d, 0x76, 0x89, 0xf6, 0x14, 0xc0, 0x8b, 0x89, 0xcc, 0x52, 0x98, 0x26, 0x9c, 0x0d, 0x72,
+	0x34, 0x70, 0xc8, 0x44, 0x01, 0x85, 0xa1, 0xe2, 0x68, 0xf5, 0x5c, 0x58, 0xa9, 0xc8, 0x70, 0xb5,
+	0xe1, 0x9e, 0x70, 0xf5, 0x19, 0x23, 0x32, 0x97, 0xf6, 0x19, 0xc0, 0xe2, 0x21, 0xcf, 0xbd, 0xf5,
+	0xdb, 0x36, 0x71, 0xb0, 0xcb, 0x9c, 0xff, 0x52, 0xf1, 0x2a, 0x1c, 0xf5, 0x78, 0x83, 0xc9, 0x50,
+	0x89, 0x42, 0x42, 0x8f, 0x07, 0x69, 0x07, 0x92, 0xf2, 0x25, 0x80, 0x97, 0xfe, 0x01, 0x5d, 0x8a,
+	0x49, 0xa1, 0xda, 0x07, 0x15, 0xad, 0xe7, 0x7c, 0x58, 0xcf, 0x98, 0x98, 0x52, 0x51, 0xe5, 0x0f,
+	0xf6, 0x11, 0x4d, 0x97, 0xe1, 0x79, 0xc1, 0xb5, 0x46, 0xa2, 0x3b, 0x1c, 0xc8, 0x39, 0x0e, 0xd3,
+	0x87, 0x12, 0xa6, 0xa9, 0xa1, 0x3d, 0x01, 0x70, 0x3e, 0xc1, 0x51, 0x16, 0xf3, 0x00, 0xce, 0x44,
+	0x9f, 0x0c, 0x39, 0x42, 0x03, 0x1c, 0x8c, 0xe9, 0xc8, 0x83, 0xa1, 0x5d, 0x91, 0xa3, 0xb5, 0x46,
+	0xe2, 0xa4, 0x8d, 0xab, 0xe2, 0x79, 0x70, 0xc2, 0x8f, 0x73, 0x95, 0x75, 0x98, 0x30, 0x17, 0xdb,
+	0x14, 0x59, 0xca, 0x40, 0x3d, 0x99, 0x8d, 0xe9, 0x49, 0xf5, 0x55, 0x06, 0x9e, 0x10, 0x50, 0xc8,
+	0x80, 0x19, 0xff, 0x46, 0x41, 0x85, 0x70, 0xe4, 0xbf, 0x2f, 0x2c, 0xf5, 0xec, 0x31, 0x16, 0x7e,
+	0x05, 0xda, 0xf4, 0xe3, 0xaf, 0x3f, 0x5f, 0xa4, 0x27, 0xd0, 0x58, 0xe8, 0x82, 0x44, 0x6f, 0x00,
+	0x54, 0xe3, 0x27, 0x1c, 0x2d, 0x45, 0x04, 0x4e, 0xbc, 0xc4, 0xd4, 0xcb, 0x03, 0x7a, 0x49, 0xc4,
+	0x9c, 0x40, 0x9c, 0x42, 0x93, 0x12, 0xb1, 0xa7, 0x72, 0x57, 0x6f, 0x51, 0xee, 0xa2, 0xf7, 0x00,
+	0xce, 0x1d, 0x37, 0x3d, 0x68, 0x39, 0x26, 0x65, 0xc2, 0x4d, 0xa1, 0xae, 0x0c, 0xec, 0x27, 0x61,
+	0xe7, 0x04, 0xec, 0x0c, 0xca, 0x4a, 0x58, 0x8f, 0x97, 0xfa, 0x78, 0x5f, 0x03, 0xa8, 0xc4, 0x0d,
+	0x07, 0xaa, 0x46, 0xe4, 0x4c, 0x18, 0x41, 0x75, 0x71, 0x20, 0x1f, 0xc9, 0x78, 0x5a, 0x30, 0xce,
+	0xa2, 0xe9, 0x90, 0xa0, 0x26, 0x71, 0xf5, 0x87, 0xd4, 0x78, 0x84, 0xde, 0x01, 0xa8, 0xc6, 0x9f,
+	0xfd, 0xc8, 0xde, 0x27, 0x4e, 0x59, 0x64, 0xef, 0x93, 0x07, 0x4c, 0x2b, 0x08, 0x54, 0x15, 0x29,
+	0x47, 0xe5, 0x0c, 0x68, 0x6b, 0x6b, 0xbb, 0xfb, 0x79, 0xb0, 0xb7, 0x9f, 0x07, 0x3f, 0xf6, 0xf3,
+	0xe0, 0xd9, 0x41, 0x3e, 0xb5, 0x77, 0x90, 0x4f, 0x7d, 0x3b, 0xc8, 0xa7, 0xee, 0x97, 0x4c, 0xea,
+	0x6e, 0x76, 0x9a, 0xe5, 0x0d, 0xd6, 0xd6, 0xfd, 0xe4, 0xa5, 0x16, 0x6e, 0xf2, 0xe0, 0xdd, 0x62,
+	0x06, 0xd1, 0xb7, 0x7b, 0x71, 0xc5, 0x9f, 0xbf, 0x99, 0x11, 0xbf, 0xfe, 0xc5, 0xdf, 0x01, 0x00,
+	0x00, 0xff, 0xff, 0x8b, 0xa0, 0x19, 0xf7, 0xe7, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -618,12 +618,12 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// ListOperatorAuthorizations returns operator authorizations matching optional filters.
-	ListOperatorAuthorizations(ctx context.Context, in *QueryListOperatorAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListOperatorAuthorizationsResponse, error)
+	// [MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters.
+	ListDelegateAuthorizations(ctx context.Context, in *QueryListDelegateAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListDelegateAuthorizationsResponse, error)
 	// ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.
 	ListVSOperatorAuthorizations(ctx context.Context, in *QueryListVSOperatorAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListVSOperatorAuthorizationsResponse, error)
-	// [MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.
-	GetOperatorAuthorization(ctx context.Context, in *QueryGetOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetOperatorAuthorizationResponse, error)
+	// [MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id.
+	GetDelegateAuthorization(ctx context.Context, in *QueryGetDelegateAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(ctx context.Context, in *QueryGetVSOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetVSOperatorAuthorizationResponse, error)
 }
@@ -645,9 +645,9 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) ListOperatorAuthorizations(ctx context.Context, in *QueryListOperatorAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListOperatorAuthorizationsResponse, error) {
-	out := new(QueryListOperatorAuthorizationsResponse)
-	err := c.cc.Invoke(ctx, "/verana.de.v1.Query/ListOperatorAuthorizations", in, out, opts...)
+func (c *queryClient) ListDelegateAuthorizations(ctx context.Context, in *QueryListDelegateAuthorizationsRequest, opts ...grpc.CallOption) (*QueryListDelegateAuthorizationsResponse, error) {
+	out := new(QueryListDelegateAuthorizationsResponse)
+	err := c.cc.Invoke(ctx, "/verana.de.v1.Query/ListDelegateAuthorizations", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -663,9 +663,9 @@ func (c *queryClient) ListVSOperatorAuthorizations(ctx context.Context, in *Quer
 	return out, nil
 }
 
-func (c *queryClient) GetOperatorAuthorization(ctx context.Context, in *QueryGetOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetOperatorAuthorizationResponse, error) {
-	out := new(QueryGetOperatorAuthorizationResponse)
-	err := c.cc.Invoke(ctx, "/verana.de.v1.Query/GetOperatorAuthorization", in, out, opts...)
+func (c *queryClient) GetDelegateAuthorization(ctx context.Context, in *QueryGetDelegateAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetDelegateAuthorizationResponse, error) {
+	out := new(QueryGetDelegateAuthorizationResponse)
+	err := c.cc.Invoke(ctx, "/verana.de.v1.Query/GetDelegateAuthorization", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -685,12 +685,12 @@ func (c *queryClient) GetVSOperatorAuthorization(ctx context.Context, in *QueryG
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// ListOperatorAuthorizations returns operator authorizations matching optional filters.
-	ListOperatorAuthorizations(context.Context, *QueryListOperatorAuthorizationsRequest) (*QueryListOperatorAuthorizationsResponse, error)
+	// [MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters.
+	ListDelegateAuthorizations(context.Context, *QueryListDelegateAuthorizationsRequest) (*QueryListDelegateAuthorizationsResponse, error)
 	// ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters.
 	ListVSOperatorAuthorizations(context.Context, *QueryListVSOperatorAuthorizationsRequest) (*QueryListVSOperatorAuthorizationsResponse, error)
-	// [MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id.
-	GetOperatorAuthorization(context.Context, *QueryGetOperatorAuthorizationRequest) (*QueryGetOperatorAuthorizationResponse, error)
+	// [MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id.
+	GetDelegateAuthorization(context.Context, *QueryGetDelegateAuthorizationRequest) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(context.Context, *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error)
 }
@@ -702,14 +702,14 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (*UnimplementedQueryServer) ListOperatorAuthorizations(ctx context.Context, req *QueryListOperatorAuthorizationsRequest) (*QueryListOperatorAuthorizationsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListOperatorAuthorizations not implemented")
+func (*UnimplementedQueryServer) ListDelegateAuthorizations(ctx context.Context, req *QueryListDelegateAuthorizationsRequest) (*QueryListDelegateAuthorizationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDelegateAuthorizations not implemented")
 }
 func (*UnimplementedQueryServer) ListVSOperatorAuthorizations(ctx context.Context, req *QueryListVSOperatorAuthorizationsRequest) (*QueryListVSOperatorAuthorizationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListVSOperatorAuthorizations not implemented")
 }
-func (*UnimplementedQueryServer) GetOperatorAuthorization(ctx context.Context, req *QueryGetOperatorAuthorizationRequest) (*QueryGetOperatorAuthorizationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOperatorAuthorization not implemented")
+func (*UnimplementedQueryServer) GetDelegateAuthorization(ctx context.Context, req *QueryGetDelegateAuthorizationRequest) (*QueryGetDelegateAuthorizationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDelegateAuthorization not implemented")
 }
 func (*UnimplementedQueryServer) GetVSOperatorAuthorization(ctx context.Context, req *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVSOperatorAuthorization not implemented")
@@ -737,20 +737,20 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ListOperatorAuthorizations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryListOperatorAuthorizationsRequest)
+func _Query_ListDelegateAuthorizations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryListDelegateAuthorizationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ListOperatorAuthorizations(ctx, in)
+		return srv.(QueryServer).ListDelegateAuthorizations(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/verana.de.v1.Query/ListOperatorAuthorizations",
+		FullMethod: "/verana.de.v1.Query/ListDelegateAuthorizations",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListOperatorAuthorizations(ctx, req.(*QueryListOperatorAuthorizationsRequest))
+		return srv.(QueryServer).ListDelegateAuthorizations(ctx, req.(*QueryListDelegateAuthorizationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -773,20 +773,20 @@ func _Query_ListVSOperatorAuthorizations_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_GetOperatorAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetOperatorAuthorizationRequest)
+func _Query_GetDelegateAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetDelegateAuthorizationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).GetOperatorAuthorization(ctx, in)
+		return srv.(QueryServer).GetDelegateAuthorization(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/verana.de.v1.Query/GetOperatorAuthorization",
+		FullMethod: "/verana.de.v1.Query/GetDelegateAuthorization",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GetOperatorAuthorization(ctx, req.(*QueryGetOperatorAuthorizationRequest))
+		return srv.(QueryServer).GetDelegateAuthorization(ctx, req.(*QueryGetDelegateAuthorizationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -819,16 +819,16 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Params_Handler,
 		},
 		{
-			MethodName: "ListOperatorAuthorizations",
-			Handler:    _Query_ListOperatorAuthorizations_Handler,
+			MethodName: "ListDelegateAuthorizations",
+			Handler:    _Query_ListDelegateAuthorizations_Handler,
 		},
 		{
 			MethodName: "ListVSOperatorAuthorizations",
 			Handler:    _Query_ListVSOperatorAuthorizations_Handler,
 		},
 		{
-			MethodName: "GetOperatorAuthorization",
-			Handler:    _Query_GetOperatorAuthorization_Handler,
+			MethodName: "GetDelegateAuthorization",
+			Handler:    _Query_GetDelegateAuthorization_Handler,
 		},
 		{
 			MethodName: "GetVSOperatorAuthorization",
@@ -895,7 +895,7 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListOperatorAuthorizationsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryListDelegateAuthorizationsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -905,12 +905,12 @@ func (m *QueryListOperatorAuthorizationsRequest) Marshal() (dAtA []byte, err err
 	return dAtA[:n], nil
 }
 
-func (m *QueryListOperatorAuthorizationsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryListDelegateAuthorizationsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListOperatorAuthorizationsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryListDelegateAuthorizationsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -920,10 +920,10 @@ func (m *QueryListOperatorAuthorizationsRequest) MarshalToSizedBuffer(dAtA []byt
 		i--
 		dAtA[i] = 0x18
 	}
-	if len(m.Operator) > 0 {
-		i -= len(m.Operator)
-		copy(dAtA[i:], m.Operator)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Operator)))
+	if len(m.Delegate) > 0 {
+		i -= len(m.Delegate)
+		copy(dAtA[i:], m.Delegate)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Delegate)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -935,7 +935,7 @@ func (m *QueryListOperatorAuthorizationsRequest) MarshalToSizedBuffer(dAtA []byt
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListOperatorAuthorizationsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryListDelegateAuthorizationsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -945,20 +945,20 @@ func (m *QueryListOperatorAuthorizationsResponse) Marshal() (dAtA []byte, err er
 	return dAtA[:n], nil
 }
 
-func (m *QueryListOperatorAuthorizationsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryListDelegateAuthorizationsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListOperatorAuthorizationsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryListDelegateAuthorizationsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.OperatorAuthorizations) > 0 {
-		for iNdEx := len(m.OperatorAuthorizations) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.DelegateAuthorizations) > 0 {
+		for iNdEx := len(m.DelegateAuthorizations) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.OperatorAuthorizations[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.DelegateAuthorizations[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1049,7 +1049,7 @@ func (m *QueryListVSOperatorAuthorizationsResponse) MarshalToSizedBuffer(dAtA []
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetOperatorAuthorizationRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryGetDelegateAuthorizationRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1059,12 +1059,12 @@ func (m *QueryGetOperatorAuthorizationRequest) Marshal() (dAtA []byte, err error
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetOperatorAuthorizationRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryGetDelegateAuthorizationRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetOperatorAuthorizationRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryGetDelegateAuthorizationRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1077,7 +1077,7 @@ func (m *QueryGetOperatorAuthorizationRequest) MarshalToSizedBuffer(dAtA []byte)
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetOperatorAuthorizationResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryGetDelegateAuthorizationResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1087,18 +1087,18 @@ func (m *QueryGetOperatorAuthorizationResponse) Marshal() (dAtA []byte, err erro
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetOperatorAuthorizationResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryGetDelegateAuthorizationResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetOperatorAuthorizationResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryGetDelegateAuthorizationResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.OperatorAuthorization.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.DelegateAuthorization.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -1202,7 +1202,7 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryListOperatorAuthorizationsRequest) Size() (n int) {
+func (m *QueryListDelegateAuthorizationsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1211,7 +1211,7 @@ func (m *QueryListOperatorAuthorizationsRequest) Size() (n int) {
 	if m.CorporationId != 0 {
 		n += 1 + sovQuery(uint64(m.CorporationId))
 	}
-	l = len(m.Operator)
+	l = len(m.Delegate)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -1221,14 +1221,14 @@ func (m *QueryListOperatorAuthorizationsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryListOperatorAuthorizationsResponse) Size() (n int) {
+func (m *QueryListDelegateAuthorizationsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.OperatorAuthorizations) > 0 {
-		for _, e := range m.OperatorAuthorizations {
+	if len(m.DelegateAuthorizations) > 0 {
+		for _, e := range m.DelegateAuthorizations {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -1270,7 +1270,7 @@ func (m *QueryListVSOperatorAuthorizationsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetOperatorAuthorizationRequest) Size() (n int) {
+func (m *QueryGetDelegateAuthorizationRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1282,13 +1282,13 @@ func (m *QueryGetOperatorAuthorizationRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetOperatorAuthorizationResponse) Size() (n int) {
+func (m *QueryGetDelegateAuthorizationResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.OperatorAuthorization.Size()
+	l = m.DelegateAuthorization.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -1455,7 +1455,7 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListOperatorAuthorizationsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryListDelegateAuthorizationsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1478,10 +1478,10 @@ func (m *QueryListOperatorAuthorizationsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListOperatorAuthorizationsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryListDelegateAuthorizationsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListOperatorAuthorizationsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryListDelegateAuthorizationsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1505,7 +1505,7 @@ func (m *QueryListOperatorAuthorizationsRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1533,7 +1533,7 @@ func (m *QueryListOperatorAuthorizationsRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Operator = string(dAtA[iNdEx:postIndex])
+			m.Delegate = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
@@ -1575,7 +1575,7 @@ func (m *QueryListOperatorAuthorizationsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListOperatorAuthorizationsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryListDelegateAuthorizationsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1598,15 +1598,15 @@ func (m *QueryListOperatorAuthorizationsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListOperatorAuthorizationsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryListDelegateAuthorizationsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListOperatorAuthorizationsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryListDelegateAuthorizationsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OperatorAuthorizations", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegateAuthorizations", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1633,8 +1633,8 @@ func (m *QueryListOperatorAuthorizationsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.OperatorAuthorizations = append(m.OperatorAuthorizations, OperatorAuthorization{})
-			if err := m.OperatorAuthorizations[len(m.OperatorAuthorizations)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.DelegateAuthorizations = append(m.DelegateAuthorizations, DelegateAuthorization{})
+			if err := m.DelegateAuthorizations[len(m.DelegateAuthorizations)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1863,7 +1863,7 @@ func (m *QueryListVSOperatorAuthorizationsResponse) Unmarshal(dAtA []byte) error
 	}
 	return nil
 }
-func (m *QueryGetOperatorAuthorizationRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryGetDelegateAuthorizationRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1886,10 +1886,10 @@ func (m *QueryGetOperatorAuthorizationRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetOperatorAuthorizationRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryGetDelegateAuthorizationRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetOperatorAuthorizationRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryGetDelegateAuthorizationRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1932,7 +1932,7 @@ func (m *QueryGetOperatorAuthorizationRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetOperatorAuthorizationResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryGetDelegateAuthorizationResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1955,15 +1955,15 @@ func (m *QueryGetOperatorAuthorizationResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetOperatorAuthorizationResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryGetDelegateAuthorizationResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetOperatorAuthorizationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryGetDelegateAuthorizationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OperatorAuthorization", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegateAuthorization", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1990,7 +1990,7 @@ func (m *QueryGetOperatorAuthorizationResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.OperatorAuthorization.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.DelegateAuthorization.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

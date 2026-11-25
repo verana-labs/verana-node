@@ -52,7 +52,7 @@
     },
     "/verana.co.v1.Msg/UpdateCorporation": {
       "post": {
-        "summary": "[MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing\nCorporation. Signers: corporation (policy_address) + operator.",
+        "summary": "[MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing\nCorporation. Signer: delegate.",
         "operationId": "Msg_UpdateCorporation",
         "responses": {
           "200": {
@@ -229,7 +229,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "did": {

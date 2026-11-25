@@ -9,6 +9,7 @@ import * as _m0 from "protobufjs/minimal";
 import { Coin } from "../../../cosmos/base/v1beta1/coin";
 import { Duration } from "../../../google/protobuf/duration";
 import { Timestamp } from "../../../google/protobuf/timestamp";
+import { MsgType, msgTypeFromJSON, msgTypeToJSON } from "./msg_type";
 import { Params } from "./params";
 
 export const protobufPackage = "verana.de.v1";
@@ -33,33 +34,28 @@ export interface MsgUpdateParamsResponse {
 }
 
 /**
- * [MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization
+ * [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
  * to a grantee on behalf of a corporation.
  *
- * Signer semantics (spec "corporation + operator OR group proposal"):
- * The signer is `operator` (consistent with the other delegable modules).
- * - Group-proposal path: the corporation's group policy account executes the
- *   message, so `operator` equals `corporation` (the policy_address) and the
- *   handler skips AUTHZ-CHECK-1 (the corporation is acting alone).
- * - Operator path: an individual `operator` signs; the handler resolves the
- *   corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to
- *   verify the operator's delegation covers this message type.
+ * The signer is `delegate`. On the group-proposal path the corporation's
+ * policy account executes the message and `delegate` equals `corporation`;
+ * only AUTHZ-CHECK-5 then applies.
  */
-export interface MsgGrantOperatorAuthorization {
+export interface MsgGrantDelegateAuthorization {
   /** corporation is the policy_address of the corporation granting the authorization. */
   corporation: string;
   /**
-   * operator is the signer: an authorized operator, or the corporation's
+   * delegate is the signer: an authorized delegate, or the corporation's
    * policy_address itself on the group-proposal path.
    */
-  operator: string;
-  /** grantee is the account that receives the authorization from authority. */
+  delegate: string;
+  /** grantee is the account that receives the authorization from corporation. */
   grantee: string;
   /**
    * msg_types is the list of VPR delegable message types for which
    * authorization is granted.
    */
-  msgTypes: string[];
+  msgTypes: MsgType[];
   /** expiration is the optional timestamp after which the authorization expires. */
   expiration:
     | Date
@@ -88,34 +84,34 @@ export interface MsgGrantOperatorAuthorization {
 }
 
 /**
- * MsgGrantOperatorAuthorizationResponse defines the response for
- * MsgGrantOperatorAuthorization.
+ * MsgGrantDelegateAuthorizationResponse defines the response for
+ * MsgGrantDelegateAuthorization.
  */
-export interface MsgGrantOperatorAuthorizationResponse {
+export interface MsgGrantDelegateAuthorizationResponse {
 }
 
 /**
- * [MOD-DE-MSG-4] MsgRevokeOperatorAuthorization revokes an operator
+ * [MOD-DE-MSG-4] MsgRevokeDelegateAuthorization revokes a delegate
  * authorization for a grantee on behalf of a corporation. Same signer
- * semantics as MsgGrantOperatorAuthorization (see above).
+ * semantics as MsgGrantDelegateAuthorization (see above).
  */
-export interface MsgRevokeOperatorAuthorization {
+export interface MsgRevokeDelegateAuthorization {
   /** corporation is the policy_address of the corporation revoking the authorization. */
   corporation: string;
   /**
-   * operator is the signer: an authorized operator, or the corporation's
+   * delegate is the signer: an authorized delegate, or the corporation's
    * policy_address itself on the group-proposal path.
    */
-  operator: string;
+  delegate: string;
   /** grantee is the account whose authorization is being revoked. */
   grantee: string;
 }
 
 /**
- * MsgRevokeOperatorAuthorizationResponse defines the response for
- * MsgRevokeOperatorAuthorization.
+ * MsgRevokeDelegateAuthorizationResponse defines the response for
+ * MsgRevokeDelegateAuthorization.
  */
-export interface MsgRevokeOperatorAuthorizationResponse {
+export interface MsgRevokeDelegateAuthorizationResponse {
 }
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
@@ -237,10 +233,10 @@ export const MsgUpdateParamsResponse = {
   },
 };
 
-function createBaseMsgGrantOperatorAuthorization(): MsgGrantOperatorAuthorization {
+function createBaseMsgGrantDelegateAuthorization(): MsgGrantDelegateAuthorization {
   return {
     corporation: "",
-    operator: "",
+    delegate: "",
     grantee: "",
     msgTypes: [],
     expiration: undefined,
@@ -252,20 +248,22 @@ function createBaseMsgGrantOperatorAuthorization(): MsgGrantOperatorAuthorizatio
   };
 }
 
-export const MsgGrantOperatorAuthorization = {
-  encode(message: MsgGrantOperatorAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgGrantDelegateAuthorization = {
+  encode(message: MsgGrantDelegateAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.grantee !== "") {
       writer.uint32(26).string(message.grantee);
     }
+    writer.uint32(34).fork();
     for (const v of message.msgTypes) {
-      writer.uint32(34).string(v!);
+      writer.int32(v);
     }
+    writer.ldelim();
     if (message.expiration !== undefined) {
       Timestamp.encode(toTimestamp(message.expiration), writer.uint32(42).fork()).ldelim();
     }
@@ -287,10 +285,10 @@ export const MsgGrantOperatorAuthorization = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantOperatorAuthorization {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantDelegateAuthorization {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgGrantOperatorAuthorization();
+    const message = createBaseMsgGrantDelegateAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -306,7 +304,7 @@ export const MsgGrantOperatorAuthorization = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -316,12 +314,22 @@ export const MsgGrantOperatorAuthorization = {
           message.grantee = reader.string();
           continue;
         case 4:
-          if (tag !== 34) {
-            break;
+          if (tag === 32) {
+            message.msgTypes.push(reader.int32() as any);
+
+            continue;
           }
 
-          message.msgTypes.push(reader.string());
-          continue;
+          if (tag === 34) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.msgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
         case 5:
           if (tag !== 42) {
             break;
@@ -373,12 +381,12 @@ export const MsgGrantOperatorAuthorization = {
     return message;
   },
 
-  fromJSON(object: any): MsgGrantOperatorAuthorization {
+  fromJSON(object: any): MsgGrantDelegateAuthorization {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       grantee: isSet(object.grantee) ? globalThis.String(object.grantee) : "",
-      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => globalThis.String(e)) : [],
+      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
       authzSpendLimit: globalThis.Array.isArray(object?.authzSpendLimit)
         ? object.authzSpendLimit.map((e: any) => Coin.fromJSON(e))
@@ -396,19 +404,19 @@ export const MsgGrantOperatorAuthorization = {
     };
   },
 
-  toJSON(message: MsgGrantOperatorAuthorization): unknown {
+  toJSON(message: MsgGrantDelegateAuthorization): unknown {
     const obj: any = {};
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.grantee !== "") {
       obj.grantee = message.grantee;
     }
     if (message.msgTypes?.length) {
-      obj.msgTypes = message.msgTypes;
+      obj.msgTypes = message.msgTypes.map((e) => msgTypeToJSON(e));
     }
     if (message.expiration !== undefined) {
       obj.expiration = message.expiration.toISOString();
@@ -431,15 +439,15 @@ export const MsgGrantOperatorAuthorization = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<MsgGrantOperatorAuthorization>, I>>(base?: I): MsgGrantOperatorAuthorization {
-    return MsgGrantOperatorAuthorization.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<MsgGrantDelegateAuthorization>, I>>(base?: I): MsgGrantDelegateAuthorization {
+    return MsgGrantDelegateAuthorization.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<MsgGrantOperatorAuthorization>, I>>(
+  fromPartial<I extends Exact<DeepPartial<MsgGrantDelegateAuthorization>, I>>(
     object: I,
-  ): MsgGrantOperatorAuthorization {
-    const message = createBaseMsgGrantOperatorAuthorization();
+  ): MsgGrantDelegateAuthorization {
+    const message = createBaseMsgGrantDelegateAuthorization();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.grantee = object.grantee ?? "";
     message.msgTypes = object.msgTypes?.map((e) => e) || [];
     message.expiration = object.expiration ?? undefined;
@@ -458,19 +466,19 @@ export const MsgGrantOperatorAuthorization = {
   },
 };
 
-function createBaseMsgGrantOperatorAuthorizationResponse(): MsgGrantOperatorAuthorizationResponse {
+function createBaseMsgGrantDelegateAuthorizationResponse(): MsgGrantDelegateAuthorizationResponse {
   return {};
 }
 
-export const MsgGrantOperatorAuthorizationResponse = {
-  encode(_: MsgGrantOperatorAuthorizationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgGrantDelegateAuthorizationResponse = {
+  encode(_: MsgGrantDelegateAuthorizationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantOperatorAuthorizationResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantDelegateAuthorizationResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgGrantOperatorAuthorizationResponse();
+    const message = createBaseMsgGrantDelegateAuthorizationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -483,39 +491,39 @@ export const MsgGrantOperatorAuthorizationResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgGrantOperatorAuthorizationResponse {
+  fromJSON(_: any): MsgGrantDelegateAuthorizationResponse {
     return {};
   },
 
-  toJSON(_: MsgGrantOperatorAuthorizationResponse): unknown {
+  toJSON(_: MsgGrantDelegateAuthorizationResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<MsgGrantOperatorAuthorizationResponse>, I>>(
+  create<I extends Exact<DeepPartial<MsgGrantDelegateAuthorizationResponse>, I>>(
     base?: I,
-  ): MsgGrantOperatorAuthorizationResponse {
-    return MsgGrantOperatorAuthorizationResponse.fromPartial(base ?? ({} as any));
+  ): MsgGrantDelegateAuthorizationResponse {
+    return MsgGrantDelegateAuthorizationResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<MsgGrantOperatorAuthorizationResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<MsgGrantDelegateAuthorizationResponse>, I>>(
     _: I,
-  ): MsgGrantOperatorAuthorizationResponse {
-    const message = createBaseMsgGrantOperatorAuthorizationResponse();
+  ): MsgGrantDelegateAuthorizationResponse {
+    const message = createBaseMsgGrantDelegateAuthorizationResponse();
     return message;
   },
 };
 
-function createBaseMsgRevokeOperatorAuthorization(): MsgRevokeOperatorAuthorization {
-  return { corporation: "", operator: "", grantee: "" };
+function createBaseMsgRevokeDelegateAuthorization(): MsgRevokeDelegateAuthorization {
+  return { corporation: "", delegate: "", grantee: "" };
 }
 
-export const MsgRevokeOperatorAuthorization = {
-  encode(message: MsgRevokeOperatorAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRevokeDelegateAuthorization = {
+  encode(message: MsgRevokeDelegateAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.grantee !== "") {
       writer.uint32(26).string(message.grantee);
@@ -523,10 +531,10 @@ export const MsgRevokeOperatorAuthorization = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeOperatorAuthorization {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeDelegateAuthorization {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgRevokeOperatorAuthorization();
+    const message = createBaseMsgRevokeDelegateAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -542,7 +550,7 @@ export const MsgRevokeOperatorAuthorization = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -560,21 +568,21 @@ export const MsgRevokeOperatorAuthorization = {
     return message;
   },
 
-  fromJSON(object: any): MsgRevokeOperatorAuthorization {
+  fromJSON(object: any): MsgRevokeDelegateAuthorization {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       grantee: isSet(object.grantee) ? globalThis.String(object.grantee) : "",
     };
   },
 
-  toJSON(message: MsgRevokeOperatorAuthorization): unknown {
+  toJSON(message: MsgRevokeDelegateAuthorization): unknown {
     const obj: any = {};
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.grantee !== "") {
       obj.grantee = message.grantee;
@@ -582,33 +590,33 @@ export const MsgRevokeOperatorAuthorization = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<MsgRevokeOperatorAuthorization>, I>>(base?: I): MsgRevokeOperatorAuthorization {
-    return MsgRevokeOperatorAuthorization.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<MsgRevokeDelegateAuthorization>, I>>(base?: I): MsgRevokeDelegateAuthorization {
+    return MsgRevokeDelegateAuthorization.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<MsgRevokeOperatorAuthorization>, I>>(
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeDelegateAuthorization>, I>>(
     object: I,
-  ): MsgRevokeOperatorAuthorization {
-    const message = createBaseMsgRevokeOperatorAuthorization();
+  ): MsgRevokeDelegateAuthorization {
+    const message = createBaseMsgRevokeDelegateAuthorization();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.grantee = object.grantee ?? "";
     return message;
   },
 };
 
-function createBaseMsgRevokeOperatorAuthorizationResponse(): MsgRevokeOperatorAuthorizationResponse {
+function createBaseMsgRevokeDelegateAuthorizationResponse(): MsgRevokeDelegateAuthorizationResponse {
   return {};
 }
 
-export const MsgRevokeOperatorAuthorizationResponse = {
-  encode(_: MsgRevokeOperatorAuthorizationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRevokeDelegateAuthorizationResponse = {
+  encode(_: MsgRevokeDelegateAuthorizationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeOperatorAuthorizationResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeDelegateAuthorizationResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgRevokeOperatorAuthorizationResponse();
+    const message = createBaseMsgRevokeDelegateAuthorizationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -621,24 +629,24 @@ export const MsgRevokeOperatorAuthorizationResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgRevokeOperatorAuthorizationResponse {
+  fromJSON(_: any): MsgRevokeDelegateAuthorizationResponse {
     return {};
   },
 
-  toJSON(_: MsgRevokeOperatorAuthorizationResponse): unknown {
+  toJSON(_: MsgRevokeDelegateAuthorizationResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<MsgRevokeOperatorAuthorizationResponse>, I>>(
+  create<I extends Exact<DeepPartial<MsgRevokeDelegateAuthorizationResponse>, I>>(
     base?: I,
-  ): MsgRevokeOperatorAuthorizationResponse {
-    return MsgRevokeOperatorAuthorizationResponse.fromPartial(base ?? ({} as any));
+  ): MsgRevokeDelegateAuthorizationResponse {
+    return MsgRevokeDelegateAuthorizationResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<MsgRevokeOperatorAuthorizationResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeDelegateAuthorizationResponse>, I>>(
     _: I,
-  ): MsgRevokeOperatorAuthorizationResponse {
-    const message = createBaseMsgRevokeOperatorAuthorizationResponse();
+  ): MsgRevokeDelegateAuthorizationResponse {
+    const message = createBaseMsgRevokeDelegateAuthorizationResponse();
     return message;
   },
 };
@@ -650,10 +658,10 @@ export interface Msg {
    * parameters. The authority defaults to the x/gov module account.
    */
   UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse>;
-  /** [MOD-DE-MSG-3] Grant Operator Authorization */
-  GrantOperatorAuthorization(request: MsgGrantOperatorAuthorization): Promise<MsgGrantOperatorAuthorizationResponse>;
-  /** [MOD-DE-MSG-4] Revoke Operator Authorization */
-  RevokeOperatorAuthorization(request: MsgRevokeOperatorAuthorization): Promise<MsgRevokeOperatorAuthorizationResponse>;
+  /** [MOD-DE-MSG-3] Grant Delegate Authorization */
+  GrantDelegateAuthorization(request: MsgGrantDelegateAuthorization): Promise<MsgGrantDelegateAuthorizationResponse>;
+  /** [MOD-DE-MSG-4] Revoke Delegate Authorization */
+  RevokeDelegateAuthorization(request: MsgRevokeDelegateAuthorization): Promise<MsgRevokeDelegateAuthorizationResponse>;
 }
 
 export const MsgServiceName = "verana.de.v1.Msg";
@@ -664,8 +672,8 @@ export class MsgClientImpl implements Msg {
     this.service = opts?.service || MsgServiceName;
     this.rpc = rpc;
     this.UpdateParams = this.UpdateParams.bind(this);
-    this.GrantOperatorAuthorization = this.GrantOperatorAuthorization.bind(this);
-    this.RevokeOperatorAuthorization = this.RevokeOperatorAuthorization.bind(this);
+    this.GrantDelegateAuthorization = this.GrantDelegateAuthorization.bind(this);
+    this.RevokeDelegateAuthorization = this.RevokeDelegateAuthorization.bind(this);
   }
   UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
@@ -673,18 +681,18 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgUpdateParamsResponse.decode(_m0.Reader.create(data)));
   }
 
-  GrantOperatorAuthorization(request: MsgGrantOperatorAuthorization): Promise<MsgGrantOperatorAuthorizationResponse> {
-    const data = MsgGrantOperatorAuthorization.encode(request).finish();
-    const promise = this.rpc.request(this.service, "GrantOperatorAuthorization", data);
-    return promise.then((data) => MsgGrantOperatorAuthorizationResponse.decode(_m0.Reader.create(data)));
+  GrantDelegateAuthorization(request: MsgGrantDelegateAuthorization): Promise<MsgGrantDelegateAuthorizationResponse> {
+    const data = MsgGrantDelegateAuthorization.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GrantDelegateAuthorization", data);
+    return promise.then((data) => MsgGrantDelegateAuthorizationResponse.decode(_m0.Reader.create(data)));
   }
 
-  RevokeOperatorAuthorization(
-    request: MsgRevokeOperatorAuthorization,
-  ): Promise<MsgRevokeOperatorAuthorizationResponse> {
-    const data = MsgRevokeOperatorAuthorization.encode(request).finish();
-    const promise = this.rpc.request(this.service, "RevokeOperatorAuthorization", data);
-    return promise.then((data) => MsgRevokeOperatorAuthorizationResponse.decode(_m0.Reader.create(data)));
+  RevokeDelegateAuthorization(
+    request: MsgRevokeDelegateAuthorization,
+  ): Promise<MsgRevokeDelegateAuthorizationResponse> {
+    const data = MsgRevokeDelegateAuthorization.encode(request).finish();
+    const promise = this.rpc.request(this.service, "RevokeDelegateAuthorization", data);
+    return promise.then((data) => MsgRevokeDelegateAuthorizationResponse.decode(_m0.Reader.create(data)));
   }
 }
 

@@ -14,14 +14,14 @@ var (
 	// ParamsKey is the prefix to retrieve all Params
 	ParamsKey = collections.NewPrefix("p_de")
 
-	// OperatorAuthorizationKey is the prefix for OperatorAuthorization storage,
+	// DelegateAuthorizationKey is the prefix for DelegateAuthorization storage,
 	// keyed by its own uint64 id.
-	OperatorAuthorizationKey = collections.NewPrefix("oa_de")
-	// OperatorAuthorizationByCorpOpKey is the secondary index
-	// (corporation_id, operator) -> OperatorAuthorization.id.
-	OperatorAuthorizationByCorpOpKey = collections.NewPrefix("oa_corpop_de")
-	// OperatorAuthorizationSeqKey backs the OperatorAuthorization id counter.
-	OperatorAuthorizationSeqKey = collections.NewPrefix("oa_seq_de")
+	DelegateAuthorizationKey = collections.NewPrefix("oa_de")
+	// DelegateAuthorizationByCorpDelegateKey is the secondary index
+	// (corporation_id, delegate) -> DelegateAuthorization.id.
+	DelegateAuthorizationByCorpDelegateKey = collections.NewPrefix("oa_corpop_de")
+	// DelegateAuthorizationSeqKey backs the DelegateAuthorization id counter.
+	DelegateAuthorizationSeqKey = collections.NewPrefix("oa_seq_de")
 
 	// FeeGrantKey is the prefix for FeeGrant storage, keyed by the composite
 	// (grantor_corporation_id, grantee).

@@ -60,7 +60,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				{
 					RpcMethod: "UpdateExchangeRate",
 					Use:       "update-exchange-rate [id] [rate]",
-					Short:     "Update an existing exchange rate (signed by the authorized operator)",
+					Short:     "Update an existing exchange rate (signed by the authorized feeder)",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "id"},
 						{ProtoField: "rate"},

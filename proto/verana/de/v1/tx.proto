@@ -8,6 +8,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
+import "verana/de/v1/msg_type.proto";
 import "verana/de/v1/params.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/de/types";
@@ -20,11 +21,11 @@ service Msg {
   // parameters. The authority defaults to the x/gov module account.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 
-  // [MOD-DE-MSG-3] Grant Operator Authorization
-  rpc GrantOperatorAuthorization(MsgGrantOperatorAuthorization) returns (MsgGrantOperatorAuthorizationResponse);
+  // [MOD-DE-MSG-3] Grant Delegate Authorization
+  rpc GrantDelegateAuthorization(MsgGrantDelegateAuthorization) returns (MsgGrantDelegateAuthorizationResponse);
 
-  // [MOD-DE-MSG-4] Revoke Operator Authorization
-  rpc RevokeOperatorAuthorization(MsgRevokeOperatorAuthorization) returns (MsgRevokeOperatorAuthorizationResponse);
+  // [MOD-DE-MSG-4] Revoke Delegate Authorization
+  rpc RevokeDelegateAuthorization(MsgRevokeDelegateAuthorization) returns (MsgRevokeDelegateAuthorizationResponse);
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
@@ -48,31 +49,26 @@ message MsgUpdateParams {
 // MsgUpdateParams message.
 message MsgUpdateParamsResponse {}
 
-// [MOD-DE-MSG-3] MsgGrantOperatorAuthorization grants an operator authorization
+// [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
 // to a grantee on behalf of a corporation.
 //
-// Signer semantics (spec "corporation + operator OR group proposal"):
-// The signer is `operator` (consistent with the other delegable modules).
-// - Group-proposal path: the corporation's group policy account executes the
-//   message, so `operator` equals `corporation` (the policy_address) and the
-//   handler skips AUTHZ-CHECK-1 (the corporation is acting alone).
-// - Operator path: an individual `operator` signs; the handler resolves the
-//   corporation from `corporation` (AUTHZ-CHECK-5) and runs AUTHZ-CHECK-1 to
-//   verify the operator's delegation covers this message type.
-message MsgGrantOperatorAuthorization {
-  option (cosmos.msg.v1.signer) = "operator";
-  option (amino.name) = "verana/x/de/MsgGrantOpAuthorization";
+// The signer is `delegate`. On the group-proposal path the corporation's
+// policy account executes the message and `delegate` equals `corporation`;
+// only AUTHZ-CHECK-5 then applies.
+message MsgGrantDelegateAuthorization {
+  option (cosmos.msg.v1.signer) = "delegate";
+  option (amino.name) = "verana/x/de/MsgGrantDelegateAuthz";
 
   // corporation is the policy_address of the corporation granting the authorization.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the signer: an authorized operator, or the corporation's
+  // delegate is the signer: an authorized delegate, or the corporation's
   // policy_address itself on the group-proposal path.
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // grantee is the account that receives the authorization from authority.
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // grantee is the account that receives the authorization from corporation.
   string grantee = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // msg_types is the list of VPR delegable message types for which
   // authorization is granted.
-  repeated string msg_types = 4;
+  repeated MsgType msg_types = 4;
   // expiration is the optional timestamp after which the authorization expires.
   google.protobuf.Timestamp expiration = 5 [
     (gogoproto.stdtime) = true,
@@ -105,26 +101,26 @@ message MsgGrantOperatorAuthorization {
   ];
 }
 
-// MsgGrantOperatorAuthorizationResponse defines the response for
-// MsgGrantOperatorAuthorization.
-message MsgGrantOperatorAuthorizationResponse {}
+// MsgGrantDelegateAuthorizationResponse defines the response for
+// MsgGrantDelegateAuthorization.
+message MsgGrantDelegateAuthorizationResponse {}
 
-// [MOD-DE-MSG-4] MsgRevokeOperatorAuthorization revokes an operator
+// [MOD-DE-MSG-4] MsgRevokeDelegateAuthorization revokes a delegate
 // authorization for a grantee on behalf of a corporation. Same signer
-// semantics as MsgGrantOperatorAuthorization (see above).
-message MsgRevokeOperatorAuthorization {
-  option (cosmos.msg.v1.signer) = "operator";
-  option (amino.name) = "verana/x/de/MsgRevokeOpAuthorization";
+// semantics as MsgGrantDelegateAuthorization (see above).
+message MsgRevokeDelegateAuthorization {
+  option (cosmos.msg.v1.signer) = "delegate";
+  option (amino.name) = "verana/x/de/MsgRevokeDelegateAuthz";
 
   // corporation is the policy_address of the corporation revoking the authorization.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the signer: an authorized operator, or the corporation's
+  // delegate is the signer: an authorized delegate, or the corporation's
   // policy_address itself on the group-proposal path.
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // grantee is the account whose authorization is being revoked.
   string grantee = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
-// MsgRevokeOperatorAuthorizationResponse defines the response for
-// MsgRevokeOperatorAuthorization.
-message MsgRevokeOperatorAuthorizationResponse {}
+// MsgRevokeDelegateAuthorizationResponse defines the response for
+// MsgRevokeDelegateAuthorization.
+message MsgRevokeDelegateAuthorizationResponse {}

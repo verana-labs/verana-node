@@ -23,7 +23,7 @@ func TestMsgCreateOrUpdateParticipantSession_ValidateBasic(t *testing.T) {
 	valid := func() *types.MsgCreateOrUpdateParticipantSession {
 		return &types.MsgCreateOrUpdateParticipantSession{
 			Corporation:              validAddr,
-			Operator:                 validAddr,
+			VsAccount:                validAddr,
 			Id:                       validUUID,
 			IssuerParticipantId:      1,
 			AgentParticipantId:       1,

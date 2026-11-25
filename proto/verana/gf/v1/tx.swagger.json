@@ -155,9 +155,9 @@
           "type": "string",
           "description": "corporation is the signing corporation (group_policy_address)."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the account authorized by corporation to run this Msg."
+          "description": "delegate is the account authorized by corporation to run this Msg."
         },
         "ecosystem_id": {
           "type": "string",
@@ -180,6 +180,10 @@
           "type": "integer",
           "format": "int64",
           "description": "version is the target governance framework version."
+        },
+        "authority": {
+          "type": "string",
+          "description": "authority is the council account, set on the network path only."
         }
       },
       "description": "[MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft\nversion owned by an Ecosystem or a Corporation."
@@ -194,14 +198,18 @@
           "type": "string",
           "description": "corporation is the signing corporation (group_policy_address)."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the account authorized by corporation to run this Msg."
+          "description": "delegate is the account authorized by corporation to run this Msg."
         },
         "ecosystem_id": {
           "type": "string",
           "format": "uint64",
           "description": "ecosystem_id is optional. If set, target is the Ecosystem; otherwise the\nsigning Corporation's own CGF."
+        },
+        "authority": {
+          "type": "string",
+          "description": "authority is the council account, set on the network path only."
         }
       },
       "description": "[MOD-GF-MSG-2] Activates the next governance framework version for an\nEcosystem or Corporation owned by the signing corporation."

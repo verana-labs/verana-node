@@ -9,6 +9,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/verana-labs/verana-node/x/cs/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 type msgServer struct {
@@ -23,21 +24,29 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
+// delegate, and returns the resolved corporation id.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (uint64, error) {
+	if ms.delegationKeeper == nil {
+		return 0, fmt.Errorf("delegation keeper is required for delegate authorization")
+	}
+	co, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
+	if err != nil {
+		return 0, err
+	}
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, delegate, msgType, ctx.BlockTime()); err != nil {
+		return 0, fmt.Errorf("authorization check failed: %w", err)
+	}
+	return co.Id, nil
+}
+
 func (ms msgServer) CreateCredentialSchema(goCtx context.Context, msg *types.MsgCreateCredentialSchema) (*types.MsgCreateCredentialSchemaResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// [MOD-CS-MSG-1-2-1] [AUTHZ-CHECK] Verify operator authorization
-	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
-	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Operator,
-		"/verana.cs.v1.MsgCreateCredentialSchema",
-		ctx.BlockTime(),
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
+	// [MOD-CS-MSG-1-2-1] [AUTHZ-CHECK]
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA)
+	if err != nil {
+		return nil, err
 	}
 
 	// Generate next ID
@@ -47,7 +56,7 @@ func (ms msgServer) CreateCredentialSchema(goCtx context.Context, msg *types.Msg
 	}
 
 	// [MOD-CS-MSG-1-2-1] Basic checks
-	if err := ms.validateCreateCredentialSchemaParams(ctx, msg); err != nil {
+	if err := ms.validateCreateCredentialSchemaParams(ctx, msg, corporationID); err != nil {
 		return nil, err
 	}
 
@@ -65,18 +74,10 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-CS-MSG-2-2-1] [AUTHZ-CHECK] Verify operator authorization
-	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
-	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Operator,
-		"/verana.cs.v1.MsgUpdateCredentialSchema",
-		now,
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
+	// [MOD-CS-MSG-2-2-1] [AUTHZ-CHECK]
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA)
+	if err != nil {
+		return nil, err
 	}
 
 	// Get credential schema
@@ -86,7 +87,7 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 	}
 
 	// [MOD-CS-MSG-2-2-1] Check ecosystem authority
-	if err := ms.checkSchemaOwnership(ctx, cs, msg.Corporation); err != nil {
+	if err := ms.checkSchemaOwnership(ctx, cs, corporationID); err != nil {
 		return nil, err
 	}
 
@@ -124,7 +125,7 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 			sdk.NewAttribute(types.AttributeKeyId, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, strconv.FormatUint(cs.EcosystemId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyIssuerGrantorValidationValidityPeriod, strconv.FormatUint(uint64(cs.IssuerGrantorValidationValidityPeriod), 10)),
 			sdk.NewAttribute(types.AttributeKeyVerifierGrantorValidationValidityPeriod, strconv.FormatUint(uint64(cs.VerifierGrantorValidationValidityPeriod), 10)),
 			sdk.NewAttribute(types.AttributeKeyIssuerValidationValidityPeriod, strconv.FormatUint(uint64(cs.IssuerValidationValidityPeriod), 10)),
@@ -174,18 +175,10 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-CS-MSG-3-2-1] [AUTHZ-CHECK] Verify operator authorization
-	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
-	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Operator,
-		"/verana.cs.v1.MsgArchiveCredentialSchema",
-		now,
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
+	// [MOD-CS-MSG-3-2-1] [AUTHZ-CHECK]
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA)
+	if err != nil {
+		return nil, err
 	}
 
 	// Get credential schema
@@ -195,7 +188,7 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 	}
 
 	// [MOD-CS-MSG-3-2-1] Check ecosystem authority
-	if err := ms.checkSchemaOwnership(ctx, cs, msg.Corporation); err != nil {
+	if err := ms.checkSchemaOwnership(ctx, cs, corporationID); err != nil {
 		return nil, err
 	}
 
@@ -228,7 +221,7 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 			sdk.NewAttribute(types.AttributeKeyId, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, strconv.FormatUint(cs.EcosystemId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyArchiveStatus, archiveStatus),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.Format(time.RFC3339)),
 		),

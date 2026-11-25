@@ -163,19 +163,19 @@ func TestEndBlock_StalePopKeepsBudget(t *testing.T) {
 	require.True(t, pa.PeriodReset.Equal(now.Add(types.DefaultVsOperatorFeePeriod)))
 }
 
-// [MOD-DE-MSG-1-4] The operator path is untouched: an explicit re-grant seeds
+// [MOD-DE-MSG-1-4] The delegate path is untouched: an explicit re-grant seeds
 // a fresh budget.
-func TestGrantFeeAllowance_OperatorPathFreshBudget(t *testing.T) {
+func TestGrantFeeAllowance_DelegatePathFreshBudget(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	grantee := acc("grantee_____________")
 	period := time.Hour
 	reset := ctx.BlockTime().Add(period)
-	require.NoError(t, k.GrantFeeAllowance(ctx, 7, grantee, []string{mtEcosystem}, &reset, uvna(10), &period))
+	require.NoError(t, k.GrantFeeAllowance(ctx, 7, grantee, []types.MsgType{mtEcosystem}, &reset, uvna(10), &period))
 	spendFee(t, f, ctx, 7, grantee, uvna(7))
 
 	reset2 := ctx.BlockTime().Add(2 * period)
-	require.NoError(t, k.GrantFeeAllowance(ctx, 7, grantee, []string{mtEcosystem}, &reset2, uvna(10), &period))
+	require.NoError(t, k.GrantFeeAllowance(ctx, 7, grantee, []types.MsgType{mtEcosystem}, &reset2, uvna(10), &period))
 
 	pa := periodic(t, f, ctx, 7, grantee)
 	require.Equal(t, uvna(10), pa.PeriodCanSpend)

@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -21,7 +22,7 @@ func TestMsgSelfCreateParticipant_ValidateBasic(t *testing.T) {
 	valid := func() *types.MsgSelfCreateParticipant {
 		return &types.MsgSelfCreateParticipant{
 			Corporation:            validAddr,
-			Operator:               validAddr,
+			Delegate:               validAddr,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: 1,
 			Did:                    validDid,
@@ -45,11 +46,11 @@ func TestMsgSelfCreateParticipant_ValidateBasic(t *testing.T) {
 		{"malformed did", func(m *types.MsgSelfCreateParticipant) { m.Did = "nope" }, "invalid DID syntax"},
 		{"vsoa params without effective_until (never-expiring)", func(m *types.MsgSelfCreateParticipant) {
 			m.VsOperator = validAddr
-			m.VsOperatorAuthzMsgTypes = []string{types.MsgCreateOrUpdateParticipantSessionTypeURL}
+			m.VsOperatorAuthzMsgTypes = []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE}
 		}, ""},
 		{"vsoa params with effective_until", func(m *types.MsgSelfCreateParticipant) {
 			m.VsOperator = validAddr
-			m.VsOperatorAuthzMsgTypes = []string{types.MsgCreateOrUpdateParticipantSessionTypeURL}
+			m.VsOperatorAuthzMsgTypes = []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE}
 			exp := time.Unix(2000000000, 0).UTC()
 			m.EffectiveUntil = &exp
 		}, ""},

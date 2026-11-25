@@ -875,7 +875,7 @@ func (x *fastReflection_MsgUpdateParamsResponse) ProtoMethods() *protoiface.Meth
 var (
 	md_MsgCreateCredentialSchema                                             protoreflect.MessageDescriptor
 	fd_MsgCreateCredentialSchema_corporation                                 protoreflect.FieldDescriptor
-	fd_MsgCreateCredentialSchema_operator                                    protoreflect.FieldDescriptor
+	fd_MsgCreateCredentialSchema_delegate                                    protoreflect.FieldDescriptor
 	fd_MsgCreateCredentialSchema_json_schema                                 protoreflect.FieldDescriptor
 	fd_MsgCreateCredentialSchema_issuer_grantor_validation_validity_period   protoreflect.FieldDescriptor
 	fd_MsgCreateCredentialSchema_verifier_grantor_validation_validity_period protoreflect.FieldDescriptor
@@ -895,7 +895,7 @@ func init() {
 	file_verana_cs_v1_tx_proto_init()
 	md_MsgCreateCredentialSchema = File_verana_cs_v1_tx_proto.Messages().ByName("MsgCreateCredentialSchema")
 	fd_MsgCreateCredentialSchema_corporation = md_MsgCreateCredentialSchema.Fields().ByName("corporation")
-	fd_MsgCreateCredentialSchema_operator = md_MsgCreateCredentialSchema.Fields().ByName("operator")
+	fd_MsgCreateCredentialSchema_delegate = md_MsgCreateCredentialSchema.Fields().ByName("delegate")
 	fd_MsgCreateCredentialSchema_json_schema = md_MsgCreateCredentialSchema.Fields().ByName("json_schema")
 	fd_MsgCreateCredentialSchema_issuer_grantor_validation_validity_period = md_MsgCreateCredentialSchema.Fields().ByName("issuer_grantor_validation_validity_period")
 	fd_MsgCreateCredentialSchema_verifier_grantor_validation_validity_period = md_MsgCreateCredentialSchema.Fields().ByName("verifier_grantor_validation_validity_period")
@@ -982,9 +982,9 @@ func (x *fastReflection_MsgCreateCredentialSchema) Range(f func(protoreflect.Fie
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgCreateCredentialSchema_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgCreateCredentialSchema_delegate, value) {
 			return
 		}
 	}
@@ -1083,8 +1083,8 @@ func (x *fastReflection_MsgCreateCredentialSchema) Has(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgCreateCredentialSchema.corporation":
 		return x.Corporation != ""
-	case "verana.cs.v1.MsgCreateCredentialSchema.operator":
-		return x.Operator != ""
+	case "verana.cs.v1.MsgCreateCredentialSchema.delegate":
+		return x.Delegate != ""
 	case "verana.cs.v1.MsgCreateCredentialSchema.json_schema":
 		return x.JsonSchema != ""
 	case "verana.cs.v1.MsgCreateCredentialSchema.issuer_grantor_validation_validity_period":
@@ -1129,8 +1129,8 @@ func (x *fastReflection_MsgCreateCredentialSchema) Clear(fd protoreflect.FieldDe
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgCreateCredentialSchema.corporation":
 		x.Corporation = ""
-	case "verana.cs.v1.MsgCreateCredentialSchema.operator":
-		x.Operator = ""
+	case "verana.cs.v1.MsgCreateCredentialSchema.delegate":
+		x.Delegate = ""
 	case "verana.cs.v1.MsgCreateCredentialSchema.json_schema":
 		x.JsonSchema = ""
 	case "verana.cs.v1.MsgCreateCredentialSchema.issuer_grantor_validation_validity_period":
@@ -1176,8 +1176,8 @@ func (x *fastReflection_MsgCreateCredentialSchema) Get(descriptor protoreflect.F
 	case "verana.cs.v1.MsgCreateCredentialSchema.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.cs.v1.MsgCreateCredentialSchema.operator":
-		value := x.Operator
+	case "verana.cs.v1.MsgCreateCredentialSchema.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
 	case "verana.cs.v1.MsgCreateCredentialSchema.json_schema":
 		value := x.JsonSchema
@@ -1240,8 +1240,8 @@ func (x *fastReflection_MsgCreateCredentialSchema) Set(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgCreateCredentialSchema.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.cs.v1.MsgCreateCredentialSchema.operator":
-		x.Operator = value.Interface().(string)
+	case "verana.cs.v1.MsgCreateCredentialSchema.delegate":
+		x.Delegate = value.Interface().(string)
 	case "verana.cs.v1.MsgCreateCredentialSchema.json_schema":
 		x.JsonSchema = value.Interface().(string)
 	case "verana.cs.v1.MsgCreateCredentialSchema.issuer_grantor_validation_validity_period":
@@ -1315,8 +1315,8 @@ func (x *fastReflection_MsgCreateCredentialSchema) Mutable(fd protoreflect.Field
 		return protoreflect.ValueOfMessage(x.HolderValidationValidityPeriod.ProtoReflect())
 	case "verana.cs.v1.MsgCreateCredentialSchema.corporation":
 		panic(fmt.Errorf("field corporation of message verana.cs.v1.MsgCreateCredentialSchema is not mutable"))
-	case "verana.cs.v1.MsgCreateCredentialSchema.operator":
-		panic(fmt.Errorf("field operator of message verana.cs.v1.MsgCreateCredentialSchema is not mutable"))
+	case "verana.cs.v1.MsgCreateCredentialSchema.delegate":
+		panic(fmt.Errorf("field delegate of message verana.cs.v1.MsgCreateCredentialSchema is not mutable"))
 	case "verana.cs.v1.MsgCreateCredentialSchema.json_schema":
 		panic(fmt.Errorf("field json_schema of message verana.cs.v1.MsgCreateCredentialSchema is not mutable"))
 	case "verana.cs.v1.MsgCreateCredentialSchema.issuer_onboarding_mode":
@@ -1348,7 +1348,7 @@ func (x *fastReflection_MsgCreateCredentialSchema) NewField(fd protoreflect.Fiel
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgCreateCredentialSchema.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.cs.v1.MsgCreateCredentialSchema.operator":
+	case "verana.cs.v1.MsgCreateCredentialSchema.delegate":
 		return protoreflect.ValueOfString("")
 	case "verana.cs.v1.MsgCreateCredentialSchema.json_schema":
 		return protoreflect.ValueOfString("")
@@ -1454,7 +1454,7 @@ func (x *fastReflection_MsgCreateCredentialSchema) ProtoMethods() *protoiface.Me
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -1652,10 +1652,10 @@ func (x *fastReflection_MsgCreateCredentialSchema) ProtoMethods() *protoiface.Me
 			i--
 			dAtA[i] = 0x22
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -1749,7 +1749,7 @@ func (x *fastReflection_MsgCreateCredentialSchema) ProtoMethods() *protoiface.Me
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1777,7 +1777,7 @@ func (x *fastReflection_MsgCreateCredentialSchema) ProtoMethods() *protoiface.Me
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
@@ -2592,7 +2592,7 @@ func (x *fastReflection_MsgCreateCredentialSchemaResponse) ProtoMethods() *proto
 var (
 	md_MsgUpdateCredentialSchema                                             protoreflect.MessageDescriptor
 	fd_MsgUpdateCredentialSchema_corporation                                 protoreflect.FieldDescriptor
-	fd_MsgUpdateCredentialSchema_operator                                    protoreflect.FieldDescriptor
+	fd_MsgUpdateCredentialSchema_delegate                                    protoreflect.FieldDescriptor
 	fd_MsgUpdateCredentialSchema_id                                          protoreflect.FieldDescriptor
 	fd_MsgUpdateCredentialSchema_issuer_grantor_validation_validity_period   protoreflect.FieldDescriptor
 	fd_MsgUpdateCredentialSchema_verifier_grantor_validation_validity_period protoreflect.FieldDescriptor
@@ -2605,7 +2605,7 @@ func init() {
 	file_verana_cs_v1_tx_proto_init()
 	md_MsgUpdateCredentialSchema = File_verana_cs_v1_tx_proto.Messages().ByName("MsgUpdateCredentialSchema")
 	fd_MsgUpdateCredentialSchema_corporation = md_MsgUpdateCredentialSchema.Fields().ByName("corporation")
-	fd_MsgUpdateCredentialSchema_operator = md_MsgUpdateCredentialSchema.Fields().ByName("operator")
+	fd_MsgUpdateCredentialSchema_delegate = md_MsgUpdateCredentialSchema.Fields().ByName("delegate")
 	fd_MsgUpdateCredentialSchema_id = md_MsgUpdateCredentialSchema.Fields().ByName("id")
 	fd_MsgUpdateCredentialSchema_issuer_grantor_validation_validity_period = md_MsgUpdateCredentialSchema.Fields().ByName("issuer_grantor_validation_validity_period")
 	fd_MsgUpdateCredentialSchema_verifier_grantor_validation_validity_period = md_MsgUpdateCredentialSchema.Fields().ByName("verifier_grantor_validation_validity_period")
@@ -2685,9 +2685,9 @@ func (x *fastReflection_MsgUpdateCredentialSchema) Range(f func(protoreflect.Fie
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgUpdateCredentialSchema_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgUpdateCredentialSchema_delegate, value) {
 			return
 		}
 	}
@@ -2744,8 +2744,8 @@ func (x *fastReflection_MsgUpdateCredentialSchema) Has(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgUpdateCredentialSchema.corporation":
 		return x.Corporation != ""
-	case "verana.cs.v1.MsgUpdateCredentialSchema.operator":
-		return x.Operator != ""
+	case "verana.cs.v1.MsgUpdateCredentialSchema.delegate":
+		return x.Delegate != ""
 	case "verana.cs.v1.MsgUpdateCredentialSchema.id":
 		return x.Id != uint64(0)
 	case "verana.cs.v1.MsgUpdateCredentialSchema.issuer_grantor_validation_validity_period":
@@ -2776,8 +2776,8 @@ func (x *fastReflection_MsgUpdateCredentialSchema) Clear(fd protoreflect.FieldDe
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgUpdateCredentialSchema.corporation":
 		x.Corporation = ""
-	case "verana.cs.v1.MsgUpdateCredentialSchema.operator":
-		x.Operator = ""
+	case "verana.cs.v1.MsgUpdateCredentialSchema.delegate":
+		x.Delegate = ""
 	case "verana.cs.v1.MsgUpdateCredentialSchema.id":
 		x.Id = uint64(0)
 	case "verana.cs.v1.MsgUpdateCredentialSchema.issuer_grantor_validation_validity_period":
@@ -2809,8 +2809,8 @@ func (x *fastReflection_MsgUpdateCredentialSchema) Get(descriptor protoreflect.F
 	case "verana.cs.v1.MsgUpdateCredentialSchema.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.cs.v1.MsgUpdateCredentialSchema.operator":
-		value := x.Operator
+	case "verana.cs.v1.MsgUpdateCredentialSchema.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
 	case "verana.cs.v1.MsgUpdateCredentialSchema.id":
 		value := x.Id
@@ -2852,8 +2852,8 @@ func (x *fastReflection_MsgUpdateCredentialSchema) Set(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgUpdateCredentialSchema.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.cs.v1.MsgUpdateCredentialSchema.operator":
-		x.Operator = value.Interface().(string)
+	case "verana.cs.v1.MsgUpdateCredentialSchema.delegate":
+		x.Delegate = value.Interface().(string)
 	case "verana.cs.v1.MsgUpdateCredentialSchema.id":
 		x.Id = value.Uint()
 	case "verana.cs.v1.MsgUpdateCredentialSchema.issuer_grantor_validation_validity_period":
@@ -2913,8 +2913,8 @@ func (x *fastReflection_MsgUpdateCredentialSchema) Mutable(fd protoreflect.Field
 		return protoreflect.ValueOfMessage(x.HolderValidationValidityPeriod.ProtoReflect())
 	case "verana.cs.v1.MsgUpdateCredentialSchema.corporation":
 		panic(fmt.Errorf("field corporation of message verana.cs.v1.MsgUpdateCredentialSchema is not mutable"))
-	case "verana.cs.v1.MsgUpdateCredentialSchema.operator":
-		panic(fmt.Errorf("field operator of message verana.cs.v1.MsgUpdateCredentialSchema is not mutable"))
+	case "verana.cs.v1.MsgUpdateCredentialSchema.delegate":
+		panic(fmt.Errorf("field delegate of message verana.cs.v1.MsgUpdateCredentialSchema is not mutable"))
 	case "verana.cs.v1.MsgUpdateCredentialSchema.id":
 		panic(fmt.Errorf("field id of message verana.cs.v1.MsgUpdateCredentialSchema is not mutable"))
 	default:
@@ -2932,7 +2932,7 @@ func (x *fastReflection_MsgUpdateCredentialSchema) NewField(fd protoreflect.Fiel
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgUpdateCredentialSchema.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.cs.v1.MsgUpdateCredentialSchema.operator":
+	case "verana.cs.v1.MsgUpdateCredentialSchema.delegate":
 		return protoreflect.ValueOfString("")
 	case "verana.cs.v1.MsgUpdateCredentialSchema.id":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -3024,7 +3024,7 @@ func (x *fastReflection_MsgUpdateCredentialSchema) ProtoMethods() *protoiface.Me
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -3155,10 +3155,10 @@ func (x *fastReflection_MsgUpdateCredentialSchema) ProtoMethods() *protoiface.Me
 			i--
 			dAtA[i] = 0x18
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -3252,7 +3252,7 @@ func (x *fastReflection_MsgUpdateCredentialSchema) ProtoMethods() *protoiface.Me
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -3280,7 +3280,7 @@ func (x *fastReflection_MsgUpdateCredentialSchema) ProtoMethods() *protoiface.Me
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 0 {
@@ -4279,7 +4279,7 @@ func (x *fastReflection_MsgUpdateCredentialSchemaResponse) ProtoMethods() *proto
 var (
 	md_MsgArchiveCredentialSchema             protoreflect.MessageDescriptor
 	fd_MsgArchiveCredentialSchema_corporation protoreflect.FieldDescriptor
-	fd_MsgArchiveCredentialSchema_operator    protoreflect.FieldDescriptor
+	fd_MsgArchiveCredentialSchema_delegate    protoreflect.FieldDescriptor
 	fd_MsgArchiveCredentialSchema_id          protoreflect.FieldDescriptor
 	fd_MsgArchiveCredentialSchema_archive     protoreflect.FieldDescriptor
 )
@@ -4288,7 +4288,7 @@ func init() {
 	file_verana_cs_v1_tx_proto_init()
 	md_MsgArchiveCredentialSchema = File_verana_cs_v1_tx_proto.Messages().ByName("MsgArchiveCredentialSchema")
 	fd_MsgArchiveCredentialSchema_corporation = md_MsgArchiveCredentialSchema.Fields().ByName("corporation")
-	fd_MsgArchiveCredentialSchema_operator = md_MsgArchiveCredentialSchema.Fields().ByName("operator")
+	fd_MsgArchiveCredentialSchema_delegate = md_MsgArchiveCredentialSchema.Fields().ByName("delegate")
 	fd_MsgArchiveCredentialSchema_id = md_MsgArchiveCredentialSchema.Fields().ByName("id")
 	fd_MsgArchiveCredentialSchema_archive = md_MsgArchiveCredentialSchema.Fields().ByName("archive")
 }
@@ -4364,9 +4364,9 @@ func (x *fastReflection_MsgArchiveCredentialSchema) Range(f func(protoreflect.Fi
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_MsgArchiveCredentialSchema_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_MsgArchiveCredentialSchema_delegate, value) {
 			return
 		}
 	}
@@ -4399,8 +4399,8 @@ func (x *fastReflection_MsgArchiveCredentialSchema) Has(fd protoreflect.FieldDes
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgArchiveCredentialSchema.corporation":
 		return x.Corporation != ""
-	case "verana.cs.v1.MsgArchiveCredentialSchema.operator":
-		return x.Operator != ""
+	case "verana.cs.v1.MsgArchiveCredentialSchema.delegate":
+		return x.Delegate != ""
 	case "verana.cs.v1.MsgArchiveCredentialSchema.id":
 		return x.Id != uint64(0)
 	case "verana.cs.v1.MsgArchiveCredentialSchema.archive":
@@ -4423,8 +4423,8 @@ func (x *fastReflection_MsgArchiveCredentialSchema) Clear(fd protoreflect.FieldD
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgArchiveCredentialSchema.corporation":
 		x.Corporation = ""
-	case "verana.cs.v1.MsgArchiveCredentialSchema.operator":
-		x.Operator = ""
+	case "verana.cs.v1.MsgArchiveCredentialSchema.delegate":
+		x.Delegate = ""
 	case "verana.cs.v1.MsgArchiveCredentialSchema.id":
 		x.Id = uint64(0)
 	case "verana.cs.v1.MsgArchiveCredentialSchema.archive":
@@ -4448,8 +4448,8 @@ func (x *fastReflection_MsgArchiveCredentialSchema) Get(descriptor protoreflect.
 	case "verana.cs.v1.MsgArchiveCredentialSchema.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.cs.v1.MsgArchiveCredentialSchema.operator":
-		value := x.Operator
+	case "verana.cs.v1.MsgArchiveCredentialSchema.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
 	case "verana.cs.v1.MsgArchiveCredentialSchema.id":
 		value := x.Id
@@ -4479,8 +4479,8 @@ func (x *fastReflection_MsgArchiveCredentialSchema) Set(fd protoreflect.FieldDes
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgArchiveCredentialSchema.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.cs.v1.MsgArchiveCredentialSchema.operator":
-		x.Operator = value.Interface().(string)
+	case "verana.cs.v1.MsgArchiveCredentialSchema.delegate":
+		x.Delegate = value.Interface().(string)
 	case "verana.cs.v1.MsgArchiveCredentialSchema.id":
 		x.Id = value.Uint()
 	case "verana.cs.v1.MsgArchiveCredentialSchema.archive":
@@ -4507,8 +4507,8 @@ func (x *fastReflection_MsgArchiveCredentialSchema) Mutable(fd protoreflect.Fiel
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgArchiveCredentialSchema.corporation":
 		panic(fmt.Errorf("field corporation of message verana.cs.v1.MsgArchiveCredentialSchema is not mutable"))
-	case "verana.cs.v1.MsgArchiveCredentialSchema.operator":
-		panic(fmt.Errorf("field operator of message verana.cs.v1.MsgArchiveCredentialSchema is not mutable"))
+	case "verana.cs.v1.MsgArchiveCredentialSchema.delegate":
+		panic(fmt.Errorf("field delegate of message verana.cs.v1.MsgArchiveCredentialSchema is not mutable"))
 	case "verana.cs.v1.MsgArchiveCredentialSchema.id":
 		panic(fmt.Errorf("field id of message verana.cs.v1.MsgArchiveCredentialSchema is not mutable"))
 	case "verana.cs.v1.MsgArchiveCredentialSchema.archive":
@@ -4528,7 +4528,7 @@ func (x *fastReflection_MsgArchiveCredentialSchema) NewField(fd protoreflect.Fie
 	switch fd.FullName() {
 	case "verana.cs.v1.MsgArchiveCredentialSchema.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.cs.v1.MsgArchiveCredentialSchema.operator":
+	case "verana.cs.v1.MsgArchiveCredentialSchema.delegate":
 		return protoreflect.ValueOfString("")
 	case "verana.cs.v1.MsgArchiveCredentialSchema.id":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -4607,7 +4607,7 @@ func (x *fastReflection_MsgArchiveCredentialSchema) ProtoMethods() *protoiface.M
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -4661,10 +4661,10 @@ func (x *fastReflection_MsgArchiveCredentialSchema) ProtoMethods() *protoiface.M
 			i--
 			dAtA[i] = 0x18
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -4758,7 +4758,7 @@ func (x *fastReflection_MsgArchiveCredentialSchema) ProtoMethods() *protoiface.M
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -4786,7 +4786,7 @@ func (x *fastReflection_MsgArchiveCredentialSchema) ProtoMethods() *protoiface.M
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 0 {
@@ -5315,8 +5315,8 @@ type MsgCreateCredentialSchema struct {
 
 	// corporation is the group account on whose behalf this message is executed
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// operator is the account authorized by the corporation to run this Msg
-	Operator                                string          `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	// delegate is the account authorized by the corporation to run this Msg
+	Delegate                                string          `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	JsonSchema                              string          `protobuf:"bytes,4,opt,name=json_schema,json=jsonSchema,proto3" json:"json_schema,omitempty"`
 	IssuerGrantorValidationValidityPeriod   *OptionalUInt32 `protobuf:"bytes,5,opt,name=issuer_grantor_validation_validity_period,json=issuerGrantorValidationValidityPeriod,proto3" json:"issuer_grantor_validation_validity_period,omitempty"`
 	VerifierGrantorValidationValidityPeriod *OptionalUInt32 `protobuf:"bytes,6,opt,name=verifier_grantor_validation_validity_period,json=verifierGrantorValidationValidityPeriod,proto3" json:"verifier_grantor_validation_validity_period,omitempty"`
@@ -5359,9 +5359,9 @@ func (x *MsgCreateCredentialSchema) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgCreateCredentialSchema) GetOperator() string {
+func (x *MsgCreateCredentialSchema) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
@@ -5500,8 +5500,8 @@ type MsgUpdateCredentialSchema struct {
 
 	// corporation is the group account on whose behalf this message is executed
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// operator is the account authorized by the corporation to run this Msg
-	Operator                                string          `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	// delegate is the account authorized by the corporation to run this Msg
+	Delegate                                string          `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Id                                      uint64          `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
 	IssuerGrantorValidationValidityPeriod   *OptionalUInt32 `protobuf:"bytes,4,opt,name=issuer_grantor_validation_validity_period,json=issuerGrantorValidationValidityPeriod,proto3" json:"issuer_grantor_validation_validity_period,omitempty"`
 	VerifierGrantorValidationValidityPeriod *OptionalUInt32 `protobuf:"bytes,5,opt,name=verifier_grantor_validation_validity_period,json=verifierGrantorValidationValidityPeriod,proto3" json:"verifier_grantor_validation_validity_period,omitempty"`
@@ -5537,9 +5537,9 @@ func (x *MsgUpdateCredentialSchema) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgUpdateCredentialSchema) GetOperator() string {
+func (x *MsgUpdateCredentialSchema) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
@@ -5656,8 +5656,8 @@ type MsgArchiveCredentialSchema struct {
 
 	// corporation is the group account on whose behalf this message is executed
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// operator is the account authorized by the corporation to run this Msg
-	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	// delegate is the account authorized by the corporation to run this Msg
+	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	Id       uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
 	Archive  bool   `protobuf:"varint,4,opt,name=archive,proto3" json:"archive,omitempty"`
 }
@@ -5689,9 +5689,9 @@ func (x *MsgArchiveCredentialSchema) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgArchiveCredentialSchema) GetOperator() string {
+func (x *MsgArchiveCredentialSchema) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
@@ -5769,10 +5769,10 @@ var file_verana_cs_v1_tx_proto_rawDesc = []byte{
 	0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64,
 	0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72,
-	0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14,
+	0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14,
 	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74,
-	0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1f,
+	0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x1f,
 	0x0a, 0x0b, 0x6a, 0x73, 0x6f, 0x6e, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x18, 0x04, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x0a, 0x6a, 0x73, 0x6f, 0x6e, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x12,
 	0x7c, 0x0a, 0x29, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x5f, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x6f,
@@ -5832,8 +5832,8 @@ var file_verana_cs_v1_tx_proto_rawDesc = []byte{
 	0x14, 0x68, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x4f, 0x6e, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x69, 0x6e,
 	0x67, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x65, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74,
 	0x65, 0x6d, 0x5f, 0x69, 0x64, 0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x65, 0x63, 0x6f,
-	0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x49, 0x64, 0x3a, 0x37, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x6f,
-	0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x25, 0x76, 0x65, 0x72, 0x61,
+	0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x49, 0x64, 0x3a, 0x37, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64,
+	0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x8a, 0xe7, 0xb0, 0x2a, 0x25, 0x76, 0x65, 0x72, 0x61,
 	0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x63, 0x73, 0x2f, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74,
 	0x65, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d,
 	0x61, 0x4a, 0x04, 0x08, 0x03, 0x10, 0x04, 0x22, 0x33, 0x0a, 0x21, 0x4d, 0x73, 0x67, 0x43, 0x72,
@@ -5845,10 +5845,10 @@ var file_verana_cs_v1_tx_proto_rawDesc = []byte{
 	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
 	0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72,
 	0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74,
-	0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f,
 	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69,
-	0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x0e, 0x0a, 0x02,
+	0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x0e, 0x0a, 0x02,
 	0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x7c, 0x0a, 0x29,
 	0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x5f, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x5f, 0x76,
 	0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x69,
@@ -5887,7 +5887,7 @@ var file_verana_cs_v1_tx_proto_rawDesc = []byte{
 	0x61, 0x6c, 0x55, 0x49, 0x6e, 0x74, 0x33, 0x32, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x01, 0x52, 0x1e,
 	0x68, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x56, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x3a, 0x37,
-	0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7, 0xb0,
+	0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x8a, 0xe7, 0xb0,
 	0x2a, 0x25, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x63, 0x73, 0x2f, 0x4d, 0x73,
 	0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61,
 	0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x22, 0x26, 0x0a, 0x0e, 0x4f, 0x70, 0x74, 0x69, 0x6f,
@@ -5901,13 +5901,13 @@ var file_verana_cs_v1_tx_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f,
 	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69,
 	0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
-	0x34, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
 	0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65,
 	0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x61, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x3a,
-	0x38, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x8a, 0xe7,
+	0x38, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x8a, 0xe7,
 	0xb0, 0x2a, 0x26, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x63, 0x73, 0x2f, 0x4d,
 	0x73, 0x67, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74,
 	0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x22, 0x24, 0x0a, 0x22, 0x4d, 0x73, 0x67,

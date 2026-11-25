@@ -17,7 +17,7 @@ Key capabilities:
 - **Corporation & Governance Framework**: Register on-chain corporations and publish versioned governance framework documents
 - **Credential Schemas**: Define credential schemas with custom issuance and verification policies
 - **Participant Roles & Permissions**: Manage issuer, verifier, and grantor roles and their permissions
-- **Delegated Operations**: Authorize operators to execute messages on behalf of an authority (AUTHZ-CHECK delegation)
+- **Delegated Operations**: Authorize delegates to execute messages on behalf of an authority (AUTHZ-CHECK delegation)
 - **Tokenized Trust Deposit**: Built-in economic incentives, yield, and slashing for ecosystem participants
 - **Supporting Registries**: On-chain exchange-rate and content-digest primitives
 - **Trust Resolution (roadmap)**: Standard API supporting the Trust Registry Query Protocol (TRQP)
@@ -37,7 +37,7 @@ Verana is composed of the following Cosmos SDK modules (spec v4-rc2):
 | Governance Framework | `x/gf` | MOD-GF | Governance framework documents and versioning |
 | Credential Schema | `x/cs` | MOD-CS | Credential schema definitions with issuance/verification policies |
 | Participant | `x/pp` | MOD-PP | Participant roles and permissions: issuer, verifier, grantor (formerly Permission) |
-| Delegation | `x/de` | MOD-DE | Operator authorizations that delegate message execution (AUTHZ-CHECK) |
+| Delegation | `x/de` | MOD-DE | Delegate authorizations that delegate message execution (AUTHZ-CHECK) |
 | Trust Deposit | `x/td` | MOD-TD | Economic trust deposits, yield, and slashing |
 | Exchange Rate | `x/xr` | MOD-XR | Token/credit exchange-rate management |
 | Digest | `x/di` | MOD-DI | Content digest registry |
@@ -55,7 +55,7 @@ What differs is how far each module has been aligned with the v4-rc2 entity mode
 - **Ecosystem** (`x/ec`): create, update, and archive ecosystems; attach governance framework documents
 - **Corporation** (`x/co`): create and update corporations
 - **Governance Framework** (`x/gf`): add governance framework documents and promote active versions
-- **Delegation** (`x/de`): grant and revoke operator authorizations (authz bootstrap only)
+- **Delegation** (`x/de`): grant and revoke delegate authorizations (authz bootstrap only)
 
 **Implemented but predating v4-rc2, under active rework (use with caution)**
 

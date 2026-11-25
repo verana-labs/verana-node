@@ -479,6 +479,46 @@
         }
       }
     },
+    "verana.de.v1.MsgType": {
+      "type": "string",
+      "enum": [
+        "MSG_TYPE_UNSPECIFIED",
+        "MSG_TYPE_UPDATE_CORPORATION",
+        "MSG_TYPE_CREATE_ECOSYSTEM",
+        "MSG_TYPE_UPDATE_ECOSYSTEM",
+        "MSG_TYPE_ARCHIVE_ECOSYSTEM",
+        "MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT",
+        "MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION",
+        "MSG_TYPE_CREATE_CREDENTIAL_SCHEMA",
+        "MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA",
+        "MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA",
+        "MSG_TYPE_START_ONBOARDING",
+        "MSG_TYPE_RENEW_ONBOARDING",
+        "MSG_TYPE_VALIDATE_ONBOARDING",
+        "MSG_TYPE_WITHDRAW_ONBOARDING_REQUEST",
+        "MSG_TYPE_CREATE_ROOT_ACCREDITATION",
+        "MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL",
+        "MSG_TYPE_REVOKE_ACCREDITATION",
+        "MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE",
+        "MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT",
+        "MSG_TYPE_SELF_CREATE_ACCREDITATION",
+        "MSG_TYPE_TRIGGER_RESOLVER",
+        "MSG_TYPE_REPAY_SLASH",
+        "MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION",
+        "MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION",
+        "MSG_TYPE_STORE_DIGEST",
+        "MSG_TYPE_REVOKE_DIGEST",
+        "MSG_TYPE_REGISTER_VERIFIABLE_SERVICE",
+        "MSG_TYPE_UPDATE_VERIFIABLE_SERVICE",
+        "MSG_TYPE_SET_PARTICIPATION_EXCLUSION",
+        "MSG_TYPE_REVOKE_SPONSORSHIP",
+        "MSG_TYPE_ACCEPT_GOVERNANCE_FRAMEWORK_VERSION",
+        "MSG_TYPE_ACCEPT_CORPORATION_GOVERNANCE_FRAMEWORK",
+        "MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION"
+      ],
+      "default": "MSG_TYPE_UNSPECIFIED",
+      "description": "MsgType enumerates the delegable messages of the VPR. Numbers are stable and\nonly ever appended to."
+    },
     "verana.pp.v1.MsgCancelParticipantOPLastRequest": {
       "type": "object",
       "properties": {
@@ -486,9 +526,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "id": {
           "type": "string",
@@ -507,9 +547,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "vs_account": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg (vs_operator)"
+          "description": "vs_account is the VS account of the entry that signs this Msg."
         },
         "id": {
           "type": "string",
@@ -556,7 +596,7 @@
           "type": "string",
           "description": "[MOD-PP-MSG-7-1] spec parameters.\nparticipant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3]."
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "schema_id": {
@@ -593,9 +633,9 @@
         "vs_operator_authz_msg_types": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/verana.de.v1.MsgType"
           },
-          "description": "vs_operator_authz_msg_types: presence triggers VSOA record creation; MUST be a\nsubset of [SetParticipantOPToValidated] for root participants."
+          "description": "vs_operator_authz_msg_types: presence triggers VSOA record creation; MUST be a\nsubset of [MSG_TYPE_VALIDATE_ONBOARDING] for root participants."
         },
         "vs_operator_authz_spend_limit": {
           "type": "array",
@@ -634,9 +674,9 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "[MOD-PP-MSG-2-1] spec parameters: corporation, operator, id."
+          "description": "[MOD-PP-MSG-2-1] spec parameters: corporation, delegate, id."
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -657,7 +697,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -675,7 +715,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -694,7 +734,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "role": {
@@ -730,7 +770,7 @@
         "vs_operator_authz_msg_types": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/verana.de.v1.MsgType"
           },
           "description": "vs_operator_authz_msg_types: presence triggers VSOA record creation."
         },
@@ -771,7 +811,7 @@
         "corporation": {
           "type": "string"
         },
-        "operator": {
+        "delegate": {
           "type": "string"
         },
         "id": {
@@ -795,9 +835,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "id": {
           "type": "string",
@@ -847,9 +887,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "id": {
           "type": "string",
@@ -875,9 +915,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "title": "operator is the account authorized by the corporation to run this Msg"
+          "title": "delegate is the account authorized by the corporation to run this Msg"
         },
         "role": {
           "$ref": "#/definitions/verana.pp.v1.ParticipantRole"
@@ -906,7 +946,7 @@
         "vs_operator_authz_msg_types": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/verana.de.v1.MsgType"
           },
           "description": "vs_operator_authz_msg_types: presence triggers VSOA record creation."
         },
@@ -950,9 +990,9 @@
           "type": "string",
           "description": "corporation is the policy_address of the corporation on whose behalf this\nmessage runs."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the account authorized by the corporation to run this Msg."
+          "description": "delegate is the account authorized by the corporation to run this Msg."
         },
         "id": {
           "type": "string",

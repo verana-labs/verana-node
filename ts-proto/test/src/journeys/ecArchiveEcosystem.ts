@@ -1,5 +1,5 @@
 /**
- * Journey: EC Archive Ecosystem (Operator-signed)
+ * Journey: EC Archive Ecosystem (Delegate-signed)
  *
  * Archives an Ecosystem. `archive` is a boolean toggle per MOD-ES-MSG-3.
  * Depends on: test:de-grant-auth, test:ec-create
@@ -24,11 +24,11 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 11;
+const DELEGATE_INDEX = 11;
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: EC Archive Ecosystem (Operator-signed)");
+  console.log("Journey: EC Archive Ecosystem (Delegate-signed)");
   console.log("=".repeat(60));
   console.log();
 
@@ -48,11 +48,11 @@ async function main() {
   console.log(`  EC ID:       ${activeEC.ecosystemId}`);
   console.log();
 
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
   const client = await createSigningClient(wallet);
 
-  console.log(`  Operator:  ${account.address}`);
+  console.log(`  Delegate:  ${account.address}`);
   console.log();
 
   // Archive Ecosystem (archive=true). The bool field replaces the legacy
@@ -63,7 +63,7 @@ async function main() {
     typeUrl: typeUrls.MsgArchiveEcosystem,
     value: MsgArchiveEcosystem.fromPartial({
       corporation: setup.authorityAddress,
-      operator: account.address,
+      delegate: account.address,
       id: activeEC.ecosystemId,
       archive: true,
     }),
@@ -72,12 +72,12 @@ async function main() {
   try {
     const fee = await calculateFeeWithSimulation(
       client, account.address, [msg],
-      "Archiving Ecosystem via operator",
+      "Archiving Ecosystem via delegate",
     );
 
     const result = await signAndBroadcastWithRetry(
       client, account.address, [msg], fee,
-      "Archiving Ecosystem via operator",
+      "Archiving Ecosystem via delegate",
     );
 
     if (result.code === 0) {

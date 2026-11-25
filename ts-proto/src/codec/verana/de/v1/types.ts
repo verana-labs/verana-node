@@ -9,27 +9,27 @@ import * as _m0 from "protobufjs/minimal";
 import { Coin } from "../../../cosmos/base/v1beta1/coin";
 import { Duration } from "../../../google/protobuf/duration";
 import { Timestamp } from "../../../google/protobuf/timestamp";
+import { MsgType, msgTypeFromJSON, msgTypeToJSON } from "./msg_type";
 import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
 
 /**
- * OperatorAuthorization is the operator-delegation record. Per spec it is
- * keyed by its own uint64 id; (corporation_id, operator) is a unique secondary
- * index.
+ * DelegateAuthorization is the delegate authorization record. It is keyed by
+ * its own uint64 id; (corporation_id, delegate) is a unique secondary index.
  */
-export interface OperatorAuthorization {
-  /** id is the own uint64 key of this OperatorAuthorization. */
+export interface DelegateAuthorization {
+  /** id is the own uint64 key of this DelegateAuthorization. */
   id: number;
   /**
    * corporation_id is the id of the corporation granting the authorization. The
-   * (corporation_id, operator) tuple MUST be unique.
+   * (corporation_id, delegate) tuple MUST be unique.
    */
   corporationId: number;
-  /** operator is the account receiving the authorization. */
-  operator: string;
-  /** msg_types is the list of module message types this authorization applies to. */
-  msgTypes: string[];
+  /** delegate is the account receiving the authorization. */
+  delegate: string;
+  /** msg_types is the list of message types this authorization applies to. */
+  msgTypes: MsgType[];
   /** spend_limit is the maximum amount of funds the grantee is allowed to spend. */
   spendLimit: Coin[];
   /**
@@ -64,7 +64,7 @@ export interface FeeGrant {
    * msg_types is the list of VPR delegable message types for which the fee
    * allowance applies.
    */
-  msgTypes: string[];
+  msgTypes: MsgType[];
   /** spend_limit is the maximum amount of fees that can be spent using this grant. */
   spendLimit: Coin[];
   /**
@@ -98,7 +98,7 @@ export interface ParticipantAuthorizationRecord {
    * msg_types is the list of delegable message types the vs_operator is
    * authorized for on behalf of corporation. Mandatory, frozen at create.
    */
-  msgTypes: string[];
+  msgTypes: MsgType[];
   /** spend_limit is the maximum amount the vs_operator is allowed to spend. */
   spendLimit: Coin[];
   /**
@@ -160,11 +160,11 @@ export interface VSOperatorAuthorization {
   records: ParticipantAuthorizationRecord[];
 }
 
-function createBaseOperatorAuthorization(): OperatorAuthorization {
+function createBaseDelegateAuthorization(): DelegateAuthorization {
   return {
     id: 0,
     corporationId: 0,
-    operator: "",
+    delegate: "",
     msgTypes: [],
     spendLimit: [],
     remainingSpend: [],
@@ -173,20 +173,22 @@ function createBaseOperatorAuthorization(): OperatorAuthorization {
   };
 }
 
-export const OperatorAuthorization = {
-  encode(message: OperatorAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const DelegateAuthorization = {
+  encode(message: DelegateAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== 0) {
       writer.uint32(8).uint64(message.id);
     }
     if (message.corporationId !== 0) {
       writer.uint32(16).uint64(message.corporationId);
     }
-    if (message.operator !== "") {
-      writer.uint32(26).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(26).string(message.delegate);
     }
+    writer.uint32(34).fork();
     for (const v of message.msgTypes) {
-      writer.uint32(34).string(v!);
+      writer.int32(v);
     }
+    writer.ldelim();
     for (const v of message.spendLimit) {
       Coin.encode(v!, writer.uint32(42).fork()).ldelim();
     }
@@ -202,10 +204,10 @@ export const OperatorAuthorization = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): OperatorAuthorization {
+  decode(input: _m0.Reader | Uint8Array, length?: number): DelegateAuthorization {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseOperatorAuthorization();
+    const message = createBaseDelegateAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -228,15 +230,25 @@ export const OperatorAuthorization = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 4:
-          if (tag !== 34) {
-            break;
+          if (tag === 32) {
+            message.msgTypes.push(reader.int32() as any);
+
+            continue;
           }
 
-          message.msgTypes.push(reader.string());
-          continue;
+          if (tag === 34) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.msgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
         case 5:
           if (tag !== 42) {
             break;
@@ -274,12 +286,12 @@ export const OperatorAuthorization = {
     return message;
   },
 
-  fromJSON(object: any): OperatorAuthorization {
+  fromJSON(object: any): DelegateAuthorization {
     return {
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
-      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => globalThis.String(e)) : [],
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
       spendLimit: globalThis.Array.isArray(object?.spendLimit)
         ? object.spendLimit.map((e: any) => Coin.fromJSON(e))
         : [],
@@ -291,7 +303,7 @@ export const OperatorAuthorization = {
     };
   },
 
-  toJSON(message: OperatorAuthorization): unknown {
+  toJSON(message: DelegateAuthorization): unknown {
     const obj: any = {};
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -299,11 +311,11 @@ export const OperatorAuthorization = {
     if (message.corporationId !== 0) {
       obj.corporationId = Math.round(message.corporationId);
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.msgTypes?.length) {
-      obj.msgTypes = message.msgTypes;
+      obj.msgTypes = message.msgTypes.map((e) => msgTypeToJSON(e));
     }
     if (message.spendLimit?.length) {
       obj.spendLimit = message.spendLimit.map((e) => Coin.toJSON(e));
@@ -320,14 +332,14 @@ export const OperatorAuthorization = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<OperatorAuthorization>, I>>(base?: I): OperatorAuthorization {
-    return OperatorAuthorization.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<DelegateAuthorization>, I>>(base?: I): DelegateAuthorization {
+    return DelegateAuthorization.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<OperatorAuthorization>, I>>(object: I): OperatorAuthorization {
-    const message = createBaseOperatorAuthorization();
+  fromPartial<I extends Exact<DeepPartial<DelegateAuthorization>, I>>(object: I): DelegateAuthorization {
+    const message = createBaseDelegateAuthorization();
     message.id = object.id ?? 0;
     message.corporationId = object.corporationId ?? 0;
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.msgTypes = object.msgTypes?.map((e) => e) || [];
     message.spendLimit = object.spendLimit?.map((e) => Coin.fromPartial(e)) || [];
     message.remainingSpend = object.remainingSpend?.map((e) => Coin.fromPartial(e)) || [];
@@ -359,9 +371,11 @@ export const FeeGrant = {
     if (message.grantee !== "") {
       writer.uint32(18).string(message.grantee);
     }
+    writer.uint32(26).fork();
     for (const v of message.msgTypes) {
-      writer.uint32(26).string(v!);
+      writer.int32(v);
     }
+    writer.ldelim();
     for (const v of message.spendLimit) {
       Coin.encode(v!, writer.uint32(34).fork()).ldelim();
     }
@@ -399,12 +413,22 @@ export const FeeGrant = {
           message.grantee = reader.string();
           continue;
         case 3:
-          if (tag !== 26) {
-            break;
+          if (tag === 24) {
+            message.msgTypes.push(reader.int32() as any);
+
+            continue;
           }
 
-          message.msgTypes.push(reader.string());
-          continue;
+          if (tag === 26) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.msgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
         case 4:
           if (tag !== 34) {
             break;
@@ -446,7 +470,7 @@ export const FeeGrant = {
     return {
       grantorCorporationId: isSet(object.grantorCorporationId) ? globalThis.Number(object.grantorCorporationId) : 0,
       grantee: isSet(object.grantee) ? globalThis.String(object.grantee) : "",
-      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => globalThis.String(e)) : [],
+      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
       spendLimit: globalThis.Array.isArray(object?.spendLimit)
         ? object.spendLimit.map((e: any) => Coin.fromJSON(e))
         : [],
@@ -467,7 +491,7 @@ export const FeeGrant = {
       obj.grantee = message.grantee;
     }
     if (message.msgTypes?.length) {
-      obj.msgTypes = message.msgTypes;
+      obj.msgTypes = message.msgTypes.map((e) => msgTypeToJSON(e));
     }
     if (message.spendLimit?.length) {
       obj.spendLimit = message.spendLimit.map((e) => Coin.toJSON(e));
@@ -520,9 +544,11 @@ export const ParticipantAuthorizationRecord = {
     if (message.participantId !== 0) {
       writer.uint32(8).uint64(message.participantId);
     }
+    writer.uint32(18).fork();
     for (const v of message.msgTypes) {
-      writer.uint32(18).string(v!);
+      writer.int32(v);
     }
+    writer.ldelim();
     for (const v of message.spendLimit) {
       Coin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
@@ -559,12 +585,22 @@ export const ParticipantAuthorizationRecord = {
           message.participantId = longToNumber(reader.uint64() as Long);
           continue;
         case 2:
-          if (tag !== 18) {
-            break;
+          if (tag === 16) {
+            message.msgTypes.push(reader.int32() as any);
+
+            continue;
           }
 
-          message.msgTypes.push(reader.string());
-          continue;
+          if (tag === 18) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.msgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
         case 3:
           if (tag !== 26) {
             break;
@@ -619,7 +655,7 @@ export const ParticipantAuthorizationRecord = {
   fromJSON(object: any): ParticipantAuthorizationRecord {
     return {
       participantId: isSet(object.participantId) ? globalThis.Number(object.participantId) : 0,
-      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => globalThis.String(e)) : [],
+      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
       spendLimit: globalThis.Array.isArray(object?.spendLimit)
         ? object.spendLimit.map((e: any) => Coin.fromJSON(e))
         : [],
@@ -641,7 +677,7 @@ export const ParticipantAuthorizationRecord = {
       obj.participantId = Math.round(message.participantId);
     }
     if (message.msgTypes?.length) {
-      obj.msgTypes = message.msgTypes;
+      obj.msgTypes = message.msgTypes.map((e) => msgTypeToJSON(e));
     }
     if (message.spendLimit?.length) {
       obj.spendLimit = message.spendLimit.map((e) => Coin.toJSON(e));
