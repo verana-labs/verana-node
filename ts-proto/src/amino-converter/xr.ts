@@ -47,13 +47,13 @@ export const MsgCreateExchangeRateAminoConverter: AminoConverter = {
 export const MsgUpdateExchangeRateAminoConverter: AminoConverter = {
   aminoType: "verana/x/xr/MsgUpdateExchangeRate",
   toAmino: (m: MsgUpdateExchangeRate) => clean({
-    operator: m.operator || undefined,
+    feeder: m.feeder || undefined,
     id: u64ToStr(m.id),
     rate: m.rate || undefined,
   }),
   fromAmino: (a: any): MsgUpdateExchangeRate =>
     MsgUpdateExchangeRate.fromPartial({
-      operator: a.operator ?? "",
+      feeder: a.feeder ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       rate: a.rate ?? "",
     }),
@@ -79,7 +79,7 @@ export const MsgGrantExchangeRateAuthorizationAminoConverter: AminoConverter = {
   toAmino: (m: MsgGrantExchangeRateAuthorization) => clean({
     authority: m.authority || undefined,
     xr_id: u64ToStr(m.xrId),
-    operator: m.operator || undefined,
+    feeder: m.feeder || undefined,
     expiration: dateToIsoAmino(m.expiration),
     min_interval: durationToAmino(m.minInterval),
     max_deviation_bps: u32ToAmino(m.maxDeviationBps),
@@ -88,7 +88,7 @@ export const MsgGrantExchangeRateAuthorizationAminoConverter: AminoConverter = {
     MsgGrantExchangeRateAuthorization.fromPartial({
       authority: a.authority ?? "",
       xrId: strToU64(a.xr_id) != null ? Number(strToU64(a.xr_id)!.toString()) : 0,
-      operator: a.operator ?? "",
+      feeder: a.feeder ?? "",
       expiration: isoToDate(a.expiration),
       minInterval: aminoToDuration(a.min_interval),
       maxDeviationBps: a.max_deviation_bps ?? 0,
@@ -100,12 +100,12 @@ export const MsgRevokeExchangeRateAuthorizationAminoConverter: AminoConverter = 
   toAmino: (m: MsgRevokeExchangeRateAuthorization) => clean({
     authority: m.authority || undefined,
     xr_id: u64ToStr(m.xrId),
-    operator: m.operator || undefined,
+    feeder: m.feeder || undefined,
   }),
   fromAmino: (a: any): MsgRevokeExchangeRateAuthorization =>
     MsgRevokeExchangeRateAuthorization.fromPartial({
       authority: a.authority ?? "",
       xrId: strToU64(a.xr_id) != null ? Number(strToU64(a.xr_id)!.toString()) : 0,
-      operator: a.operator ?? "",
+      feeder: a.feeder ?? "",
     }),
 };

@@ -60,7 +60,7 @@ func TestUpdateEcosystem_RejectsDIDOwnedByForeignParticipant(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
-		Corporation: tkCorp, Operator: tkOp, Id: 1, Did: "did:example:rotated",
+		Corporation: tkCorp, Delegate: tkOp, Id: 1, Did: "did:example:rotated",
 	})
 	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)
 }

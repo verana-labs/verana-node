@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -18,6 +19,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	"github.com/verana-labs/verana-node/x/ec/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
@@ -28,14 +30,14 @@ import (
 // x/ec Keeper without depending on the live x/de, x/co and x/gf modules.
 type stubDelegationKeeper struct{}
 
-func (stubDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (stubDelegationKeeper) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 
 type stubCorporationKeeper struct{}
 
-func (stubCorporationKeeper) ResolveByPolicyAddress(_ context.Context, _ string) (types.CorporationView, bool) {
-	return types.CorporationView{}, false
+func (stubCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
+	return types.CorporationView{}, errors.New("corporation not registered")
 }
 
 func (stubCorporationKeeper) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool) {

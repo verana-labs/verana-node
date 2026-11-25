@@ -1,11 +1,11 @@
 /**
- * Journey: DE Grant CS Operator Authorization
+ * Journey: DE Grant CS Delegate Authorization
  *
- * This script grants operator authorization from a CS authority account to a
- * CS operator account for all 3 CS message types (plus TR create, so the
- * operator can create the Trust Registry needed for CS tests).
+ * This script grants delegate authorization from a CS authority account to a
+ * CS delegate account for all 3 CS message types (plus TR create, so the
+ * delegate can create the Trust Registry needed for CS tests).
  *
- * Key insight: When operator is empty in MsgGrantOperatorAuthorization,
+ * Key insight: When delegate is empty in MsgGrantDelegateAuthorization,
  * the AUTHZ-CHECK is skipped — the authority acts alone and signs directly.
  *
  * Run order: test:de-grant-cs-auth → test:cs-create → test:cs-update → test:cs-archive
@@ -26,40 +26,41 @@ import {
   config,
 } from "../helpers/client";
 import { typeUrls } from "../helpers/registry";
-import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/tx";
+import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
 import { saveCsAuthzSetup } from "../helpers/journeyResults";
+import { MsgType, msgTypeToJSON } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-// Derivation path indexes for CS authority and operator (separate from TR's 10/11)
+// Derivation path indexes for CS authority and delegate (separate from TR's 10/11)
 const AUTHORITY_INDEX = 12;
-const OPERATOR_INDEX = 13;
+const DELEGATE_INDEX = 13;
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: DE Grant CS Operator Authorization (TypeScript Client)");
+  console.log("Journey: DE Grant CS Delegate Authorization (TypeScript Client)");
   console.log("=".repeat(60));
   console.log();
 
-  // Step 1: Create authority and operator wallets
-  console.log("Step 1: Creating CS authority and operator wallets...");
+  // Step 1: Create authority and delegate wallets
+  console.log("Step 1: Creating CS authority and delegate wallets...");
   const authorityWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, AUTHORITY_INDEX);
-  const operatorWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  const delegateWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const cooluserWallet = await createWallet(COOLUSER_MNEMONIC);
 
   const authorityAccount = await getAccountInfo(authorityWallet);
-  const operatorAccount = await getAccountInfo(operatorWallet);
+  const delegateAccount = await getAccountInfo(delegateWallet);
   const cooluserAccount = await getAccountInfo(cooluserWallet);
 
   console.log(`  Cooluser:     ${cooluserAccount.address}`);
   console.log(`  CS Authority: ${authorityAccount.address} (derivation index ${AUTHORITY_INDEX})`);
-  console.log(`  CS Operator:  ${operatorAccount.address} (derivation index ${OPERATOR_INDEX})`);
+  console.log(`  CS Delegate:  ${delegateAccount.address} (derivation index ${DELEGATE_INDEX})`);
   console.log();
 
-  // Step 2: Fund authority and operator from cooluser
-  console.log("Step 2: Funding CS authority and operator accounts...");
+  // Step 2: Fund authority and delegate from cooluser
+  console.log("Step 2: Funding CS authority and delegate accounts...");
   const fundAmount = "50000000uvna"; // 50 VNA
 
   const fundAuthResult = await fundAccount(
@@ -104,22 +105,22 @@ async function main() {
   const fundOpResult = await fundAccount(
     COOLUSER_MNEMONIC,
     cooluserAccount.address,
-    operatorAccount.address,
+    delegateAccount.address,
     fundAmount,
   );
   if (fundOpResult.code !== 0) {
-    console.log(`  ❌ Failed to fund CS operator: ${fundOpResult.rawLog}`);
+    console.log(`  ❌ Failed to fund CS delegate: ${fundOpResult.rawLog}`);
     process.exit(1);
   }
-  console.log(`  ✓ Funded CS operator with ${fundAmount}`);
+  console.log(`  ✓ Funded CS delegate with ${fundAmount}`);
 
-  // Wait for operator funding tx to confirm
-  console.log("  ⏳ Waiting for CS operator funding tx to confirm...");
+  // Wait for delegate funding tx to confirm
+  console.log("  ⏳ Waiting for CS delegate funding tx to confirm...");
   for (let i = 0; i < 30; i++) {
     try {
       const tx = await queryClient.getTx(fundOpResult.transactionHash);
       if (tx) {
-        console.log(`  ✓ CS operator funding confirmed at block ${tx.height}`);
+        console.log(`  ✓ CS delegate funding confirmed at block ${tx.height}`);
         break;
       }
     } catch {}
@@ -139,31 +140,31 @@ async function main() {
   queryClient.disconnect();
   console.log();
 
-  // Step 3: Authority grants operator authorization for EC create + all 3 CS message types
+  // Step 3: Authority grants delegate authorization for EC create + all 3 CS message types
   // (v4-rc2: EC replaces TR as the parent of credential schemas).
-  console.log("Step 3: Granting CS operator authorization...");
+  console.log("Step 3: Granting CS delegate authorization...");
 
   const allCsMsgTypes = [
-    typeUrls.MsgCreateEcosystem,            // needed so operator can create the EC for CS tests
-    typeUrls.MsgCreateCredentialSchema,
-    typeUrls.MsgUpdateCredentialSchema,
-    typeUrls.MsgArchiveCredentialSchema,
+    MsgType.MSG_TYPE_CREATE_ECOSYSTEM,            // needed so delegate can create the EC for CS tests
+    MsgType.MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+    MsgType.MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA,
+    MsgType.MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA,
   ];
 
   console.log("  Message types being authorized:");
   for (const msgType of allCsMsgTypes) {
-    console.log(`    - ${msgType}`);
+    console.log(`    - ${msgTypeToJSON(msgType)}`);
   }
 
   const client = await createSigningClient(authorityWallet);
 
   const msg = {
-    typeUrl: typeUrls.MsgGrantOperatorAuthorization,
-    value: MsgGrantOperatorAuthorization.fromPartial({
+    typeUrl: typeUrls.MsgGrantDelegateAuthorization,
+    value: MsgGrantDelegateAuthorization.fromPartial({
       corporation: authorityAccount.address,
-      // operator == corporation policy_address — authority acts alone (AUTHZ-CHECK-1 skipped)
-      operator: authorityAccount.address,
-      grantee: operatorAccount.address,
+      // delegate == corporation policy_address — authority acts alone (AUTHZ-CHECK-1 skipped)
+      delegate: authorityAccount.address,
+      grantee: delegateAccount.address,
       msgTypes: allCsMsgTypes,
       withFeegrant: false,
     }),
@@ -174,7 +175,7 @@ async function main() {
       client,
       authorityAccount.address,
       [msg],
-      "Granting CS operator authorization",
+      "Granting CS delegate authorization",
     );
     console.log(`  Calculated gas: ${fee.gas}, fee: ${fee.amount[0].amount}${fee.amount[0].denom}`);
 
@@ -183,12 +184,12 @@ async function main() {
       authorityAccount.address,
       [msg],
       fee,
-      "Granting CS operator authorization",
+      "Granting CS delegate authorization",
     );
 
     console.log();
     if (result.code === 0) {
-      console.log("✅ SUCCESS! CS operator authorization granted!");
+      console.log("✅ SUCCESS! CS delegate authorization granted!");
       console.log("=".repeat(60));
       console.log(`  Transaction Hash: ${result.transactionHash}`);
       console.log(`  Block Height:     ${result.height}`);
@@ -197,7 +198,7 @@ async function main() {
       // Print relevant events
       const events = result.events || [];
       for (const event of events) {
-        if (event.type.includes("grant") || event.type.includes("operator")) {
+        if (event.type.includes("grant") || event.type.includes("delegate")) {
           console.log(`  Event: ${event.type}`);
           for (const attr of event.attributes) {
             console.log(`    ${attr.key}: ${attr.value}`);
@@ -206,9 +207,9 @@ async function main() {
       }
 
       // Save CS authz setup for CS journeys
-      saveCsAuthzSetup(authorityAccount.address, operatorAccount.address);
+      saveCsAuthzSetup(authorityAccount.address, delegateAccount.address);
       console.log();
-      console.log("  💾 Saved CS authority and operator addresses for CS journeys");
+      console.log("  💾 Saved CS authority and delegate addresses for CS journeys");
     } else {
       console.log("❌ FAILED! Transaction failed.");
       console.log(`  Error Code: ${result.code}`);

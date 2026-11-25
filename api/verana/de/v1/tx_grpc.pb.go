@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Msg_GrantOperatorAuthorization_FullMethodName  = "/verana.de.v1.Msg/GrantOperatorAuthorization"
-	Msg_RevokeOperatorAuthorization_FullMethodName = "/verana.de.v1.Msg/RevokeOperatorAuthorization"
+	Msg_GrantDelegateAuthorization_FullMethodName  = "/verana.de.v1.Msg/GrantDelegateAuthorization"
+	Msg_RevokeDelegateAuthorization_FullMethodName = "/verana.de.v1.Msg/RevokeDelegateAuthorization"
 )
 
 // MsgClient is the client API for Msg service.
@@ -29,10 +29,10 @@ const (
 //
 // Msg defines the Msg service.
 type MsgClient interface {
-	// [MOD-DE-MSG-3] Grant Operator Authorization
-	GrantOperatorAuthorization(ctx context.Context, in *MsgGrantOperatorAuthorization, opts ...grpc.CallOption) (*MsgGrantOperatorAuthorizationResponse, error)
-	// [MOD-DE-MSG-4] Revoke Operator Authorization
-	RevokeOperatorAuthorization(ctx context.Context, in *MsgRevokeOperatorAuthorization, opts ...grpc.CallOption) (*MsgRevokeOperatorAuthorizationResponse, error)
+	// [MOD-DE-MSG-3] Grant Delegate Authorization
+	GrantDelegateAuthorization(ctx context.Context, in *MsgGrantDelegateAuthorization, opts ...grpc.CallOption) (*MsgGrantDelegateAuthorizationResponse, error)
+	// [MOD-DE-MSG-4] Revoke Delegate Authorization
+	RevokeDelegateAuthorization(ctx context.Context, in *MsgRevokeDelegateAuthorization, opts ...grpc.CallOption) (*MsgRevokeDelegateAuthorizationResponse, error)
 }
 
 type msgClient struct {
@@ -43,20 +43,20 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) GrantOperatorAuthorization(ctx context.Context, in *MsgGrantOperatorAuthorization, opts ...grpc.CallOption) (*MsgGrantOperatorAuthorizationResponse, error) {
+func (c *msgClient) GrantDelegateAuthorization(ctx context.Context, in *MsgGrantDelegateAuthorization, opts ...grpc.CallOption) (*MsgGrantDelegateAuthorizationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgGrantOperatorAuthorizationResponse)
-	err := c.cc.Invoke(ctx, Msg_GrantOperatorAuthorization_FullMethodName, in, out, cOpts...)
+	out := new(MsgGrantDelegateAuthorizationResponse)
+	err := c.cc.Invoke(ctx, Msg_GrantDelegateAuthorization_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) RevokeOperatorAuthorization(ctx context.Context, in *MsgRevokeOperatorAuthorization, opts ...grpc.CallOption) (*MsgRevokeOperatorAuthorizationResponse, error) {
+func (c *msgClient) RevokeDelegateAuthorization(ctx context.Context, in *MsgRevokeDelegateAuthorization, opts ...grpc.CallOption) (*MsgRevokeDelegateAuthorizationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgRevokeOperatorAuthorizationResponse)
-	err := c.cc.Invoke(ctx, Msg_RevokeOperatorAuthorization_FullMethodName, in, out, cOpts...)
+	out := new(MsgRevokeDelegateAuthorizationResponse)
+	err := c.cc.Invoke(ctx, Msg_RevokeDelegateAuthorization_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +69,10 @@ func (c *msgClient) RevokeOperatorAuthorization(ctx context.Context, in *MsgRevo
 //
 // Msg defines the Msg service.
 type MsgServer interface {
-	// [MOD-DE-MSG-3] Grant Operator Authorization
-	GrantOperatorAuthorization(context.Context, *MsgGrantOperatorAuthorization) (*MsgGrantOperatorAuthorizationResponse, error)
-	// [MOD-DE-MSG-4] Revoke Operator Authorization
-	RevokeOperatorAuthorization(context.Context, *MsgRevokeOperatorAuthorization) (*MsgRevokeOperatorAuthorizationResponse, error)
+	// [MOD-DE-MSG-3] Grant Delegate Authorization
+	GrantDelegateAuthorization(context.Context, *MsgGrantDelegateAuthorization) (*MsgGrantDelegateAuthorizationResponse, error)
+	// [MOD-DE-MSG-4] Revoke Delegate Authorization
+	RevokeDelegateAuthorization(context.Context, *MsgRevokeDelegateAuthorization) (*MsgRevokeDelegateAuthorizationResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -83,11 +83,11 @@ type MsgServer interface {
 // pointer dereference when methods are called.
 type UnimplementedMsgServer struct{}
 
-func (UnimplementedMsgServer) GrantOperatorAuthorization(context.Context, *MsgGrantOperatorAuthorization) (*MsgGrantOperatorAuthorizationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GrantOperatorAuthorization not implemented")
+func (UnimplementedMsgServer) GrantDelegateAuthorization(context.Context, *MsgGrantDelegateAuthorization) (*MsgGrantDelegateAuthorizationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GrantDelegateAuthorization not implemented")
 }
-func (UnimplementedMsgServer) RevokeOperatorAuthorization(context.Context, *MsgRevokeOperatorAuthorization) (*MsgRevokeOperatorAuthorizationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RevokeOperatorAuthorization not implemented")
+func (UnimplementedMsgServer) RevokeDelegateAuthorization(context.Context, *MsgRevokeDelegateAuthorization) (*MsgRevokeDelegateAuthorizationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeDelegateAuthorization not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 func (UnimplementedMsgServer) testEmbeddedByValue()             {}
@@ -110,38 +110,38 @@ func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 	s.RegisterService(&Msg_ServiceDesc, srv)
 }
 
-func _Msg_GrantOperatorAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGrantOperatorAuthorization)
+func _Msg_GrantDelegateAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGrantDelegateAuthorization)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).GrantOperatorAuthorization(ctx, in)
+		return srv.(MsgServer).GrantDelegateAuthorization(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_GrantOperatorAuthorization_FullMethodName,
+		FullMethod: Msg_GrantDelegateAuthorization_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GrantOperatorAuthorization(ctx, req.(*MsgGrantOperatorAuthorization))
+		return srv.(MsgServer).GrantDelegateAuthorization(ctx, req.(*MsgGrantDelegateAuthorization))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_RevokeOperatorAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRevokeOperatorAuthorization)
+func _Msg_RevokeDelegateAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRevokeDelegateAuthorization)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).RevokeOperatorAuthorization(ctx, in)
+		return srv.(MsgServer).RevokeDelegateAuthorization(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_RevokeOperatorAuthorization_FullMethodName,
+		FullMethod: Msg_RevokeDelegateAuthorization_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RevokeOperatorAuthorization(ctx, req.(*MsgRevokeOperatorAuthorization))
+		return srv.(MsgServer).RevokeDelegateAuthorization(ctx, req.(*MsgRevokeDelegateAuthorization))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -154,12 +154,12 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GrantOperatorAuthorization",
-			Handler:    _Msg_GrantOperatorAuthorization_Handler,
+			MethodName: "GrantDelegateAuthorization",
+			Handler:    _Msg_GrantDelegateAuthorization_Handler,
 		},
 		{
-			MethodName: "RevokeOperatorAuthorization",
-			Handler:    _Msg_RevokeOperatorAuthorization_Handler,
+			MethodName: "RevokeDelegateAuthorization",
+			Handler:    _Msg_RevokeDelegateAuthorization_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

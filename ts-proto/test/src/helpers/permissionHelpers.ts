@@ -42,7 +42,7 @@ export async function createRootPermissionForTest(
     typeUrl: typeUrls.MsgCreateRootParticipant,
     value: MsgCreateRootParticipant.fromPartial({
       corporation: address,
-      operator: "",
+      delegate: "",
       schemaId: schemaId,
       did: did,
       effectiveFrom: effectiveFrom,
@@ -186,7 +186,7 @@ export async function createPermissionForTest(
     typeUrl: typeUrls.MsgSelfCreateParticipant,
     value: MsgSelfCreateParticipant.fromPartial({
       corporation: address,
-      operator: "",
+      delegate: "",
       role: type,
       validatorParticipantId: 0,
       did: did,
@@ -310,7 +310,7 @@ export async function createSchemaForTest(
     typeUrl: typeUrls.MsgCreateEcosystem,
     value: MsgCreateEcosystem.fromPartial({
       corporation: address,
-      operator: "",
+      delegate: "",
       did: did,
       language: "en",
       docUrl: "http://example-ecosystem.com/doc-v1",
@@ -385,7 +385,7 @@ export async function createSchemaForTest(
     typeUrl: typeUrls.MsgCreateCredentialSchema,
     value: MsgCreateCredentialSchema.fromPartial({
       corporation: address,
-      operator: "",
+      delegate: "",
       ecosystemId: ecId,
       jsonSchema: generateSimpleSchema(ecId.toString()),
       issuerGrantorValidationValidityPeriod: { value: 0 } as OptionalUInt32,
@@ -475,7 +475,7 @@ export async function createSchemaForTest(
 }
 
 // ============================================================
-// Operator-signed helpers for PERM journey tests
+// Delegate-signed helpers for PERM journey tests
 // ============================================================
 
 /**
@@ -530,21 +530,21 @@ async function waitForTxConfirmation(
 }
 
 /**
- * Creates an Ecosystem using operator-signed pattern (replaces TR-create).
+ * Creates an Ecosystem using delegate-signed pattern (replaces TR-create).
  * `corporation` MUST be the policy_address of a registered MOD-CO Corporation
  * (AUTHZ-CHECK-5). Returns the EC ID and DID.
  */
-export async function createECWithOperator(
+export async function createECWithDelegate(
   client: SigningStargateClient,
   corporation: string,
-  operator: string,
+  delegate: string,
 ): Promise<{ ecId: number; did: string }> {
   const did = generateUniqueDID();
   const msg = {
     typeUrl: typeUrls.MsgCreateEcosystem,
     value: MsgCreateEcosystem.fromPartial({
       corporation,
-      operator,
+      delegate,
       did,
       language: "en",
       docUrl: "http://perm-test-ecosystem.com/doc-v1",
@@ -552,9 +552,9 @@ export async function createECWithOperator(
     }),
   };
 
-  const seqBefore = (await client.getSequence(operator)).sequence;
-  const fee = await calculateFeeWithSimulation(client, operator, [msg], "Creating EC for perm test");
-  const result = await signAndBroadcastWithRetry(client, operator, [msg], fee, "Creating EC for perm test");
+  const seqBefore = (await client.getSequence(delegate)).sequence;
+  const fee = await calculateFeeWithSimulation(client, delegate, [msg], "Creating EC for perm test");
+  const result = await signAndBroadcastWithRetry(client, delegate, [msg], fee, "Creating EC for perm test");
 
   if (result.code !== 0) {
     throw new Error(`Failed to create EC: ${result.rawLog}`);
@@ -563,18 +563,18 @@ export async function createECWithOperator(
   const ecId = extractIdFromEvents(result.events || [], "create_ecosystem", ["ecosystem_id", "id"]);
   if (!ecId) throw new Error("Could not extract EC ID from events");
 
-  await waitForTxConfirmation(client, result.transactionHash, operator, seqBefore);
+  await waitForTxConfirmation(client, result.transactionHash, delegate, seqBefore);
   return { ecId, did };
 }
 
 /**
- * Creates a Credential Schema using operator-signed pattern.
+ * Creates a Credential Schema using delegate-signed pattern.
  * Returns the schema ID.
  */
-export async function createCSWithOperator(
+export async function createCSWithDelegate(
   client: SigningStargateClient,
   corporation: string,
-  operator: string,
+  delegate: string,
   ecosystemId: number,
   mode: IssuerOnboardingMode,
 ): Promise<number> {
@@ -599,7 +599,7 @@ export async function createCSWithOperator(
     typeUrl: typeUrls.MsgCreateCredentialSchema,
     value: MsgCreateCredentialSchema.fromPartial({
       corporation,
-      operator,
+      delegate,
       ecosystemId,
       jsonSchema,
       issuerGrantorValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 0 }),
@@ -616,9 +616,9 @@ export async function createCSWithOperator(
     }),
   };
 
-  const seqBefore = (await client.getSequence(operator)).sequence;
-  const fee = await calculateFeeWithSimulation(client, operator, [msg], "Creating CS for perm test");
-  const result = await signAndBroadcastWithRetry(client, operator, [msg], fee, "Creating CS for perm test");
+  const seqBefore = (await client.getSequence(delegate)).sequence;
+  const fee = await calculateFeeWithSimulation(client, delegate, [msg], "Creating CS for perm test");
+  const result = await signAndBroadcastWithRetry(client, delegate, [msg], fee, "Creating CS for perm test");
 
   if (result.code !== 0) {
     throw new Error(`Failed to create CS: ${result.rawLog}`);
@@ -627,18 +627,18 @@ export async function createCSWithOperator(
   const csId = extractIdFromEvents(result.events || [], "create_credential_schema", ["credential_schema_id", "id", "cs_id"]);
   if (!csId) throw new Error("Could not extract CS ID from events");
 
-  await waitForTxConfirmation(client, result.transactionHash, operator, seqBefore);
+  await waitForTxConfirmation(client, result.transactionHash, delegate, seqBefore);
   return csId;
 }
 
 /**
- * Creates a root (ECOSYSTEM) permission using operator-signed pattern.
+ * Creates a root (ECOSYSTEM) permission using delegate-signed pattern.
  * Returns the root permission ID.
  */
-export async function createRootPermWithOperator(
+export async function createRootPermWithDelegate(
   client: SigningStargateClient,
   corporation: string,
-  operator: string,
+  delegate: string,
   schemaId: number,
   did: string,
   opts?: { validationFees?: number; issuanceFees?: number; verificationFees?: number },
@@ -650,7 +650,7 @@ export async function createRootPermWithOperator(
     typeUrl: typeUrls.MsgCreateRootParticipant,
     value: MsgCreateRootParticipant.fromPartial({
       corporation,
-      operator,
+      delegate,
       schemaId,
       did,
       effectiveFrom,
@@ -663,9 +663,9 @@ export async function createRootPermWithOperator(
     }),
   };
 
-  const seqBefore = (await client.getSequence(operator)).sequence;
-  const fee = await calculateFeeWithSimulation(client, operator, [msg], "Creating root permission");
-  const result = await signAndBroadcastWithRetry(client, operator, [msg], fee, "Creating root permission");
+  const seqBefore = (await client.getSequence(delegate)).sequence;
+  const fee = await calculateFeeWithSimulation(client, delegate, [msg], "Creating root permission");
+  const result = await signAndBroadcastWithRetry(client, delegate, [msg], fee, "Creating root permission");
 
   if (result.code !== 0) {
     throw new Error(`Failed to create root permission: ${result.rawLog}`);
@@ -674,7 +674,7 @@ export async function createRootPermWithOperator(
   const rootPermId = extractIdFromEvents(result.events || [], "create_root_participant", ["root_participant_id", "participant_id", "id"]);
   if (!rootPermId) throw new Error("Could not extract root permission ID from events");
 
-  await waitForTxConfirmation(client, result.transactionHash, operator, seqBefore);
+  await waitForTxConfirmation(client, result.transactionHash, delegate, seqBefore);
   return { rootPermId, effectiveFrom };
 }
 
@@ -685,19 +685,19 @@ export async function createRootPermWithOperator(
 export async function createPermPrerequisites(
   client: SigningStargateClient,
   corporation: string,
-  operator: string,
+  delegate: string,
   mode: IssuerOnboardingMode = IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 ): Promise<{ ecId: number; schemaId: number; rootPermId: number; did: string; effectiveFrom: Date }> {
   console.log("  Creating EC...");
-  const { ecId, did } = await createECWithOperator(client, corporation, operator);
+  const { ecId, did } = await createECWithDelegate(client, corporation, delegate);
   console.log(`  ✓ EC created (ID: ${ecId})`);
 
   console.log("  Creating CS...");
-  const schemaId = await createCSWithOperator(client, corporation, operator, ecId, mode);
+  const schemaId = await createCSWithDelegate(client, corporation, delegate, ecId, mode);
   console.log(`  ✓ CS created (ID: ${schemaId}, mode: ${mode === IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_OPEN ? "OPEN" : mode === IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS ? "ECOSYSTEM" : "GRANTOR_VALIDATION"})`);
 
   console.log("  Creating root permission...");
-  const { rootPermId, effectiveFrom } = await createRootPermWithOperator(client, corporation, operator, schemaId, did);
+  const { rootPermId, effectiveFrom } = await createRootPermWithDelegate(client, corporation, delegate, schemaId, did);
   console.log(`  ✓ Root permission created (ID: ${rootPermId})`);
 
   return { ecId, schemaId, rootPermId, did, effectiveFrom };
@@ -710,7 +710,7 @@ export async function createPermPrerequisites(
 export async function createValidatedPermission(
   client: SigningStargateClient,
   corporation: string,
-  operator: string,
+  delegate: string,
   schemaId: number,
   rootPermId: number,
   did: string,
@@ -720,7 +720,7 @@ export async function createValidatedPermission(
     typeUrl: typeUrls.MsgStartParticipantOP,
     value: MsgStartParticipantOP.fromPartial({
       corporation,
-      operator,
+      delegate,
       role: ParticipantRole.ISSUER,
       validatorParticipantId: rootPermId,
       did,
@@ -731,9 +731,9 @@ export async function createValidatedPermission(
     }),
   };
 
-  const seqBefore1 = (await client.getSequence(operator)).sequence;
-  const startFee = await calculateFeeWithSimulation(client, operator, [startMsg], "Starting VP");
-  const startResult = await signAndBroadcastWithRetry(client, operator, [startMsg], startFee, "Starting VP");
+  const seqBefore1 = (await client.getSequence(delegate)).sequence;
+  const startFee = await calculateFeeWithSimulation(client, delegate, [startMsg], "Starting VP");
+  const startResult = await signAndBroadcastWithRetry(client, delegate, [startMsg], startFee, "Starting VP");
 
   if (startResult.code !== 0) {
     throw new Error(`Failed to start VP: ${startResult.rawLog}`);
@@ -742,7 +742,7 @@ export async function createValidatedPermission(
   const vpPermId = extractIdFromEvents(startResult.events || [], "start_participant_op", ["participant_id", "id"]);
   if (!vpPermId) throw new Error("Could not extract VP permission ID from events");
 
-  await waitForTxConfirmation(client, startResult.transactionHash, operator, seqBefore1);
+  await waitForTxConfirmation(client, startResult.transactionHash, delegate, seqBefore1);
 
   // Validate VP
   // Must be <= validator_perm.effective_until (root uses effectiveFrom + 360 days)
@@ -751,7 +751,7 @@ export async function createValidatedPermission(
     typeUrl: typeUrls.MsgSetParticipantOPToValidated,
     value: MsgSetParticipantOPToValidated.fromPartial({
       corporation,
-      operator,
+      delegate,
       id: vpPermId,
       effectiveUntil,
       validationFees: 5,
@@ -763,14 +763,14 @@ export async function createValidatedPermission(
     }),
   };
 
-  const seqBefore2 = (await client.getSequence(operator)).sequence;
-  const validateFee = await calculateFeeWithSimulation(client, operator, [validateMsg], "Validating VP");
-  const validateResult = await signAndBroadcastWithRetry(client, operator, [validateMsg], validateFee, "Validating VP");
+  const seqBefore2 = (await client.getSequence(delegate)).sequence;
+  const validateFee = await calculateFeeWithSimulation(client, delegate, [validateMsg], "Validating VP");
+  const validateResult = await signAndBroadcastWithRetry(client, delegate, [validateMsg], validateFee, "Validating VP");
 
   if (validateResult.code !== 0) {
     throw new Error(`Failed to validate VP: ${validateResult.rawLog}`);
   }
 
-  await waitForTxConfirmation(client, validateResult.transactionHash, operator, seqBefore2);
+  await waitForTxConfirmation(client, validateResult.transactionHash, delegate, seqBefore2);
   return vpPermId;
 }

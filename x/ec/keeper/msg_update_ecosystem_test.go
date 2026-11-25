@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	"github.com/verana-labs/verana-node/x/ec/types"
 )
@@ -30,7 +31,7 @@ func TestUpdateEcosystem_DIDRotationKeepsSiblingProtection(t *testing.T) {
 	// Corp A rotates EC1 (id 1) from X to Y.
 	_, err = ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
 		Corporation: tkCorp,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Id:          1,
 		Did:         "did:example:rotated",
 	})
@@ -59,7 +60,7 @@ func TestUpdateEcosystem_Happy(t *testing.T) {
 
 	_, err = ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
 		Corporation: tkCorp,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Id:          1,
 		Did:         "did:example:rotated",
 	})
@@ -106,7 +107,7 @@ func TestUpdateEcosystem_NoopOnSameDID(t *testing.T) {
 	ctx = ctx.WithBlockTime(time.Date(2026, 6, 5, 0, 0, 0, 0, time.UTC))
 	_, err = ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
 		Corporation: tkCorp,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Id:          1,
 		Did:         "did:example:ec1", // unchanged
 	})
@@ -128,7 +129,7 @@ func TestUpdateEcosystem_EcosystemNotFound(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
 		Corporation: tkCorp,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Id:          999,
 		Did:         "did:example:any",
 	})
@@ -150,11 +151,11 @@ func TestUpdateEcosystem_WrongCorporation(t *testing.T) {
 
 	_, err = ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
 		Corporation: tkCorpB, // corp 2 signs
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Id:          1,
 		Did:         "did:example:rotated",
 	})
-	require.ErrorIs(t, err, types.ErrUnauthorizedOperator)
+	require.ErrorIs(t, err, types.ErrUnauthorizedDelegate)
 }
 
 func TestUpdateEcosystem_AuthzDenied(t *testing.T) {
@@ -165,7 +166,7 @@ func TestUpdateEcosystem_AuthzDenied(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
 		Corporation: tkCorp,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Id:          1,
 		Did:         "did:example:any",
 	})
@@ -177,11 +178,11 @@ func TestUpdateEcosystem_CorporationNotRegistered(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
 		Corporation: tkCorp,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Id:          1,
 		Did:         "did:example:any",
 	})
-	require.ErrorIs(t, err, types.ErrCorporationNotRegistered)
+	require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
 }
 
 // TestUpdateEcosystem_DIDConflictWithOtherCorp pins MOD-ES-MSG-2-2-1:
@@ -210,7 +211,7 @@ func TestUpdateEcosystem_DIDConflictWithOtherCorp(t *testing.T) {
 	// Corp 1 tries to rotate ec 1 → did B (owned by corp 2).
 	_, err = ms.UpdateEcosystem(ctx, &types.MsgUpdateEcosystem{
 		Corporation: tkCorp,
-		Operator:    tkOp,
+		Delegate:    tkOp,
 		Id:          1,
 		Did:         "did:example:B",
 	})

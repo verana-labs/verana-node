@@ -9,6 +9,7 @@ import (
 	cerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
@@ -17,14 +18,17 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
+	if msg.Authority != "" {
+		return nil, ms.checkNetworkPath(msg.Authority)
+	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// AUTHZ-CHECK-1
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, sdk.MsgTypeURL(msg), ctx.BlockTime()); err != nil {
+	coView, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION)
+	if err != nil {
 		return nil, err
 	}
 
-	sub, err := ms.resolveSubject(ctx, msg.Corporation, msg.EcosystemId)
+	sub, err := ms.resolveSubject(ctx, coView, msg.EcosystemId)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +80,7 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeIncreaseGFActive,
 		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-		sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", msg.EcosystemId)),
 		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
 		sdk.NewAttribute(types.AttributeKeyVersion, fmt.Sprintf("%d", nextVersion)),

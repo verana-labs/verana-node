@@ -6,15 +6,16 @@ import (
 
 	"github.com/verana-labs/cosmos-group"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // DelegationKeeper is the minimum surface MOD-CO needs from x/de for
-// AUTHZ-CHECK-1 (operator authorization on MSG-2). Signature matches
-// x/de/keeper.Keeper.CheckOperatorAuthorization exactly so the DE keeper
+// AUTHZ-CHECK-1 (delegate authorization on MSG-2). Signature matches
+// x/de/keeper.Keeper.CheckDelegateAuthorization exactly so the DE keeper
 // concrete type satisfies this interface and depinject can auto-wire it.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, corporation string, operator string, msgTypeURL string, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time) error
 }
 
 // GroupKeeper is the minimum surface MOD-CO needs from x/group for MSG-1.
@@ -39,4 +40,6 @@ type GroupKeeper interface {
 type GFKeeper interface {
 	CreateInitialGFVersionForCorporation(ctx context.Context, corpID uint64, language, docURL, docDigestSRI string) error
 	ListVersionsByCorporation(ctx context.Context, corpID uint64, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error)
+	// CheckNetworkGFAcceptance runs GF-CHECK-1 for a resolved corporation.
+	CheckNetworkGFAcceptance(ctx context.Context, co gftypes.CorporationView, now time.Time) error
 }

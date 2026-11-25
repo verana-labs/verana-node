@@ -28,15 +28,15 @@ interface TestConfig {
 }
 
 const tests: TestConfig[] = [
-  // Bootstrap: corporation, ecosystem, governance framework, operator authz.
+  // Bootstrap: corporation, ecosystem, governance framework, delegate authz.
   { name: "CO: Create Corporation",                script: "test:co-create" },
-  { name: "DE: Grant Operator Authorization",      script: "test:de-grant-auth" },
+  { name: "DE: Grant Delegate Authorization",      script: "test:de-grant-auth" },
   { name: "EC: Create Ecosystem",                  script: "test:ec-create" },
   { name: "GF: Add Governance Framework Document", script: "test:gf-add-doc" },
   { name: "GF: Increase Active GF Version",        script: "test:gf-increase-version" },
   { name: "EC: Update Ecosystem",                  script: "test:ec-update" },
   { name: "EC: Archive Ecosystem",                 script: "test:ec-archive" },
-  { name: "DE: Grant PERM Operator Authorization", script: "test:de-grant-perm-auth" },
+  { name: "DE: Grant PERM Delegate Authorization", script: "test:de-grant-perm-auth" },
   // PERM module — every participant transaction, all in SIGN_MODE_LEGACY_AMINO_JSON.
   { name: "PERM: Create Root Participant",            script: "test:perm-create-root" },
   { name: "PERM: Start Participant OP",               script: "test:perm-start-vp" },
@@ -50,7 +50,7 @@ const tests: TestConfig[] = [
   { name: "PERM: Slash Participant Trust Deposit",    script: "test:perm-slash" },
   { name: "PERM: Repay Slashed Trust Deposit",        script: "test:perm-repay" },
   { name: "PERM: Trigger Resolver",                   script: "test:perm-trigger-resolver" },
-  { name: "PERM: Operator spend_limit enforcement",   script: "test:perm-spend-enforcement" },
+  { name: "PERM: Delegate spend_limit enforcement",   script: "test:perm-spend-enforcement" },
 ];
 
 /**

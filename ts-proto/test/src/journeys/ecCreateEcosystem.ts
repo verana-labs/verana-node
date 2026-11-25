@@ -1,7 +1,7 @@
 /**
- * Journey: EC Create Ecosystem (Operator-signed)
+ * Journey: EC Create Ecosystem (Delegate-signed)
  *
- * The operator signs MsgCreateEcosystem on behalf of the Corporation. The
+ * The delegate signs MsgCreateEcosystem on behalf of the Corporation. The
  * Corporation policy_address (from coCreateCorporation) is the `corporation`
  * field; AUTHZ-CHECK-5 verifies it resolves to a registered MOD-CO entry.
  *
@@ -31,11 +31,11 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 11;
+const DELEGATE_INDEX = 11;
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: EC Create Ecosystem (Operator-signed)");
+  console.log("Journey: EC Create Ecosystem (Delegate-signed)");
   console.log("=".repeat(60));
   console.log();
 
@@ -47,17 +47,17 @@ async function main() {
     process.exit(1);
   }
   console.log(`  Corporation (policy_address): ${setup.authorityAddress}`);
-  console.log(`  Operator:                     ${setup.operatorAddress}`);
+  console.log(`  Delegate:                     ${setup.delegateAddress}`);
   console.log();
 
-  // Step 2: Create operator wallet and connect
-  console.log("Step 2: Setting up operator wallet...");
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Create delegate wallet and connect
+  console.log("Step 2: Setting up delegate wallet...");
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
-  console.log(`  Operator wallet: ${account.address}`);
+  console.log(`  Delegate wallet: ${account.address}`);
 
-  if (account.address !== setup.operatorAddress) {
-    console.log("  ❌ Operator address mismatch!");
+  if (account.address !== setup.delegateAddress) {
+    console.log("  ❌ Delegate address mismatch!");
     process.exit(1);
   }
 
@@ -66,7 +66,7 @@ async function main() {
   console.log();
 
   // Step 3: Check balance
-  console.log("Step 3: Checking operator balance...");
+  console.log("Step 3: Checking delegate balance...");
   const balance = await client.getBalance(account.address, config.denom);
   console.log(`  Balance: ${balance.amount} ${balance.denom}`);
   if (BigInt(balance.amount) < BigInt(1000000)) {
@@ -83,7 +83,7 @@ async function main() {
     typeUrl: typeUrls.MsgCreateEcosystem,
     value: MsgCreateEcosystem.fromPartial({
       corporation: setup.authorityAddress,
-      operator: account.address,
+      delegate: account.address,
       did,
       language: "en",
       docUrl: "http://ts-proto-test-ecosystem.com/doc-v1",
@@ -92,20 +92,20 @@ async function main() {
   };
 
   console.log(`  Corporation: ${setup.authorityAddress}`);
-  console.log(`  Operator:    ${account.address}`);
+  console.log(`  Delegate:    ${account.address}`);
   console.log(`  DID:         ${did}`);
   console.log();
 
   try {
     const fee = await calculateFeeWithSimulation(
       client, account.address, [msg],
-      "Creating Ecosystem via operator",
+      "Creating Ecosystem via delegate",
     );
     console.log(`  Gas: ${fee.gas}, Fee: ${fee.amount[0].amount}${fee.amount[0].denom}`);
 
     const result = await signAndBroadcastWithRetry(
       client, account.address, [msg], fee,
-      "Creating Ecosystem via operator",
+      "Creating Ecosystem via delegate",
     );
 
     if (result.code === 0) {

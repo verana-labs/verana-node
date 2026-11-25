@@ -11,7 +11,7 @@ import (
 
 // TestMsgRenewParticipantOP_ValidateBasic exercises the three spec-defined
 // parameters per [MOD-PP-MSG-2-1] and [MOD-PP-MSG-2-2-1]: corporation,
-// operator, id. No participant_type is validated because the spec does not
+// delegate, id. No participant_type is validated because the spec does not
 // include it as a parameter.
 func TestMsgRenewParticipantOP_ValidateBasic(t *testing.T) {
 	validAddr := sdk.AccAddress([]byte("test_address________")).String()
@@ -19,7 +19,7 @@ func TestMsgRenewParticipantOP_ValidateBasic(t *testing.T) {
 	valid := func() *types.MsgRenewParticipantOP {
 		return &types.MsgRenewParticipantOP{
 			Corporation: validAddr,
-			Operator:    validAddr,
+			Delegate:    validAddr,
 			Id:          1,
 		}
 	}
@@ -32,7 +32,7 @@ func TestMsgRenewParticipantOP_ValidateBasic(t *testing.T) {
 		{"valid baseline", func(m *types.MsgRenewParticipantOP) {}, ""},
 		{"empty corporation", func(m *types.MsgRenewParticipantOP) { m.Corporation = "" }, "invalid corporation address"},
 		{"invalid corporation bech32", func(m *types.MsgRenewParticipantOP) { m.Corporation = "not-bech32" }, "invalid corporation address"},
-		{"empty operator", func(m *types.MsgRenewParticipantOP) { m.Operator = "" }, "invalid operator address"},
+		{"empty delegate", func(m *types.MsgRenewParticipantOP) { m.Delegate = "" }, "invalid delegate address"},
 		{"id = 0", func(m *types.MsgRenewParticipantOP) { m.Id = 0 }, "participant ID cannot be 0"},
 	}
 

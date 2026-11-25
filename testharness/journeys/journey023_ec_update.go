@@ -19,8 +19,8 @@ func RunEcosystemUpdateJourney(ctx context.Context, client cosmosclient.Client) 
 	setup020 := lib.LoadJourneyResult("journey020")
 
 	policyAddr := setup001.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, corpAOperator)
-	operatorAddr := setup001.OperatorAddr
+	delegateAccount := lib.GetAccount(client, corpADelegate)
+	delegateAddr := setup001.DelegateAddr
 
 	var ecID uint64
 	fmt.Sscanf(setup020.EcosystemID, "%d", &ecID)
@@ -28,7 +28,7 @@ func RunEcosystemUpdateJourney(ctx context.Context, client cosmosclient.Client) 
 
 	fmt.Printf("  ec-alpha ID:  %d\n", ecID)
 	fmt.Printf("  Original DID: %s\n", originalDID)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 
 	// =========================================================================
 	// Step 1: Unauthorized caller tries UpdateEcosystem (expect failure)
@@ -46,12 +46,12 @@ func RunEcosystemUpdateJourney(ctx context.Context, client cosmosclient.Client) 
 	waitForTx("UpdateEcosystem rejection")
 
 	// =========================================================================
-	// Step 2: Authorized operator updates DID [MOD-EC-MSG-2]
+	// Step 2: Authorized delegate updates DID [MOD-EC-MSG-2]
 	// =========================================================================
-	fmt.Println("\n--- Step 2: Authorized operator updates ec-alpha DID ---")
+	fmt.Println("\n--- Step 2: Authorized delegate updates ec-alpha DID ---")
 	updatedDID := lib.GenerateUniqueDID(client, ctx)
 	err = lib.UpdateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, updatedDID,
 	)
 	if err != nil {

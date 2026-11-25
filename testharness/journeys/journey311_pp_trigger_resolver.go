@@ -13,6 +13,7 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionTriggerResolverJourney implements Journey 311: PP Trigger Resolver
@@ -26,30 +27,30 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 
 	setup := lib.LoadJourneyResult("journey301")
 	policyAddr := setup.GroupPolicyAddr
-	operatorAddr := setup.OperatorAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
+	delegateAddr := setup.DelegateAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	fmt.Printf("  Corporation: %s\n", policyAddr)
-	fmt.Printf("  Operator:    %s\n", operatorAddr)
+	fmt.Printf("  Delegate:    %s\n", delegateAddr)
 
 	// =========================================================================
-	// Step 1: Grant the operator all authz it needs (incl. MsgTriggerResolver)
+	// Step 1: Grant the delegate all authz it needs (incl. MsgTriggerResolver)
 	// up front. Grants are in-place replacements.
 	// =========================================================================
-	fmt.Println("\n--- Step 1: Grant operator authz (incl. MsgTriggerResolver) ---")
-	msgTypes := []string{
-		"/verana.ec.v1.MsgCreateEcosystem",
-		"/verana.cs.v1.MsgCreateCredentialSchema",
-		"/verana.pp.v1.MsgCreateRootParticipant",
-		"/verana.pp.v1.MsgStartParticipantOP",
-		"/verana.pp.v1.MsgSetParticipantOPToValidated",
-		"/verana.pp.v1.MsgTriggerResolver",
+	fmt.Println("\n--- Step 1: Grant delegate authz (incl. MsgTriggerResolver) ---")
+	msgTypes := []detypes.MsgType{
+		detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM,
+		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+		detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+		detypes.MsgType_MSG_TYPE_START_ONBOARDING,
+		detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
+		detypes.MsgType_MSG_TYPE_TRIGGER_RESOLVER,
 	}
-	if err := lib.GrantOperatorAuthorizationViaGroup(
+	if err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr, msgTypes,
+		policyAddr, delegateAddr, delegateAddr, msgTypes,
 	); err != nil {
 		return fmt.Errorf("step 1 failed: grant authz: %w", err)
 	}
@@ -60,7 +61,7 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 	// =========================================================================
 	fmt.Println("\n--- Step 2: Create Ecosystem ---")
 	trIDStr, err := lib.CreateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		lib.GenerateUniqueDID(client, ctx),
 		"https://trigger-resolver-test.com/governance-framework.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -77,7 +78,7 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 	// =========================================================================
 	fmt.Println("\n--- Step 3: Create Credential Schema ---")
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, lib.GenerateSimpleSchema(trIDStr),
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
@@ -96,7 +97,7 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 	rootEffectiveFrom := time.Now().Add(2 * time.Second)
 	rootEffectiveUntil := rootEffectiveFrom.Add(360 * 24 * time.Hour)
 	rootID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, lib.GenerateUniqueDID(client, ctx),
 		&rootEffectiveFrom, &rootEffectiveUntil, 0, 0, 0,
 	)
@@ -130,7 +131,7 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 	// =========================================================================
 	fmt.Println("\n--- Step 5: Start child participant VP ---")
 	childIDStr, err := lib.StartPermissionVPWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		permtypes.ParticipantRole_ISSUER_GRANTOR, rootID,
 		lib.GenerateUniqueDID(client, ctx),
 	)
@@ -145,7 +146,7 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 	// Step 6: Validate the child so it is an active participant.
 	// =========================================================================
 	fmt.Println("\n--- Step 6: Validate child participant ---")
-	if _, err := lib.SetPermissionVPToValidated(client, ctx, operatorAccount, permtypes.MsgSetParticipantOPToValidated{
+	if _, err := lib.SetPermissionVPToValidated(client, ctx, delegateAccount, permtypes.MsgSetParticipantOPToValidated{
 		Corporation: policyAddr,
 		Id:          childID,
 	}); err != nil {
@@ -154,8 +155,8 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 	waitForTx("validate child")
 
 	// =========================================================================
-	// Step 7: Broadcast MsgTriggerResolver as the operator (Path 2: the child's
-	// active root ancestor authorizes via the operator's AUTHZ-CHECK-1 grant).
+	// Step 7: Broadcast MsgTriggerResolver as the delegate (Path 2: the child's
+	// active root ancestor authorizes via the delegate's AUTHZ-CHECK-1 grant).
 	// =========================================================================
 	fmt.Println("\n--- Step 7: Broadcast MsgTriggerResolver ---")
 	target, err := lib.GetParticipant(client, ctx, childID)
@@ -167,10 +168,10 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 
 	msg := &permtypes.MsgTriggerResolver{
 		Corporation: policyAddr,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Id:          childID,
 	}
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("step 7 failed: broadcast: %w", err)
 	}

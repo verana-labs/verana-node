@@ -5,15 +5,15 @@
  * account is NOT the policy_address of a registered Corporation MUST abort with
  * ErrCorporationNotRegistered (see MOD-CO-MSG-1).
  *
- * Probe: MsgGrantOperatorAuthorization with operator="" (self-grant). AUTHZ-CHECK-1
- * short-circuits for the empty operator (corporation acting alone), so
+ * Probe: MsgGrantDelegateAuthorization with delegate="" (self-grant). AUTHZ-CHECK-1
+ * short-circuits for the empty delegate (corporation acting alone), so
  * AUTHZ-CHECK-5 is the primary gate. The message's signer IS `corporation`, so a
  * fresh account that was never registered via MOD-CO-MSG-1 signs it directly
  * (no group proposal needed) and MUST be rejected.
  *
  * Signing: SIGN_MODE_LEGACY_AMINO_JSON (Secp256k1HdWallet) — strict, no exceptions.
- * MsgGrantOperatorAuthorization is amino-encoded via its converter in
- * ts-proto/src/amino-converter/de.ts (aminoType verana/x/de/MsgGrantOpAuthorization).
+ * MsgGrantDelegateAuthorization is amino-encoded via its converter in
+ * ts-proto/src/amino-converter/de.ts (aminoType verana/x/de/MsgGrantDelegateAuthz).
  *
  * Self-contained: does NOT depend on test:co-create. It derives a fresh,
  * never-registered account, funds it from cooluser, and asserts the grant is
@@ -32,7 +32,8 @@ import {
   fundAccount,
 } from "../helpers/client";
 import { typeUrls } from "../helpers/registry";
-import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/tx";
+import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
+import { MsgType } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
@@ -90,13 +91,13 @@ async function main() {
   // Step 3: self-grant from the unregistered account → expect AUTHZ-CHECK-5 abort.
   console.log("Step 3: Self-grant from unregistered corporation (expect ErrCorporationNotRegistered)...");
   const grantMsg = {
-    typeUrl: typeUrls.MsgGrantOperatorAuthorization,
-    value: MsgGrantOperatorAuthorization.fromPartial({
+    typeUrl: typeUrls.MsgGrantDelegateAuthorization,
+    value: MsgGrantDelegateAuthorization.fromPartial({
       corporation: account.address,
-      // self-grant (operator == corporation): AUTHZ-CHECK-1 skipped, AUTHZ-CHECK-5 is the gate
-      operator: account.address,
+      // self-grant (delegate == corporation): AUTHZ-CHECK-1 skipped, AUTHZ-CHECK-5 is the gate
+      delegate: account.address,
       grantee: account.address,
-      msgTypes: [typeUrls.MsgStoreDigest],
+      msgTypes: [MsgType.MSG_TYPE_STORE_DIGEST],
       withFeegrant: false,
     }),
   };

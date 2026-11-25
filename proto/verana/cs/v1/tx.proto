@@ -48,13 +48,13 @@ message MsgUpdateParamsResponse {}
 
 // [MOD-CS-MSG-1] Create New Credential Schema
 message MsgCreateCredentialSchema {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/cs/MsgCreateCredentialSchema";
 
   // corporation is the group account on whose behalf this message is executed
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   reserved 3; // tr_id removed in v4-rc2 (issue #305)
   string json_schema = 4;
   OptionalUInt32 issuer_grantor_validation_validity_period = 5 [(gogoproto.nullable) = true];
@@ -77,13 +77,13 @@ message MsgCreateCredentialSchemaResponse {
 
 // [MOD-CS-MSG-2] Update Credential Schema
 message MsgUpdateCredentialSchema {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/cs/MsgUpdateCredentialSchema";
 
   // corporation is the group account on whose behalf this message is executed
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
   OptionalUInt32 issuer_grantor_validation_validity_period = 4 [(gogoproto.nullable) = true];
   OptionalUInt32 verifier_grantor_validation_validity_period = 5 [(gogoproto.nullable) = true];
@@ -101,13 +101,13 @@ message MsgUpdateCredentialSchemaResponse {}
 
 // [MOD-CS-MSG-3] Archive Credential Schema
 message MsgArchiveCredentialSchema {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/cs/MsgArchiveCredentialSchema";
 
   // corporation is the group account on whose behalf this message is executed
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
   bool archive = 4;
 }

@@ -8,18 +8,21 @@ import (
 	"github.com/verana-labs/cosmos-group"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // mockDelegation lets a test pre-program AUTHZ-CHECK-1 results.
-// Default zero value returns nil from CheckOperatorAuthorization (auth granted).
+// Default zero value returns nil from CheckDelegateAuthorization (auth granted).
 type mockDelegation struct {
-	err   error
-	calls int
+	err       error
+	calls     int
+	gotCorpID uint64
 }
 
-func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (m *mockDelegation) CheckDelegateAuthorization(_ context.Context, corporationID uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	m.calls++
+	m.gotCorpID = corporationID
 	return m.err
 }
 
@@ -70,6 +73,18 @@ type mockGF struct {
 		preferredLang string
 	}
 	listCalls int
+
+	ngfErr   error
+	ngfCalls int
+	ngfCo    gftypes.CorporationView
+	ngfNow   time.Time
+}
+
+func (m *mockGF) CheckNetworkGFAcceptance(_ context.Context, co gftypes.CorporationView, now time.Time) error {
+	m.ngfCalls++
+	m.ngfCo = co
+	m.ngfNow = now
+	return m.ngfErr
 }
 
 func (m *mockGF) CreateInitialGFVersionForCorporation(_ context.Context, corpID uint64, language, docURL, docDigestSRI string) error {

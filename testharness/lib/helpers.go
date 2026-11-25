@@ -390,10 +390,10 @@ func RenewPermissionVP(client cosmosclient.Client, ctx context.Context, account 
 		return "", fmt.Errorf("failed to get account address: %v", err)
 	}
 
-	// Set authority and operator to the account address
+	// Set authority and delegate to the account address
 	msgToSend := permtypes.MsgRenewParticipantOP{
 		Corporation: accountAddr,
-		Operator:    accountAddr,
+		Delegate:    accountAddr,
 		Id:          msg.Id,
 	}
 
@@ -481,7 +481,7 @@ func ReclaimTrustDepositYieldWithResponse(client cosmosclient.Client, ctx contex
 
 	msg := tdtypes.MsgReclaimTrustDepositYield{
 		Corporation: creatorAddr,
-		Operator:    creatorAddr,
+		Delegate:    creatorAddr,
 	}
 
 	txResp, err := client.BroadcastTx(ctx, creator, &msg)
@@ -524,20 +524,20 @@ func ReclaimTrustDepositYieldWithResponse(client cosmosclient.Client, ctx contex
 	return response, blockHeight, nil
 }
 
-// RepaySlashedTrustDeposit broadcasts MsgRepaySlashedTrustDeposit on behalf of authority via operator.
-func RepaySlashedTrustDeposit(client cosmosclient.Client, ctx context.Context, operatorAccount cosmosaccount.Account, authorityAddr string, amount uint64) (string, error) {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+// RepaySlashedTrustDeposit broadcasts MsgRepaySlashedTrustDeposit on behalf of authority via delegate.
+func RepaySlashedTrustDeposit(client cosmosclient.Client, ctx context.Context, delegateAccount cosmosaccount.Account, authorityAddr string, amount uint64) (string, error) {
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return "", fmt.Errorf("failed to get operator address: %v", err)
+		return "", fmt.Errorf("failed to get delegate address: %v", err)
 	}
 
 	msg := tdtypes.MsgRepaySlashedTrustDeposit{
 		Corporation: authorityAddr,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Deposit:     amount,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, &msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, &msg)
 	if err != nil {
 		return "", fmt.Errorf("failed to broadcast repay slashed trust deposit: %v", err)
 	}
@@ -553,19 +553,19 @@ func RepaySlashedTrustDeposit(client cosmosclient.Client, ctx context.Context, o
 	return "success", nil
 }
 
-// ReclaimTrustDepositYieldWithAuthority broadcasts MsgReclaimTrustDepositYield with authority/operator pattern.
-func ReclaimTrustDepositYieldWithAuthority(client cosmosclient.Client, ctx context.Context, operatorAccount cosmosaccount.Account, authorityAddr string) (*tdtypes.MsgReclaimTrustDepositYieldResponse, error) {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+// ReclaimTrustDepositYieldWithAuthority broadcasts MsgReclaimTrustDepositYield with authority/delegate pattern.
+func ReclaimTrustDepositYieldWithAuthority(client cosmosclient.Client, ctx context.Context, delegateAccount cosmosaccount.Account, authorityAddr string) (*tdtypes.MsgReclaimTrustDepositYieldResponse, error) {
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get operator address: %v", err)
+		return nil, fmt.Errorf("failed to get delegate address: %v", err)
 	}
 
 	msg := tdtypes.MsgReclaimTrustDepositYield{
 		Corporation: authorityAddr,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, &msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, &msg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to broadcast reclaim trust deposit yield: %v", err)
 	}
@@ -727,11 +727,11 @@ func AddGovernanceFrameworkDocument(
 		return "", fmt.Errorf("failed to get creator address: %v", err)
 	}
 
-	// Create the complete message with authority and operator addresses
-	// For v4 spec, authority and operator are both the creator's address
+	// Create the complete message with authority and delegate addresses
+	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := gftypes.MsgAddGovernanceFrameworkDocument{
 		Corporation:  creatorAddr,
-		Operator:     creatorAddr,
+		Delegate:     creatorAddr,
 		EcosystemId:  msg.EcosystemId,
 		DocLanguage:  msg.DocLanguage,
 		DocUrl:       msg.DocUrl,
@@ -769,11 +769,11 @@ func IncreaseActiveGovernanceFrameworkVersion(
 		return "", fmt.Errorf("failed to get creator address: %v", err)
 	}
 
-	// Create the complete message with authority and operator addresses
-	// For v4 spec, authority and operator are both the creator's address
+	// Create the complete message with authority and delegate addresses
+	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{
 		Corporation: creatorAddr,
-		Operator:    creatorAddr,
+		Delegate:    creatorAddr,
 		EcosystemId: msg.EcosystemId,
 	}
 
@@ -833,20 +833,20 @@ func VerifyGovernanceFrameworkUpdate(
 	return true
 }
 
-// RevokePermission revokes a permission (v4: authority/operator pattern)
-func RevokePermission(client cosmosclient.Client, ctx context.Context, operator cosmosaccount.Account, authority string, id uint64) (string, error) {
-	operatorAddr, err := operator.Address(addressPrefix)
+// RevokePermission revokes a permission (v4: authority/delegate pattern)
+func RevokePermission(client cosmosclient.Client, ctx context.Context, delegate cosmosaccount.Account, authority string, id uint64) (string, error) {
+	delegateAddr, err := delegate.Address(addressPrefix)
 	if err != nil {
-		return "", fmt.Errorf("failed to get operator address: %w", err)
+		return "", fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := permtypes.MsgRevokeParticipant{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Id:          id,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operator, &msg)
+	txResp, err := client.BroadcastTx(ctx, delegate, &msg)
 	if err != nil {
 		return "", fmt.Errorf("failed to broadcast transaction: %w", err)
 	}
@@ -865,20 +865,20 @@ func RevokePermission(client cosmosclient.Client, ctx context.Context, operator 
 }
 
 // AdjustPermission adjusts the validity period of a permission
-func AdjustPermission(client cosmosclient.Client, ctx context.Context, operator cosmosaccount.Account, authority string, id uint64, effectiveUntil *time.Time) (string, error) {
-	operatorAddr, err := operator.Address(addressPrefix)
+func AdjustPermission(client cosmosclient.Client, ctx context.Context, delegate cosmosaccount.Account, authority string, id uint64, effectiveUntil *time.Time) (string, error) {
+	delegateAddr, err := delegate.Address(addressPrefix)
 	if err != nil {
-		return "", fmt.Errorf("failed to get operator address: %w", err)
+		return "", fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := permtypes.MsgSetParticipantEffectiveUntil{
 		Corporation:    authority,
-		Operator:       operatorAddr,
+		Delegate:       delegateAddr,
 		Id:             id,
 		EffectiveUntil: effectiveUntil,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operator, &msg)
+	txResp, err := client.BroadcastTx(ctx, delegate, &msg)
 	if err != nil {
 		return "", fmt.Errorf("failed to broadcast transaction: %w", err)
 	}
@@ -911,12 +911,12 @@ func UpdateCredentialSchema(
 		return "", fmt.Errorf("failed to get creator address: %w", err)
 	}
 
-	// Create complete message with authority/operator addresses
+	// Create complete message with authority/delegate addresses
 	// All validity period fields are mandatory - always set them (use 0 if not updating)
-	// For v4 spec, authority and operator are both the creator's address
+	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := cschema.MsgUpdateCredentialSchema{
 		Corporation: creatorAddr,
-		Operator:    creatorAddr,
+		Delegate:    creatorAddr,
 		Id:          schemaID,
 		// Always set OptionalUInt32 fields (mandatory in new version)
 		IssuerGrantorValidationValidityPeriod: &cschema.OptionalUInt32{
@@ -961,11 +961,11 @@ func ArchiveCredentialSchema(client cosmosclient.Client, ctx context.Context, cr
 		return "", fmt.Errorf("failed to get creator address: %w", err)
 	}
 
-	// Create complete message with authority/operator addresses
-	// For v4 spec, authority and operator are both the creator's address
+	// Create complete message with authority/delegate addresses
+	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := cschema.MsgArchiveCredentialSchema{
 		Corporation: creatorAddr,
-		Operator:    creatorAddr,
+		Delegate:    creatorAddr,
 		Id:          msg.Id,
 		Archive:     msg.Archive,
 	}
@@ -997,10 +997,10 @@ func CancelPermissionVPLastRequest(client cosmosclient.Client, ctx context.Conte
 		return "", fmt.Errorf("failed to get applicant address: %w", err)
 	}
 
-	// Create complete message with authority/operator addresses
+	// Create complete message with authority/delegate addresses
 	msgComplete := permtypes.MsgCancelParticipantOPLastRequest{
 		Corporation: applicantAddr,
-		Operator:    applicantAddr,
+		Delegate:    applicantAddr,
 		Id:          msg.Id,
 	}
 
@@ -1032,7 +1032,7 @@ func SlashPermissionTrustDeposit(client cosmosclient.Client, ctx context.Context
 
 	msg := &permtypes.MsgSlashParticipantTrustDeposit{
 		Corporation: authority,
-		Operator:    actorAddr,
+		Delegate:    actorAddr,
 		Id:          id,
 		Amount:      amount,
 		Reason:      reason,
@@ -1063,7 +1063,7 @@ func RepayPermissionSlashedTrustDeposit(client cosmosclient.Client, ctx context.
 
 	msg := &permtypes.MsgRepayParticipantSlashedTrustDeposit{
 		Corporation: authority,
-		Operator:    actorAddr,
+		Delegate:    actorAddr,
 		Id:          id,
 	}
 
@@ -1088,7 +1088,7 @@ func CreatePermission(client cosmosclient.Client, ctx context.Context, actor cos
 
 	fullMsg := &permtypes.MsgSelfCreateParticipant{
 		Corporation:                  authority,
-		Operator:                     actorAddr,
+		Delegate:                     actorAddr,
 		Role:                         msg.Role,
 		ValidatorParticipantId:       msg.ValidatorParticipantId,
 		Did:                          msg.Did,
@@ -1116,11 +1116,11 @@ func CreatePermission(client cosmosclient.Client, ctx context.Context, actor cos
 	return "success", nil
 }
 
-// CreatePermissionSession creates a new permission session using authority/operator pattern
+// CreatePermissionSession creates a new permission session using authority/delegate pattern
 func CreatePermissionSession(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authorityAddr string,
 	sessionID string,
 	issuerPermID uint64,
@@ -1128,15 +1128,15 @@ func CreatePermissionSession(
 	agentPermID uint64,
 	walletAgentPermID uint64,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	// Create the session creation message
 	msg := &permtypes.MsgCreateOrUpdateParticipantSession{
 		Corporation:              authorityAddr,
-		Operator:                 operatorAddr,
+		VsAccount:                delegateAddr,
 		Id:                       sessionID,
 		IssuerParticipantId:      issuerPermID,
 		VerifierParticipantId:    verifierPermID,
@@ -1145,7 +1145,7 @@ func CreatePermissionSession(
 	}
 
 	// Broadcast the transaction
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to create permission session: %w", err)
 	}
@@ -1603,7 +1603,7 @@ func CreateRootPermissionWithError(client cosmosclient.Client, ctx context.Conte
 	// [MOD-PP-MSG-7-1] spec v4 draft 13 mandates permission_type and vs_operator.
 	fullMsg := &permtypes.MsgCreateRootParticipant{
 		Corporation:      creatorAddr,
-		Operator:         creatorAddr,
+		Delegate:         creatorAddr,
 		SchemaId:         msg.SchemaId,
 		Did:              msg.Did,
 		EffectiveFrom:    msg.EffectiveFrom,
@@ -1641,7 +1641,7 @@ func CreateRootPermissionAndGetID(client cosmosclient.Client, ctx context.Contex
 	// [MOD-PP-MSG-7-1] spec v4 draft 13 mandates permission_type and vs_operator.
 	fullMsg := &permtypes.MsgCreateRootParticipant{
 		Corporation:      creatorAddr,
-		Operator:         creatorAddr,
+		Delegate:         creatorAddr,
 		SchemaId:         msg.SchemaId,
 		Did:              msg.Did,
 		EffectiveFrom:    msg.EffectiveFrom,
@@ -1703,7 +1703,7 @@ func StartPermissionVPWithError(client cosmosclient.Client, ctx context.Context,
 	// Create the message
 	fullMsg := &permtypes.MsgStartParticipantOP{
 		Corporation:            msg.Corporation,
-		Operator:               creatorAddr,
+		Delegate:               creatorAddr,
 		Role:                   msg.Role,
 		Did:                    msg.Did,
 		ValidatorParticipantId: msg.ValidatorParticipantId,
@@ -1732,20 +1732,20 @@ func StartPermissionVPWithError(client cosmosclient.Client, ctx context.Context,
 // RevokePermissionWithError revokes a permission and returns any error
 // instead of calling log.Fatal. This is useful for testing error scenarios.
 func RevokePermissionWithError(client cosmosclient.Client, ctx context.Context,
-	operator cosmosaccount.Account, authority string, id uint64) error {
+	delegate cosmosaccount.Account, authority string, id uint64) error {
 
-	operatorAddr, err := operator.Address(addressPrefix)
+	delegateAddr, err := delegate.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %v", err)
+		return fmt.Errorf("failed to get delegate address: %v", err)
 	}
 
 	fullMsg := &permtypes.MsgRevokeParticipant{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Id:          id,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operator, fullMsg)
+	txResp, err := client.BroadcastTx(ctx, delegate, fullMsg)
 	if err != nil {
 		return fmt.Errorf("broadcast error: %v", err)
 	}
@@ -1783,7 +1783,7 @@ func CreateInactiveValidatorPermission(client cosmosclient.Client, ctx context.C
 	// [MOD-PP-MSG-7-1] spec v4 draft 13 mandates permission_type and vs_operator.
 	msg := &permtypes.MsgCreateRootParticipant{
 		Corporation:    creatorAddr,
-		Operator:       creatorAddr,
+		Delegate:       creatorAddr,
 		SchemaId:       schemaID,
 		Did:            did,
 		EffectiveFrom:  &futureTime, // Future = not yet active
@@ -1830,7 +1830,7 @@ func CreateInactiveValidatorPermission(client cosmosclient.Client, ctx context.C
 }
 
 // =============================================================================
-// GROUP + OPERATOR AUTHORIZATION HELPERS
+// GROUP + DELEGATE AUTHORIZATION HELPERS
 // =============================================================================
 
 // CreateGroupWithPolicy creates a group with a threshold decision policy.
@@ -2177,41 +2177,41 @@ func ExecGroupProposal(
 	return nil
 }
 
-// GrantOperatorAuthorizationViaGroup grants operator authorization via a group proposal.
-// Submits a proposal containing MsgGrantOperatorAuthorization, votes from admin and voter2, auto-executes.
-func GrantOperatorAuthorizationViaGroup(
+// GrantDelegateAuthorizationViaGroup grants delegate authorization via a group proposal.
+// Submits a proposal containing MsgGrantDelegateAuthorization, votes from admin and voter2, auto-executes.
+func GrantDelegateAuthorizationViaGroup(
 	client cosmosclient.Client,
 	ctx context.Context,
 	admin cosmosaccount.Account,
 	voter2 cosmosaccount.Account,
 	policyAddr string,
-	operatorAddr string,
+	delegateAddr string,
 	granteeAddr string,
-	msgTypes []string,
+	msgTypes []detypes.MsgType,
 ) error {
-	return GrantOperatorAuthorizationWithSpendViaGroup(
-		client, ctx, admin, voter2, policyAddr, operatorAddr, granteeAddr, msgTypes, nil, nil,
+	return GrantDelegateAuthorizationWithSpendViaGroup(
+		client, ctx, admin, voter2, policyAddr, delegateAddr, granteeAddr, msgTypes, nil, nil,
 	)
 }
 
-// GrantOperatorAuthorizationWithSpendViaGroup is like GrantOperatorAuthorizationViaGroup
-// but also sets the operator authorization's authz_spend_limit (+ optional period),
+// GrantDelegateAuthorizationWithSpendViaGroup is like GrantDelegateAuthorizationViaGroup
+// but also sets the delegate authorization's authz_spend_limit (+ optional period),
 // so spend-enforcement journeys can exercise AUTHZ-CHECK-1 step 3.
-func GrantOperatorAuthorizationWithSpendViaGroup(
+func GrantDelegateAuthorizationWithSpendViaGroup(
 	client cosmosclient.Client,
 	ctx context.Context,
 	admin cosmosaccount.Account,
 	voter2 cosmosaccount.Account,
 	policyAddr string,
-	operatorAddr string,
+	delegateAddr string,
 	granteeAddr string,
-	msgTypes []string,
+	msgTypes []detypes.MsgType,
 	authzSpendLimit sdk.Coins,
 	authzSpendLimitPeriod *time.Duration,
 ) error {
-	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantOperatorAuthorization{
+	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
 		Corporation:           policyAddr,
-		Operator:              policyAddr, // group-proposal path: operator == corporation policy_address
+		Delegate:              policyAddr, // group-proposal path: delegate == corporation policy_address
 		Grantee:               granteeAddr,
 		MsgTypes:              msgTypes,
 		AuthzSpendLimit:       authzSpendLimit,
@@ -2219,22 +2219,22 @@ func GrantOperatorAuthorizationWithSpendViaGroup(
 	})
 }
 
-// GrantOperatorAuthorizationWithFeegrantViaGroup grants operator authz with a corporation fee grant.
-func GrantOperatorAuthorizationWithFeegrantViaGroup(
+// GrantDelegateAuthorizationWithFeegrantViaGroup grants delegate authz with a corporation fee grant.
+func GrantDelegateAuthorizationWithFeegrantViaGroup(
 	client cosmosclient.Client,
 	ctx context.Context,
 	admin cosmosaccount.Account,
 	voter2 cosmosaccount.Account,
 	policyAddr string,
 	granteeAddr string,
-	msgTypes []string,
+	msgTypes []detypes.MsgType,
 	feegrantSpendLimit sdk.Coins,
 	feegrantSpendLimitPeriod *time.Duration,
 	expiration *time.Time,
 ) error {
-	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantOperatorAuthorization{
+	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
 		Corporation:              policyAddr,
-		Operator:                 policyAddr, // group-proposal path: operator == corporation policy_address
+		Delegate:                 policyAddr, // group-proposal path: delegate == corporation policy_address
 		Grantee:                  granteeAddr,
 		MsgTypes:                 msgTypes,
 		WithFeegrant:             true,
@@ -2251,14 +2251,14 @@ func submitGrantOpAuthzViaGroup(
 	admin cosmosaccount.Account,
 	voter2 cosmosaccount.Account,
 	policyAddr string,
-	grantMsg *detypes.MsgGrantOperatorAuthorization,
+	grantMsg *detypes.MsgGrantDelegateAuthorization,
 ) error {
-	title := fmt.Sprintf("Grant operator auth (%d msg types)", len(grantMsg.MsgTypes))
+	title := fmt.Sprintf("Grant delegate auth (%d msg types)", len(grantMsg.MsgTypes))
 	proposalID, err := SubmitGroupProposal(
 		client, ctx, admin, policyAddr,
 		[]sdk.Msg{grantMsg},
 		title,
-		"Grant operator authorization via group proposal",
+		"Grant delegate authorization via group proposal",
 	)
 	if err != nil {
 		return fmt.Errorf("failed to submit group proposal: %w", err)
@@ -2275,27 +2275,27 @@ func submitGrantOpAuthzViaGroup(
 	}
 	fmt.Println("    - Waiting for proposal execution to complete...")
 	time.Sleep(1 * time.Second)
-	fmt.Printf("✅ Granted operator authorization for %s via group proposal\n", grantMsg.Grantee)
+	fmt.Printf("✅ Granted delegate authorization for %s via group proposal\n", grantMsg.Grantee)
 	return nil
 }
 
-// GrantSelfDelegation grants an operator self-delegation so they can execute messages
-// with corporation=operator (same address). MsgGrantOperatorAuthorization has signer="operator";
-// operator == corporation bypasses AUTHZ-CHECK-1 (corporation acting alone).
+// GrantSelfDelegation grants a delegate self-delegation so they can execute messages
+// with corporation=delegate (same address). MsgGrantDelegateAuthorization has signer="delegate";
+// delegate == corporation bypasses AUTHZ-CHECK-1 (corporation acting alone).
 func GrantSelfDelegation(
 	client cosmosclient.Client,
 	ctx context.Context,
 	account cosmosaccount.Account,
-	msgTypes []string,
+	msgTypes []detypes.MsgType,
 ) error {
 	addr, err := account.Address(addressPrefix)
 	if err != nil {
 		return fmt.Errorf("failed to get account address: %w", err)
 	}
 
-	msg := &detypes.MsgGrantOperatorAuthorization{
+	msg := &detypes.MsgGrantDelegateAuthorization{
 		Corporation: addr,
-		Operator:    addr,
+		Delegate:    addr,
 		Grantee:     addr,
 		MsgTypes:    msgTypes,
 	}
@@ -2314,32 +2314,32 @@ func GrantSelfDelegation(
 	return nil
 }
 
-// CreateEcosystemWithAuthority creates an ecosystem where authority and operator are different.
+// CreateEcosystemWithAuthority creates an ecosystem where authority and delegate are different.
 func CreateEcosystemWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	did string,
 	docURL string,
 	docHash string,
 	language string,
 ) (string, error) {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return "", fmt.Errorf("failed to get operator address: %w", err)
+		return "", fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &ectypes.MsgCreateEcosystem{
 		Corporation:  authority,
-		Operator:     operatorAddr,
+		Delegate:     delegateAddr,
 		Did:          did,
 		Language:     language,
 		DocUrl:       docURL,
 		DocDigestSri: docHash,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return "", fmt.Errorf("failed to broadcast CreateEcosystem: %w", err)
 	}
@@ -2374,11 +2374,11 @@ func CreateEcosystemWithAuthority(
 	return "", fmt.Errorf("ecosystem_id not found in events")
 }
 
-// AddGFDWithAuthority adds a governance framework document with separate authority/operator.
+// AddGFDWithAuthority adds a governance framework document with separate authority/delegate.
 func AddGFDWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	ecosystemID uint64,
 	docLanguage string,
@@ -2386,14 +2386,14 @@ func AddGFDWithAuthority(
 	docHash string,
 	version uint32,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &gftypes.MsgAddGovernanceFrameworkDocument{
 		Corporation:  authority,
-		Operator:     operatorAddr,
+		Delegate:     delegateAddr,
 		EcosystemId:  ecosystemID,
 		DocLanguage:  docLanguage,
 		DocUrl:       docURL,
@@ -2401,7 +2401,7 @@ func AddGFDWithAuthority(
 		Version:      version,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast AddGFD: %w", err)
 	}
@@ -2417,26 +2417,26 @@ func AddGFDWithAuthority(
 	return nil
 }
 
-// IncreaseActiveGFVersionWithAuthority increases the active GF version with separate authority/operator.
+// IncreaseActiveGFVersionWithAuthority increases the active GF version with separate authority/delegate.
 func IncreaseActiveGFVersionWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	ecosystemID uint64,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		EcosystemId: ecosystemID,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast IncreaseActiveGFVersion: %w", err)
 	}
@@ -2452,28 +2452,28 @@ func IncreaseActiveGFVersionWithAuthority(
 	return nil
 }
 
-// UpdateEcosystemWithAuthority updates an ecosystem with separate authority/operator.
+// UpdateEcosystemWithAuthority updates an ecosystem with separate authority/delegate.
 func UpdateEcosystemWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	ecosystemID uint64,
 	did string,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &ectypes.MsgUpdateEcosystem{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Id:          ecosystemID,
 		Did:         did,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast UpdateEcosystem: %w", err)
 	}
@@ -2489,28 +2489,28 @@ func UpdateEcosystemWithAuthority(
 	return nil
 }
 
-// ArchiveEcosystemWithAuthority archives/unarchives an ecosystem with separate authority/operator.
+// ArchiveEcosystemWithAuthority archives/unarchives an ecosystem with separate authority/delegate.
 func ArchiveEcosystemWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	ecosystemID uint64,
 	archive bool,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &ectypes.MsgArchiveEcosystem{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Id:          ecosystemID,
 		Archive:     archive,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast ArchiveEcosystem: %w", err)
 	}
@@ -2530,22 +2530,22 @@ func ArchiveEcosystemWithAuthority(
 func UpdateCorporationWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	newDID string,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &cotypes.MsgUpdateCorporation{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Did:         newDID,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast UpdateCorporation: %w", err)
 	}
@@ -2561,25 +2561,25 @@ func UpdateCorporationWithAuthority(
 	return nil
 }
 
-// CreateCredentialSchemaWithAuthority creates a credential schema with separate authority/operator.
+// CreateCredentialSchemaWithAuthority creates a credential schema with separate authority/delegate.
 func CreateCredentialSchemaWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	ecosystemID uint64,
 	schemaData string,
 	issuerMode cschema.IssuerOnboardingMode,
 	verifierMode cschema.VerifierOnboardingMode,
 ) (string, error) {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return "", fmt.Errorf("failed to get operator address: %w", err)
+		return "", fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &cschema.MsgCreateCredentialSchema{
 		Corporation:                             authority,
-		Operator:                                operatorAddr,
+		Delegate:                                delegateAddr,
 		EcosystemId:                             ecosystemID,
 		JsonSchema:                              schemaData,
 		IssuerOnboardingMode:                    uint32(issuerMode),
@@ -2595,7 +2595,7 @@ func CreateCredentialSchemaWithAuthority(
 		HolderValidationValidityPeriod:          &cschema.OptionalUInt32{Value: 0},
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return "", fmt.Errorf("failed to broadcast CreateCredentialSchema: %w", err)
 	}
@@ -2630,11 +2630,11 @@ func CreateCredentialSchemaWithAuthority(
 	return "", fmt.Errorf("credential_schema_id not found in events")
 }
 
-// UpdateCredentialSchemaWithAuthority updates a credential schema with separate authority/operator.
+// UpdateCredentialSchemaWithAuthority updates a credential schema with separate authority/delegate.
 func UpdateCredentialSchemaWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	csID uint64,
 	issuerGrantorValidityPeriod uint32,
@@ -2643,14 +2643,14 @@ func UpdateCredentialSchemaWithAuthority(
 	verifierValidityPeriod uint32,
 	holderValidityPeriod uint32,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &cschema.MsgUpdateCredentialSchema{
 		Corporation:                             authority,
-		Operator:                                operatorAddr,
+		Delegate:                                delegateAddr,
 		Id:                                      csID,
 		IssuerGrantorValidationValidityPeriod:   &cschema.OptionalUInt32{Value: issuerGrantorValidityPeriod},
 		VerifierGrantorValidationValidityPeriod: &cschema.OptionalUInt32{Value: verifierGrantorValidityPeriod},
@@ -2659,7 +2659,7 @@ func UpdateCredentialSchemaWithAuthority(
 		HolderValidationValidityPeriod:          &cschema.OptionalUInt32{Value: holderValidityPeriod},
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast UpdateCredentialSchema: %w", err)
 	}
@@ -2675,28 +2675,28 @@ func UpdateCredentialSchemaWithAuthority(
 	return nil
 }
 
-// ArchiveCredentialSchemaWithAuthority archives/unarchives a credential schema with separate authority/operator.
+// ArchiveCredentialSchemaWithAuthority archives/unarchives a credential schema with separate authority/delegate.
 func ArchiveCredentialSchemaWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	csID uint64,
 	archive bool,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &cschema.MsgArchiveCredentialSchema{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Id:          csID,
 		Archive:     archive,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast ArchiveCredentialSchema: %w", err)
 	}
@@ -2712,30 +2712,30 @@ func ArchiveCredentialSchemaWithAuthority(
 	return nil
 }
 
-// StartPermissionVPWithAuthority starts a permission VP where authority and operator are different.
+// StartPermissionVPWithAuthority starts a permission VP where authority and delegate are different.
 func StartPermissionVPWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	permType permtypes.ParticipantRole,
 	validatorPermId uint64,
 	did string,
 ) (string, error) {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return "", fmt.Errorf("failed to get operator address: %w", err)
+		return "", fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &permtypes.MsgStartParticipantOP{
 		Corporation:            authority,
-		Operator:               operatorAddr,
+		Delegate:               delegateAddr,
 		Role:                   permType,
 		ValidatorParticipantId: validatorPermId,
 		Did:                    did,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return "", fmt.Errorf("failed to broadcast StartPermissionVP: %w", err)
 	}
@@ -2770,26 +2770,26 @@ func StartPermissionVPWithAuthority(
 	return "", fmt.Errorf("permission_id not found in events")
 }
 
-// RenewPermissionVPWithAuthority renews a permission VP where authority and operator are different.
+// RenewPermissionVPWithAuthority renews a permission VP where authority and delegate are different.
 func RenewPermissionVPWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	permID uint64,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &permtypes.MsgRenewParticipantOP{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Id:          permID,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast RenewPermissionVP: %w", err)
 	}
@@ -2808,7 +2808,7 @@ func RenewPermissionVPWithAuthority(
 func CreateRootPermissionWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	schemaID uint64,
 	did string,
@@ -2818,15 +2818,15 @@ func CreateRootPermissionWithAuthority(
 	issuanceFees uint64,
 	verificationFees uint64,
 ) (uint64, error) {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return 0, fmt.Errorf("failed to get operator address: %w", err)
+		return 0, fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	// [MOD-PP-MSG-7-3] spec v4 draft 13: handler hardcodes perm.type = ECOSYSTEM.
 	msg := &permtypes.MsgCreateRootParticipant{
 		Corporation:      authority,
-		Operator:         operatorAddr,
+		Delegate:         delegateAddr,
 		SchemaId:         schemaID,
 		Did:              did,
 		EffectiveFrom:    effectiveFrom,
@@ -2836,7 +2836,7 @@ func CreateRootPermissionWithAuthority(
 		VerificationFees: verificationFees,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return 0, fmt.Errorf("failed to broadcast CreateRootPermission: %w", err)
 	}
@@ -2880,22 +2880,22 @@ func CreateRootPermissionWithAuthority(
 func CancelPermissionVPLastRequestWithAuthority(
 	client cosmosclient.Client,
 	ctx context.Context,
-	operatorAccount cosmosaccount.Account,
+	delegateAccount cosmosaccount.Account,
 	authority string,
 	permID uint64,
 ) error {
-	operatorAddr, err := operatorAccount.Address(addressPrefix)
+	delegateAddr, err := delegateAccount.Address(addressPrefix)
 	if err != nil {
-		return fmt.Errorf("failed to get operator address: %w", err)
+		return fmt.Errorf("failed to get delegate address: %w", err)
 	}
 
 	msg := &permtypes.MsgCancelParticipantOPLastRequest{
 		Corporation: authority,
-		Operator:    operatorAddr,
+		Delegate:    delegateAddr,
 		Id:          permID,
 	}
 
-	txResp, err := client.BroadcastTx(ctx, operatorAccount, msg)
+	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)
 	if err != nil {
 		return fmt.Errorf("failed to broadcast CancelPermissionVPLastRequest: %w", err)
 	}

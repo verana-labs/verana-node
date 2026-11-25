@@ -18,6 +18,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	"github.com/verana-labs/verana-node/x/cs/keeper"
 	"github.com/verana-labs/verana-node/x/cs/types"
 	ectypes "github.com/verana-labs/verana-node/x/ec/types"
@@ -137,22 +138,33 @@ func (k *MockEcosystemKeeper) CreateMockEcosystem(corporation string, did string
 // every counterexample address.
 type MockCorporationKeeper struct {
 	corporationByPolicyAddr map[string]types.CorporationView
+	// Unregistered lists the accounts AUTHZ-CHECK-5 rejects.
+	Unregistered map[string]bool
 }
 
 func NewMockCorporationKeeper(ekKeeper *MockEcosystemKeeper) *MockCorporationKeeper {
-	return &MockCorporationKeeper{corporationByPolicyAddr: ekKeeper.corporationByPolicyAddr}
+	return &MockCorporationKeeper{corporationByPolicyAddr: ekKeeper.corporationByPolicyAddr, Unregistered: map[string]bool{}}
 }
 
 const mockUnregisteredCorpID uint64 = 1 << 31
 
-func (k *MockCorporationKeeper) ResolveByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, bool) {
-	if v, ok := k.corporationByPolicyAddr[policyAddress]; ok {
-		return v, true
+func (k *MockCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context, policyAddress string) (types.CorporationView, error) {
+	if k.Unregistered[policyAddress] {
+		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
 	}
-	return types.CorporationView{Id: mockUnregisteredCorpID, PolicyAddress: policyAddress}, true
+	if v, ok := k.corporationByPolicyAddr[policyAddress]; ok {
+		return v, nil
+	}
+	return types.CorporationView{Id: mockUnregisteredCorpID, PolicyAddress: policyAddress}, nil
 }
 
 func CredentialschemaKeeper(t testing.TB) (keeper.Keeper, *MockEcosystemKeeper, sdk.Context) {
+	k, ecosystemKeeper, _, _, ctx := CredentialschemaKeeperWithMocks(t)
+	return k, ecosystemKeeper, ctx
+}
+
+// CredentialschemaKeeperWithMocks also returns the corporation and delegation mocks.
+func CredentialschemaKeeperWithMocks(t testing.TB) (keeper.Keeper, *MockEcosystemKeeper, *MockCorporationKeeper, *MockDelegationKeeper, sdk.Context) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
 	db := dbm.NewMemDB()
@@ -187,5 +199,5 @@ func CredentialschemaKeeper(t testing.TB) (keeper.Keeper, *MockEcosystemKeeper, 
 		panic(err)
 	}
 
-	return k, ecosystemKeeper, ctx
+	return k, ecosystemKeeper, coKeeper, mockDelegationKeeper, ctx
 }

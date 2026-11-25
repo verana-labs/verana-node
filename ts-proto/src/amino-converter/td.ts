@@ -8,29 +8,29 @@ import { strToU64, u64ToStrIfNonZero } from "./util/helpers";
 
 export const MsgReclaimTrustDepositYieldAminoConverter: AminoConverter = {
   aminoType: "verana/x/td/MsgReclaimTrustDepositYield",
-  // [MOD-TD-MSG-2-1] Spec v4 draft 13: parameters are corporation + operator only.
-  toAmino: ({ corporation, operator }: MsgReclaimTrustDepositYield) => ({
+  // [MOD-TD-MSG-2-1] Spec v4 draft 13: parameters are corporation + delegate only.
+  toAmino: ({ corporation, delegate }: MsgReclaimTrustDepositYield) => ({
     corporation,
-    operator,
+    delegate,
   }),
   fromAmino: (value: any) =>
     MsgReclaimTrustDepositYield.fromPartial({
       corporation: value.corporation,
-      operator: value.operator,
+      delegate: value.delegate,
     }),
 };
 
 export const MsgRepaySlashedTrustDepositAminoConverter: AminoConverter = {
   aminoType: "verana/x/td/MsgRepaySlashedTrustDeposit",
-  toAmino: ({ corporation, operator, deposit }: MsgRepaySlashedTrustDeposit) => ({
+  toAmino: ({ corporation, delegate, deposit }: MsgRepaySlashedTrustDeposit) => ({
     corporation,
-    operator,
+    delegate,
     deposit: deposit != null ? deposit.toString() : undefined,
   }),
   fromAmino: (value: any) =>
     MsgRepaySlashedTrustDeposit.fromPartial({
       corporation: value.corporation,
-      operator: value.operator,
+      delegate: value.delegate,
       deposit: value.deposit != null ? Number(value.deposit) : 0,
     }),
 };

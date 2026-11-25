@@ -13,32 +13,33 @@ import (
 	permtypes "github.com/verana-labs/verana-node/x/pp/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // RunPermissionCreatePermJourney implements Journey 310: Test CreatePermission (Self Create)
-// with operator authorization (authority/operator pattern).
+// with delegate authorization (authority/delegate pattern).
 //
 // TEST 1: CreatePermission (fail without auth, grant auth, succeed)
 // TEST 2: Verify created permission fields
-// TEST 3: Unauthorized operator (negative test)
+// TEST 3: Unauthorized delegate (negative test)
 // TEST 4: Wrong authority - non-OPEN mode (negative test)
 func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 310: CreatePermission (Self Create) with Operator Authorization")
+	fmt.Println("Starting Journey 310: CreatePermission (Self Create) with Delegate Authorization")
 
 	// Load results from prior journeys
 	setup301 := lib.LoadJourneyResult("journey301")
 	setup302 := lib.LoadJourneyResult("journey302")
 	setup304 := lib.LoadJourneyResult("journey304")
 	policyAddr := setup302.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
-	operatorAddr := setup302.OperatorAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
+	delegateAddr := setup302.DelegateAddr
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	trID, _ := strconv.ParseUint(setup304.EcosystemID, 10, 64)
 
 	fmt.Printf("  Group Policy: %s\n", policyAddr)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 
 	// =========================================================================
 	// PREREQUISITES: Create CS with OPEN mode + ECOSYSTEM root perm
@@ -47,10 +48,10 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 
 	// Re-grant CreateCredentialSchema auth
 	fmt.Println("\n--- Prerequisite 1: Re-grant CreateCredentialSchema auth ---")
-	err := lib.GrantOperatorAuthorizationViaGroup(
+	err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgCreateCredentialSchema"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 1 failed: %w", err)
@@ -62,7 +63,7 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 	fmt.Println("\n--- Prerequisite 2: Create OPEN-mode Credential Schema ---")
 	schemaData := lib.GenerateSimpleSchema(setup304.EcosystemID)
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, schemaData,
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN,
@@ -75,10 +76,10 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 
 	// Re-grant CreateRootPermission auth
 	fmt.Println("\n--- Prerequisite 3: Re-grant CreateRootPermission auth ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgCreateRootParticipant"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ROOT_ACCREDITATION},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 3 failed: %w", err)
@@ -103,7 +104,7 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 	effectiveFrom := time.Now().Add(5 * time.Second)
 	effectiveUntil := effectiveFrom.Add(360 * 24 * time.Hour)
 	rootPermID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, rootPermDID, &effectiveFrom, &effectiveUntil,
 		0, 0, 0, // no fees for ecosystem root
 	)
@@ -127,8 +128,8 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 	permEffectiveUntil := effectiveUntil // same as root perm
 
 	// 1a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries CreatePermission without auth (expect failure) ---")
-	_, err = lib.CreatePermission(client, ctx, operatorAccount, policyAddr, permtypes.MsgSelfCreateParticipant{
+	fmt.Println("\n--- Step 1a: Delegate tries CreatePermission without auth (expect failure) ---")
+	_, err = lib.CreatePermission(client, ctx, delegateAccount, policyAddr, permtypes.MsgSelfCreateParticipant{
 		Role:                   permtypes.ParticipantRole_ISSUER,
 		ValidatorParticipantId: rootPermID,
 		Did:                    issuerDID,
@@ -142,11 +143,11 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 	waitForTx("create perm rejection")
 
 	// 1b: Grant authorization for CreatePermission
-	fmt.Println("\n--- Step 1b: Grant operator auth for CreatePermission ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1b: Grant delegate auth for CreatePermission ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.pp.v1.MsgSelfCreateParticipant"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_SELF_CREATE_ACCREDITATION},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)
@@ -155,8 +156,8 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 	waitForTx("grant create perm auth")
 
 	// 1c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 1c: Operator creates permission with auth (expect success) ---")
-	_, err = lib.CreatePermission(client, ctx, operatorAccount, policyAddr, permtypes.MsgSelfCreateParticipant{
+	fmt.Println("\n--- Step 1c: Delegate creates permission with auth (expect success) ---")
+	_, err = lib.CreatePermission(client, ctx, delegateAccount, policyAddr, permtypes.MsgSelfCreateParticipant{
 		Role:                   permtypes.ParticipantRole_ISSUER,
 		ValidatorParticipantId: rootPermID,
 		Did:                    issuerDID,
@@ -216,11 +217,11 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 		createdPerm.Id, createdPerm.ValidatorParticipantId, createdPerm.CorporationId)
 
 	// =========================================================================
-	// TEST 3: Unauthorized operator (negative test)
+	// TEST 3: Unauthorized delegate (negative test)
 	// =========================================================================
-	fmt.Println("\n=== TEST 3: Unauthorized operator (negative test) ===")
+	fmt.Println("\n=== TEST 3: Unauthorized delegate (negative test) ===")
 
-	fmt.Println("\n--- Step 3a: Unauthorized operator tries CreatePermission (expect failure) ---")
+	fmt.Println("\n--- Step 3a: Unauthorized delegate tries CreatePermission (expect failure) ---")
 	coolusrAcct := lib.GetAccount(client, lib.COOLUSER_NAME)
 	_, err = lib.CreatePermission(client, ctx, coolusrAcct, policyAddr, permtypes.MsgSelfCreateParticipant{
 		Role:                   permtypes.ParticipantRole_ISSUER,
@@ -232,15 +233,15 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 	if err := expectAuthorizationError("Step 3a", err); err != nil {
 		return err
 	}
-	fmt.Println("OK Step 3a: Unauthorized operator correctly rejected")
+	fmt.Println("OK Step 3a: Unauthorized delegate correctly rejected")
 
 	// =========================================================================
 	// TEST 4: Wrong authority (negative test)
 	// =========================================================================
 	fmt.Println("\n=== TEST 4: Wrong authority (negative test) ===")
 
-	fmt.Println("\n--- Step 4a: Correct operator but wrong authority (expect failure) ---")
-	_, err = lib.CreatePermission(client, ctx, operatorAccount, operatorAddr, permtypes.MsgSelfCreateParticipant{
+	fmt.Println("\n--- Step 4a: Correct delegate but wrong authority (expect failure) ---")
+	_, err = lib.CreatePermission(client, ctx, delegateAccount, delegateAddr, permtypes.MsgSelfCreateParticipant{
 		Role:                   permtypes.ParticipantRole_ISSUER,
 		ValidatorParticipantId: rootPermID,
 		Did:                    "did:example:wrongauth",
@@ -260,17 +261,17 @@ func RunPermissionCreatePermJourney(ctx context.Context, client cosmosclient.Cli
 		PermissionID:    strconv.FormatUint(rootPermID, 10),
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey310", result)
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 310 completed successfully!")
 	fmt.Println("CreatePermission (Self Create) tested:")
-	fmt.Println("  - Unauthorized operator rejected")
-	fmt.Println("  - Authorized operator succeeded")
+	fmt.Println("  - Unauthorized delegate rejected")
+	fmt.Println("  - Authorized delegate succeeded")
 	fmt.Println("  - Created permission fields verified")
-	fmt.Println("  - Unauthorized operator rejected")
+	fmt.Println("  - Unauthorized delegate rejected")
 	fmt.Println("  - Wrong authority rejected")
 	fmt.Println("========================================")
 

@@ -109,7 +109,7 @@ func TestSelfCreateParticipant_GasIndependentOfStoreSize(t *testing.T) {
 
 		ctx = ctx.WithGasMeter(storetypes.NewInfiniteGasMeter())
 		_, err = ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: applicant, Operator: applicant,
+			Corporation: applicant, Delegate: applicant,
 			Role: types.ParticipantRole_ISSUER, ValidatorParticipantId: rootID,
 			Did: "did:example:gas-applicant", EffectiveFrom: &future,
 		})

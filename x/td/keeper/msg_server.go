@@ -6,8 +6,10 @@ import (
 	mathstd "math"
 	"strconv"
 
+	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/td/types"
 )
 
@@ -23,102 +25,26 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-func (ms msgServer) ReclaimTrustDepositYield(goCtx context.Context, msg *types.MsgReclaimTrustDepositYield) (*types.MsgReclaimTrustDepositYieldResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	account := msg.Corporation
-
-	// [MOD-TD-MSG-2-2] [AUTHZ-CHECK] Verify operator authorization
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
+// delegate, and returns the resolved corporation id.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (uint64, error) {
 	if ms.Keeper.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return 0, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.Keeper.delegationKeeper.CheckOperatorAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Operator,
-		"/verana.td.v1.MsgReclaimTrustDepositYield",
-		ctx.BlockTime(),
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
-	// [AUTHZ-CHECK-5] Signing corporation account MUST be a registered Corporation.
-	co, err := ms.Keeper.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+	co, err := ms.Keeper.coKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	corpID := co.Id
+	if err := ms.Keeper.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, delegate, msgType, ctx.BlockTime()); err != nil {
+		return 0, fmt.Errorf("authorization check failed: %w", err)
+	}
+	return co.Id, nil
+}
 
-	// [MOD-TD-MSG-2-2-1] Load TrustDeposit entry (keyed by corporation_id)
-	td, err := ms.Keeper.TrustDeposit.Get(ctx, corpID)
-	if err != nil {
-		return nil, fmt.Errorf("trust deposit not found for account: %s", account)
-	}
-
-	// [MOD-TD-MSG-2-2-1] abort if slashed and not fully repaid (outstanding = slashed - repaid > 0).
-	if td.SlashedDeposit > 0 && td.RepaidDeposit < td.SlashedDeposit {
-		return nil, fmt.Errorf("deposit has been slashed and not repaid")
-	}
-
-	// [MOD-TD-MSG-2-2-1] claimable_yield = share*value - deposit; abort if <= 0.
-	shareValue := ms.Keeper.GetTrustDepositShareValue(ctx)
-	claimableYield := td.Share.Mul(shareValue).Sub(math.LegacyNewDecFromInt(math.NewIntFromUint64(td.Deposit)))
-	if !claimableYield.IsPositive() {
-		return nil, fmt.Errorf("no claimable yield")
-	}
-	claimedInt := claimableYield.TruncateInt()
-	if !claimedInt.IsUint64() {
-		return nil, fmt.Errorf("claimable yield exceeds uint64: %s", claimedInt)
-	}
-	claimed := claimedInt.Uint64()
-	// Sub-unit yield truncates to zero: abort rather than emit a 0-coin transfer.
-	if claimed == 0 {
-		return nil, fmt.Errorf("no claimable yield")
-	}
-
-	// [MOD-TD-MSG-2-3] share -= claimable_yield / share_value
-	sharesToReduce := ms.Keeper.AmountToShare(claimed, shareValue)
-	td.Share = td.Share.Sub(sharesToReduce)
-
-	// Validate corporation address
-	addr, err := sdk.AccAddressFromBech32(account)
-	if err != nil {
-		return nil, fmt.Errorf("invalid corporation address: %w", err)
-	}
-
-	// Save updated trust deposit BEFORE bank transfer to ensure atomicity —
-	// if Set fails, no coins have been transferred yet.
-	if err := ms.Keeper.TrustDeposit.Set(ctx, corpID, td); err != nil {
-		return nil, fmt.Errorf("failed to update trust deposit: %w", err)
-	}
-
-	// [MOD-TD-MSG-2-3] Transfer yield from TrustDeposit module account to corporation
-	if claimed > uint64(mathstd.MaxInt64) {
-		return nil, fmt.Errorf("amount exceeds maximum coin value: %d", claimed)
-	}
-	coins := sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(claimed)))
-	if err := ms.Keeper.bankKeeper.SendCoinsFromModuleToAccount(
-		ctx,
-		types.ModuleName,
-		addr,
-		coins,
-	); err != nil {
-		return nil, fmt.Errorf("failed to transfer yield: %w", err)
-	}
-
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeReclaimTrustDepositYield,
-			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(corpID, 10)),
-			sdk.NewAttribute(types.AttributeKeyAccount, account),
-			sdk.NewAttribute(types.AttributeKeyClaimedYield, strconv.FormatUint(claimed, 10)),
-			sdk.NewAttribute(types.AttributeKeySharesReduced, sharesToReduce.String()),
-			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
-		),
-	})
-
-	return &types.MsgReclaimTrustDepositYieldResponse{
-		ClaimedAmount: claimed,
-	}, nil
+// ReclaimTrustDepositYield is refused: [MOD-TD-MSG-2] is void in v5, so the
+// message has no MsgType and no authorization covers it.
+func (ms msgServer) ReclaimTrustDepositYield(_ context.Context, _ *types.MsgReclaimTrustDepositYield) (*types.MsgReclaimTrustDepositYieldResponse, error) {
+	return nil, errorsmod.Wrap(types.ErrMsgVoid, "MsgReclaimTrustDepositYield (MOD-TD-MSG-2)")
 }
 
 // ShareToAmount converts share value to amount using decimal math
@@ -226,26 +152,11 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	account := msg.Corporation
 
-	// [MOD-TD-MSG-6-2-1] [AUTHZ-CHECK] Verify operator authorization
-	if ms.Keeper.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
-	}
-	if err := ms.Keeper.delegationKeeper.CheckOperatorAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Operator,
-		"/verana.td.v1.MsgRepaySlashedTrustDeposit",
-		ctx.BlockTime(),
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
-	// [AUTHZ-CHECK-5] Signing corporation account MUST be a registered Corporation.
-	co, err := ms.Keeper.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+	// [MOD-TD-MSG-6-2-1] [AUTHZ-CHECK]
+	corpID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_REPAY_SLASH)
 	if err != nil {
 		return nil, err
 	}
-	corpID := co.Id
 
 	// [MOD-TD-MSG-6-2-1] Load TrustDeposit entry for corporation (must exist, keyed by corporation_id)
 	td, err := ms.Keeper.TrustDeposit.Get(ctx, corpID)
@@ -298,12 +209,12 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	// [MOD-TD-MSG-6-3] add amount to the TrustDeposit account (slashed coins were
 	// already burned at slash time per MOD-TD-MSG-5-3).
 	transferCoins := sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(msg.Deposit)))
-	// AUTHZ-CHECK-1 step 3: debit the operator's spend limit for the committed funds.
-	if err := ms.Keeper.delegationKeeper.ConsumeOperatorSpend(
-		ctx, msg.Corporation, msg.Operator,
-		"/verana.td.v1.MsgRepaySlashedTrustDeposit", now, transferCoins,
+	// AUTHZ-CHECK-1 step 3: debit the delegate's spend limit for the committed funds.
+	if err := ms.Keeper.delegationKeeper.ConsumeDelegateSpend(
+		ctx, corpID, msg.Delegate,
+		detypes.MsgType_MSG_TYPE_REPAY_SLASH, now, transferCoins,
 	); err != nil {
-		return nil, fmt.Errorf("failed to consume operator spend: %w", err)
+		return nil, fmt.Errorf("failed to consume delegate spend: %w", err)
 	}
 	if err := ms.Keeper.bankKeeper.SendCoinsFromAccountToModule(
 		ctx,

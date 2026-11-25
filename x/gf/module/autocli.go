@@ -74,41 +74,11 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
 					RpcMethod: "AddGovernanceFrameworkDocument",
-					Use:       "add-governance-framework-document [corporation] [operator] [doc-language] [doc-url] [doc-digest-sri] [version]",
-					Short:     "[MOD-GF-MSG-1] Add a governance framework document",
-					Long:      "Add or replace a GovernanceFrameworkDocument for a draft GovernanceFrameworkVersion owned by either an Ecosystem (set --ecosystem-id) or the signing Corporation's own CGF (omit --ecosystem-id).",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "corporation"},
-						{ProtoField: "operator"},
-						{ProtoField: "doc_language"},
-						{ProtoField: "doc_url"},
-						{ProtoField: "doc_digest_sri"},
-						{ProtoField: "version"},
-					},
-					FlagOptions: map[string]*autocliv1.FlagOptions{
-						"ecosystem_id": {
-							Name:         "ecosystem-id",
-							DefaultValue: "0",
-							Usage:        "Target Ecosystem ID (omit for Corporation-targeted CGF).",
-						},
-					},
+					Skip:      true, // custom command in cli_tx.go
 				},
 				{
 					RpcMethod: "IncreaseActiveGovernanceFrameworkVersion",
-					Use:       "increase-active-gf-version [corporation] [operator]",
-					Short:     "[MOD-GF-MSG-2] Activate the next governance framework version",
-					Long:      "Activate the next governance framework version for either an Ecosystem (set --ecosystem-id) or the signing Corporation's own CGF (omit --ecosystem-id). Requires the next version to exist and contain a document in the subject's default language.",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "corporation"},
-						{ProtoField: "operator"},
-					},
-					FlagOptions: map[string]*autocliv1.FlagOptions{
-						"ecosystem_id": {
-							Name:         "ecosystem-id",
-							DefaultValue: "0",
-							Usage:        "Target Ecosystem ID (omit for Corporation-targeted CGF).",
-						},
-					},
+					Skip:      true, // custom command in cli_tx.go
 				},
 				{
 					RpcMethod: "UpdateParams",

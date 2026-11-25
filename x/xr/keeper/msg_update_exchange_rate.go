@@ -28,19 +28,19 @@ func (ms msgServer) UpdateExchangeRate(ctx context.Context, msg *types.MsgUpdate
 		return nil, errorsmod.Wrapf(types.ErrExchangeRateNotFound, "exchange rate with id %d not found", msg.Id)
 	}
 
-	// [MOD-XR-MSG-2] Authorization: an ExchangeRateAuthorization (xr_id, operator)
+	// [MOD-XR-MSG-2] Authorization: an ExchangeRateAuthorization (xr_id, feeder)
 	// MUST exist and MUST NOT be expired.
-	authzKey := collections.Join(msg.Id, msg.Operator)
+	authzKey := collections.Join(msg.Id, msg.Feeder)
 	authz, err := ms.ExchangeRateAuthorizations.Get(ctx, authzKey)
 	if err != nil {
-		return nil, errorsmod.Wrapf(types.ErrAuthorizationNotFound, "operator %s is not authorized to update exchange rate %d", msg.Operator, msg.Id)
+		return nil, errorsmod.Wrapf(types.ErrAuthorizationNotFound, "feeder %s is not authorized to update exchange rate %d", msg.Feeder, msg.Id)
 	}
 	if !authz.Expiration.After(now) {
 		return nil, types.ErrAuthorizationExpired
 	}
 
 	// [MOD-XR-MSG-2-2-1] xr.state MUST be enabled (the only state gate; an expired
-	// rate is still refreshable by its operator).
+	// rate is still refreshable by its feeder).
 	if !xr.State {
 		return nil, errorsmod.Wrapf(types.ErrExchangeRateNotActive, "exchange rate with id %d is not active", msg.Id)
 	}
@@ -82,7 +82,7 @@ func (ms msgServer) UpdateExchangeRate(ctx context.Context, msg *types.MsgUpdate
 		sdk.NewEvent(
 			types.EventTypeUpdateExchangeRate,
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.Id)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Feeder),
 			sdk.NewAttribute(types.AttributeKeyRate, msg.Rate),
 		),
 	)

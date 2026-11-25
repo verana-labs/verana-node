@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/collections"
 	"cosmossdk.io/core/address"
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -112,6 +113,37 @@ func (m *mockParticipantKeeper) ViewParticipant(_ context.Context, id uint64) (t
 	return types.ParticipantView{Active: true}, true
 }
 
+// mockGFKeeper backs GF-CHECK-2 in MOD-DE tests. It passes unless err is set.
+type mockGFKeeper struct {
+	err       error
+	calls     int
+	gotCorpID uint64
+	gotAuthz  *types.DelegateAuthorization
+	gotNow    time.Time
+}
+
+func (m *mockGFKeeper) CheckDelegateCGFAcceptance(_ context.Context, corporationID uint64, authz *types.DelegateAuthorization, now time.Time) error {
+	m.calls++
+	m.gotCorpID, m.gotAuthz, m.gotNow = corporationID, authz, now
+	return m.err
+}
+
+// memVsAccountBudgets is an in-memory VsAccountBudget store keyed by vs_id.
+type memVsAccountBudgets map[uint64]types.VsAccountBudget
+
+func (m memVsAccountBudgets) Get(_ context.Context, vsID uint64) (types.VsAccountBudget, error) {
+	b, ok := m[vsID]
+	if !ok {
+		return types.VsAccountBudget{}, collections.ErrNotFound
+	}
+	return b, nil
+}
+
+func (m memVsAccountBudgets) Set(_ context.Context, vsID uint64, b types.VsAccountBudget) error {
+	m[vsID] = b
+	return nil
+}
+
 type fixture struct {
 	ctx          context.Context
 	keeper       keeper.Keeper
@@ -119,6 +151,8 @@ type fixture struct {
 	corpKeeper   *mockCorpKeeper
 	participants *mockParticipantKeeper
 	feegrants    *memFeegrantKeeper
+	gf           *mockGFKeeper
+	budgets      memVsAccountBudgets
 	vs           *mockVsKeeper
 }
 
@@ -149,6 +183,10 @@ func initFixture(t *testing.T) *fixture {
 	k.SetParticipantKeeper(participants)
 	feegrants := newMemFeegrantKeeper()
 	k.SetFeegrantKeeper(feegrants)
+	gf := &mockGFKeeper{}
+	k.SetGovernanceFrameworkKeeper(gf)
+	budgets := memVsAccountBudgets{}
+	k.SetVsAccountBudgetStore(budgets)
 	vs := &mockVsKeeper{period: vstypes.DefaultVsAccountFeePeriod}
 	k.SetVerifiableServiceKeeper(vs)
 
@@ -159,6 +197,8 @@ func initFixture(t *testing.T) *fixture {
 		corpKeeper:   corpKeeper,
 		participants: participants,
 		feegrants:    feegrants,
+		gf:           gf,
+		budgets:      budgets,
 		vs:           vs,
 	}
 }

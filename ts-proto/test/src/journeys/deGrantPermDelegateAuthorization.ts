@@ -1,11 +1,11 @@
 /**
- * Journey: DE Grant PERM Operator Authorization
+ * Journey: DE Grant PERM Delegate Authorization
  *
- * Grants operator authorization from the authority account to a perm-specific
- * operator for all PERM message types, plus TR and CS message types needed
+ * Grants delegate authorization from the authority account to a perm-specific
+ * delegate for all PERM message types, plus TR and CS message types needed
  * for creating prerequisites in perm journeys.
  *
- * Uses: authority=index 10 (same as TR/CS), operator=index 15
+ * Uses: authority=index 10 (same as TR/CS), delegate=index 15
  *
  * Usage:
  *   npm run test:de-grant-perm-auth
@@ -23,22 +23,23 @@ import {
   config,
 } from "../helpers/client";
 import { typeUrls } from "../helpers/registry";
-import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/tx";
+import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
 import { getEcAuthzSetup, savePermAuthzSetup } from "../helpers/journeyResults";
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
+import { MsgType } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 15;
+const DELEGATE_INDEX = 15;
 // Corp group member (proposer/voter) — matches co-create's SIGNER_INDEX.
 const SIGNER_INDEX = 10;
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: DE Grant PERM Operator Authorization");
+  console.log("Journey: DE Grant PERM Delegate Authorization");
   console.log("=".repeat(60));
   console.log();
 
@@ -53,30 +54,30 @@ async function main() {
   console.log(`  Authority (corporation policy_address): ${authorityAddress}`);
   console.log();
 
-  // Step 2: Create perm operator wallet
-  console.log("Step 2: Creating PERM operator wallet...");
-  const operatorWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Create perm delegate wallet
+  console.log("Step 2: Creating PERM delegate wallet...");
+  const delegateWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const cooluserWallet = await createWallet(COOLUSER_MNEMONIC);
-  const operatorAccount = await getAccountInfo(operatorWallet);
+  const delegateAccount = await getAccountInfo(delegateWallet);
   const cooluserAccount = await getAccountInfo(cooluserWallet);
-  console.log(`  PERM Operator: ${operatorAccount.address} (index ${OPERATOR_INDEX})`);
+  console.log(`  PERM Delegate: ${delegateAccount.address} (index ${DELEGATE_INDEX})`);
   console.log();
 
-  // Step 3: Fund operator
-  console.log("Step 3: Funding PERM operator...");
+  // Step 3: Fund delegate
+  console.log("Step 3: Funding PERM delegate...");
   const fundAmount = "5000000000uvna"; // 5000 VNA (enough for perm operations with trust deposits + fees)
 
   const fundResult = await fundAccount(
     COOLUSER_MNEMONIC,
     cooluserAccount.address,
-    operatorAccount.address,
+    delegateAccount.address,
     fundAmount,
   );
   if (fundResult.code !== 0) {
-    console.log(`  Failed to fund operator: ${fundResult.rawLog}`);
+    console.log(`  Failed to fund delegate: ${fundResult.rawLog}`);
     process.exit(1);
   }
-  console.log(`  Funded operator with ${fundAmount}`);
+  console.log(`  Funded delegate with ${fundAmount}`);
 
   // Wait for funding to confirm
   const queryClient = await createQueryClient();
@@ -94,9 +95,9 @@ async function main() {
 
   // Verify balance
   for (let i = 0; i < 20; i++) {
-    const balance = await queryClient.getBalance(operatorAccount.address, config.denom);
+    const balance = await queryClient.getBalance(delegateAccount.address, config.denom);
     if (BigInt(balance.amount) > 0) {
-      console.log(`  Operator balance: ${balance.amount}${balance.denom}`);
+      console.log(`  Delegate balance: ${balance.amount}${balance.denom}`);
       break;
     }
     await new Promise((r) => setTimeout(r, 1000));
@@ -104,51 +105,51 @@ async function main() {
   queryClient.disconnect();
   console.log();
 
-  // Step 4: Grant operator authorization for all PERM + TR + CS message types
-  console.log("Step 4: Granting operator authorization...");
+  // Step 4: Grant delegate authorization for all PERM + TR + CS message types
+  console.log("Step 4: Granting delegate authorization...");
 
   const allMsgTypes = [
     // EC messages (for creating prerequisite Ecosystems)
-    typeUrls.MsgCreateEcosystem,
-    typeUrls.MsgUpdateEcosystem,
-    typeUrls.MsgArchiveEcosystem,
+    MsgType.MSG_TYPE_CREATE_ECOSYSTEM,
+    MsgType.MSG_TYPE_UPDATE_ECOSYSTEM,
+    MsgType.MSG_TYPE_ARCHIVE_ECOSYSTEM,
     // GF messages (moved from verana.tr.v1 to verana.gf.v1 in v4-rc2)
-    typeUrls.MsgAddGovernanceFrameworkDocument,
-    typeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
+    MsgType.MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT,
+    MsgType.MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION,
     // CS messages (for creating prerequisite CSs)
-    typeUrls.MsgCreateCredentialSchema,
-    typeUrls.MsgUpdateCredentialSchema,
-    typeUrls.MsgArchiveCredentialSchema,
+    MsgType.MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
+    MsgType.MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA,
+    MsgType.MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA,
     // PERM messages
-    typeUrls.MsgCreateRootParticipant,
-    typeUrls.MsgSelfCreateParticipant,
-    typeUrls.MsgSetParticipantEffectiveUntil,
-    typeUrls.MsgRevokeParticipant,
-    typeUrls.MsgStartParticipantOP,
-    typeUrls.MsgRenewParticipantOP,
-    typeUrls.MsgSetParticipantOPToValidated,
-    typeUrls.MsgCancelParticipantOPLastRequest,
+    MsgType.MSG_TYPE_CREATE_ROOT_ACCREDITATION,
+    MsgType.MSG_TYPE_SELF_CREATE_ACCREDITATION,
+    MsgType.MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL,
+    MsgType.MSG_TYPE_REVOKE_ACCREDITATION,
+    MsgType.MSG_TYPE_START_ONBOARDING,
+    MsgType.MSG_TYPE_RENEW_ONBOARDING,
+    MsgType.MSG_TYPE_VALIDATE_ONBOARDING,
+    MsgType.MSG_TYPE_WITHDRAW_ONBOARDING_REQUEST,
     // Note: MsgCreateOrUpdateParticipantSession is NOT DE-delegable
     // It uses VS operator authorization (AUTHZ-CHECK-3) instead
-    typeUrls.MsgSlashParticipantTrustDeposit,
-    typeUrls.MsgRepayParticipantSlashedTrustDeposit,
+    MsgType.MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT,
+    MsgType.MSG_TYPE_REPAY_SLASH,
     // [MOD-PP-MSG-15] Trigger Resolver
-    typeUrls.MsgTriggerResolver,
+    MsgType.MSG_TYPE_TRIGGER_RESOLVER,
   ];
 
   // The corporation policy_address cannot sign directly; the corp's sole group
   // member (SIGNER_INDEX, matching co-create) submits an x/group proposal carrying
-  // the inner MsgGrantOperatorAuthorization (operator == corporation policy_address
+  // the inner MsgGrantDelegateAuthorization (delegate == corporation policy_address
   // = corporation acts alone) and votes YES with EXEC_TRY so the policy executes it.
   const signerWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, SIGNER_INDEX);
   const signerAccount = await getAccountInfo(signerWallet);
   const client = await createSigningClient(signerWallet);
 
-  const innerMsgValue = MsgGrantOperatorAuthorization.encode(
-    MsgGrantOperatorAuthorization.fromPartial({
+  const innerMsgValue = MsgGrantDelegateAuthorization.encode(
+    MsgGrantDelegateAuthorization.fromPartial({
       corporation: authorityAddress,
-      operator: authorityAddress,
-      grantee: operatorAccount.address,
+      delegate: authorityAddress,
+      grantee: delegateAccount.address,
       msgTypes: allMsgTypes,
       withFeegrant: false,
     }),
@@ -159,10 +160,10 @@ async function main() {
     value: MsgSubmitProposal.fromPartial({
       groupPolicyAddress: authorityAddress,
       proposers: [signerAccount.address],
-      metadata: "Grant PERM operator authz",
-      title: "Grant PERM operator authz",
-      summary: "Grant operator authorization for PERM/EC/GF/CS message types",
-      messages: [{ typeUrl: typeUrls.MsgGrantOperatorAuthorization, value: innerMsgValue }],
+      metadata: "Grant PERM delegate authz",
+      title: "Grant PERM delegate authz",
+      summary: "Grant delegate authorization for PERM/EC/GF/CS message types",
+      messages: [{ typeUrl: typeUrls.MsgGrantDelegateAuthorization, value: innerMsgValue }],
       exec: Exec.EXEC_UNSPECIFIED,
     }),
   };
@@ -173,7 +174,7 @@ async function main() {
     const proposalResult = await signAndBroadcastWithRetry(client, signerAccount.address, [proposalMsg], proposalFee, "Submit PERM grant proposal");
     if (proposalResult.code !== 0) {
       if (String(proposalResult.rawLog).includes("already exists")) {
-        savePermAuthzSetup(authorityAddress, operatorAccount.address);
+        savePermAuthzSetup(authorityAddress, delegateAccount.address);
         console.log("  Authorization already exists; saved setup.");
         client.disconnect();
         console.log("=".repeat(60));
@@ -208,13 +209,13 @@ async function main() {
     for (let i = 0; i < 30; i++) { try { if (await qc3.getTx(voteResult.transactionHash)) break; } catch {} await new Promise((r) => setTimeout(r, 1000)); }
     qc3.disconnect();
 
-    savePermAuthzSetup(authorityAddress, operatorAccount.address);
+    savePermAuthzSetup(authorityAddress, delegateAccount.address);
     console.log("  Saved perm-authz-setup");
   } catch (error: any) {
     const errorMsg = error?.message || String(error);
     if (errorMsg.includes("already exists") || errorMsg.includes("mutual exclusivity")) {
       console.log("  Authorization already exists on chain. Saving setup and continuing.");
-      savePermAuthzSetup(authorityAddress, operatorAccount.address);
+      savePermAuthzSetup(authorityAddress, delegateAccount.address);
     } else {
       console.error(error);
       process.exit(1);

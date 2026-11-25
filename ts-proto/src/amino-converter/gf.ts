@@ -13,44 +13,49 @@ export const MsgAddGovernanceFrameworkDocumentAminoConverter: AminoConverter = {
   aminoType: "verana/x/gf/MsgAddGovernanceFrameworkDocument",
   toAmino: ({
     corporation,
-    operator,
+    delegate,
     ecosystemId,
     docLanguage,
     docUrl,
     docDigestSri,
     version,
+    authority,
   }: MsgAddGovernanceFrameworkDocument) => clean({
     corporation: corporation || undefined,
-    operator: operator || undefined,
+    delegate: delegate || undefined,
     ecosystem_id: u64ToStr(ecosystemId as any),
     doc_language: docLanguage || undefined,
     doc_url: docUrl || undefined,
     doc_digest_sri: docDigestSri || undefined,
     version: version || undefined,
+    authority: authority || undefined,
   }),
   fromAmino: (value: any) =>
     MsgAddGovernanceFrameworkDocument.fromPartial({
       corporation: value.corporation ?? "",
-      operator: value.operator ?? "",
+      delegate: value.delegate ?? "",
       ecosystemId: value.ecosystem_id != null ? Number(value.ecosystem_id) : 0,
       docLanguage: value.doc_language ?? "",
       docUrl: value.doc_url ?? "",
       docDigestSri: value.doc_digest_sri ?? "",
       version: value.version ?? 0,
+      authority: value.authority ?? "",
     }),
 };
 
 export const MsgIncreaseActiveGovernanceFrameworkVersionAminoConverter: AminoConverter = {
   aminoType: "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion",
-  toAmino: ({ corporation, operator, ecosystemId }: MsgIncreaseActiveGovernanceFrameworkVersion) => clean({
+  toAmino: ({ corporation, delegate, ecosystemId, authority }: MsgIncreaseActiveGovernanceFrameworkVersion) => clean({
     corporation: corporation || undefined,
-    operator: operator || undefined,
+    delegate: delegate || undefined,
     ecosystem_id: u64ToStr(ecosystemId as any),
+    authority: authority || undefined,
   }),
   fromAmino: (value: any) =>
     MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({
       corporation: value.corporation ?? "",
-      operator: value.operator ?? "",
+      delegate: value.delegate ?? "",
       ecosystemId: value.ecosystem_id != null ? Number(value.ecosystem_id) : 0,
+      authority: value.authority ?? "",
     }),
 };

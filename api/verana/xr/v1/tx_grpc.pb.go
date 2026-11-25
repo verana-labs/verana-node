@@ -38,15 +38,15 @@ type MsgClient interface {
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 	// CreateExchangeRate defines a governance operation for creating an exchange rate.
 	CreateExchangeRate(ctx context.Context, in *MsgCreateExchangeRate, opts ...grpc.CallOption) (*MsgCreateExchangeRateResponse, error)
-	// UpdateExchangeRate defines an operator operation for updating an exchange rate.
+	// UpdateExchangeRate defines a feeder operation for updating an exchange rate.
 	UpdateExchangeRate(ctx context.Context, in *MsgUpdateExchangeRate, opts ...grpc.CallOption) (*MsgUpdateExchangeRateResponse, error)
 	// SetExchangeRateState defines a governance operation for enabling or disabling an exchange rate.
 	SetExchangeRateState(ctx context.Context, in *MsgSetExchangeRateState, opts ...grpc.CallOption) (*MsgSetExchangeRateStateResponse, error)
 	// GrantExchangeRateAuthorization defines a governance operation authorizing an
-	// operator to update a given exchange rate. [MOD-XR-MSG-4]
+	// feeder to update a given exchange rate. [MOD-XR-MSG-4]
 	GrantExchangeRateAuthorization(ctx context.Context, in *MsgGrantExchangeRateAuthorization, opts ...grpc.CallOption) (*MsgGrantExchangeRateAuthorizationResponse, error)
 	// RevokeExchangeRateAuthorization defines a governance operation revoking an
-	// operator's authorization for a given exchange rate. [MOD-XR-MSG-5]
+	// feeder's authorization for a given exchange rate. [MOD-XR-MSG-5]
 	RevokeExchangeRateAuthorization(ctx context.Context, in *MsgRevokeExchangeRateAuthorization, opts ...grpc.CallOption) (*MsgRevokeExchangeRateAuthorizationResponse, error)
 }
 
@@ -129,15 +129,15 @@ type MsgServer interface {
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	// CreateExchangeRate defines a governance operation for creating an exchange rate.
 	CreateExchangeRate(context.Context, *MsgCreateExchangeRate) (*MsgCreateExchangeRateResponse, error)
-	// UpdateExchangeRate defines an operator operation for updating an exchange rate.
+	// UpdateExchangeRate defines a feeder operation for updating an exchange rate.
 	UpdateExchangeRate(context.Context, *MsgUpdateExchangeRate) (*MsgUpdateExchangeRateResponse, error)
 	// SetExchangeRateState defines a governance operation for enabling or disabling an exchange rate.
 	SetExchangeRateState(context.Context, *MsgSetExchangeRateState) (*MsgSetExchangeRateStateResponse, error)
 	// GrantExchangeRateAuthorization defines a governance operation authorizing an
-	// operator to update a given exchange rate. [MOD-XR-MSG-4]
+	// feeder to update a given exchange rate. [MOD-XR-MSG-4]
 	GrantExchangeRateAuthorization(context.Context, *MsgGrantExchangeRateAuthorization) (*MsgGrantExchangeRateAuthorizationResponse, error)
 	// RevokeExchangeRateAuthorization defines a governance operation revoking an
-	// operator's authorization for a given exchange rate. [MOD-XR-MSG-5]
+	// feeder's authorization for a given exchange rate. [MOD-XR-MSG-5]
 	RevokeExchangeRateAuthorization(context.Context, *MsgRevokeExchangeRateAuthorization) (*MsgRevokeExchangeRateAuthorizationResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

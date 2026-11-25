@@ -19,13 +19,13 @@ func RunEcosystemArchiveJourney(ctx context.Context, client cosmosclient.Client)
 	setup020 := lib.LoadJourneyResult("journey020")
 
 	policyAddr := setup001.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, corpAOperator)
-	operatorAddr := setup001.OperatorAddr
+	delegateAccount := lib.GetAccount(client, corpADelegate)
+	delegateAddr := setup001.DelegateAddr
 
 	var ecID uint64
 	fmt.Sscanf(setup020.EcosystemID, "%d", &ecID)
 	fmt.Printf("  ec-alpha ID: %d\n", ecID)
-	fmt.Printf("  Operator:    %s\n", operatorAddr)
+	fmt.Printf("  Delegate:    %s\n", delegateAddr)
 
 	// =========================================================================
 	// Step 1: Unauthorized caller tries ArchiveEcosystem (expect failure)
@@ -46,7 +46,7 @@ func RunEcosystemArchiveJourney(ctx context.Context, client cosmosclient.Client)
 	// =========================================================================
 	fmt.Println("\n--- Step 2: Unarchive a non-archived ecosystem (expect failure) ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, false,
 	)
 	if err == nil {
@@ -57,9 +57,9 @@ func RunEcosystemArchiveJourney(ctx context.Context, client cosmosclient.Client)
 	// =========================================================================
 	// Step 3: Archive the ecosystem [MOD-EC-MSG-3]
 	// =========================================================================
-	fmt.Println("\n--- Step 3: Authorized operator archives ec-alpha ---")
+	fmt.Println("\n--- Step 3: Authorized delegate archives ec-alpha ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, true,
 	)
 	if err != nil {
@@ -83,7 +83,7 @@ func RunEcosystemArchiveJourney(ctx context.Context, client cosmosclient.Client)
 	// =========================================================================
 	fmt.Println("\n--- Step 4: Archive an already-archived ecosystem (expect failure) ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, true,
 	)
 	if err == nil {
@@ -94,9 +94,9 @@ func RunEcosystemArchiveJourney(ctx context.Context, client cosmosclient.Client)
 	// =========================================================================
 	// Step 5: Unarchive the ecosystem [MOD-EC-MSG-3]
 	// =========================================================================
-	fmt.Println("\n--- Step 5: Authorized operator unarchives ec-alpha ---")
+	fmt.Println("\n--- Step 5: Authorized delegate unarchives ec-alpha ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, false,
 	)
 	if err != nil {
@@ -120,7 +120,7 @@ func RunEcosystemArchiveJourney(ctx context.Context, client cosmosclient.Client)
 	// =========================================================================
 	fmt.Println("\n--- Step 6: Unarchive a non-archived ecosystem again (expect failure) ---")
 	err = lib.ArchiveEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, false,
 	)
 	if err == nil {

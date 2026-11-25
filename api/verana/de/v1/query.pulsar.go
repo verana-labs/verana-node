@@ -18,29 +18,29 @@ import (
 )
 
 var (
-	md_QueryListOperatorAuthorizationsRequest                   protoreflect.MessageDescriptor
-	fd_QueryListOperatorAuthorizationsRequest_corporation_id    protoreflect.FieldDescriptor
-	fd_QueryListOperatorAuthorizationsRequest_operator          protoreflect.FieldDescriptor
-	fd_QueryListOperatorAuthorizationsRequest_response_max_size protoreflect.FieldDescriptor
+	md_QueryListDelegateAuthorizationsRequest                   protoreflect.MessageDescriptor
+	fd_QueryListDelegateAuthorizationsRequest_corporation_id    protoreflect.FieldDescriptor
+	fd_QueryListDelegateAuthorizationsRequest_delegate          protoreflect.FieldDescriptor
+	fd_QueryListDelegateAuthorizationsRequest_response_max_size protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_de_v1_query_proto_init()
-	md_QueryListOperatorAuthorizationsRequest = File_verana_de_v1_query_proto.Messages().ByName("QueryListOperatorAuthorizationsRequest")
-	fd_QueryListOperatorAuthorizationsRequest_corporation_id = md_QueryListOperatorAuthorizationsRequest.Fields().ByName("corporation_id")
-	fd_QueryListOperatorAuthorizationsRequest_operator = md_QueryListOperatorAuthorizationsRequest.Fields().ByName("operator")
-	fd_QueryListOperatorAuthorizationsRequest_response_max_size = md_QueryListOperatorAuthorizationsRequest.Fields().ByName("response_max_size")
+	md_QueryListDelegateAuthorizationsRequest = File_verana_de_v1_query_proto.Messages().ByName("QueryListDelegateAuthorizationsRequest")
+	fd_QueryListDelegateAuthorizationsRequest_corporation_id = md_QueryListDelegateAuthorizationsRequest.Fields().ByName("corporation_id")
+	fd_QueryListDelegateAuthorizationsRequest_delegate = md_QueryListDelegateAuthorizationsRequest.Fields().ByName("delegate")
+	fd_QueryListDelegateAuthorizationsRequest_response_max_size = md_QueryListDelegateAuthorizationsRequest.Fields().ByName("response_max_size")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryListOperatorAuthorizationsRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryListDelegateAuthorizationsRequest)(nil)
 
-type fastReflection_QueryListOperatorAuthorizationsRequest QueryListOperatorAuthorizationsRequest
+type fastReflection_QueryListDelegateAuthorizationsRequest QueryListDelegateAuthorizationsRequest
 
-func (x *QueryListOperatorAuthorizationsRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryListOperatorAuthorizationsRequest)(x)
+func (x *QueryListDelegateAuthorizationsRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryListDelegateAuthorizationsRequest)(x)
 }
 
-func (x *QueryListOperatorAuthorizationsRequest) slowProtoReflect() protoreflect.Message {
+func (x *QueryListDelegateAuthorizationsRequest) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_query_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -52,43 +52,43 @@ func (x *QueryListOperatorAuthorizationsRequest) slowProtoReflect() protoreflect
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryListOperatorAuthorizationsRequest_messageType fastReflection_QueryListOperatorAuthorizationsRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QueryListOperatorAuthorizationsRequest_messageType{}
+var _fastReflection_QueryListDelegateAuthorizationsRequest_messageType fastReflection_QueryListDelegateAuthorizationsRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryListDelegateAuthorizationsRequest_messageType{}
 
-type fastReflection_QueryListOperatorAuthorizationsRequest_messageType struct{}
+type fastReflection_QueryListDelegateAuthorizationsRequest_messageType struct{}
 
-func (x fastReflection_QueryListOperatorAuthorizationsRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryListOperatorAuthorizationsRequest)(nil)
+func (x fastReflection_QueryListDelegateAuthorizationsRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryListDelegateAuthorizationsRequest)(nil)
 }
-func (x fastReflection_QueryListOperatorAuthorizationsRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryListOperatorAuthorizationsRequest)
+func (x fastReflection_QueryListDelegateAuthorizationsRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryListDelegateAuthorizationsRequest)
 }
-func (x fastReflection_QueryListOperatorAuthorizationsRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListOperatorAuthorizationsRequest
+func (x fastReflection_QueryListDelegateAuthorizationsRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryListDelegateAuthorizationsRequest
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListOperatorAuthorizationsRequest
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryListDelegateAuthorizationsRequest
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QueryListOperatorAuthorizationsRequest_messageType
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryListDelegateAuthorizationsRequest_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) New() protoreflect.Message {
-	return new(fastReflection_QueryListOperatorAuthorizationsRequest)
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryListDelegateAuthorizationsRequest)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Interface() protoreflect.ProtoMessage {
-	return (*QueryListOperatorAuthorizationsRequest)(x)
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryListDelegateAuthorizationsRequest)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -96,22 +96,22 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Interface() prot
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.CorporationId != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.CorporationId)
-		if !f(fd_QueryListOperatorAuthorizationsRequest_corporation_id, value) {
+		if !f(fd_QueryListDelegateAuthorizationsRequest_corporation_id, value) {
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_QueryListOperatorAuthorizationsRequest_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_QueryListDelegateAuthorizationsRequest_delegate, value) {
 			return
 		}
 	}
 	if x.ResponseMaxSize != uint32(0) {
 		value := protoreflect.ValueOfUint32(x.ResponseMaxSize)
-		if !f(fd_QueryListOperatorAuthorizationsRequest_response_max_size, value) {
+		if !f(fd_QueryListDelegateAuthorizationsRequest_response_max_size, value) {
 			return
 		}
 	}
@@ -128,19 +128,19 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Range(f func(pro
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.corporation_id":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.corporation_id":
 		return x.CorporationId != uint64(0)
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.operator":
-		return x.Operator != ""
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.response_max_size":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.delegate":
+		return x.Delegate != ""
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.response_max_size":
 		return x.ResponseMaxSize != uint32(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -150,19 +150,19 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Has(fd protorefl
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.corporation_id":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.corporation_id":
 		x.CorporationId = uint64(0)
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.operator":
-		x.Operator = ""
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.response_max_size":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.delegate":
+		x.Delegate = ""
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.response_max_size":
 		x.ResponseMaxSize = uint32(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -172,22 +172,22 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Clear(fd protore
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.corporation_id":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.corporation_id":
 		value := x.CorporationId
 		return protoreflect.ValueOfUint64(value)
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.operator":
-		value := x.Operator
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.response_max_size":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.response_max_size":
 		value := x.ResponseMaxSize
 		return protoreflect.ValueOfUint32(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -201,19 +201,19 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Get(descriptor p
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.corporation_id":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.corporation_id":
 		x.CorporationId = value.Uint()
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.operator":
-		x.Operator = value.Interface().(string)
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.response_max_size":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.delegate":
+		x.Delegate = value.Interface().(string)
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.response_max_size":
 		x.ResponseMaxSize = uint32(value.Uint())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -227,48 +227,48 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Set(fd protorefl
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.corporation_id":
-		panic(fmt.Errorf("field corporation_id of message verana.de.v1.QueryListOperatorAuthorizationsRequest is not mutable"))
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.operator":
-		panic(fmt.Errorf("field operator of message verana.de.v1.QueryListOperatorAuthorizationsRequest is not mutable"))
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.response_max_size":
-		panic(fmt.Errorf("field response_max_size of message verana.de.v1.QueryListOperatorAuthorizationsRequest is not mutable"))
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.corporation_id":
+		panic(fmt.Errorf("field corporation_id of message verana.de.v1.QueryListDelegateAuthorizationsRequest is not mutable"))
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.delegate":
+		panic(fmt.Errorf("field delegate of message verana.de.v1.QueryListDelegateAuthorizationsRequest is not mutable"))
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.response_max_size":
+		panic(fmt.Errorf("field response_max_size of message verana.de.v1.QueryListDelegateAuthorizationsRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.corporation_id":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.corporation_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.operator":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.delegate":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.QueryListOperatorAuthorizationsRequest.response_max_size":
+	case "verana.de.v1.QueryListDelegateAuthorizationsRequest.response_max_size":
 		return protoreflect.ValueOfUint32(uint32(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryListOperatorAuthorizationsRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryListDelegateAuthorizationsRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -276,7 +276,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) WhichOneof(d pro
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -287,7 +287,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) GetUnknown() pro
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -299,7 +299,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) SetUnknown(field
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) IsValid() bool {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) IsValid() bool {
 	return x != nil
 }
 
@@ -309,9 +309,9 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryListDelegateAuthorizationsRequest) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryListOperatorAuthorizationsRequest)
+		x := input.Message.Interface().(*QueryListDelegateAuthorizationsRequest)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -326,7 +326,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *
 		if x.CorporationId != 0 {
 			n += 1 + runtime.Sov(uint64(x.CorporationId))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -343,7 +343,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListOperatorAuthorizationsRequest)
+		x := input.Message.Interface().(*QueryListDelegateAuthorizationsRequest)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -367,10 +367,10 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *
 			i--
 			dAtA[i] = 0x18
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -390,7 +390,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListOperatorAuthorizationsRequest)
+		x := input.Message.Interface().(*QueryListDelegateAuthorizationsRequest)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -422,10 +422,10 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListOperatorAuthorizationsRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListDelegateAuthorizationsRequest: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListOperatorAuthorizationsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListDelegateAuthorizationsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -449,7 +449,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *
 				}
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -477,7 +477,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 0 {
@@ -533,77 +533,77 @@ func (x *fastReflection_QueryListOperatorAuthorizationsRequest) ProtoMethods() *
 	}
 }
 
-var _ protoreflect.List = (*_QueryListOperatorAuthorizationsResponse_1_list)(nil)
+var _ protoreflect.List = (*_QueryListDelegateAuthorizationsResponse_1_list)(nil)
 
-type _QueryListOperatorAuthorizationsResponse_1_list struct {
-	list *[]*OperatorAuthorization
+type _QueryListDelegateAuthorizationsResponse_1_list struct {
+	list *[]*DelegateAuthorization
 }
 
-func (x *_QueryListOperatorAuthorizationsResponse_1_list) Len() int {
+func (x *_QueryListDelegateAuthorizationsResponse_1_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_QueryListOperatorAuthorizationsResponse_1_list) Get(i int) protoreflect.Value {
+func (x *_QueryListDelegateAuthorizationsResponse_1_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_QueryListOperatorAuthorizationsResponse_1_list) Set(i int, value protoreflect.Value) {
+func (x *_QueryListDelegateAuthorizationsResponse_1_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*OperatorAuthorization)
+	concreteValue := valueUnwrapped.Interface().(*DelegateAuthorization)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_QueryListOperatorAuthorizationsResponse_1_list) Append(value protoreflect.Value) {
+func (x *_QueryListDelegateAuthorizationsResponse_1_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*OperatorAuthorization)
+	concreteValue := valueUnwrapped.Interface().(*DelegateAuthorization)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_QueryListOperatorAuthorizationsResponse_1_list) AppendMutable() protoreflect.Value {
-	v := new(OperatorAuthorization)
+func (x *_QueryListDelegateAuthorizationsResponse_1_list) AppendMutable() protoreflect.Value {
+	v := new(DelegateAuthorization)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_QueryListOperatorAuthorizationsResponse_1_list) Truncate(n int) {
+func (x *_QueryListDelegateAuthorizationsResponse_1_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_QueryListOperatorAuthorizationsResponse_1_list) NewElement() protoreflect.Value {
-	v := new(OperatorAuthorization)
+func (x *_QueryListDelegateAuthorizationsResponse_1_list) NewElement() protoreflect.Value {
+	v := new(DelegateAuthorization)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_QueryListOperatorAuthorizationsResponse_1_list) IsValid() bool {
+func (x *_QueryListDelegateAuthorizationsResponse_1_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_QueryListOperatorAuthorizationsResponse                         protoreflect.MessageDescriptor
-	fd_QueryListOperatorAuthorizationsResponse_operator_authorizations protoreflect.FieldDescriptor
+	md_QueryListDelegateAuthorizationsResponse                         protoreflect.MessageDescriptor
+	fd_QueryListDelegateAuthorizationsResponse_delegate_authorizations protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_de_v1_query_proto_init()
-	md_QueryListOperatorAuthorizationsResponse = File_verana_de_v1_query_proto.Messages().ByName("QueryListOperatorAuthorizationsResponse")
-	fd_QueryListOperatorAuthorizationsResponse_operator_authorizations = md_QueryListOperatorAuthorizationsResponse.Fields().ByName("operator_authorizations")
+	md_QueryListDelegateAuthorizationsResponse = File_verana_de_v1_query_proto.Messages().ByName("QueryListDelegateAuthorizationsResponse")
+	fd_QueryListDelegateAuthorizationsResponse_delegate_authorizations = md_QueryListDelegateAuthorizationsResponse.Fields().ByName("delegate_authorizations")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryListOperatorAuthorizationsResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryListDelegateAuthorizationsResponse)(nil)
 
-type fastReflection_QueryListOperatorAuthorizationsResponse QueryListOperatorAuthorizationsResponse
+type fastReflection_QueryListDelegateAuthorizationsResponse QueryListDelegateAuthorizationsResponse
 
-func (x *QueryListOperatorAuthorizationsResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryListOperatorAuthorizationsResponse)(x)
+func (x *QueryListDelegateAuthorizationsResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryListDelegateAuthorizationsResponse)(x)
 }
 
-func (x *QueryListOperatorAuthorizationsResponse) slowProtoReflect() protoreflect.Message {
+func (x *QueryListDelegateAuthorizationsResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_query_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -615,43 +615,43 @@ func (x *QueryListOperatorAuthorizationsResponse) slowProtoReflect() protoreflec
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryListOperatorAuthorizationsResponse_messageType fastReflection_QueryListOperatorAuthorizationsResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QueryListOperatorAuthorizationsResponse_messageType{}
+var _fastReflection_QueryListDelegateAuthorizationsResponse_messageType fastReflection_QueryListDelegateAuthorizationsResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryListDelegateAuthorizationsResponse_messageType{}
 
-type fastReflection_QueryListOperatorAuthorizationsResponse_messageType struct{}
+type fastReflection_QueryListDelegateAuthorizationsResponse_messageType struct{}
 
-func (x fastReflection_QueryListOperatorAuthorizationsResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryListOperatorAuthorizationsResponse)(nil)
+func (x fastReflection_QueryListDelegateAuthorizationsResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryListDelegateAuthorizationsResponse)(nil)
 }
-func (x fastReflection_QueryListOperatorAuthorizationsResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryListOperatorAuthorizationsResponse)
+func (x fastReflection_QueryListDelegateAuthorizationsResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryListDelegateAuthorizationsResponse)
 }
-func (x fastReflection_QueryListOperatorAuthorizationsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListOperatorAuthorizationsResponse
+func (x fastReflection_QueryListDelegateAuthorizationsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryListDelegateAuthorizationsResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListOperatorAuthorizationsResponse
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryListDelegateAuthorizationsResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QueryListOperatorAuthorizationsResponse_messageType
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryListDelegateAuthorizationsResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) New() protoreflect.Message {
-	return new(fastReflection_QueryListOperatorAuthorizationsResponse)
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryListDelegateAuthorizationsResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Interface() protoreflect.ProtoMessage {
-	return (*QueryListOperatorAuthorizationsResponse)(x)
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryListDelegateAuthorizationsResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -659,10 +659,10 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Interface() pro
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.OperatorAuthorizations) != 0 {
-		value := protoreflect.ValueOfList(&_QueryListOperatorAuthorizationsResponse_1_list{list: &x.OperatorAuthorizations})
-		if !f(fd_QueryListOperatorAuthorizationsResponse_operator_authorizations, value) {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.DelegateAuthorizations) != 0 {
+		value := protoreflect.ValueOfList(&_QueryListDelegateAuthorizationsResponse_1_list{list: &x.DelegateAuthorizations})
+		if !f(fd_QueryListDelegateAuthorizationsResponse_delegate_authorizations, value) {
 			return
 		}
 	}
@@ -679,15 +679,15 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Range(f func(pr
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsResponse.operator_authorizations":
-		return len(x.OperatorAuthorizations) != 0
+	case "verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations":
+		return len(x.DelegateAuthorizations) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -697,15 +697,15 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Has(fd protoref
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsResponse.operator_authorizations":
-		x.OperatorAuthorizations = nil
+	case "verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations":
+		x.DelegateAuthorizations = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -715,19 +715,19 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Clear(fd protor
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsResponse.operator_authorizations":
-		if len(x.OperatorAuthorizations) == 0 {
-			return protoreflect.ValueOfList(&_QueryListOperatorAuthorizationsResponse_1_list{})
+	case "verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations":
+		if len(x.DelegateAuthorizations) == 0 {
+			return protoreflect.ValueOfList(&_QueryListDelegateAuthorizationsResponse_1_list{})
 		}
-		listValue := &_QueryListOperatorAuthorizationsResponse_1_list{list: &x.OperatorAuthorizations}
+		listValue := &_QueryListDelegateAuthorizationsResponse_1_list{list: &x.DelegateAuthorizations}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -741,17 +741,17 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Get(descriptor 
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsResponse.operator_authorizations":
+	case "verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations":
 		lv := value.List()
-		clv := lv.(*_QueryListOperatorAuthorizationsResponse_1_list)
-		x.OperatorAuthorizations = *clv.list
+		clv := lv.(*_QueryListDelegateAuthorizationsResponse_1_list)
+		x.DelegateAuthorizations = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -765,45 +765,45 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Set(fd protoref
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsResponse.operator_authorizations":
-		if x.OperatorAuthorizations == nil {
-			x.OperatorAuthorizations = []*OperatorAuthorization{}
+	case "verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations":
+		if x.DelegateAuthorizations == nil {
+			x.DelegateAuthorizations = []*DelegateAuthorization{}
 		}
-		value := &_QueryListOperatorAuthorizationsResponse_1_list{list: &x.OperatorAuthorizations}
+		value := &_QueryListDelegateAuthorizationsResponse_1_list{list: &x.DelegateAuthorizations}
 		return protoreflect.ValueOfList(value)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryListOperatorAuthorizationsResponse.operator_authorizations":
-		list := []*OperatorAuthorization{}
-		return protoreflect.ValueOfList(&_QueryListOperatorAuthorizationsResponse_1_list{list: &list})
+	case "verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations":
+		list := []*DelegateAuthorization{}
+		return protoreflect.ValueOfList(&_QueryListDelegateAuthorizationsResponse_1_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListOperatorAuthorizationsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListDelegateAuthorizationsResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryListOperatorAuthorizationsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryListDelegateAuthorizationsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryListOperatorAuthorizationsResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryListDelegateAuthorizationsResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -811,7 +811,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) WhichOneof(d pr
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -822,7 +822,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) GetUnknown() pr
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -834,7 +834,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) SetUnknown(fiel
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) IsValid() bool {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -844,9 +844,9 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) IsValid() bool 
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryListOperatorAuthorizationsResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryListDelegateAuthorizationsResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryListOperatorAuthorizationsResponse)
+		x := input.Message.Interface().(*QueryListDelegateAuthorizationsResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -858,8 +858,8 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) ProtoMethods() 
 		var n int
 		var l int
 		_ = l
-		if len(x.OperatorAuthorizations) > 0 {
-			for _, e := range x.OperatorAuthorizations {
+		if len(x.DelegateAuthorizations) > 0 {
+			for _, e := range x.DelegateAuthorizations {
 				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -874,7 +874,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) ProtoMethods() 
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListOperatorAuthorizationsResponse)
+		x := input.Message.Interface().(*QueryListDelegateAuthorizationsResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -893,9 +893,9 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) ProtoMethods() 
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.OperatorAuthorizations) > 0 {
-			for iNdEx := len(x.OperatorAuthorizations) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.OperatorAuthorizations[iNdEx])
+		if len(x.DelegateAuthorizations) > 0 {
+			for iNdEx := len(x.DelegateAuthorizations) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.DelegateAuthorizations[iNdEx])
 				if err != nil {
 					return protoiface.MarshalOutput{
 						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -920,7 +920,7 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) ProtoMethods() 
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListOperatorAuthorizationsResponse)
+		x := input.Message.Interface().(*QueryListDelegateAuthorizationsResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -952,15 +952,15 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) ProtoMethods() 
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListOperatorAuthorizationsResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListDelegateAuthorizationsResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListOperatorAuthorizationsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListDelegateAuthorizationsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperatorAuthorizations", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DelegateAuthorizations", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -987,8 +987,8 @@ func (x *fastReflection_QueryListOperatorAuthorizationsResponse) ProtoMethods() 
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.OperatorAuthorizations = append(x.OperatorAuthorizations, &OperatorAuthorization{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.OperatorAuthorizations[len(x.OperatorAuthorizations)-1]); err != nil {
+				x.DelegateAuthorizations = append(x.DelegateAuthorizations, &DelegateAuthorization{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.DelegateAuthorizations[len(x.DelegateAuthorizations)-1]); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -2038,25 +2038,25 @@ func (x *fastReflection_QueryListVSOperatorAuthorizationsResponse) ProtoMethods(
 }
 
 var (
-	md_QueryGetOperatorAuthorizationRequest    protoreflect.MessageDescriptor
-	fd_QueryGetOperatorAuthorizationRequest_id protoreflect.FieldDescriptor
+	md_QueryGetDelegateAuthorizationRequest    protoreflect.MessageDescriptor
+	fd_QueryGetDelegateAuthorizationRequest_id protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_de_v1_query_proto_init()
-	md_QueryGetOperatorAuthorizationRequest = File_verana_de_v1_query_proto.Messages().ByName("QueryGetOperatorAuthorizationRequest")
-	fd_QueryGetOperatorAuthorizationRequest_id = md_QueryGetOperatorAuthorizationRequest.Fields().ByName("id")
+	md_QueryGetDelegateAuthorizationRequest = File_verana_de_v1_query_proto.Messages().ByName("QueryGetDelegateAuthorizationRequest")
+	fd_QueryGetDelegateAuthorizationRequest_id = md_QueryGetDelegateAuthorizationRequest.Fields().ByName("id")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryGetOperatorAuthorizationRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryGetDelegateAuthorizationRequest)(nil)
 
-type fastReflection_QueryGetOperatorAuthorizationRequest QueryGetOperatorAuthorizationRequest
+type fastReflection_QueryGetDelegateAuthorizationRequest QueryGetDelegateAuthorizationRequest
 
-func (x *QueryGetOperatorAuthorizationRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryGetOperatorAuthorizationRequest)(x)
+func (x *QueryGetDelegateAuthorizationRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryGetDelegateAuthorizationRequest)(x)
 }
 
-func (x *QueryGetOperatorAuthorizationRequest) slowProtoReflect() protoreflect.Message {
+func (x *QueryGetDelegateAuthorizationRequest) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_query_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2068,43 +2068,43 @@ func (x *QueryGetOperatorAuthorizationRequest) slowProtoReflect() protoreflect.M
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryGetOperatorAuthorizationRequest_messageType fastReflection_QueryGetOperatorAuthorizationRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QueryGetOperatorAuthorizationRequest_messageType{}
+var _fastReflection_QueryGetDelegateAuthorizationRequest_messageType fastReflection_QueryGetDelegateAuthorizationRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryGetDelegateAuthorizationRequest_messageType{}
 
-type fastReflection_QueryGetOperatorAuthorizationRequest_messageType struct{}
+type fastReflection_QueryGetDelegateAuthorizationRequest_messageType struct{}
 
-func (x fastReflection_QueryGetOperatorAuthorizationRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryGetOperatorAuthorizationRequest)(nil)
+func (x fastReflection_QueryGetDelegateAuthorizationRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryGetDelegateAuthorizationRequest)(nil)
 }
-func (x fastReflection_QueryGetOperatorAuthorizationRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryGetOperatorAuthorizationRequest)
+func (x fastReflection_QueryGetDelegateAuthorizationRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryGetDelegateAuthorizationRequest)
 }
-func (x fastReflection_QueryGetOperatorAuthorizationRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryGetOperatorAuthorizationRequest
+func (x fastReflection_QueryGetDelegateAuthorizationRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetDelegateAuthorizationRequest
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryGetOperatorAuthorizationRequest
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetDelegateAuthorizationRequest
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QueryGetOperatorAuthorizationRequest_messageType
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryGetDelegateAuthorizationRequest_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) New() protoreflect.Message {
-	return new(fastReflection_QueryGetOperatorAuthorizationRequest)
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryGetDelegateAuthorizationRequest)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Interface() protoreflect.ProtoMessage {
-	return (*QueryGetOperatorAuthorizationRequest)(x)
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryGetDelegateAuthorizationRequest)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -2112,10 +2112,10 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Interface() protor
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Id != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.Id)
-		if !f(fd_QueryGetOperatorAuthorizationRequest_id, value) {
+		if !f(fd_QueryGetDelegateAuthorizationRequest_id, value) {
 			return
 		}
 	}
@@ -2132,15 +2132,15 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Range(f func(proto
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationRequest.id":
+	case "verana.de.v1.QueryGetDelegateAuthorizationRequest.id":
 		return x.Id != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2150,15 +2150,15 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Has(fd protoreflec
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationRequest.id":
+	case "verana.de.v1.QueryGetDelegateAuthorizationRequest.id":
 		x.Id = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2168,16 +2168,16 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Clear(fd protorefl
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationRequest.id":
+	case "verana.de.v1.QueryGetDelegateAuthorizationRequest.id":
 		value := x.Id
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2191,15 +2191,15 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Get(descriptor pro
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationRequest.id":
+	case "verana.de.v1.QueryGetDelegateAuthorizationRequest.id":
 		x.Id = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2213,40 +2213,40 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Set(fd protoreflec
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationRequest.id":
-		panic(fmt.Errorf("field id of message verana.de.v1.QueryGetOperatorAuthorizationRequest is not mutable"))
+	case "verana.de.v1.QueryGetDelegateAuthorizationRequest.id":
+		panic(fmt.Errorf("field id of message verana.de.v1.QueryGetDelegateAuthorizationRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationRequest.id":
+	case "verana.de.v1.QueryGetDelegateAuthorizationRequest.id":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationRequest"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryGetOperatorAuthorizationRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryGetDelegateAuthorizationRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2254,7 +2254,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) WhichOneof(d proto
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2265,7 +2265,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) GetUnknown() proto
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2277,7 +2277,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) SetUnknown(fields 
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) IsValid() bool {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) IsValid() bool {
 	return x != nil
 }
 
@@ -2287,9 +2287,9 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryGetOperatorAuthorizationRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryGetDelegateAuthorizationRequest) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryGetOperatorAuthorizationRequest)
+		x := input.Message.Interface().(*QueryGetDelegateAuthorizationRequest)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2314,7 +2314,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) ProtoMethods() *pr
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryGetOperatorAuthorizationRequest)
+		x := input.Message.Interface().(*QueryGetDelegateAuthorizationRequest)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2349,7 +2349,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) ProtoMethods() *pr
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryGetOperatorAuthorizationRequest)
+		x := input.Message.Interface().(*QueryGetDelegateAuthorizationRequest)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2381,10 +2381,10 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) ProtoMethods() *pr
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetOperatorAuthorizationRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetDelegateAuthorizationRequest: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetOperatorAuthorizationRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetDelegateAuthorizationRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -2442,25 +2442,25 @@ func (x *fastReflection_QueryGetOperatorAuthorizationRequest) ProtoMethods() *pr
 }
 
 var (
-	md_QueryGetOperatorAuthorizationResponse                        protoreflect.MessageDescriptor
-	fd_QueryGetOperatorAuthorizationResponse_operator_authorization protoreflect.FieldDescriptor
+	md_QueryGetDelegateAuthorizationResponse                        protoreflect.MessageDescriptor
+	fd_QueryGetDelegateAuthorizationResponse_delegate_authorization protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_de_v1_query_proto_init()
-	md_QueryGetOperatorAuthorizationResponse = File_verana_de_v1_query_proto.Messages().ByName("QueryGetOperatorAuthorizationResponse")
-	fd_QueryGetOperatorAuthorizationResponse_operator_authorization = md_QueryGetOperatorAuthorizationResponse.Fields().ByName("operator_authorization")
+	md_QueryGetDelegateAuthorizationResponse = File_verana_de_v1_query_proto.Messages().ByName("QueryGetDelegateAuthorizationResponse")
+	fd_QueryGetDelegateAuthorizationResponse_delegate_authorization = md_QueryGetDelegateAuthorizationResponse.Fields().ByName("delegate_authorization")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryGetOperatorAuthorizationResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryGetDelegateAuthorizationResponse)(nil)
 
-type fastReflection_QueryGetOperatorAuthorizationResponse QueryGetOperatorAuthorizationResponse
+type fastReflection_QueryGetDelegateAuthorizationResponse QueryGetDelegateAuthorizationResponse
 
-func (x *QueryGetOperatorAuthorizationResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryGetOperatorAuthorizationResponse)(x)
+func (x *QueryGetDelegateAuthorizationResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryGetDelegateAuthorizationResponse)(x)
 }
 
-func (x *QueryGetOperatorAuthorizationResponse) slowProtoReflect() protoreflect.Message {
+func (x *QueryGetDelegateAuthorizationResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_query_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2472,43 +2472,43 @@ func (x *QueryGetOperatorAuthorizationResponse) slowProtoReflect() protoreflect.
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryGetOperatorAuthorizationResponse_messageType fastReflection_QueryGetOperatorAuthorizationResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QueryGetOperatorAuthorizationResponse_messageType{}
+var _fastReflection_QueryGetDelegateAuthorizationResponse_messageType fastReflection_QueryGetDelegateAuthorizationResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryGetDelegateAuthorizationResponse_messageType{}
 
-type fastReflection_QueryGetOperatorAuthorizationResponse_messageType struct{}
+type fastReflection_QueryGetDelegateAuthorizationResponse_messageType struct{}
 
-func (x fastReflection_QueryGetOperatorAuthorizationResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryGetOperatorAuthorizationResponse)(nil)
+func (x fastReflection_QueryGetDelegateAuthorizationResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryGetDelegateAuthorizationResponse)(nil)
 }
-func (x fastReflection_QueryGetOperatorAuthorizationResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryGetOperatorAuthorizationResponse)
+func (x fastReflection_QueryGetDelegateAuthorizationResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryGetDelegateAuthorizationResponse)
 }
-func (x fastReflection_QueryGetOperatorAuthorizationResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryGetOperatorAuthorizationResponse
+func (x fastReflection_QueryGetDelegateAuthorizationResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetDelegateAuthorizationResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryGetOperatorAuthorizationResponse
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetDelegateAuthorizationResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QueryGetOperatorAuthorizationResponse_messageType
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryGetDelegateAuthorizationResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) New() protoreflect.Message {
-	return new(fastReflection_QueryGetOperatorAuthorizationResponse)
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryGetDelegateAuthorizationResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Interface() protoreflect.ProtoMessage {
-	return (*QueryGetOperatorAuthorizationResponse)(x)
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryGetDelegateAuthorizationResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -2516,10 +2516,10 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Interface() proto
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.OperatorAuthorization != nil {
-		value := protoreflect.ValueOfMessage(x.OperatorAuthorization.ProtoReflect())
-		if !f(fd_QueryGetOperatorAuthorizationResponse_operator_authorization, value) {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.DelegateAuthorization != nil {
+		value := protoreflect.ValueOfMessage(x.DelegateAuthorization.ProtoReflect())
+		if !f(fd_QueryGetDelegateAuthorizationResponse_delegate_authorization, value) {
 			return
 		}
 	}
@@ -2536,15 +2536,15 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Range(f func(prot
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationResponse.operator_authorization":
-		return x.OperatorAuthorization != nil
+	case "verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization":
+		return x.DelegateAuthorization != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2554,15 +2554,15 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Has(fd protorefle
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationResponse.operator_authorization":
-		x.OperatorAuthorization = nil
+	case "verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization":
+		x.DelegateAuthorization = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2572,16 +2572,16 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Clear(fd protoref
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationResponse.operator_authorization":
-		value := x.OperatorAuthorization
+	case "verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization":
+		value := x.DelegateAuthorization
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2595,15 +2595,15 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Get(descriptor pr
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationResponse.operator_authorization":
-		x.OperatorAuthorization = value.Message().Interface().(*OperatorAuthorization)
+	case "verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization":
+		x.DelegateAuthorization = value.Message().Interface().(*DelegateAuthorization)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2617,44 +2617,44 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Set(fd protorefle
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationResponse.operator_authorization":
-		if x.OperatorAuthorization == nil {
-			x.OperatorAuthorization = new(OperatorAuthorization)
+	case "verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization":
+		if x.DelegateAuthorization == nil {
+			x.DelegateAuthorization = new(DelegateAuthorization)
 		}
-		return protoreflect.ValueOfMessage(x.OperatorAuthorization.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.DelegateAuthorization.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.QueryGetOperatorAuthorizationResponse.operator_authorization":
-		m := new(OperatorAuthorization)
+	case "verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization":
+		m := new(DelegateAuthorization)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetOperatorAuthorizationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetDelegateAuthorizationResponse"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.QueryGetOperatorAuthorizationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.QueryGetDelegateAuthorizationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryGetOperatorAuthorizationResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryGetDelegateAuthorizationResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2662,7 +2662,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) WhichOneof(d prot
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2673,7 +2673,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) GetUnknown() prot
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2685,7 +2685,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) SetUnknown(fields
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) IsValid() bool {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -2695,9 +2695,9 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryGetOperatorAuthorizationResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryGetDelegateAuthorizationResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryGetOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*QueryGetDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2709,8 +2709,8 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) ProtoMethods() *p
 		var n int
 		var l int
 		_ = l
-		if x.OperatorAuthorization != nil {
-			l = options.Size(x.OperatorAuthorization)
+		if x.DelegateAuthorization != nil {
+			l = options.Size(x.DelegateAuthorization)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
@@ -2723,7 +2723,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) ProtoMethods() *p
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryGetOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*QueryGetDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2742,8 +2742,8 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) ProtoMethods() *p
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.OperatorAuthorization != nil {
-			encoded, err := options.Marshal(x.OperatorAuthorization)
+		if x.DelegateAuthorization != nil {
+			encoded, err := options.Marshal(x.DelegateAuthorization)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2767,7 +2767,7 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) ProtoMethods() *p
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryGetOperatorAuthorizationResponse)
+		x := input.Message.Interface().(*QueryGetDelegateAuthorizationResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2799,15 +2799,15 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) ProtoMethods() *p
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetOperatorAuthorizationResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetDelegateAuthorizationResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetOperatorAuthorizationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetDelegateAuthorizationResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperatorAuthorization", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DelegateAuthorization", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -2834,10 +2834,10 @@ func (x *fastReflection_QueryGetOperatorAuthorizationResponse) ProtoMethods() *p
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				if x.OperatorAuthorization == nil {
-					x.OperatorAuthorization = &OperatorAuthorization{}
+				if x.DelegateAuthorization == nil {
+					x.DelegateAuthorization = &DelegateAuthorization{}
 				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.OperatorAuthorization); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.DelegateAuthorization); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -3728,23 +3728,23 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// QueryListOperatorAuthorizationsRequest is the request type for the
-// Query/ListOperatorAuthorizations RPC method.
-type QueryListOperatorAuthorizationsRequest struct {
+// QueryListDelegateAuthorizationsRequest is the request type for the
+// Query/ListDelegateAuthorizations RPC method.
+type QueryListDelegateAuthorizationsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// corporation_id filters by the corporation that granted the authorization.
 	CorporationId uint64 `protobuf:"varint,1,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
-	// operator filters by the operator account that received the authorization.
-	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+	// delegate filters by the delegate account that received the authorization.
+	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
 	// response_max_size limits the number of results. Must be 1-1024, defaults to 64.
 	ResponseMaxSize uint32 `protobuf:"varint,3,opt,name=response_max_size,json=responseMaxSize,proto3" json:"response_max_size,omitempty"`
 }
 
-func (x *QueryListOperatorAuthorizationsRequest) Reset() {
-	*x = QueryListOperatorAuthorizationsRequest{}
+func (x *QueryListDelegateAuthorizationsRequest) Reset() {
+	*x = QueryListDelegateAuthorizationsRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_query_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3752,50 +3752,50 @@ func (x *QueryListOperatorAuthorizationsRequest) Reset() {
 	}
 }
 
-func (x *QueryListOperatorAuthorizationsRequest) String() string {
+func (x *QueryListDelegateAuthorizationsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryListOperatorAuthorizationsRequest) ProtoMessage() {}
+func (*QueryListDelegateAuthorizationsRequest) ProtoMessage() {}
 
-// Deprecated: Use QueryListOperatorAuthorizationsRequest.ProtoReflect.Descriptor instead.
-func (*QueryListOperatorAuthorizationsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryListDelegateAuthorizationsRequest.ProtoReflect.Descriptor instead.
+func (*QueryListDelegateAuthorizationsRequest) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *QueryListOperatorAuthorizationsRequest) GetCorporationId() uint64 {
+func (x *QueryListDelegateAuthorizationsRequest) GetCorporationId() uint64 {
 	if x != nil {
 		return x.CorporationId
 	}
 	return 0
 }
 
-func (x *QueryListOperatorAuthorizationsRequest) GetOperator() string {
+func (x *QueryListDelegateAuthorizationsRequest) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
 
-func (x *QueryListOperatorAuthorizationsRequest) GetResponseMaxSize() uint32 {
+func (x *QueryListDelegateAuthorizationsRequest) GetResponseMaxSize() uint32 {
 	if x != nil {
 		return x.ResponseMaxSize
 	}
 	return 0
 }
 
-// QueryListOperatorAuthorizationsResponse is the response type for the
-// Query/ListOperatorAuthorizations RPC method.
-type QueryListOperatorAuthorizationsResponse struct {
+// QueryListDelegateAuthorizationsResponse is the response type for the
+// Query/ListDelegateAuthorizations RPC method.
+type QueryListDelegateAuthorizationsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	OperatorAuthorizations []*OperatorAuthorization `protobuf:"bytes,1,rep,name=operator_authorizations,json=operatorAuthorizations,proto3" json:"operator_authorizations,omitempty"`
+	DelegateAuthorizations []*DelegateAuthorization `protobuf:"bytes,1,rep,name=delegate_authorizations,json=delegateAuthorizations,proto3" json:"delegate_authorizations,omitempty"`
 }
 
-func (x *QueryListOperatorAuthorizationsResponse) Reset() {
-	*x = QueryListOperatorAuthorizationsResponse{}
+func (x *QueryListDelegateAuthorizationsResponse) Reset() {
+	*x = QueryListDelegateAuthorizationsResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_query_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3803,20 +3803,20 @@ func (x *QueryListOperatorAuthorizationsResponse) Reset() {
 	}
 }
 
-func (x *QueryListOperatorAuthorizationsResponse) String() string {
+func (x *QueryListDelegateAuthorizationsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryListOperatorAuthorizationsResponse) ProtoMessage() {}
+func (*QueryListDelegateAuthorizationsResponse) ProtoMessage() {}
 
-// Deprecated: Use QueryListOperatorAuthorizationsResponse.ProtoReflect.Descriptor instead.
-func (*QueryListOperatorAuthorizationsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryListDelegateAuthorizationsResponse.ProtoReflect.Descriptor instead.
+func (*QueryListDelegateAuthorizationsResponse) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *QueryListOperatorAuthorizationsResponse) GetOperatorAuthorizations() []*OperatorAuthorization {
+func (x *QueryListDelegateAuthorizationsResponse) GetDelegateAuthorizations() []*DelegateAuthorization {
 	if x != nil {
-		return x.OperatorAuthorizations
+		return x.DelegateAuthorizations
 	}
 	return nil
 }
@@ -3914,19 +3914,19 @@ func (x *QueryListVSOperatorAuthorizationsResponse) GetVsOperatorAuthorizations(
 	return nil
 }
 
-// QueryGetOperatorAuthorizationRequest is the request type for the
-// Query/GetOperatorAuthorization RPC method.
-type QueryGetOperatorAuthorizationRequest struct {
+// QueryGetDelegateAuthorizationRequest is the request type for the
+// Query/GetDelegateAuthorization RPC method.
+type QueryGetDelegateAuthorizationRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// id is the OperatorAuthorization id to fetch.
+	// id is the DelegateAuthorization id to fetch.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (x *QueryGetOperatorAuthorizationRequest) Reset() {
-	*x = QueryGetOperatorAuthorizationRequest{}
+func (x *QueryGetDelegateAuthorizationRequest) Reset() {
+	*x = QueryGetDelegateAuthorizationRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_query_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3934,36 +3934,36 @@ func (x *QueryGetOperatorAuthorizationRequest) Reset() {
 	}
 }
 
-func (x *QueryGetOperatorAuthorizationRequest) String() string {
+func (x *QueryGetDelegateAuthorizationRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryGetOperatorAuthorizationRequest) ProtoMessage() {}
+func (*QueryGetDelegateAuthorizationRequest) ProtoMessage() {}
 
-// Deprecated: Use QueryGetOperatorAuthorizationRequest.ProtoReflect.Descriptor instead.
-func (*QueryGetOperatorAuthorizationRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryGetDelegateAuthorizationRequest.ProtoReflect.Descriptor instead.
+func (*QueryGetDelegateAuthorizationRequest) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *QueryGetOperatorAuthorizationRequest) GetId() uint64 {
+func (x *QueryGetDelegateAuthorizationRequest) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-// QueryGetOperatorAuthorizationResponse is the response type for the
-// Query/GetOperatorAuthorization RPC method.
-type QueryGetOperatorAuthorizationResponse struct {
+// QueryGetDelegateAuthorizationResponse is the response type for the
+// Query/GetDelegateAuthorization RPC method.
+type QueryGetDelegateAuthorizationResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	OperatorAuthorization *OperatorAuthorization `protobuf:"bytes,1,opt,name=operator_authorization,json=operatorAuthorization,proto3" json:"operator_authorization,omitempty"`
+	DelegateAuthorization *DelegateAuthorization `protobuf:"bytes,1,opt,name=delegate_authorization,json=delegateAuthorization,proto3" json:"delegate_authorization,omitempty"`
 }
 
-func (x *QueryGetOperatorAuthorizationResponse) Reset() {
-	*x = QueryGetOperatorAuthorizationResponse{}
+func (x *QueryGetDelegateAuthorizationResponse) Reset() {
+	*x = QueryGetDelegateAuthorizationResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_query_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3971,20 +3971,20 @@ func (x *QueryGetOperatorAuthorizationResponse) Reset() {
 	}
 }
 
-func (x *QueryGetOperatorAuthorizationResponse) String() string {
+func (x *QueryGetDelegateAuthorizationResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryGetOperatorAuthorizationResponse) ProtoMessage() {}
+func (*QueryGetDelegateAuthorizationResponse) ProtoMessage() {}
 
-// Deprecated: Use QueryGetOperatorAuthorizationResponse.ProtoReflect.Descriptor instead.
-func (*QueryGetOperatorAuthorizationResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryGetDelegateAuthorizationResponse.ProtoReflect.Descriptor instead.
+func (*QueryGetDelegateAuthorizationResponse) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *QueryGetOperatorAuthorizationResponse) GetOperatorAuthorization() *OperatorAuthorization {
+func (x *QueryGetDelegateAuthorizationResponse) GetDelegateAuthorization() *DelegateAuthorization {
 	if x != nil {
-		return x.OperatorAuthorization
+		return x.DelegateAuthorization
 	}
 	return nil
 }
@@ -4080,26 +4080,26 @@ var file_verana_de_v1_query_proto_rawDesc = []byte{
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64,
 	0x65, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x22, 0xb1, 0x01, 0x0a, 0x26, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x4f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
+	0x22, 0xb1, 0x01, 0x0a, 0x26, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x63,
 	0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x64, 0x12, 0x34, 0x0a, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02,
+	0x49, 0x64, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
 	0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08,
-	0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x2a, 0x0a, 0x11, 0x72, 0x65, 0x73, 0x70,
+	0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x2a, 0x0a, 0x11, 0x72, 0x65, 0x73, 0x70,
 	0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x03, 0x20,
 	0x01, 0x28, 0x0d, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x4d, 0x61, 0x78,
 	0x53, 0x69, 0x7a, 0x65, 0x22, 0x8d, 0x01, 0x0a, 0x27, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69,
-	0x73, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72,
+	0x73, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72,
 	0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x62, 0x0a, 0x17, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x75, 0x74,
+	0x12, 0x62, 0x0a, 0x17, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x5f, 0x61, 0x75, 0x74,
 	0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
 	0x0b, 0x32, 0x23, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31,
-	0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
-	0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x16, 0x6f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
+	0x2e, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
+	0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x16, 0x64, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x73, 0x22, 0xb8, 0x01, 0x0a, 0x28, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69,
 	0x73, 0x74, 0x56, 0x53, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68,
 	0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
@@ -4122,17 +4122,17 @@ var file_verana_de_v1_query_proto_rawDesc = []byte{
 	0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x18,
 	0x76, 0x73, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72,
 	0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x36, 0x0a, 0x24, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x47, 0x65, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68,
+	0x79, 0x47, 0x65, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68,
 	0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
 	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64,
-	0x22, 0x89, 0x01, 0x0a, 0x25, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x4f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x16, 0x6f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
+	0x22, 0x89, 0x01, 0x0a, 0x25, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x44, 0x65, 0x6c,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x16, 0x64, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x5f, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
 	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x76, 0x65, 0x72,
-	0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74,
-	0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
-	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x15, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41,
+	0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
+	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x15, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41,
 	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x38, 0x0a, 0x26,
 	0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x56, 0x53, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74,
 	0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
@@ -4147,14 +4147,14 @@ var file_verana_de_v1_query_proto_rawDesc = []byte{
 	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde,
 	0x1f, 0x00, 0x52, 0x17, 0x76, 0x73, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75,
 	0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x32, 0xb1, 0x05, 0x0a, 0x05,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0xa4, 0x01, 0x0a, 0x1a, 0x4c, 0x69, 0x73, 0x74, 0x4f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0xa4, 0x01, 0x0a, 0x1a, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x73, 0x12, 0x34, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x4f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
+	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65, 0x6c,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x35, 0x2e, 0x76, 0x65, 0x72,
 	0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c,
-	0x69, 0x73, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f,
+	0x69, 0x73, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f,
 	0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x22, 0x19, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x13, 0x12, 0x11, 0x2f, 0x64, 0x65, 0x2f, 0x76,
 	0x31, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x2f, 0x6c, 0x69, 0x73, 0x74, 0x12, 0xad, 0x01, 0x0a,
@@ -4169,13 +4169,13 @@ var file_verana_de_v1_query_proto_rawDesc = []byte{
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c,
 	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x76,
 	0x73, 0x2d, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x2f, 0x6c, 0x69, 0x73, 0x74, 0x12, 0xa2, 0x01, 0x0a,
-	0x18, 0x47, 0x65, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68,
+	0x18, 0x47, 0x65, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68,
 	0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x32, 0x2e, 0x76, 0x65, 0x72, 0x61,
 	0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
-	0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
+	0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
 	0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x33, 0x2e,
 	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x47, 0x65, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74,
+	0x72, 0x79, 0x47, 0x65, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74,
 	0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x22, 0x1d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x17, 0x12, 0x15, 0x2f, 0x64, 0x65, 0x2f,
 	0x76, 0x31, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x2f, 0x67, 0x65, 0x74, 0x2f, 0x7b, 0x69, 0x64,
@@ -4218,29 +4218,29 @@ func file_verana_de_v1_query_proto_rawDescGZIP() []byte {
 
 var file_verana_de_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_verana_de_v1_query_proto_goTypes = []interface{}{
-	(*QueryListOperatorAuthorizationsRequest)(nil),    // 0: verana.de.v1.QueryListOperatorAuthorizationsRequest
-	(*QueryListOperatorAuthorizationsResponse)(nil),   // 1: verana.de.v1.QueryListOperatorAuthorizationsResponse
+	(*QueryListDelegateAuthorizationsRequest)(nil),    // 0: verana.de.v1.QueryListDelegateAuthorizationsRequest
+	(*QueryListDelegateAuthorizationsResponse)(nil),   // 1: verana.de.v1.QueryListDelegateAuthorizationsResponse
 	(*QueryListVSOperatorAuthorizationsRequest)(nil),  // 2: verana.de.v1.QueryListVSOperatorAuthorizationsRequest
 	(*QueryListVSOperatorAuthorizationsResponse)(nil), // 3: verana.de.v1.QueryListVSOperatorAuthorizationsResponse
-	(*QueryGetOperatorAuthorizationRequest)(nil),      // 4: verana.de.v1.QueryGetOperatorAuthorizationRequest
-	(*QueryGetOperatorAuthorizationResponse)(nil),     // 5: verana.de.v1.QueryGetOperatorAuthorizationResponse
+	(*QueryGetDelegateAuthorizationRequest)(nil),      // 4: verana.de.v1.QueryGetDelegateAuthorizationRequest
+	(*QueryGetDelegateAuthorizationResponse)(nil),     // 5: verana.de.v1.QueryGetDelegateAuthorizationResponse
 	(*QueryGetVSOperatorAuthorizationRequest)(nil),    // 6: verana.de.v1.QueryGetVSOperatorAuthorizationRequest
 	(*QueryGetVSOperatorAuthorizationResponse)(nil),   // 7: verana.de.v1.QueryGetVSOperatorAuthorizationResponse
-	(*OperatorAuthorization)(nil),                     // 8: verana.de.v1.OperatorAuthorization
+	(*DelegateAuthorization)(nil),                     // 8: verana.de.v1.DelegateAuthorization
 	(*VSOperatorAuthorization)(nil),                   // 9: verana.de.v1.VSOperatorAuthorization
 }
 var file_verana_de_v1_query_proto_depIdxs = []int32{
-	8, // 0: verana.de.v1.QueryListOperatorAuthorizationsResponse.operator_authorizations:type_name -> verana.de.v1.OperatorAuthorization
+	8, // 0: verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations:type_name -> verana.de.v1.DelegateAuthorization
 	9, // 1: verana.de.v1.QueryListVSOperatorAuthorizationsResponse.vs_operator_authorizations:type_name -> verana.de.v1.VSOperatorAuthorization
-	8, // 2: verana.de.v1.QueryGetOperatorAuthorizationResponse.operator_authorization:type_name -> verana.de.v1.OperatorAuthorization
+	8, // 2: verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization:type_name -> verana.de.v1.DelegateAuthorization
 	9, // 3: verana.de.v1.QueryGetVSOperatorAuthorizationResponse.vs_operator_authorization:type_name -> verana.de.v1.VSOperatorAuthorization
-	0, // 4: verana.de.v1.Query.ListOperatorAuthorizations:input_type -> verana.de.v1.QueryListOperatorAuthorizationsRequest
+	0, // 4: verana.de.v1.Query.ListDelegateAuthorizations:input_type -> verana.de.v1.QueryListDelegateAuthorizationsRequest
 	2, // 5: verana.de.v1.Query.ListVSOperatorAuthorizations:input_type -> verana.de.v1.QueryListVSOperatorAuthorizationsRequest
-	4, // 6: verana.de.v1.Query.GetOperatorAuthorization:input_type -> verana.de.v1.QueryGetOperatorAuthorizationRequest
+	4, // 6: verana.de.v1.Query.GetDelegateAuthorization:input_type -> verana.de.v1.QueryGetDelegateAuthorizationRequest
 	6, // 7: verana.de.v1.Query.GetVSOperatorAuthorization:input_type -> verana.de.v1.QueryGetVSOperatorAuthorizationRequest
-	1, // 8: verana.de.v1.Query.ListOperatorAuthorizations:output_type -> verana.de.v1.QueryListOperatorAuthorizationsResponse
+	1, // 8: verana.de.v1.Query.ListDelegateAuthorizations:output_type -> verana.de.v1.QueryListDelegateAuthorizationsResponse
 	3, // 9: verana.de.v1.Query.ListVSOperatorAuthorizations:output_type -> verana.de.v1.QueryListVSOperatorAuthorizationsResponse
-	5, // 10: verana.de.v1.Query.GetOperatorAuthorization:output_type -> verana.de.v1.QueryGetOperatorAuthorizationResponse
+	5, // 10: verana.de.v1.Query.GetDelegateAuthorization:output_type -> verana.de.v1.QueryGetDelegateAuthorizationResponse
 	7, // 11: verana.de.v1.Query.GetVSOperatorAuthorization:output_type -> verana.de.v1.QueryGetVSOperatorAuthorizationResponse
 	8, // [8:12] is the sub-list for method output_type
 	4, // [4:8] is the sub-list for method input_type
@@ -4257,7 +4257,7 @@ func file_verana_de_v1_query_proto_init() {
 	file_verana_de_v1_types_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_verana_de_v1_query_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryListOperatorAuthorizationsRequest); i {
+			switch v := v.(*QueryListDelegateAuthorizationsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4269,7 +4269,7 @@ func file_verana_de_v1_query_proto_init() {
 			}
 		}
 		file_verana_de_v1_query_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryListOperatorAuthorizationsResponse); i {
+			switch v := v.(*QueryListDelegateAuthorizationsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4305,7 +4305,7 @@ func file_verana_de_v1_query_proto_init() {
 			}
 		}
 		file_verana_de_v1_query_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryGetOperatorAuthorizationRequest); i {
+			switch v := v.(*QueryGetDelegateAuthorizationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4317,7 +4317,7 @@ func file_verana_de_v1_query_proto_init() {
 			}
 		}
 		file_verana_de_v1_query_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryGetOperatorAuthorizationResponse); i {
+			switch v := v.(*QueryGetDelegateAuthorizationResponse); i {
 			case 0:
 				return &v.state
 			case 1:

@@ -43,7 +43,7 @@ func main() {
 func runJourney(ctx context.Context, client cosmosclient.Client, journeyID int) error {
 	switch journeyID {
 	case 1:
-		// CreateCorporation (Corp A) + bootstrap operator authz
+		// CreateCorporation (Corp A) + bootstrap delegate authz
 		return journeys.RunCorpCreateJourney(ctx, client)
 	case 2:
 		// UpdateCorporation + CO queries
@@ -70,55 +70,55 @@ func runJourney(ctx context.Context, client cosmosclient.Client, journeyID int) 
 		// EC + GF query coverage
 		return journeys.RunEcosystemQueriesJourney(ctx, client)
 	case 101:
-		// Ecosystem Operator Authorization Setup (Group + Fund)
+		// Ecosystem Delegate Authorization Setup (Group + Fund)
 		return journeys.RunEcosystemAuthzSetupJourney(ctx, client)
 	case 102:
-		// Ecosystem Operations with Operator Authorization (fail-then-pass)
+		// Ecosystem Operations with Delegate Authorization (fail-then-pass)
 		return journeys.RunEcosystemAuthzOperationsJourney(ctx, client)
 	case 110:
 		// AUTHZ-CHECK-5 negative: delegable Msg from an unregistered corporation
 		return journeys.RunAuthzCheck5UnregisteredJourney(ctx, client)
 	case 201:
-		// Credential Schema Operator Authorization Setup (Group + Fund)
+		// Credential Schema Delegate Authorization Setup (Group + Fund)
 		return journeys.RunCredentialSchemaAuthzSetupJourney(ctx, client)
 	case 202:
-		// Credential Schema Operations with Operator Authorization (fail-then-pass)
+		// Credential Schema Operations with Delegate Authorization (fail-then-pass)
 		return journeys.RunCredentialSchemaAuthzOperationsJourney(ctx, client)
 	case 301:
-		// Permission Operator Authorization Setup (Group + Fund)
+		// Permission Delegate Authorization Setup (Group + Fund)
 		return journeys.RunPermissionAuthzSetupJourney(ctx, client)
 	case 302:
-		// Permission Operations with Operator Authorization (fail-then-pass)
+		// Permission Operations with Delegate Authorization (fail-then-pass)
 		return journeys.RunPermissionAuthzOperationsJourney(ctx, client)
 	case 303:
-		// Permission Cancel VP Last Request with Operator Authorization
+		// Permission Cancel VP Last Request with Delegate Authorization
 		return journeys.RunPermissionCancelVPJourney(ctx, client)
 	case 304:
-		// Permission Create Root Permission with Operator Authorization
+		// Permission Create Root Permission with Delegate Authorization
 		return journeys.RunPermissionCreateRootJourney(ctx, client)
 	case 305:
-		// Permission Adjust Permission with Operator Authorization
+		// Permission Adjust Permission with Delegate Authorization
 		return journeys.RunPermissionAdjustJourney(ctx, client)
 	case 306:
-		// Permission Revoke Permission with Operator Authorization
+		// Permission Revoke Permission with Delegate Authorization
 		return journeys.RunPermissionRevokeJourney(ctx, client)
 	case 307:
 		// Permission CreateOrUpdatePermissionSession with VS Operator Authorization
 		return journeys.RunPermissionCSPSJourney(ctx, client)
 	case 308:
-		// Permission Slash Trust Deposit with Operator Authorization
+		// Permission Slash Trust Deposit with Delegate Authorization
 		return journeys.RunPermissionSlashTDJourney(ctx, client)
 	case 309:
-		// Permission Repay Slashed Trust Deposit with Operator Authorization
+		// Permission Repay Slashed Trust Deposit with Delegate Authorization
 		return journeys.RunPermissionRepaySlashedTDJourney(ctx, client)
 	case 310:
-		// Permission CreatePermission (Self Create) with Operator Authorization
+		// Permission CreatePermission (Self Create) with Delegate Authorization
 		return journeys.RunPermissionCreatePermJourney(ctx, client)
 	case 311:
 		// PP Trigger Resolver (MOD-PP-MSG-15) via ancestor-validator authorization
 		return journeys.RunPermissionTriggerResolverJourney(ctx, client)
 	case 312:
-		// PP Operator spend_limit enforcement (AUTHZ-CHECK-1, #324)
+		// PP Delegate spend_limit enforcement (AUTHZ-CHECK-1, #324)
 		return journeys.RunPermissionSpendEnforcementJourney(ctx, client)
 	case 313:
 		// DE fee grant -> x/feegrant allowance create/revoke (AUTHZ-CHECK-2, #324)
@@ -127,16 +127,16 @@ func runJourney(ctx context.Context, client cosmosclient.Client, journeyID int) 
 		// PP record spend/fee enforcement in CSPS (AUTHZ-CHECK-3 / CHECK-4, #324)
 		return journeys.RunPermissionRecordEnforcementJourney(ctx, client)
 	case 401:
-		// Trust Deposit ReclaimYield + RepaySlashed with Operator Authorization
+		// Trust Deposit ReclaimYield + RepaySlashed with Delegate Authorization
 		return journeys.RunTDReclaimYieldJourney(ctx, client)
 	case 501:
-		// DI Store Digest with Operator Authorization
+		// DI Store Digest with Delegate Authorization
 		return journeys.RunDiStoreDigestJourney(ctx, client)
 	case 601:
 		// XR Create Exchange Rate via Governance
 		return journeys.RunXrCreateExchangeRateJourney(ctx, client)
 	case 602:
-		// XR Update Exchange Rate with Operator Authorization
+		// XR Update Exchange Rate with Delegate Authorization
 		return journeys.RunXrUpdateExchangeRateJourney(ctx, client)
 	case 603:
 		// XR Get Price Query
@@ -156,7 +156,7 @@ func printUsage() {
 	fmt.Println("Usage: verana-test-harness JOURNEY_ID")
 	fmt.Println("Available journeys:")
 	fmt.Println("\n  Corporation (CO) Journeys:")
-	fmt.Println("  1  - CreateCorporation (Corp A) + bootstrap operator authz")
+	fmt.Println("  1  - CreateCorporation (Corp A) + bootstrap delegate authz")
 	fmt.Println("  2  - UpdateCorporation + CO queries")
 	fmt.Println("  3  - Corp CGF AddGFD + IncreaseGFV + GF queries")
 	fmt.Println("\n  Ecosystem (EC) Journeys:")
@@ -167,30 +167,30 @@ func printUsage() {
 	fmt.Println("  24 - ArchiveEcosystem for ec-alpha (archive + unarchive)")
 	fmt.Println("  25 - EC + GF query coverage")
 	fmt.Println("\n  Ecosystem Authorization Journeys (legacy):")
-	fmt.Println("  101 - EC Operator Authorization Setup (Group + Fund)")
-	fmt.Println("  102 - EC Operations with Operator Authorization (fail-then-pass)")
+	fmt.Println("  101 - EC Delegate Authorization Setup (Group + Fund)")
+	fmt.Println("  102 - EC Operations with Delegate Authorization (fail-then-pass)")
 	fmt.Println("\n  Credential Schema Authorization Journeys:")
-	fmt.Println("  201 - CS Operator Authorization Setup (Group + Fund)")
-	fmt.Println("  202 - CS Operations with Operator Authorization (fail-then-pass)")
+	fmt.Println("  201 - CS Delegate Authorization Setup (Group + Fund)")
+	fmt.Println("  202 - CS Operations with Delegate Authorization (fail-then-pass)")
 	fmt.Println("\n  Permission Authorization Journeys:")
-	fmt.Println("  301 - Perm Operator Authorization Setup (Group + Fund)")
-	fmt.Println("  302 - Perm Operations with Operator Authorization (fail-then-pass)")
-	fmt.Println("  303 - Perm Cancel VP Last Request with Operator Authorization")
-	fmt.Println("  304 - Perm Create Root Permission with Operator Authorization")
-	fmt.Println("  305 - Perm Adjust Permission with Operator Authorization")
-	fmt.Println("  306 - Perm Revoke Permission with Operator Authorization")
+	fmt.Println("  301 - Perm Delegate Authorization Setup (Group + Fund)")
+	fmt.Println("  302 - Perm Operations with Delegate Authorization (fail-then-pass)")
+	fmt.Println("  303 - Perm Cancel VP Last Request with Delegate Authorization")
+	fmt.Println("  304 - Perm Create Root Permission with Delegate Authorization")
+	fmt.Println("  305 - Perm Adjust Permission with Delegate Authorization")
+	fmt.Println("  306 - Perm Revoke Permission with Delegate Authorization")
 	fmt.Println("  307 - Perm CreateOrUpdatePermissionSession with VS Operator Authorization")
-	fmt.Println("  308 - Perm Slash Permission Trust Deposit with Operator Authorization")
-	fmt.Println("  309 - Perm Repay Slashed Trust Deposit with Operator Authorization")
-	fmt.Println("  310 - Perm CreatePermission (Self Create) with Operator Authorization")
+	fmt.Println("  308 - Perm Slash Permission Trust Deposit with Delegate Authorization")
+	fmt.Println("  309 - Perm Repay Slashed Trust Deposit with Delegate Authorization")
+	fmt.Println("  310 - Perm CreatePermission (Self Create) with Delegate Authorization")
 	fmt.Println("  311 - PP Trigger Resolver (MOD-PP-MSG-15) via ancestor-validator authorization")
-	fmt.Println("  312 - PP Operator spend_limit enforcement (AUTHZ-CHECK-1)")
+	fmt.Println("  312 - PP Delegate spend_limit enforcement (AUTHZ-CHECK-1)")
 	fmt.Println("\n  Trust Deposit Authorization Journeys:")
-	fmt.Println("  401 - TD ReclaimYield + RepaySlashed with Operator Authorization")
+	fmt.Println("  401 - TD ReclaimYield + RepaySlashed with Delegate Authorization")
 	fmt.Println("\n  Digest (DI) Journeys:")
-	fmt.Println("  501 - DI Store Digest with Operator Authorization")
+	fmt.Println("  501 - DI Store Digest with Delegate Authorization")
 	fmt.Println("\n  Exchange Rate (XR) Journeys:")
 	fmt.Println("  601 - XR Create Exchange Rate via Council")
-	fmt.Println("  602 - XR Update Exchange Rate with Operator Authorization")
+	fmt.Println("  602 - XR Update Exchange Rate with Delegate Authorization")
 	fmt.Println("  603 - XR Get Price Query")
 }

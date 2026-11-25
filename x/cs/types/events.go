@@ -12,7 +12,7 @@ const (
 	AttributeKeyId                                      = "credential_schema_id"
 	AttributeKeyEcosystemId                             = "ecosystem_id"
 	AttributeKeyCorporation                             = "corporation"
-	AttributeKeyOperator                                = "operator"
+	AttributeKeyDelegate                                = "delegate"
 	AttributeKeyTimestamp                               = "timestamp"
 	AttributeKeyArchiveStatus                           = "archive_status"
 	AttributeKeyIssuerGrantorValidationValidityPeriod   = "issuer_grantor_validation_validity_period"

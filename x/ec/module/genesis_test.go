@@ -2,6 +2,7 @@ package ecosystem_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -18,6 +19,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/ec/keeper"
 	ecosystem "github.com/verana-labs/verana-node/x/ec/module"
 	"github.com/verana-labs/verana-node/x/ec/types"
@@ -26,11 +28,11 @@ import (
 
 type genStub struct{}
 
-func (genStub) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (genStub) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
-func (genStub) ResolveByPolicyAddress(_ context.Context, _ string) (types.CorporationView, bool) {
-	return types.CorporationView{}, false
+func (genStub) ResolveCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
+	return types.CorporationView{}, errors.New("corporation not registered")
 }
 func (genStub) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
 	return 0, false, nil
