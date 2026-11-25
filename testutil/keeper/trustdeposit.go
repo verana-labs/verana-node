@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"testing"
+	"time"
 
 	"cosmossdk.io/log/v2"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -117,7 +118,7 @@ func newTrustdepositKeeper(
 		dsKeeper,
 	)
 
-	ctx := sdk.NewContext(stateStore, cmtproto.Header{}, false, log.NewNopLogger())
+	ctx := sdk.NewContext(stateStore, cmtproto.Header{Time: time.Unix(1_700_000_000, 0).UTC()}, false, log.NewNopLogger())
 	require.NoError(t, k.SetParams(ctx, types.DefaultParams()))
 	require.NoError(t, k.TuPegValue.Set(ctx, types.DefaultTuPegValueGenesis))
 	require.NoError(t, k.EpochOrigin.Set(ctx, ctx.BlockTime().Unix()))

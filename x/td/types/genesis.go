@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"math"
 )
 
 // DefaultIndex is the default global index
@@ -73,6 +74,10 @@ func (gs GenesisState) validateTuIndex() error {
 		return fmt.Errorf("tu_peg_value must equal tu_peg_value_genesis %s while no epoch is closed: %s", genesisPeg, peg)
 	case gs.LastClosedEpoch != nil && gs.EpochOrigin == nil:
 		return fmt.Errorf("last_closed_epoch requires epoch_origin")
+	case gs.EpochOrigin != nil && gs.EpochOrigin.Unix() < 0:
+		return fmt.Errorf("epoch_origin must not be before 1970: %s", gs.EpochOrigin)
+	case gs.LastClosedEpoch != nil && *gs.LastClosedEpoch >= uint64(math.MaxInt64/int64(gs.Params.EpochLength)):
+		return fmt.Errorf("last_closed_epoch out of range for epoch_length %s: %d", gs.Params.EpochLength, *gs.LastClosedEpoch)
 	}
 	return nil
 }

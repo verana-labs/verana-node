@@ -179,6 +179,19 @@ func TestEpochBoundary_RoundsDown(t *testing.T) {
 	requirePeg(t, ctx, k, "0.000000000000000002")
 }
 
+func TestEpochBoundary_EndBeyondDurationRange(t *testing.T) {
+	k, ctx, _, ds := setupIndex(t)
+	params := k.GetParams(ctx)
+	params.EpochLength = 100 * 365 * day
+	require.NoError(t, k.SetParams(ctx, params))
+
+	// the end of epoch 2 lies past the time.Duration range from the origin
+	require.NoError(t, k.ProcessEpochBoundaries(blockAt(ctx, 250*365*day)))
+
+	require.Equal(t, []uint64{0, 1}, ds.Epochs)
+	requireLastClosed(t, ctx, k, 1)
+}
+
 func TestEpochBoundary_WithoutDistribution(t *testing.T) {
 	k, ctx := keepertest.TrustdepositKeeper(t)
 	require.NoError(t, k.EpochOrigin.Set(ctx, epochOrigin.Unix()))

@@ -18,7 +18,10 @@ func TestGenesisState_Validate(t *testing.T) {
 		return &d
 	}
 	origin := time.Unix(1_700_000_000, 0).UTC()
+	beforeUnix := time.Unix(-1, 0).UTC()
 	closed := uint64(3)
+	// 106751 daily epochs fit in a time.Duration
+	lastInRange, lastOutOfRange := uint64(106_750), uint64(106_751)
 
 	tests := []struct {
 		desc     string
@@ -130,6 +133,35 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params:          types.DefaultParams(),
 				TuPegValue:      math.LegacyMustNewDecFromStr("99.9"),
 				LastClosedEpoch: &closed,
+			},
+			valid: false,
+		},
+		{
+			desc: "origin before 1970",
+			genState: &types.GenesisState{
+				Params:      types.DefaultParams(),
+				TuPegValue:  types.DefaultTuPegValueGenesis,
+				EpochOrigin: &beforeUnix,
+			},
+			valid: false,
+		},
+		{
+			desc: "last closed epoch at the end of the range",
+			genState: &types.GenesisState{
+				Params:          types.DefaultParams(),
+				TuPegValue:      math.LegacyMustNewDecFromStr("99.9"),
+				EpochOrigin:     &origin,
+				LastClosedEpoch: &lastInRange,
+			},
+			valid: true,
+		},
+		{
+			desc: "last closed epoch beyond the range",
+			genState: &types.GenesisState{
+				Params:          types.DefaultParams(),
+				TuPegValue:      math.LegacyMustNewDecFromStr("99.9"),
+				EpochOrigin:     &origin,
+				LastClosedEpoch: &lastOutOfRange,
 			},
 			valid: false,
 		},

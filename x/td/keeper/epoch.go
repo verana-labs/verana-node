@@ -27,8 +27,9 @@ func (k Keeper) ProcessEpochBoundaries(ctx sdk.Context) error {
 	case !errors.Is(err, collections.ErrNotFound):
 		return err
 	}
-	start, length := time.Unix(origin, 0), k.GetParams(ctx).EpochLength
-	for ; !start.Add(time.Duration(next+1) * length).After(ctx.BlockTime()); next++ {
+	// Sub saturates, so the count of ended epochs never overflows
+	ended := ctx.BlockTime().Sub(time.Unix(origin, 0)) / k.GetParams(ctx).EpochLength
+	for ; ended > 0 && next < uint64(ended); next++ {
 		if err := k.closeEpoch(ctx, next); err != nil {
 			return err
 		}
