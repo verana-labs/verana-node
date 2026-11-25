@@ -64,13 +64,12 @@ func (ms msgServer) toNative(ctx sdk.Context, assetType cstypes.PricingAssetType
 	if amount == 0 {
 		return 0, nil
 	}
-	out, err := ms.exchangeRateKeeper.GetPrice(ctx, assetType, asset, cstypes.PricingAssetType_COIN, types.BondDenom, math.NewIntFromUint64(amount).String())
+	v, err := ms.exchangeRateKeeper.GetPrice(ctx, assetType, asset, cstypes.PricingAssetType_COIN, types.BondDenom, math.NewIntFromUint64(amount))
 	if err != nil {
 		return 0, fmt.Errorf("price conversion to native denom failed: %w", err)
 	}
-	v, ok := math.NewIntFromString(out)
-	if !ok || !v.IsUint64() {
-		return 0, fmt.Errorf("invalid converted price %q", out)
+	if !v.IsUint64() {
+		return 0, fmt.Errorf("converted price %s exceeds uint64", v)
 	}
 	return v.Uint64(), nil
 }

@@ -48,7 +48,7 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 	revokeMsg := &xrtypes.MsgRevokeExchangeRateAuthorization{
 		Authority: council,
 		XrId:      exchangeRateID,
-		Operator:  operatorAddr,
+		Feeder:    operatorAddr,
 	}
 
 	proposalID, err := lib.SubmitCouncilProposal(
@@ -86,7 +86,7 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 	}
 
 	for _, a := range getResp.Authorizations {
-		if a.Operator == operatorAddr {
+		if a.Feeder == operatorAddr {
 			return fmt.Errorf("step 4 failed: authorization for operator %s still present on exchange rate %d", operatorAddr, exchangeRateID)
 		}
 	}

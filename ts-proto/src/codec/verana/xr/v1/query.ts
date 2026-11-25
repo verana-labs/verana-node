@@ -14,7 +14,7 @@ import Long = require("long");
 
 export const protobufPackage = "verana.xr.v1";
 
-/** StateFilter is used for optional bool filtering: 0=unset, 1=active, 2=inactive. */
+/** StateFilter is an optional state: 0=unset, 1=enabled, 2=disabled. */
 export enum StateFilter {
   STATE_FILTER_UNSPECIFIED = 0,
   STATE_FILTER_ACTIVE = 1,
@@ -72,7 +72,8 @@ export interface QueryGetExchangeRateRequest {
   quoteAssetType: PricingAssetType;
   quoteAsset: string;
   state: StateFilter;
-  expireTs: Date | undefined;
+  /** expires, if set, keeps only an entry whose expires is strictly later. */
+  expires: Date | undefined;
 }
 
 /** QueryGetExchangeRateResponse is the response type for Query/GetExchangeRate. */
@@ -80,27 +81,8 @@ export interface QueryGetExchangeRateResponse {
   exchangeRate:
     | ExchangeRate
     | undefined;
-  /** authorizations lists the operators authorized to update this exchange rate. [MOD-XR-QRY-1] */
+  /** authorizations lists the feeders authorized to update this exchange rate. */
   authorizations: ExchangeRateAuthorization[];
-}
-
-/** QueryListExchangeRatesRequest is the request type for Query/ListExchangeRates. */
-export interface QueryListExchangeRatesRequest {
-  baseAssetType: PricingAssetType;
-  baseAsset: string;
-  quoteAssetType: PricingAssetType;
-  quoteAsset: string;
-  state: StateFilter;
-  expire:
-    | Date
-    | undefined;
-  /** response_max_size caps the number of returned entries (default 64, max 1024). [MOD-XR-QRY-2] */
-  responseMaxSize: number;
-}
-
-/** QueryListExchangeRatesResponse is the response type for Query/ListExchangeRates. */
-export interface QueryListExchangeRatesResponse {
-  exchangeRates: ExchangeRate[];
 }
 
 /** QueryGetPriceRequest is the request type for Query/GetPrice. */
@@ -220,7 +202,7 @@ export const QueryParamsResponse = {
 };
 
 function createBaseQueryGetExchangeRateRequest(): QueryGetExchangeRateRequest {
-  return { id: 0, baseAssetType: 0, baseAsset: "", quoteAssetType: 0, quoteAsset: "", state: 0, expireTs: undefined };
+  return { id: 0, baseAssetType: 0, baseAsset: "", quoteAssetType: 0, quoteAsset: "", state: 0, expires: undefined };
 }
 
 export const QueryGetExchangeRateRequest = {
@@ -243,8 +225,8 @@ export const QueryGetExchangeRateRequest = {
     if (message.state !== 0) {
       writer.uint32(48).int32(message.state);
     }
-    if (message.expireTs !== undefined) {
-      Timestamp.encode(toTimestamp(message.expireTs), writer.uint32(58).fork()).ldelim();
+    if (message.expires !== undefined) {
+      Timestamp.encode(toTimestamp(message.expires), writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -303,7 +285,7 @@ export const QueryGetExchangeRateRequest = {
             break;
           }
 
-          message.expireTs = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.expires = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -322,7 +304,7 @@ export const QueryGetExchangeRateRequest = {
       quoteAssetType: isSet(object.quoteAssetType) ? pricingAssetTypeFromJSON(object.quoteAssetType) : 0,
       quoteAsset: isSet(object.quoteAsset) ? globalThis.String(object.quoteAsset) : "",
       state: isSet(object.state) ? stateFilterFromJSON(object.state) : 0,
-      expireTs: isSet(object.expireTs) ? fromJsonTimestamp(object.expireTs) : undefined,
+      expires: isSet(object.expires) ? fromJsonTimestamp(object.expires) : undefined,
     };
   },
 
@@ -346,8 +328,8 @@ export const QueryGetExchangeRateRequest = {
     if (message.state !== 0) {
       obj.state = stateFilterToJSON(message.state);
     }
-    if (message.expireTs !== undefined) {
-      obj.expireTs = message.expireTs.toISOString();
+    if (message.expires !== undefined) {
+      obj.expires = message.expires.toISOString();
     }
     return obj;
   },
@@ -363,7 +345,7 @@ export const QueryGetExchangeRateRequest = {
     message.quoteAssetType = object.quoteAssetType ?? 0;
     message.quoteAsset = object.quoteAsset ?? "";
     message.state = object.state ?? 0;
-    message.expireTs = object.expireTs ?? undefined;
+    message.expires = object.expires ?? undefined;
     return message;
   },
 };
@@ -442,228 +424,6 @@ export const QueryGetExchangeRateResponse = {
       ? ExchangeRate.fromPartial(object.exchangeRate)
       : undefined;
     message.authorizations = object.authorizations?.map((e) => ExchangeRateAuthorization.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseQueryListExchangeRatesRequest(): QueryListExchangeRatesRequest {
-  return {
-    baseAssetType: 0,
-    baseAsset: "",
-    quoteAssetType: 0,
-    quoteAsset: "",
-    state: 0,
-    expire: undefined,
-    responseMaxSize: 0,
-  };
-}
-
-export const QueryListExchangeRatesRequest = {
-  encode(message: QueryListExchangeRatesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.baseAssetType !== 0) {
-      writer.uint32(8).int32(message.baseAssetType);
-    }
-    if (message.baseAsset !== "") {
-      writer.uint32(18).string(message.baseAsset);
-    }
-    if (message.quoteAssetType !== 0) {
-      writer.uint32(24).int32(message.quoteAssetType);
-    }
-    if (message.quoteAsset !== "") {
-      writer.uint32(34).string(message.quoteAsset);
-    }
-    if (message.state !== 0) {
-      writer.uint32(40).int32(message.state);
-    }
-    if (message.expire !== undefined) {
-      Timestamp.encode(toTimestamp(message.expire), writer.uint32(50).fork()).ldelim();
-    }
-    if (message.responseMaxSize !== 0) {
-      writer.uint32(56).uint32(message.responseMaxSize);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListExchangeRatesRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryListExchangeRatesRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.baseAssetType = reader.int32() as any;
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.baseAsset = reader.string();
-          continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.quoteAssetType = reader.int32() as any;
-          continue;
-        case 4:
-          if (tag !== 34) {
-            break;
-          }
-
-          message.quoteAsset = reader.string();
-          continue;
-        case 5:
-          if (tag !== 40) {
-            break;
-          }
-
-          message.state = reader.int32() as any;
-          continue;
-        case 6:
-          if (tag !== 50) {
-            break;
-          }
-
-          message.expire = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        case 7:
-          if (tag !== 56) {
-            break;
-          }
-
-          message.responseMaxSize = reader.uint32();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryListExchangeRatesRequest {
-    return {
-      baseAssetType: isSet(object.baseAssetType) ? pricingAssetTypeFromJSON(object.baseAssetType) : 0,
-      baseAsset: isSet(object.baseAsset) ? globalThis.String(object.baseAsset) : "",
-      quoteAssetType: isSet(object.quoteAssetType) ? pricingAssetTypeFromJSON(object.quoteAssetType) : 0,
-      quoteAsset: isSet(object.quoteAsset) ? globalThis.String(object.quoteAsset) : "",
-      state: isSet(object.state) ? stateFilterFromJSON(object.state) : 0,
-      expire: isSet(object.expire) ? fromJsonTimestamp(object.expire) : undefined,
-      responseMaxSize: isSet(object.responseMaxSize) ? globalThis.Number(object.responseMaxSize) : 0,
-    };
-  },
-
-  toJSON(message: QueryListExchangeRatesRequest): unknown {
-    const obj: any = {};
-    if (message.baseAssetType !== 0) {
-      obj.baseAssetType = pricingAssetTypeToJSON(message.baseAssetType);
-    }
-    if (message.baseAsset !== "") {
-      obj.baseAsset = message.baseAsset;
-    }
-    if (message.quoteAssetType !== 0) {
-      obj.quoteAssetType = pricingAssetTypeToJSON(message.quoteAssetType);
-    }
-    if (message.quoteAsset !== "") {
-      obj.quoteAsset = message.quoteAsset;
-    }
-    if (message.state !== 0) {
-      obj.state = stateFilterToJSON(message.state);
-    }
-    if (message.expire !== undefined) {
-      obj.expire = message.expire.toISOString();
-    }
-    if (message.responseMaxSize !== 0) {
-      obj.responseMaxSize = Math.round(message.responseMaxSize);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryListExchangeRatesRequest>, I>>(base?: I): QueryListExchangeRatesRequest {
-    return QueryListExchangeRatesRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryListExchangeRatesRequest>, I>>(
-    object: I,
-  ): QueryListExchangeRatesRequest {
-    const message = createBaseQueryListExchangeRatesRequest();
-    message.baseAssetType = object.baseAssetType ?? 0;
-    message.baseAsset = object.baseAsset ?? "";
-    message.quoteAssetType = object.quoteAssetType ?? 0;
-    message.quoteAsset = object.quoteAsset ?? "";
-    message.state = object.state ?? 0;
-    message.expire = object.expire ?? undefined;
-    message.responseMaxSize = object.responseMaxSize ?? 0;
-    return message;
-  },
-};
-
-function createBaseQueryListExchangeRatesResponse(): QueryListExchangeRatesResponse {
-  return { exchangeRates: [] };
-}
-
-export const QueryListExchangeRatesResponse = {
-  encode(message: QueryListExchangeRatesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.exchangeRates) {
-      ExchangeRate.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListExchangeRatesResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryListExchangeRatesResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.exchangeRates.push(ExchangeRate.decode(reader, reader.uint32()));
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryListExchangeRatesResponse {
-    return {
-      exchangeRates: globalThis.Array.isArray(object?.exchangeRates)
-        ? object.exchangeRates.map((e: any) => ExchangeRate.fromJSON(e))
-        : [],
-    };
-  },
-
-  toJSON(message: QueryListExchangeRatesResponse): unknown {
-    const obj: any = {};
-    if (message.exchangeRates?.length) {
-      obj.exchangeRates = message.exchangeRates.map((e) => ExchangeRate.toJSON(e));
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryListExchangeRatesResponse>, I>>(base?: I): QueryListExchangeRatesResponse {
-    return QueryListExchangeRatesResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryListExchangeRatesResponse>, I>>(
-    object: I,
-  ): QueryListExchangeRatesResponse {
-    const message = createBaseQueryListExchangeRatesResponse();
-    message.exchangeRates = object.exchangeRates?.map((e) => ExchangeRate.fromPartial(e)) || [];
     return message;
   },
 };
@@ -850,8 +610,6 @@ export interface Query {
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /** GetExchangeRate queries an exchange rate by id or by asset pair. */
   GetExchangeRate(request: QueryGetExchangeRateRequest): Promise<QueryGetExchangeRateResponse>;
-  /** ListExchangeRates queries exchange rates with optional filters. */
-  ListExchangeRates(request: QueryListExchangeRatesRequest): Promise<QueryListExchangeRatesResponse>;
   /** GetPrice computes the price using an exchange rate. */
   GetPrice(request: QueryGetPriceRequest): Promise<QueryGetPriceResponse>;
 }
@@ -865,7 +623,6 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.Params = this.Params.bind(this);
     this.GetExchangeRate = this.GetExchangeRate.bind(this);
-    this.ListExchangeRates = this.ListExchangeRates.bind(this);
     this.GetPrice = this.GetPrice.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
@@ -878,12 +635,6 @@ export class QueryClientImpl implements Query {
     const data = QueryGetExchangeRateRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "GetExchangeRate", data);
     return promise.then((data) => QueryGetExchangeRateResponse.decode(_m0.Reader.create(data)));
-  }
-
-  ListExchangeRates(request: QueryListExchangeRatesRequest): Promise<QueryListExchangeRatesResponse> {
-    const data = QueryListExchangeRatesRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListExchangeRates", data);
-    return promise.then((data) => QueryListExchangeRatesResponse.decode(_m0.Reader.create(data)));
   }
 
   GetPrice(request: QueryGetPriceRequest): Promise<QueryGetPriceResponse> {

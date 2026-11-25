@@ -1,6 +1,8 @@
 package keeper_test
 
 import (
+	"math"
+	"strings"
 	"testing"
 	"time"
 
@@ -8,248 +10,180 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 	"github.com/verana-labs/verana-node/x/xr/keeper"
 	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
-// createActiveExchangeRateWithValidity creates an active rate with a custom validity duration.
-func createActiveExchangeRateWithValidity(t *testing.T, f *fixture, ms types.MsgServer, validity time.Duration) uint64 {
+func authzKey(t *testing.T, id uint64, feeder string) collections.Pair[uint64, sdk.AccAddress] {
 	t.Helper()
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
+	addr, err := sdk.AccAddressFromBech32(feeder)
 	require.NoError(t, err)
+	return collections.Join(id, addr)
+}
 
-	resp, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
-		BaseAssetType:    cstypes.PricingAssetType_COIN,
-		BaseAsset:        "uverana",
-		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
-		QuoteAsset:       "EUR",
-		Rate:             "100",
-		RateScale:        2,
-		ValidityDuration: validity,
-	})
-	require.NoError(t, err)
-
-	xr, err := f.keeper.ExchangeRates.Get(f.ctx, resp.Id)
-	require.NoError(t, err)
-	xr.State = true
-	require.NoError(t, f.keeper.ExchangeRates.Set(f.ctx, resp.Id, xr))
-	return resp.Id
+func grantMsg(t *testing.T, f *fixture, id uint64) *types.MsgGrantExchangeRateAuthorization {
+	exp := testNow.Add(time.Hour)
+	return &types.MsgGrantExchangeRateAuthorization{
+		Authority:  f.authority(t),
+		XrId:       id,
+		Feeder:     testAccount("feeder"),
+		Expiration: &exp,
+	}
 }
 
 func TestGrantExchangeRateAuthorization_Success(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRate(t, f, ms)
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
-	require.NoError(t, err)
-	op := stdOperator()
-	exp := sdk.UnwrapSDKContext(f.ctx).BlockTime().Add(time.Hour)
+	id := createRate(t, f, createMsg(t, f), true)
+	msg := grantMsg(t, f, id)
 	minInterval := 5 * time.Minute
+	msg.MinInterval = &minInterval
+	msg.MaxDeviationBps = 500
 
-	_, err = ms.GrantExchangeRateAuthorization(f.ctx, &types.MsgGrantExchangeRateAuthorization{
-		Authority:       authorityStr,
-		XrId:            id,
-		Operator:        op,
-		Expiration:      &exp,
-		MinInterval:     &minInterval,
-		MaxDeviationBps: 500,
-	})
+	_, err := ms.GrantExchangeRateAuthorization(f.ctx, msg)
 	require.NoError(t, err)
 
-	stored, err := f.keeper.ExchangeRateAuthorizations.Get(f.ctx, collections.Join(id, op))
+	stored, err := f.keeper.ExchangeRateAuthorizations.Get(f.ctx, authzKey(t, id, msg.Feeder))
 	require.NoError(t, err)
-	require.Equal(t, op, stored.Operator)
-	require.Equal(t, id, stored.XrId)
-	require.Equal(t, uint32(500), stored.MaxDeviationBps)
-	require.Equal(t, minInterval, stored.MinInterval)
+	require.Equal(t, types.ExchangeRateAuthorizationRecord{Expiration: testNow.Add(time.Hour).Unix(), MinInterval: 300, MaxDeviationBps: 500}, stored)
+
+	attrs := eventAttrs(t, f, types.EventTypeGrantExchangeRateAuthorization)
+	require.Equal(t, "1", attrs[types.AttributeKeyXrID])
+	require.Equal(t, msg.Feeder, attrs[types.AttributeKeyFeeder])
+	require.Contains(t, attrs["msg"], `"max_deviation_bps":500`)
+
+	// a second grant replaces the record and unsets what it omits
+	msg.MinInterval = nil
+	msg.MaxDeviationBps = 0
+	_, err = ms.GrantExchangeRateAuthorization(f.ctx, msg)
+	require.NoError(t, err)
+	stored, err = f.keeper.ExchangeRateAuthorizations.Get(f.ctx, authzKey(t, id, msg.Feeder))
+	require.NoError(t, err)
+	require.Equal(t, types.ExchangeRateAuthorizationRecord{Expiration: testNow.Add(time.Hour).Unix()}, stored)
 }
 
 func TestGrantExchangeRateAuthorization_NonAuthority(t *testing.T) {
 	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRate(t, f, ms)
-	notGov := sdk.AccAddress([]byte("not_gov_authority___")).String()
-	exp := sdk.UnwrapSDKContext(f.ctx).BlockTime().Add(time.Hour)
-
-	_, err := ms.GrantExchangeRateAuthorization(f.ctx, &types.MsgGrantExchangeRateAuthorization{
-		Authority:  notGov,
-		XrId:       id,
-		Operator:   stdOperator(),
-		Expiration: &exp,
-	})
+	msg := grantMsg(t, f, createRate(t, f, createMsg(t, f), true))
+	msg.Authority = testAccount("not_council")
+	_, err := keeper.NewMsgServerImpl(f.keeper).GrantExchangeRateAuthorization(f.ctx, msg)
 	require.ErrorIs(t, err, types.ErrInvalidSigner)
 }
 
 func TestGrantExchangeRateAuthorization_ExpirationPast(t *testing.T) {
 	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRate(t, f, ms)
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
-	require.NoError(t, err)
-	exp := sdk.UnwrapSDKContext(f.ctx).BlockTime().Add(-time.Hour)
-
-	_, err = ms.GrantExchangeRateAuthorization(f.ctx, &types.MsgGrantExchangeRateAuthorization{
-		Authority:  authorityStr,
-		XrId:       id,
-		Operator:   stdOperator(),
-		Expiration: &exp,
-	})
+	msg := grantMsg(t, f, createRate(t, f, createMsg(t, f), true))
+	*msg.Expiration = testNow
+	_, err := keeper.NewMsgServerImpl(f.keeper).GrantExchangeRateAuthorization(f.ctx, msg)
 	require.ErrorIs(t, err, types.ErrInvalidExpiration)
 }
 
 func TestGrantExchangeRateAuthorization_InvalidXrId(t *testing.T) {
 	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
-	require.NoError(t, err)
-	exp := sdk.UnwrapSDKContext(f.ctx).BlockTime().Add(time.Hour)
-
-	_, err = ms.GrantExchangeRateAuthorization(f.ctx, &types.MsgGrantExchangeRateAuthorization{
-		Authority:  authorityStr,
-		XrId:       999,
-		Operator:   stdOperator(),
-		Expiration: &exp,
-	})
+	_, err := keeper.NewMsgServerImpl(f.keeper).GrantExchangeRateAuthorization(f.ctx, grantMsg(t, f, 999))
 	require.ErrorIs(t, err, types.ErrExchangeRateNotFound)
 }
 
 func TestGrantExchangeRateAuthorization_MaxDeviationOutOfRange(t *testing.T) {
 	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRate(t, f, ms)
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
-	require.NoError(t, err)
-	exp := sdk.UnwrapSDKContext(f.ctx).BlockTime().Add(time.Hour)
-
-	_, err = ms.GrantExchangeRateAuthorization(f.ctx, &types.MsgGrantExchangeRateAuthorization{
-		Authority:       authorityStr,
-		XrId:            id,
-		Operator:        stdOperator(),
-		Expiration:      &exp,
-		MaxDeviationBps: 10001,
-	})
+	msg := grantMsg(t, f, createRate(t, f, createMsg(t, f), true))
+	msg.MaxDeviationBps = 10001
+	_, err := keeper.NewMsgServerImpl(f.keeper).GrantExchangeRateAuthorization(f.ctx, msg)
 	require.ErrorIs(t, err, types.ErrInvalidMaxDeviation)
+}
+
+func TestGrantExchangeRateAuthorization_InvalidMinInterval(t *testing.T) {
+	f := initFixture(t)
+	msg := grantMsg(t, f, createRate(t, f, createMsg(t, f), true))
+	for _, d := range []time.Duration{0, -time.Second, time.Second / 2, 3 * time.Second / 2, time.Duration(math.MaxUint32+1) * time.Second} {
+		msg.MinInterval = &d
+		_, err := keeper.NewMsgServerImpl(f.keeper).GrantExchangeRateAuthorization(f.ctx, msg)
+		require.ErrorIs(t, err, types.ErrInvalidMinInterval, d.String())
+	}
+}
+
+func TestGrantExchangeRateAuthorization_InvalidFeeder(t *testing.T) {
+	f := initFixture(t)
+	msg := grantMsg(t, f, createRate(t, f, createMsg(t, f), true))
+	msg.Feeder = "feeder"
+	_, err := keeper.NewMsgServerImpl(f.keeper).GrantExchangeRateAuthorization(f.ctx, msg)
+	require.ErrorContains(t, err, "invalid feeder address")
+}
+
+func TestGrantExchangeRateAuthorization_MissingExpiration(t *testing.T) {
+	f := initFixture(t)
+	msg := grantMsg(t, f, createRate(t, f, createMsg(t, f), true))
+	msg.Expiration = nil
+	_, err := keeper.NewMsgServerImpl(f.keeper).GrantExchangeRateAuthorization(f.ctx, msg)
+	require.ErrorContains(t, err, "expiration must be set")
+}
+
+func TestGrantExchangeRateAuthorization_CanonicalFeeder(t *testing.T) {
+	f := initFixture(t)
+	ms := keeper.NewMsgServerImpl(f.keeper)
+	id := createRate(t, f, createMsg(t, f), true)
+	msg := grantMsg(t, f, id)
+	feeder := msg.Feeder
+	msg.Feeder = strings.ToUpper(feeder)
+
+	_, err := ms.GrantExchangeRateAuthorization(f.ctx, msg)
+	require.NoError(t, err)
+	require.Equal(t, feeder, eventAttrs(t, f, types.EventTypeGrantExchangeRateAuthorization)[types.AttributeKeyFeeder])
+
+	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 101})
+	require.NoError(t, err)
+
+	_, err = ms.RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Authority: f.authority(t), XrId: id, Feeder: msg.Feeder})
+	require.NoError(t, err)
+	require.Equal(t, feeder, eventAttrs(t, f, types.EventTypeRevokeExchangeRateAuthorization)[types.AttributeKeyFeeder])
+}
+
+func TestGrantExchangeRateAuthorization_GenesisPairNeedsMaxDeviation(t *testing.T) {
+	f := initFixture(t)
+	ms := keeper.NewMsgServerImpl(f.keeper)
+	msg := grantMsg(t, f, createRate(t, f, genesisPairMsg(t, f), true))
+
+	_, err := ms.GrantExchangeRateAuthorization(f.ctx, msg)
+	require.ErrorIs(t, err, types.ErrInvalidMaxDeviation)
+
+	msg.MaxDeviationBps = 1000
+	_, err = ms.GrantExchangeRateAuthorization(f.ctx, msg)
+	require.NoError(t, err)
+
+	// another fiat currency priced in the native denom is not the genesis pair
+	other := genesisPairMsg(t, f)
+	other.BaseAsset = "EUR"
+	_, err = ms.GrantExchangeRateAuthorization(f.ctx, grantMsg(t, f, createRate(t, f, other, true)))
+	require.NoError(t, err)
 }
 
 func TestRevokeExchangeRateAuthorization_Success(t *testing.T) {
 	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
+	id := createRate(t, f, createMsg(t, f), true)
+	feeder := testAccount("feeder")
+	grantAuthz(t, f, id, feeder, 0, 0)
 
-	id := createActiveExchangeRate(t, f, ms)
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
-	require.NoError(t, err)
-	op := stdOperator()
-	grantXRAuthz(t, f, ms, id, op, 0, 0)
-
-	_, err = ms.RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{
-		Authority: authorityStr,
-		XrId:      id,
-		Operator:  op,
-	})
+	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Authority: f.authority(t), XrId: id, Feeder: feeder})
 	require.NoError(t, err)
 
-	// Update must now fail (no authorization).
-	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Operator: op, Id: id, Rate: "200"})
-	require.ErrorIs(t, err, types.ErrAuthorizationNotFound)
+	has, err := f.keeper.ExchangeRateAuthorizations.Has(f.ctx, authzKey(t, id, feeder))
+	require.NoError(t, err)
+	require.False(t, has)
+
+	attrs := eventAttrs(t, f, types.EventTypeRevokeExchangeRateAuthorization)
+	require.Equal(t, "1", attrs[types.AttributeKeyXrID])
+	require.Equal(t, feeder, attrs[types.AttributeKeyFeeder])
+	require.Contains(t, attrs["msg"], feeder)
 }
 
 func TestRevokeExchangeRateAuthorization_Missing(t *testing.T) {
 	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRate(t, f, ms)
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
-	require.NoError(t, err)
-
-	_, err = ms.RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{
-		Authority: authorityStr,
-		XrId:      id,
-		Operator:  stdOperator(),
-	})
+	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Authority: f.authority(t), XrId: 1, Feeder: testAccount("feeder")})
 	require.ErrorIs(t, err, types.ErrAuthorizationNotFound)
 }
 
-func TestUpdateExchangeRate_AuthzExpired(t *testing.T) {
+func TestRevokeExchangeRateAuthorization_NonAuthority(t *testing.T) {
 	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRateWithValidity(t, f, ms, 3*time.Hour)
-	op := stdOperator()
-	grantXRAuthz(t, f, ms, id, op, 0, 0) // expiration = now + 1h
-
-	// Advance block time past the authorization expiration (now + 2h).
-	blockTime := sdk.UnwrapSDKContext(f.ctx).BlockTime()
-	ctx2 := sdk.UnwrapSDKContext(f.ctx).WithBlockTime(blockTime.Add(2 * time.Hour))
-
-	_, err := ms.UpdateExchangeRate(ctx2, &types.MsgUpdateExchangeRate{Operator: op, Id: id, Rate: "200"})
-	require.ErrorIs(t, err, types.ErrAuthorizationExpired)
-}
-
-func TestUpdateExchangeRate_MinIntervalAntiSpam(t *testing.T) {
-	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRate(t, f, ms) // Updated = blockTime
-	op := stdOperator()
-	grantXRAuthz(t, f, ms, id, op, 10*time.Minute, 0)
-
-	// Update at the same block time: 0 elapsed < 10m min_interval -> rejected.
-	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Operator: op, Id: id, Rate: "200"})
-	require.ErrorIs(t, err, types.ErrUpdateTooSoon)
-}
-
-func TestUpdateExchangeRate_MinIntervalElapsed(t *testing.T) {
-	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRateWithValidity(t, f, ms, 3*time.Hour)
-	op := stdOperator()
-	grantXRAuthz(t, f, ms, id, op, 10*time.Minute, 0)
-
-	// Advance 11 minutes (> min_interval, < validity and authz expiration).
-	blockTime := sdk.UnwrapSDKContext(f.ctx).BlockTime()
-	ctx2 := sdk.UnwrapSDKContext(f.ctx).WithBlockTime(blockTime.Add(11 * time.Minute))
-
-	_, err := ms.UpdateExchangeRate(ctx2, &types.MsgUpdateExchangeRate{Operator: op, Id: id, Rate: "200"})
-	require.NoError(t, err)
-}
-
-func TestUpdateExchangeRate_MaxDeviationCircuitBreaker(t *testing.T) {
-	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-
-	id := createActiveExchangeRate(t, f, ms) // rate = 100
-	op := stdOperator()
-	grantXRAuthz(t, f, ms, id, op, 0, 1000) // 10% max deviation
-
-	// 100 -> 200 is +100% > 10% -> rejected.
-	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Operator: op, Id: id, Rate: "200"})
-	require.ErrorIs(t, err, types.ErrRateDeviationExceeded)
-
-	// 100 -> 105 is +5% <= 10% -> allowed.
-	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Operator: op, Id: id, Rate: "105"})
-	require.NoError(t, err)
-}
-
-func TestGetExchangeRate_IncludesAuthorizations(t *testing.T) {
-	f := initFixture(t)
-	ms := keeper.NewMsgServerImpl(f.keeper)
-	qs := keeper.NewQueryServerImpl(f.keeper)
-
-	id := createActiveExchangeRate(t, f, ms)
-	op := stdOperator()
-	grantXRAuthz(t, f, ms, id, op, 0, 0)
-
-	resp, err := qs.GetExchangeRate(f.ctx, &types.QueryGetExchangeRateRequest{Id: id})
-	require.NoError(t, err)
-	require.Len(t, resp.Authorizations, 1)
-	require.Equal(t, op, resp.Authorizations[0].Operator)
-	require.Equal(t, id, resp.Authorizations[0].XrId)
+	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Authority: testAccount("not_council"), XrId: 1, Feeder: testAccount("feeder")})
+	require.ErrorIs(t, err, types.ErrInvalidSigner)
 }

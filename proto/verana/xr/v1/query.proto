@@ -2,7 +2,6 @@ syntax = "proto3";
 package verana.xr.v1;
 
 import "amino/amino.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
@@ -24,11 +23,6 @@ service Query {
     option (google.api.http).get = "/xr/v1/get";
   }
 
-  // ListExchangeRates queries exchange rates with optional filters.
-  rpc ListExchangeRates(QueryListExchangeRatesRequest) returns (QueryListExchangeRatesResponse) {
-    option (google.api.http).get = "/xr/v1/list";
-  }
-
   // GetPrice computes the price using an exchange rate.
   rpc GetPrice(QueryGetPriceRequest) returns (QueryGetPriceResponse) {
     option (google.api.http).get = "/xr/v1/price";
@@ -47,7 +41,7 @@ message QueryParamsResponse {
   ];
 }
 
-// StateFilter is used for optional bool filtering: 0=unset, 1=active, 2=inactive.
+// StateFilter is an optional state: 0=unset, 1=enabled, 2=disabled.
 enum StateFilter {
   STATE_FILTER_UNSPECIFIED = 0;
   STATE_FILTER_ACTIVE = 1;
@@ -62,33 +56,16 @@ message QueryGetExchangeRateRequest {
   verana.cs.v1.PricingAssetType quote_asset_type = 4;
   string quote_asset = 5;
   StateFilter state = 6;
-  google.protobuf.Timestamp expire_ts = 7 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
+  // expires, if set, keeps only an entry whose expires is strictly later.
+  google.protobuf.Timestamp expires = 7 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
 }
 
 // QueryGetExchangeRateResponse is the response type for Query/GetExchangeRate.
 message QueryGetExchangeRateResponse {
   ExchangeRate exchange_rate = 1 [(gogoproto.nullable) = false];
 
-  // authorizations lists the operators authorized to update this exchange rate. [MOD-XR-QRY-1]
+  // authorizations lists the feeders authorized to update this exchange rate.
   repeated ExchangeRateAuthorization authorizations = 2 [(gogoproto.nullable) = false];
-}
-
-// QueryListExchangeRatesRequest is the request type for Query/ListExchangeRates.
-message QueryListExchangeRatesRequest {
-  verana.cs.v1.PricingAssetType base_asset_type = 1;
-  string base_asset = 2;
-  verana.cs.v1.PricingAssetType quote_asset_type = 3;
-  string quote_asset = 4;
-  StateFilter state = 5;
-  google.protobuf.Timestamp expire = 6 [(gogoproto.nullable) = true, (gogoproto.stdtime) = true];
-
-  // response_max_size caps the number of returned entries (default 64, max 1024). [MOD-XR-QRY-2]
-  uint32 response_max_size = 7;
-}
-
-// QueryListExchangeRatesResponse is the response type for Query/ListExchangeRates.
-message QueryListExchangeRatesResponse {
-  repeated ExchangeRate exchange_rates = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryGetPriceRequest is the request type for Query/GetPrice.

@@ -55,7 +55,7 @@ fi
 # Replace remaining "stake" references BEFORE seating the council
 # Use Python for reliable cross-platform editing
 log "Replacing 'stake' with 'uvna' in genesis.json..."
-python3 - <<'PYEOF'
+FEEDER=$($BINARY keys show $VALIDATOR_NAME -a --keyring-backend test) python3 - <<'PYEOF'
 import json, os
 
 home = os.path.expanduser("~")
@@ -73,13 +73,11 @@ with open(genesis_path, "w") as f:
 with open(genesis_path) as f:
     g = json.load(f)
 
-# Seed an active TU->uvna exchange rate so TU-priced schemas resolve fees via
-# x/xr getPrice. rate=1000000/scale=0 matches the legacy trust_unit_price
-# (1 tu = 1000000 uvna), keeping fee amounts unchanged.
+# Genesis exchange rate (XRG): 1 USD cent = 1000000 uvna, fed by the validator key.
 g['app_state']['xr']['exchange_rates'] = [{
     "id": "1",
-    "base_asset_type": "TU",
-    "base_asset": "tu",
+    "base_asset_type": "FIAT",
+    "base_asset": "USD",
     "quote_asset_type": "COIN",
     "quote_asset": "uvna",
     "rate": "1000000",
@@ -89,7 +87,13 @@ g['app_state']['xr']['exchange_rates'] = [{
     "state": True,
     "updated": "2024-01-01T00:00:00Z",
 }]
-g['app_state']['xr']['next_exchange_rate_id'] = "2"
+g['app_state']['xr']['next_exchange_rate_id'] = "1"
+g['app_state']['xr']['exchange_rate_authorizations'] = [{
+    "xr_id": "1",
+    "feeder": os.environ["FEEDER"],
+    "expiration": "2100-01-01T00:00:00Z",
+    "max_deviation_bps": 1000,
+}]
 
 with open(genesis_path, "w") as f:
     json.dump(g, f, indent=2)

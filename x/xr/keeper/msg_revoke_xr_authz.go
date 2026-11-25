@@ -1,14 +1,13 @@
 package keeper
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 
 	"cosmossdk.io/collections"
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/verana-labs/verana-node/util/events"
 	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
@@ -17,35 +16,34 @@ func (ms msgServer) RevokeExchangeRateAuthorization(ctx context.Context, msg *ty
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-
-	// authority MUST equal the council account.
-	authority, err := ms.addressCodec.StringToBytes(msg.Authority)
+	if err := ms.checkAuthority(msg.Authority); err != nil {
+		return nil, err
+	}
+	feederBz, err := ms.addressCodec.StringToBytes(msg.Feeder)
 	if err != nil {
-		return nil, errorsmod.Wrap(err, "invalid authority address")
+		return nil, errorsmod.Wrap(err, "invalid feeder address")
 	}
-	if !bytes.Equal(ms.GetAuthority(), authority) {
-		expected, _ := ms.addressCodec.BytesToString(ms.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expected, msg.Authority)
-	}
+	feeder := sdk.AccAddress(feederBz)
 
-	// (xr_id, operator) MUST exist.
-	key := collections.Join(msg.XrId, msg.Operator)
-	if _, err := ms.ExchangeRateAuthorizations.Get(ctx, key); err != nil {
-		return nil, errorsmod.Wrapf(types.ErrAuthorizationNotFound, "no authorization for xr_id %d operator %s", msg.XrId, msg.Operator)
+	key := collections.Join(msg.XrId, feeder)
+	has, err := ms.ExchangeRateAuthorizations.Has(ctx, key)
+	if err != nil {
+		return nil, err
 	}
-
+	if !has {
+		return nil, errorsmod.Wrapf(types.ErrAuthorizationNotFound, "no authorization for xr_id %d feeder %s", msg.XrId, msg.Feeder)
+	}
 	if err := ms.ExchangeRateAuthorizations.Remove(ctx, key); err != nil {
 		return nil, errorsmod.Wrap(err, "failed to delete exchange rate authorization")
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	sdkCtx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeRevokeExchangeRateAuthz,
-			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.XrId)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
-		),
-	)
+	ev := events.New(types.ModuleName, types.EventTypeRevokeExchangeRateAuthorization).
+		Uint(types.AttributeKeyXrID, msg.XrId).
+		Addr(types.AttributeKeyFeeder, feeder)
+	if err := ev.Msg(ms.cdc, msg); err != nil {
+		return nil, err
+	}
+	ev.Emit(sdk.UnwrapSDKContext(ctx))
 
 	return &types.MsgRevokeExchangeRateAuthorizationResponse{}, nil
 }

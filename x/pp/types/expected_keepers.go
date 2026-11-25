@@ -48,7 +48,7 @@ type EcosystemKeeper interface {
 // ExchangeRateKeeper exposes x/xr price conversion. [MOD-PP fee model] uses it
 // to convert a schema's pricing asset to the native denom for trust-deposit math.
 type ExchangeRateKeeper interface {
-	GetPrice(ctx context.Context, baseAssetType credentialschematypes.PricingAssetType, baseAsset string, quoteAssetType credentialschematypes.PricingAssetType, quoteAsset string, amount string) (string, error)
+	GetPrice(ctx context.Context, baseAssetType credentialschematypes.PricingAssetType, baseAsset string, quoteAssetType credentialschematypes.PricingAssetType, quoteAsset string, amount math.Int) (math.Int, error)
 }
 
 // CorporationView is the read shape MOD-PP needs about a Corporation

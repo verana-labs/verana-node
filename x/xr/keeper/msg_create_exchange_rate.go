@@ -1,37 +1,27 @@
 package keeper
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/verana-labs/verana-node/util/events"
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
+// CreateExchangeRate implements [MOD-XR-MSG-1] Create Exchange Rate.
 func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreateExchangeRate) (*types.MsgCreateExchangeRateResponse, error) {
-	// Validate basic fields
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-
-	// Governance authority check
-	authority, err := ms.addressCodec.StringToBytes(msg.Authority)
-	if err != nil {
-		return nil, errorsmod.Wrap(err, "invalid authority address")
+	if err := ms.checkAuthority(msg.Authority); err != nil {
+		return nil, err
 	}
 
-	if !bytes.Equal(ms.GetAuthority(), authority) {
-		expectedAuthorityStr, _ := ms.addressCodec.BytesToString(ms.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expectedAuthorityStr, msg.Authority)
-	}
-
-	// [MOD-XR-MSG-1-2-1] COIN assets MUST exist on-chain.
 	if err := ms.assertCoinAssetExists(ctx, msg.BaseAssetType, msg.BaseAsset, "base"); err != nil {
 		return nil, err
 	}
@@ -39,73 +29,48 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 		return nil, err
 	}
 
-	// Check pair uniqueness
-	pairKey := buildPairKey(msg.BaseAssetType, msg.BaseAsset, msg.QuoteAssetType, msg.QuoteAsset)
-	_, err = ms.PairIndex.Get(ctx, pairKey)
+	_, _, err := ms.findExchangeRate(ctx, msg.BaseAssetType, msg.BaseAsset, msg.QuoteAssetType, msg.QuoteAsset)
 	if err == nil {
-		return nil, errorsmod.Wrapf(types.ErrDuplicatePair, "exchange rate pair already exists for %s", pairKey)
+		return nil, types.ErrDuplicatePair
+	}
+	if !isNotFound(err) {
+		return nil, err
 	}
 
-	// Auto-generate ID
 	id, err := ms.GetNextID(ctx, types.CounterKeyExchangeRate)
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "failed to generate exchange rate ID")
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	blockTime := sdkCtx.BlockTime()
-
-	// Create ExchangeRate entry
-	xr := types.ExchangeRate{
-		Id:               id,
+	now := sdkCtx.BlockTime().Unix()
+	validity := uint32(msg.ValidityDuration / time.Second)
+	xr := types.ExchangeRateRecord{
 		BaseAssetType:    msg.BaseAssetType,
 		BaseAsset:        msg.BaseAsset,
 		QuoteAssetType:   msg.QuoteAssetType,
 		QuoteAsset:       msg.QuoteAsset,
 		Rate:             msg.Rate,
 		RateScale:        msg.RateScale,
-		ValidityDuration: msg.ValidityDuration,
-		Expires:          blockTime.Add(msg.ValidityDuration),
-		// [MOD-XR-MSG-1-3] entry starts disabled; enabled via gov SetExchangeRateState.
-		State:   false,
-		Updated: blockTime,
+		ValidityDuration: validity,
+		Updated:          now,
+		Expires:          now + int64(validity),
+		State:            false,
 	}
-
-	// Store in collection
 	if err := ms.ExchangeRates.Set(ctx, id, xr); err != nil {
 		return nil, errorsmod.Wrap(err, "failed to store exchange rate")
 	}
 
-	// Store pair index for uniqueness
-	if err := ms.PairIndex.Set(ctx, pairKey, id); err != nil {
-		return nil, errorsmod.Wrap(err, "failed to store pair index")
+	ev := events.New(types.ModuleName, types.EventTypeCreateExchangeRate).
+		Uint(types.AttributeKeyXrID, id).
+		Time(types.AttributeKeyUpdated, time.Unix(xr.Updated, 0)).
+		Time(types.AttributeKeyExpires, time.Unix(xr.Expires, 0))
+	if err := ev.Msg(ms.cdc, msg); err != nil {
+		return nil, err
 	}
-
-	// Emit event
-	sdkCtx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeCreateExchangeRate,
-			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-			sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority),
-			sdk.NewAttribute(types.AttributeKeyBaseAssetType, msg.BaseAssetType.String()),
-			sdk.NewAttribute(types.AttributeKeyBaseAsset, msg.BaseAsset),
-			sdk.NewAttribute(types.AttributeKeyQuoteAssetType, msg.QuoteAssetType.String()),
-			sdk.NewAttribute(types.AttributeKeyQuoteAsset, msg.QuoteAsset),
-			sdk.NewAttribute(types.AttributeKeyRate, msg.Rate),
-			sdk.NewAttribute(types.AttributeKeyRateScale, fmt.Sprintf("%d", msg.RateScale)),
-			sdk.NewAttribute(types.AttributeKeyValidityDuration, msg.ValidityDuration.String()),
-			sdk.NewAttribute(types.AttributeKeyExpires, xr.Expires.UTC().Format(time.RFC3339Nano)),
-		),
-	)
+	ev.Emit(sdkCtx)
 
 	return &types.MsgCreateExchangeRateResponse{Id: id}, nil
-}
-
-// buildPairKey uses '|' as the delimiter — illegal in SDK denoms, so distinct
-// asset pairs can never collide into the same key (unlike ':', which is legal
-// inside a denom).
-func buildPairKey(baseType cstypes.PricingAssetType, baseAsset string, quoteType cstypes.PricingAssetType, quoteAsset string) string {
-	return fmt.Sprintf("%d|%s|%d|%s", baseType, baseAsset, quoteType, quoteAsset)
 }
 
 // assertCoinAssetExists implements the [MOD-XR-MSG-1-2-1] on-chain existence check
