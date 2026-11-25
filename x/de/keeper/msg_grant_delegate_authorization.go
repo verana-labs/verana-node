@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"cosmossdk.io/collections"
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
 
@@ -66,6 +67,22 @@ func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types
 		}
 		if hasVSOA {
 			return nil, types.ErrVSOperatorAuthzExists
+		}
+	}
+
+	// grantee MUST NOT be the policy_address of a corporation co sponsors: the
+	// sponsorship holds that x/feegrant slot.
+	sponsored, found, err := ms.corporationKeeper().GetCorporationByPolicyAddress(ctx, grantee.String())
+	if err != nil {
+		return nil, err
+	}
+	if found {
+		sponsoring, err := ms.Sponsorships.Has(ctx, collections.Join(co.Id, sponsored.Id))
+		if err != nil {
+			return nil, err
+		}
+		if sponsoring {
+			return nil, errorsmod.Wrapf(types.ErrSponsorshipSlotTaken, "grantee is the policy_address of sponsored corporation %d", sponsored.Id)
 		}
 	}
 

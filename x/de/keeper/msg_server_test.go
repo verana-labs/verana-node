@@ -358,6 +358,28 @@ func TestGrantDelegateAuthorization_OwnPolicyAddress(t *testing.T) {
 	}
 }
 
+// [MOD-DE-MSG-3-2] grantee MUST NOT be the policy_address of a corporation the
+// corporation sponsors.
+func TestGrantDelegateAuthorization_SponsoredPolicyAddress(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	grant := func(grantee string) error {
+		_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+			Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		})
+		return err
+	}
+
+	require.NoError(t, grant(corpPolicyAddr(2)))
+	setSponsorship(t, f, ctx, types.Sponsorship{SponsorCorporationId: testCorpID, SponsoredCorporationId: 2})
+	require.ErrorIs(t, grant(corpPolicyAddr(2)), types.ErrSponsorshipSlotTaken)
+	require.ErrorIs(t, grant(strings.ToUpper(corpPolicyAddr(2))), types.ErrSponsorshipSlotTaken)
+
+	// Another sponsor's sponsorship does not count.
+	setSponsorship(t, f, ctx, types.Sponsorship{SponsorCorporationId: 9, SponsoredCorporationId: 3})
+	require.NoError(t, grant(corpPolicyAddr(3)))
+}
+
 func TestRevokeDelegateAuthorization(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
