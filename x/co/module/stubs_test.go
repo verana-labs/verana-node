@@ -13,7 +13,7 @@ import (
 
 type stubDelegation struct{}
 
-func (stubDelegation) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (stubDelegation) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 
@@ -31,12 +31,15 @@ func (stubGF) CreateInitialGFVersionForCorporation(_ context.Context, _ uint64, 
 func (stubGF) ListVersionsByCorporation(_ context.Context, _ uint64, _ uint32, _ bool, _ string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
 	return nil, nil
 }
+func (stubGF) CheckNetworkGFAcceptance(_ context.Context, _ gftypes.CorporationView, _ time.Time) error {
+	return nil
+}
 
 // stubGFDelegation + stubEcosystem satisfy the MOD-GF NewKeeper signature for
 // tests that need to build a real GF concrete keeper (post-cycle-break).
 type stubGFDelegation struct{}
 
-func (stubGFDelegation) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (stubGFDelegation) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 

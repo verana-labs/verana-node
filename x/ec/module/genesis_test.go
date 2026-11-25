@@ -2,6 +2,7 @@ package ecosystem_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -27,11 +28,11 @@ import (
 
 type genStub struct{}
 
-func (genStub) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (genStub) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
-func (genStub) ResolveByPolicyAddress(_ context.Context, _ string) (types.CorporationView, bool) {
-	return types.CorporationView{}, false
+func (genStub) ResolveCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
+	return types.CorporationView{}, errors.New("corporation not registered")
 }
 func (genStub) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
 	return 0, false, nil

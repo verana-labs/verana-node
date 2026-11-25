@@ -30,7 +30,7 @@ func (ms msgServer) RevokeDelegateAuthorization(goCtx context.Context, msg *type
 	if msg.Delegate != msg.Corporation {
 		if err := ms.CheckDelegateAuthorization(
 			ctx,
-			msg.Corporation,
+			co.Id,
 			msg.Delegate,
 			types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION,
 			now,

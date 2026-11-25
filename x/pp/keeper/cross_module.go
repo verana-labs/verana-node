@@ -19,12 +19,12 @@ func NewCoAsParticipantCorporationKeeper(k cokeeper.Keeper) types.CorporationKee
 	return CoAsParticipantCorporationKeeper{k: k}
 }
 
-func (a CoAsParticipantCorporationKeeper) ResolveByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, bool) {
-	coID, err := a.k.CorporationByPolicyAddr.Get(ctx, policyAddress)
+func (a CoAsParticipantCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, error) {
+	co, err := a.k.ResolveCorporationByPolicyAddress(ctx, policyAddress)
 	if err != nil {
-		return types.CorporationView{}, false
+		return types.CorporationView{}, err
 	}
-	return types.CorporationView{Id: coID, PolicyAddress: policyAddress}, true
+	return types.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, nil
 }
 
 func (a CoAsParticipantCorporationKeeper) ResolveByID(ctx context.Context, id uint64) (types.CorporationView, bool) {

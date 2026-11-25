@@ -25,6 +25,22 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
+// delegate, and returns the resolved corporation id.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (uint64, error) {
+	if ms.Keeper.delegationKeeper == nil {
+		return 0, fmt.Errorf("delegation keeper is required for delegate authorization")
+	}
+	co, err := ms.Keeper.coKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
+	if err != nil {
+		return 0, err
+	}
+	if err := ms.Keeper.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, delegate, msgType, ctx.BlockTime()); err != nil {
+		return 0, fmt.Errorf("authorization check failed: %w", err)
+	}
+	return co.Id, nil
+}
+
 // ReclaimTrustDepositYield is refused: [MOD-TD-MSG-2] is void in v5, so the
 // message has no MsgType and no authorization covers it.
 func (ms msgServer) ReclaimTrustDepositYield(_ context.Context, _ *types.MsgReclaimTrustDepositYield) (*types.MsgReclaimTrustDepositYieldResponse, error) {
@@ -138,26 +154,11 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	account := msg.Corporation
 
-	// [MOD-TD-MSG-6-2-1] [AUTHZ-CHECK] Verify delegate authorization
-	if ms.Keeper.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
-	}
-	if err := ms.Keeper.delegationKeeper.CheckDelegateAuthorization(
-		ctx,
-		msg.Corporation,
-		msg.Delegate,
-		detypes.MsgType_MSG_TYPE_REPAY_SLASH,
-		ctx.BlockTime(),
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
-	}
-
-	// [AUTHZ-CHECK-5] Signing corporation account MUST be a registered Corporation.
-	co, err := ms.Keeper.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+	// [MOD-TD-MSG-6-2-1] [AUTHZ-CHECK]
+	corpID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_REPAY_SLASH)
 	if err != nil {
 		return nil, err
 	}
-	corpID := co.Id
 
 	// [MOD-TD-MSG-6-2-1] Load TrustDeposit entry for corporation (must exist, keyed by corporation_id)
 	td, err := ms.Keeper.TrustDeposit.Get(ctx, corpID)
@@ -213,7 +214,7 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	transferCoins := sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(msg.Deposit)))
 	// AUTHZ-CHECK-1 step 3: debit the delegate's spend limit for the committed funds.
 	if err := ms.Keeper.delegationKeeper.ConsumeDelegateSpend(
-		ctx, msg.Corporation, msg.Delegate,
+		ctx, corpID, msg.Delegate,
 		detypes.MsgType_MSG_TYPE_REPAY_SLASH, now, transferCoins,
 	); err != nil {
 		return nil, fmt.Errorf("failed to consume delegate spend: %w", err)

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -45,7 +46,7 @@ func TestDelegateAuthzPeriodRenewal(t *testing.T) {
 
 	// Check well past expiry: must succeed (auto-renew), not abort.
 	checkAt := now.Add(90 * time.Minute)
-	require.NoError(t, f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, mtEcosystem, checkAt))
+	require.NoError(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, grantee, mtEcosystem, checkAt))
 
 	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: id})
 	require.NoError(t, err)
@@ -66,7 +67,7 @@ func TestDelegateAuthzExpiresWithoutPeriod(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, mtEcosystem, now.Add(2*time.Hour))
+	err = f.keeper.CheckDelegateAuthorization(ctx, testCorpID, grantee, mtEcosystem, now.Add(2*time.Hour))
 	require.ErrorIs(t, err, types.ErrAuthzExpired)
 }
 
@@ -82,9 +83,9 @@ func TestDelegateAuthzMsgTypeMembership(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.NoError(t, f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, mtEcosystem, now))
-	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, mtSchema, now), types.ErrAuthzMsgTypeNotFound)
-	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, corporation, grantee, types.MsgType_MSG_TYPE_UNSPECIFIED, now), types.ErrAuthzMsgTypeNotFound)
+	require.NoError(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, grantee, mtEcosystem, now))
+	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, grantee, mtSchema, now), types.ErrAuthzMsgTypeNotFound)
+	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, grantee, types.MsgType_MSG_TYPE_UNSPECIFIED, now), types.ErrAuthzMsgTypeNotFound)
 }
 
 // [MOD-DE-MSG-1] FeeGrant seeds remaining_spend at grant.
@@ -140,29 +141,67 @@ func TestConsumeDelegateSpend(t *testing.T) {
 	id := list.DelegateAuthorizations[0].Id
 
 	// Debit 60 -> remaining 40.
-	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))))
+	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, testCorpID, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))))
 	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: id})
 	require.NoError(t, err)
 	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uvna", 40)), got.DelegateAuthorization.RemainingSpend)
 
 	// Debit another 60 -> exceeds remaining 40.
 	require.ErrorIs(t,
-		f.keeper.ConsumeDelegateSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))),
+		f.keeper.ConsumeDelegateSpend(ctx, testCorpID, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))),
 		types.ErrAuthzSpendLimitExceeded)
 
 	// Empty delegate is not a path.
 	require.ErrorIs(t,
-		f.keeper.ConsumeDelegateSpend(ctx, corporation, "", mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))),
+		f.keeper.ConsumeDelegateSpend(ctx, testCorpID, "", mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))),
 		types.ErrAuthzNotFound)
+}
+
+// [AUTHZ-CHECK-1] step 4: GF-CHECK-2 runs for the delegate's authorization and
+// its failure aborts both the check and the spend.
+func TestDelegateAuthzGFCheck2(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	grantee := acc("grantee_____________")
+	now := ctx.BlockTime()
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	})
+	require.NoError(t, err)
+
+	require.NoError(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, grantee, mtEcosystem, now))
+	require.Equal(t, 1, f.gf.calls)
+	require.Equal(t, testCorpID, f.gf.gotCorpID)
+	require.Equal(t, grantee, f.gf.gotAuthz.Delegate)
+	require.Equal(t, now, f.gf.gotNow)
+
+	f.gf.err = errors.New("accept corporation governance framework version 2")
+	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, grantee, mtEcosystem, now), f.gf.err)
+	require.ErrorIs(t, f.keeper.ConsumeDelegateSpend(ctx, testCorpID, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 1))), f.gf.err)
+}
+
+// GF-CHECK-2 does not apply on the group-proposal path, and runs only once
+// steps 1 to 3 pass.
+func TestDelegateAuthzGFCheck2NotApplied(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	f.gf.err = errors.New("not accepted")
+	corporation := acc("corp________________")
+	now := ctx.BlockTime()
+
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: acc("grantee_____________"), MsgTypes: []types.MsgType{mtEcosystem},
+	})
+	require.NoError(t, err)
+	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, acc("stranger____________"), mtEcosystem, now), types.ErrAuthzNotFound)
+	require.Zero(t, f.gf.calls)
 }
 
 // [AUTHZ-CHECK-1] an empty delegate is rejected, not skipped.
 func TestCheckDelegateAuthorization_EmptyDelegate(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
-	corporation := acc("corp________________")
 
 	require.ErrorIs(t,
-		f.keeper.CheckDelegateAuthorization(ctx, corporation, "", mtEcosystem, ctx.BlockTime()),
+		f.keeper.CheckDelegateAuthorization(ctx, testCorpID, "", mtEcosystem, ctx.BlockTime()),
 		types.ErrAuthzNotFound)
 }
 
@@ -173,10 +212,10 @@ func TestCheckDelegateAuthorization_CorporationAsDelegate(t *testing.T) {
 	corporation := acc("corp________________")
 
 	require.ErrorIs(t,
-		f.keeper.CheckDelegateAuthorization(ctx, corporation, corporation, mtEcosystem, ctx.BlockTime()),
+		f.keeper.CheckDelegateAuthorization(ctx, testCorpID, corporation, mtEcosystem, ctx.BlockTime()),
 		types.ErrAuthzNotFound)
 	require.ErrorIs(t,
-		f.keeper.ConsumeDelegateSpend(ctx, corporation, corporation, mtEcosystem, ctx.BlockTime(), sdk.NewCoins(sdk.NewInt64Coin("uvna", 1))),
+		f.keeper.ConsumeDelegateSpend(ctx, testCorpID, corporation, mtEcosystem, ctx.BlockTime(), sdk.NewCoins(sdk.NewInt64Coin("uvna", 1))),
 		types.ErrAuthzNotFound)
 }
 
@@ -190,7 +229,7 @@ func TestConsumeDelegateSpend_NoLimit(t *testing.T) {
 		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
-	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, corporation, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))))
+	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, testCorpID, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))))
 }
 
 // [AUTHZ-CHECK-3] step 6: ConsumeRecordSpend debits the record's remaining_spend.

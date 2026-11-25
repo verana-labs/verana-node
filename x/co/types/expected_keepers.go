@@ -15,7 +15,7 @@ import (
 // x/de/keeper.Keeper.CheckDelegateAuthorization exactly so the DE keeper
 // concrete type satisfies this interface and depinject can auto-wire it.
 type DelegationKeeper interface {
-	CheckDelegateAuthorization(ctx context.Context, corporation string, delegate string, msgType detypes.MsgType, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time) error
 }
 
 // GroupKeeper is the minimum surface MOD-CO needs from x/group for MSG-1.
@@ -40,4 +40,6 @@ type GroupKeeper interface {
 type GFKeeper interface {
 	CreateInitialGFVersionForCorporation(ctx context.Context, corpID uint64, language, docURL, docDigestSRI string) error
 	ListVersionsByCorporation(ctx context.Context, corpID uint64, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error)
+	// CheckNetworkGFAcceptance runs GF-CHECK-1 for a resolved corporation.
+	CheckNetworkGFAcceptance(ctx context.Context, co gftypes.CorporationView, now time.Time) error
 }

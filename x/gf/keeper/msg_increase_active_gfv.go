@@ -23,12 +23,12 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// AUTHZ-CHECK-1
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION, ctx.BlockTime()); err != nil {
+	coView, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION)
+	if err != nil {
 		return nil, err
 	}
 
-	sub, err := ms.resolveSubject(ctx, msg.Corporation, msg.EcosystemId)
+	sub, err := ms.resolveSubject(ctx, coView, msg.EcosystemId)
 	if err != nil {
 		return nil, err
 	}

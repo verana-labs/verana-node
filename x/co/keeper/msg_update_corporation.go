@@ -22,23 +22,12 @@ func (ms msgServer) UpdateCorporation(goCtx context.Context, msg *types.MsgUpdat
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// AUTHZ-CHECK-5: resolve policy_address → corporation_id.
-	coID, err := ms.CorporationByPolicyAddr.Get(ctx, msg.Corporation)
+	// AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the delegate.
+	co, err := ms.ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
 	if err != nil {
-		return nil, errors.Wrap(types.ErrCorporationNotRegistered, msg.Corporation)
+		return nil, err
 	}
-	co, err := ms.Corporation.Get(ctx, coID)
-	if err != nil {
-		// Should never happen: the reverse index just resolved this id but the
-		// primary table doesn't have it. This is a store-inconsistency, not a
-		// user-facing not-found.
-		return nil, fmt.Errorf("store inconsistency: corporation id %d resolved by index but missing from primary: %w", coID, err)
-	}
-
-	// AUTHZ-CHECK-1: delegate must hold a delegation from the Corporation for
-	// this msg type. msg.Corporation is the policy_address — DE's check accepts
-	// the address form.
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_CORPORATION, ctx.BlockTime()); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_CORPORATION, ctx.BlockTime()); err != nil {
 		return nil, err
 	}
 

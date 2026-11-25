@@ -69,6 +69,41 @@ func TestUpdateCorporation_DEDenies(t *testing.T) {
 	require.ErrorIs(t, err, errAuthDenied)
 }
 
+func TestUpdateCorporation_GFCheck1BeforeAuthzCheck1(t *testing.T) {
+	del := &mockDelegation{}
+	gf := &mockGF{}
+	k, ctx := keepertest.CoKeeper(t, del, &mockGroup{policy: tkPolicy}, gf)
+	ms := keeper.NewMsgServerImpl(k)
+	_, err := ms.CreateCorporation(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+	gf.ngfErr = errAuthDenied
+
+	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
+		Corporation: tkPolicy,
+		Delegate:    tkOp,
+		Did:         "did:example:rotated",
+	})
+	require.ErrorIs(t, err, errAuthDenied)
+	require.Zero(t, del.calls)
+}
+
+func TestUpdateCorporation_AuthzCheck1GetsResolvedID(t *testing.T) {
+	del := &mockDelegation{}
+	k, ctx := keepertest.CoKeeper(t, del, &mockGroup{policy: tkPolicy}, &mockGF{})
+	ms := keeper.NewMsgServerImpl(k)
+	_, err := ms.CreateCorporation(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+
+	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
+		Corporation: tkPolicy,
+		Delegate:    tkOp,
+		Did:         "did:example:rotated",
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, del.calls)
+	require.Equal(t, uint64(1), del.gotCorpID)
+}
+
 func TestUpdateCorporation_NoopOnSameDID(t *testing.T) {
 	grp := &mockGroup{policy: tkPolicy}
 	del := &mockDelegation{}
