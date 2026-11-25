@@ -1,7 +1,6 @@
 package types
 
 import (
-	"strconv"
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
@@ -86,19 +85,4 @@ func (p Params) Validate() error {
 		return errorsmod.Wrap(ErrInvalidParams, "unbonding_period must be positive")
 	}
 	return nil
-}
-
-// EventAttributes lists every parameter value for the update event.
-func (p Params) EventAttributes() []sdk.Attribute {
-	return []sdk.Attribute{
-		sdk.NewAttribute("validator_node_budget", p.ValidatorNodeBudget.String()),
-		sdk.NewAttribute("validator_target_uptime", p.ValidatorTargetUptime.String()),
-		sdk.NewAttribute("validator_min_uptime", p.ValidatorMinUptime.String()),
-		sdk.NewAttribute("council_budget", p.CouncilBudget.String()),
-		sdk.NewAttribute("foundation_budget", p.FoundationBudget.String()),
-		sdk.NewAttribute("foundation_account", p.FoundationAccount),
-		sdk.NewAttribute("vna_holder_max_yield_rate", p.VnaHolderMaxYieldRate.String()),
-		sdk.NewAttribute("unbonding_period", p.UnbondingPeriod.String()),
-		sdk.NewAttribute("bonding_enabled", strconv.FormatBool(p.BondingEnabled)),
-	}
 }

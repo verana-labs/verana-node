@@ -1,6 +1,7 @@
 package ds
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -22,7 +23,8 @@ var (
 	_ module.AppModule      = (*AppModule)(nil)
 	_ module.HasGenesis     = (*AppModule)(nil)
 
-	_ appmodule.AppModule = (*AppModule)(nil)
+	_ appmodule.AppModule     = (*AppModule)(nil)
+	_ appmodule.HasEndBlocker = (*AppModule)(nil)
 )
 
 // AppModule implements the AppModule interface for the Distribution module.
@@ -94,6 +96,11 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, _ codec.JSONCodec) json.RawMe
 		panic(fmt.Errorf("failed to export %s genesis state: %w", types.ModuleName, err))
 	}
 	return am.cdc.MustMarshalJSON(genState)
+}
+
+// EndBlock counts the block in the open epoch.
+func (am AppModule) EndBlock(ctx context.Context) error {
+	return am.keeper.CountBlock(ctx)
 }
 
 // ConsensusVersion is a sequence number for state-breaking change of the module.

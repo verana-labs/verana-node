@@ -31,6 +31,7 @@ import (
 
 	"github.com/verana-labs/verana-node/app"
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	dstypes "github.com/verana-labs/verana-node/x/ds/types"
 	poakeeper "github.com/verana-labs/verana-node/x/poa/keeper"
 	poatypes "github.com/verana-labs/verana-node/x/poa/types"
 )
@@ -304,6 +305,34 @@ func TestGenesisValidator_SignsBlocks(t *testing.T) {
 	info, err := a.SlashingKeeper.GetValidatorSigningInfo(a.NewContext(true), consAddr)
 	require.NoError(t, err)
 	require.Equal(t, consAddr.String(), info.Address)
+}
+
+func TestGenesisValidator_CountedPerBlock(t *testing.T) {
+	a := newTestApp(t)
+	gs, corps := councilGenesis(t, a, 3)
+	require.NoError(t, initChain(t, a, gs))
+	c := &liveChain{app: a, now: time.Unix(0, 0).UTC()}
+	c.block(t)
+
+	c.height++
+	c.now = c.now.Add(time.Second)
+	_, err := a.FinalizeBlock(&abci.RequestFinalizeBlock{
+		Height: c.height, Time: c.now,
+		DecidedLastCommit: abci.CommitInfo{Votes: []abci.VoteInfo{{
+			Validator: abci.Validator{Address: corps[0].cons.PubKey().Address(), Power: 1}, BlockIdFlag: cmtproto.BlockIDFlagCommit,
+		}}},
+	})
+	require.NoError(t, err)
+	_, err = a.Commit()
+	require.NoError(t, err)
+
+	ctx := a.NewContext(true)
+	got, err := a.DsKeeper.ValidatorBlocks.Get(ctx, sdk.ValAddress(corps[0].policy))
+	require.NoError(t, err)
+	require.Equal(t, dstypes.ValidatorBlocks{SignedBlocks: 1, MemberBlocks: 2}, got)
+	n, err := a.DsKeeper.EpochBlocks.Get(ctx)
+	require.NoError(t, err)
+	require.Equal(t, uint64(2), n)
 }
 
 func TestSeatAndUnseat_ThroughStaking(t *testing.T) {

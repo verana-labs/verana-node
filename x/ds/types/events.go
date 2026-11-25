@@ -1,7 +1,17 @@
 package types
 
 const (
-	EventTypeUpdateParams = "update_params"
+	EventTypeUpdateModuleParameters = "update_module_parameters"
+	EventTypeCloseEpoch             = "close_epoch"
 
-	AttributeKeyAuthority = "authority"
+	AttributeKeyEpoch            = "epoch"
+	AttributeKeyEpochBlocks      = "epoch_blocks"
+	AttributeKeySkipped          = "skipped"
+	AttributeKeyValidator        = "validator"
+	AttributeKeySignedBlocks     = "signed_blocks"
+	AttributeKeyMemberBlocks     = "member_blocks"
+	AttributeKeyValidatorPayout  = "validator_payout"
+	AttributeKeyCouncilPayout    = "council_payout"
+	AttributeKeyFoundationPayout = "foundation_payout"
+	AttributeKeyBurned           = "burned"
 )

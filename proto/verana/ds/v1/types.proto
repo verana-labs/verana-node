@@ -1,0 +1,13 @@
+syntax = "proto3";
+package verana.ds.v1;
+
+option go_package = "github.com/verana-labs/verana-node/x/ds/types";
+
+// ValidatorBlocks counts a validator's blocks in the open epoch, keyed by its
+// operator address.
+message ValidatorBlocks {
+  // blocks whose last commit carries its signature
+  uint64 signed_blocks = 1;
+  // blocks during which it was a member of the validator set
+  uint64 member_blocks = 2;
+}

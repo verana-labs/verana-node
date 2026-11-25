@@ -6,6 +6,7 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/verana-labs/verana-node/x/ds/keeper"
@@ -16,6 +17,8 @@ func TestMsgUpdateParams(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)
 	authority := f.authority(t)
+	blocked := sdk.AccAddress(authtypes.NewModuleAddress("bonded_tokens_pool")).String()
+	f.bank.blocked[blocked] = true
 
 	withEdit := func(edit func(p *types.Params)) types.Params {
 		p := types.DefaultParams()
@@ -41,6 +44,13 @@ func TestMsgUpdateParams(t *testing.T) {
 			name: "resulting min uptime above target",
 			input: &types.MsgUpdateParams{Authority: authority, Params: withEdit(func(p *types.Params) {
 				p.ValidatorMinUptime = math.LegacyMustNewDecFromStr("0.995")
+			})},
+			expErr: types.ErrInvalidParams,
+		},
+		{
+			name: "foundation account blocked",
+			input: &types.MsgUpdateParams{Authority: authority, Params: withEdit(func(p *types.Params) {
+				p.FoundationAccount = blocked
 			})},
 			expErr: types.ErrInvalidParams,
 		},
@@ -74,27 +84,29 @@ func TestMsgUpdateParams(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
+func TestMsgUpdateParams_EmitsMsg(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)
-	authority := f.authority(t)
 
 	p := types.DefaultParams()
 	p.BondingEnabled = true
-	_, err := ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Authority: authority, Params: p})
+	msg := &types.MsgUpdateParams{Authority: f.authority(t), Params: p}
+	_, err := ms.UpdateParams(f.ctx, msg)
 	require.NoError(t, err)
 
-	attrs := map[string]string{}
-	for _, ev := range sdk.UnwrapSDKContext(f.ctx).EventManager().Events() {
-		if ev.Type == types.EventTypeUpdateParams {
-			for _, a := range ev.Attributes {
-				attrs[a.Key] = a.Value
-			}
+	want, err := f.cdc.MarshalJSON(msg)
+	require.NoError(t, err)
+	var found bool
+	for _, ev := range f.ctx.EventManager().Events() {
+		if ev.Type != types.EventTypeUpdateModuleParameters {
+			continue
 		}
+		found = true
+		attrs := map[string]string{}
+		for _, a := range ev.Attributes {
+			attrs[a.Key] = a.Value
+		}
+		require.Equal(t, map[string]string{sdk.AttributeKeyModule: types.ModuleName, "msg": string(want)}, attrs)
 	}
-	require.Equal(t, authority, attrs[types.AttributeKeyAuthority])
-	require.Equal(t, "true", attrs["bonding_enabled"])
-	require.Equal(t, p.FoundationAccount, attrs["foundation_account"])
-	require.Equal(t, "0.990000000000000000", attrs["validator_target_uptime"])
-	require.Len(t, attrs, 10)
+	require.True(t, found)
 }
