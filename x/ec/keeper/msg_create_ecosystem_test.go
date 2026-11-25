@@ -14,14 +14,14 @@ import (
 const (
 	tkCorp  = "cosmos14wcc52lpsxwuxxhqjxrhvuumhm0xr6z247un93" // corp-test-1
 	tkCorpB = "cosmos1lyfknrsmxhlr7rflvuz6x7jjjpnx4s5uywj78f" // corp-test-2
-	tkOp    = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn" // operator-test
+	tkOp    = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn" // delegate-test
 )
 
 func validCreateMsg(t *testing.T) *types.MsgCreateEcosystem {
 	t.Helper()
 	return &types.MsgCreateEcosystem{
 		Corporation:  tkCorp,
-		Operator:     tkOp,
+		Delegate:     tkOp,
 		Did:          "did:example:ec1",
 		Language:     "en",
 		DocUrl:       "https://example.com/ec.pdf",

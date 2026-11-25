@@ -63,18 +63,18 @@ func (gs GenesisState) Validate() error {
 		if _, ok := rateIDs[a.XrId]; !ok {
 			return fmt.Errorf("exchange rate authorization references unknown xr_id %d", a.XrId)
 		}
-		if _, err := sdk.AccAddressFromBech32(a.Operator); err != nil {
-			return fmt.Errorf("exchange rate authorization for xr_id %d has invalid operator: %w", a.XrId, err)
+		if _, err := sdk.AccAddressFromBech32(a.Feeder); err != nil {
+			return fmt.Errorf("exchange rate authorization for xr_id %d has invalid feeder: %w", a.XrId, err)
 		}
 		if a.Expiration.IsZero() {
-			return fmt.Errorf("exchange rate authorization (xr_id %d, operator %s) has no expiration", a.XrId, a.Operator)
+			return fmt.Errorf("exchange rate authorization (xr_id %d, feeder %s) has no expiration", a.XrId, a.Feeder)
 		}
 		if a.MaxDeviationBps > 10000 {
-			return fmt.Errorf("exchange rate authorization (xr_id %d, operator %s) max_deviation_bps %d exceeds 10000", a.XrId, a.Operator, a.MaxDeviationBps)
+			return fmt.Errorf("exchange rate authorization (xr_id %d, feeder %s) max_deviation_bps %d exceeds 10000", a.XrId, a.Feeder, a.MaxDeviationBps)
 		}
-		key := fmt.Sprintf("%d/%s", a.XrId, a.Operator)
+		key := fmt.Sprintf("%d/%s", a.XrId, a.Feeder)
 		if _, dup := seen[key]; dup {
-			return fmt.Errorf("duplicate exchange rate authorization for (xr_id %d, operator %s)", a.XrId, a.Operator)
+			return fmt.Errorf("duplicate exchange rate authorization for (xr_id %d, feeder %s)", a.XrId, a.Feeder)
 		}
 		seen[key] = struct{}{}
 	}

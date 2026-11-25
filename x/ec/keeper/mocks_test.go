@@ -16,7 +16,7 @@ type mockDelegation struct {
 	calls int
 }
 
-func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (m *mockDelegation) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	m.calls++
 	return m.err
 }

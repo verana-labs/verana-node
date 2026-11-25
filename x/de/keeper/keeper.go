@@ -26,12 +26,12 @@ type Keeper struct {
 	Schema collections.Schema
 	Params collections.Item[types.Params]
 
-	// OperatorAuthorization: keyed by its own uint64 id; (corporation_id,
-	// operator) is a unique secondary index. Runtime spend balances live
+	// DelegateAuthorization: keyed by its own uint64 id; (corporation_id,
+	// delegate) is a unique secondary index. Runtime spend balances live
 	// on-object (remaining_spend).
-	OperatorAuthorizations        collections.Map[uint64, types.OperatorAuthorization]
-	OperatorAuthorizationByCorpOp collections.Map[collections.Pair[uint64, string], uint64]
-	OperatorAuthorizationSeq      collections.Sequence
+	DelegateAuthorizations              collections.Map[uint64, types.DelegateAuthorization]
+	DelegateAuthorizationByCorpDelegate collections.Map[collections.Pair[uint64, string], uint64]
+	DelegateAuthorizationSeq            collections.Sequence
 
 	// FeeGrant: composite key (grantor_corporation_id, grantee).
 	FeeGrants collections.Map[collections.Pair[uint64, string], types.FeeGrant]
@@ -86,11 +86,11 @@ func NewKeeper(
 
 		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
 
-		OperatorAuthorizations: collections.NewMap(sb, types.OperatorAuthorizationKey, "operator_authorization",
-			collections.Uint64Key, codec.CollValue[types.OperatorAuthorization](cdc)),
-		OperatorAuthorizationByCorpOp: collections.NewMap(sb, types.OperatorAuthorizationByCorpOpKey, "operator_authorization_by_corp_op",
+		DelegateAuthorizations: collections.NewMap(sb, types.DelegateAuthorizationKey, "delegate_authorization",
+			collections.Uint64Key, codec.CollValue[types.DelegateAuthorization](cdc)),
+		DelegateAuthorizationByCorpDelegate: collections.NewMap(sb, types.DelegateAuthorizationByCorpDelegateKey, "delegate_authorization_by_corp_delegate",
 			corpOpKeyCodec, collections.Uint64Value),
-		OperatorAuthorizationSeq: collections.NewSequence(sb, types.OperatorAuthorizationSeqKey, "operator_authorization_seq"),
+		DelegateAuthorizationSeq: collections.NewSequence(sb, types.DelegateAuthorizationSeqKey, "delegate_authorization_seq"),
 
 		FeeGrants: collections.NewMap(sb, types.FeeGrantKey, "fee_grant",
 			corpOpKeyCodec, codec.CollValue[types.FeeGrant](cdc)),
@@ -156,9 +156,9 @@ func (k Keeper) corporationKeeper() types.CorporationKeeper {
 	return k.corpRef.K
 }
 
-// nextOperatorAuthorizationID returns a fresh, 1-based OperatorAuthorization id.
-func (k Keeper) nextOperatorAuthorizationID(ctx context.Context) (uint64, error) {
-	n, err := k.OperatorAuthorizationSeq.Next(ctx)
+// nextDelegateAuthorizationID returns a fresh, 1-based DelegateAuthorization id.
+func (k Keeper) nextDelegateAuthorizationID(ctx context.Context) (uint64, error) {
+	n, err := k.DelegateAuthorizationSeq.Next(ctx)
 	if err != nil {
 		return 0, err
 	}
@@ -174,22 +174,22 @@ func (k Keeper) nextVSOAID(ctx context.Context) (uint64, error) {
 	return n + 1, nil
 }
 
-// getOperatorAuthorizationByCorpOp loads the OperatorAuthorization indexed by
-// the (corporation_id, operator) secondary index. Returns found=false when no
+// getDelegateAuthorizationByCorpDelegate loads the DelegateAuthorization indexed by
+// the (corporation_id, delegate) secondary index. Returns found=false when no
 // entry exists.
-func (k Keeper) getOperatorAuthorizationByCorpOp(ctx context.Context, corporationID uint64, operator string) (types.OperatorAuthorization, bool, error) {
-	id, err := k.OperatorAuthorizationByCorpOp.Get(ctx, collections.Join(corporationID, operator))
+func (k Keeper) getDelegateAuthorizationByCorpDelegate(ctx context.Context, corporationID uint64, delegate string) (types.DelegateAuthorization, bool, error) {
+	id, err := k.DelegateAuthorizationByCorpDelegate.Get(ctx, collections.Join(corporationID, delegate))
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
-			return types.OperatorAuthorization{}, false, nil
+			return types.DelegateAuthorization{}, false, nil
 		}
-		return types.OperatorAuthorization{}, false, err
+		return types.DelegateAuthorization{}, false, err
 	}
-	oa, err := k.OperatorAuthorizations.Get(ctx, id)
+	da, err := k.DelegateAuthorizations.Get(ctx, id)
 	if err != nil {
-		return types.OperatorAuthorization{}, false, err
+		return types.DelegateAuthorization{}, false, err
 	}
-	return oa, true, nil
+	return da, true, nil
 }
 
 // getVSOAByCorpOp loads the VSOperatorAuthorization indexed by the

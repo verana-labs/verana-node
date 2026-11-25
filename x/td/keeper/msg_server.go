@@ -138,14 +138,14 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	account := msg.Corporation
 
-	// [MOD-TD-MSG-6-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-TD-MSG-6-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.Keeper.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.Keeper.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.Keeper.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_REPAY_SLASH,
 		ctx.BlockTime(),
 	); err != nil {
@@ -211,12 +211,12 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	// [MOD-TD-MSG-6-3] add amount to the TrustDeposit account (slashed coins were
 	// already burned at slash time per MOD-TD-MSG-5-3).
 	transferCoins := sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(msg.Deposit)))
-	// AUTHZ-CHECK-1 step 3: debit the operator's spend limit for the committed funds.
-	if err := ms.Keeper.delegationKeeper.ConsumeOperatorSpend(
-		ctx, msg.Corporation, msg.Operator,
+	// AUTHZ-CHECK-1 step 3: debit the delegate's spend limit for the committed funds.
+	if err := ms.Keeper.delegationKeeper.ConsumeDelegateSpend(
+		ctx, msg.Corporation, msg.Delegate,
 		detypes.MsgType_MSG_TYPE_REPAY_SLASH, now, transferCoins,
 	); err != nil {
-		return nil, fmt.Errorf("failed to consume operator spend: %w", err)
+		return nil, fmt.Errorf("failed to consume delegate spend: %w", err)
 	}
 	if err := ms.Keeper.bankKeeper.SendCoinsFromAccountToModule(
 		ctx,

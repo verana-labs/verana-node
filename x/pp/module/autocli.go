@@ -145,7 +145,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						},
 						"vs_operator": {
 							Name:         "vs-operator",
-							Usage:        "Optional Verifiable Service operator account address (cannot be the corporation's own policy_address)",
+							Usage:        "Optional Verifiable Service delegate account address (cannot be the corporation's own policy_address)",
 							DefaultValue: "",
 						},
 						"vs_operator_authz_msg_types": {
@@ -183,7 +183,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Short:     "Set participant validation process to validated state",
 					Long: `Set a participant validation process to validated state.
 
-Requires authority/operator authorization. The authority must be the validator participant's authority.
+Requires authority/delegate authorization. The authority must be the validator participant's authority.
 
 Parameters:
 - id: ID of the participant to validate
@@ -462,7 +462,7 @@ Parameters:
 - id: ID of the participant for which a trust resolution must be triggered
 - corporation: The group policy address (corporation) on whose behalf this message is executed
 
-The operator (signer) is taken from --from.`,
+The delegate (signer) is taken from --from.`,
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{
 							ProtoField: "id",

@@ -37,8 +37,8 @@ export interface MsgUpdateParamsResponse {
 export interface MsgReclaimTrustDepositYield {
   /** corporation is the group address that owns the trust deposit. */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg. */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg. */
+  delegate: string;
 }
 
 /** MsgReclaimTrustDepositYieldResponse defines the response type */
@@ -70,13 +70,13 @@ export interface MsgSlashTrustDepositResponse {
 
 /**
  * MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.
- * [MOD-TD-MSG-6] Any authorized operator CAN execute this on behalf of a corporation.
+ * [MOD-TD-MSG-6] Any authorized delegate CAN execute this on behalf of a corporation.
  */
 export interface MsgRepaySlashedTrustDeposit {
   /** corporation is the group address that owns the slashed trust deposit. */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg. */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg. */
+  delegate: string;
   /** deposit is the repayment amount (must equal outstanding slashed amount). */
   deposit: number;
 }
@@ -204,7 +204,7 @@ export const MsgUpdateParamsResponse = {
 };
 
 function createBaseMsgReclaimTrustDepositYield(): MsgReclaimTrustDepositYield {
-  return { corporation: "", operator: "" };
+  return { corporation: "", delegate: "" };
 }
 
 export const MsgReclaimTrustDepositYield = {
@@ -212,8 +212,8 @@ export const MsgReclaimTrustDepositYield = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     return writer;
   },
@@ -237,7 +237,7 @@ export const MsgReclaimTrustDepositYield = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -251,7 +251,7 @@ export const MsgReclaimTrustDepositYield = {
   fromJSON(object: any): MsgReclaimTrustDepositYield {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
     };
   },
 
@@ -260,8 +260,8 @@ export const MsgReclaimTrustDepositYield = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     return obj;
   },
@@ -272,7 +272,7 @@ export const MsgReclaimTrustDepositYield = {
   fromPartial<I extends Exact<DeepPartial<MsgReclaimTrustDepositYield>, I>>(object: I): MsgReclaimTrustDepositYield {
     const message = createBaseMsgReclaimTrustDepositYield();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     return message;
   },
 };
@@ -486,7 +486,7 @@ export const MsgSlashTrustDepositResponse = {
 };
 
 function createBaseMsgRepaySlashedTrustDeposit(): MsgRepaySlashedTrustDeposit {
-  return { corporation: "", operator: "", deposit: 0 };
+  return { corporation: "", delegate: "", deposit: 0 };
 }
 
 export const MsgRepaySlashedTrustDeposit = {
@@ -494,8 +494,8 @@ export const MsgRepaySlashedTrustDeposit = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.deposit !== 0) {
       writer.uint32(24).uint64(message.deposit);
@@ -522,7 +522,7 @@ export const MsgRepaySlashedTrustDeposit = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -543,7 +543,7 @@ export const MsgRepaySlashedTrustDeposit = {
   fromJSON(object: any): MsgRepaySlashedTrustDeposit {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       deposit: isSet(object.deposit) ? globalThis.Number(object.deposit) : 0,
     };
   },
@@ -553,8 +553,8 @@ export const MsgRepaySlashedTrustDeposit = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.deposit !== 0) {
       obj.deposit = Math.round(message.deposit);
@@ -568,7 +568,7 @@ export const MsgRepaySlashedTrustDeposit = {
   fromPartial<I extends Exact<DeepPartial<MsgRepaySlashedTrustDeposit>, I>>(object: I): MsgRepaySlashedTrustDeposit {
     const message = createBaseMsgRepaySlashedTrustDeposit();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.deposit = object.deposit ?? 0;
     return message;
   },

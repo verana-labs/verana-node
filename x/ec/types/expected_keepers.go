@@ -25,7 +25,7 @@ type BankKeeper interface {
 // DelegationKeeper backs AUTHZ-CHECK for delegable Msgs in x/ec.
 // Method signature matches x/de keeper exactly so depinject can auto-wire it.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, corporation string, operator string, msgType detypes.MsgType, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, corporation string, delegate string, msgType detypes.MsgType, now time.Time) error
 }
 
 // CorporationView is the read shape MOD-ES needs about a Corporation subject.

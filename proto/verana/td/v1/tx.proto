@@ -46,16 +46,16 @@ message MsgUpdateParamsResponse {}
 // MsgReclaimTrustDepositYield defines the request type
 // [MOD-TD-MSG-2] Reclaim Trust Deposit Yield
 message MsgReclaimTrustDepositYield {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/td/MsgReclaimTrustDepositYield";
 
-  // [MOD-TD-MSG-2-1] parameters per spec: corporation + operator only.
+  // [MOD-TD-MSG-2-1] parameters per spec: corporation + delegate only.
   // The full claimable balance is drained; no amount parameter.
 
   // corporation is the group address that owns the trust deposit.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg.
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg.
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 // MsgReclaimTrustDepositYieldResponse defines the response type
@@ -87,15 +87,15 @@ message MsgSlashTrustDeposit {
 message MsgSlashTrustDepositResponse {}
 
 // MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.
-// [MOD-TD-MSG-6] Any authorized operator CAN execute this on behalf of a corporation.
+// [MOD-TD-MSG-6] Any authorized delegate CAN execute this on behalf of a corporation.
 message MsgRepaySlashedTrustDeposit {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/td/MsgRepaySlashedTrustDeposit";
 
   // corporation is the group address that owns the slashed trust deposit.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // operator is the account authorized by the corporation to run this Msg.
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // delegate is the account authorized by the corporation to run this Msg.
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // deposit is the repayment amount (must equal outstanding slashed amount).
   uint64 deposit = 3;
 }

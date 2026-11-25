@@ -34,8 +34,8 @@ export interface MsgUpdateParamsResponse {
 export interface MsgCreateCredentialSchema {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg */
+  delegate: string;
   jsonSchema: string;
   issuerGrantorValidationValidityPeriod: OptionalUInt32 | undefined;
   verifierGrantorValidationValidityPeriod: OptionalUInt32 | undefined;
@@ -60,8 +60,8 @@ export interface MsgCreateCredentialSchemaResponse {
 export interface MsgUpdateCredentialSchema {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg */
+  delegate: string;
   id: number;
   issuerGrantorValidationValidityPeriod: OptionalUInt32 | undefined;
   verifierGrantorValidationValidityPeriod: OptionalUInt32 | undefined;
@@ -82,8 +82,8 @@ export interface MsgUpdateCredentialSchemaResponse {
 export interface MsgArchiveCredentialSchema {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** operator is the account authorized by the corporation to run this Msg */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg */
+  delegate: string;
   id: number;
   archive: boolean;
 }
@@ -213,7 +213,7 @@ export const MsgUpdateParamsResponse = {
 function createBaseMsgCreateCredentialSchema(): MsgCreateCredentialSchema {
   return {
     corporation: "",
-    operator: "",
+    delegate: "",
     jsonSchema: "",
     issuerGrantorValidationValidityPeriod: undefined,
     verifierGrantorValidationValidityPeriod: undefined,
@@ -235,8 +235,8 @@ export const MsgCreateCredentialSchema = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.jsonSchema !== "") {
       writer.uint32(34).string(message.jsonSchema);
@@ -299,7 +299,7 @@ export const MsgCreateCredentialSchema = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 4:
           if (tag !== 34) {
@@ -404,7 +404,7 @@ export const MsgCreateCredentialSchema = {
   fromJSON(object: any): MsgCreateCredentialSchema {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       jsonSchema: isSet(object.jsonSchema) ? globalThis.String(object.jsonSchema) : "",
       issuerGrantorValidationValidityPeriod: isSet(object.issuerGrantorValidationValidityPeriod)
         ? OptionalUInt32.fromJSON(object.issuerGrantorValidationValidityPeriod)
@@ -438,8 +438,8 @@ export const MsgCreateCredentialSchema = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.jsonSchema !== "") {
       obj.jsonSchema = message.jsonSchema;
@@ -491,7 +491,7 @@ export const MsgCreateCredentialSchema = {
   fromPartial<I extends Exact<DeepPartial<MsgCreateCredentialSchema>, I>>(object: I): MsgCreateCredentialSchema {
     const message = createBaseMsgCreateCredentialSchema();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.jsonSchema = object.jsonSchema ?? "";
     message.issuerGrantorValidationValidityPeriod =
       (object.issuerGrantorValidationValidityPeriod !== undefined &&
@@ -590,7 +590,7 @@ export const MsgCreateCredentialSchemaResponse = {
 function createBaseMsgUpdateCredentialSchema(): MsgUpdateCredentialSchema {
   return {
     corporation: "",
-    operator: "",
+    delegate: "",
     id: 0,
     issuerGrantorValidationValidityPeriod: undefined,
     verifierGrantorValidationValidityPeriod: undefined,
@@ -605,8 +605,8 @@ export const MsgUpdateCredentialSchema = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -648,7 +648,7 @@ export const MsgUpdateCredentialSchema = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -704,7 +704,7 @@ export const MsgUpdateCredentialSchema = {
   fromJSON(object: any): MsgUpdateCredentialSchema {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       issuerGrantorValidationValidityPeriod: isSet(object.issuerGrantorValidationValidityPeriod)
         ? OptionalUInt32.fromJSON(object.issuerGrantorValidationValidityPeriod)
@@ -729,8 +729,8 @@ export const MsgUpdateCredentialSchema = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -761,7 +761,7 @@ export const MsgUpdateCredentialSchema = {
   fromPartial<I extends Exact<DeepPartial<MsgUpdateCredentialSchema>, I>>(object: I): MsgUpdateCredentialSchema {
     const message = createBaseMsgUpdateCredentialSchema();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     message.issuerGrantorValidationValidityPeriod =
       (object.issuerGrantorValidationValidityPeriod !== undefined &&
@@ -894,7 +894,7 @@ export const MsgUpdateCredentialSchemaResponse = {
 };
 
 function createBaseMsgArchiveCredentialSchema(): MsgArchiveCredentialSchema {
-  return { corporation: "", operator: "", id: 0, archive: false };
+  return { corporation: "", delegate: "", id: 0, archive: false };
 }
 
 export const MsgArchiveCredentialSchema = {
@@ -902,8 +902,8 @@ export const MsgArchiveCredentialSchema = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -933,7 +933,7 @@ export const MsgArchiveCredentialSchema = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -961,7 +961,7 @@ export const MsgArchiveCredentialSchema = {
   fromJSON(object: any): MsgArchiveCredentialSchema {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       archive: isSet(object.archive) ? globalThis.Boolean(object.archive) : false,
     };
@@ -972,8 +972,8 @@ export const MsgArchiveCredentialSchema = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -990,7 +990,7 @@ export const MsgArchiveCredentialSchema = {
   fromPartial<I extends Exact<DeepPartial<MsgArchiveCredentialSchema>, I>>(object: I): MsgArchiveCredentialSchema {
     const message = createBaseMsgArchiveCredentialSchema();
     message.corporation = object.corporation ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.id = object.id ?? 0;
     message.archive = object.archive ?? false;
     return message;

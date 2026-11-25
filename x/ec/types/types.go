@@ -8,14 +8,14 @@ import (
 )
 
 // MsgCreateEcosystem.ValidateBasic implements MOD-ES-MSG-1-2-1 stateless
-// preconditions: signer bech32, operator bech32, did syntax, BCP-47 language,
+// preconditions: signer bech32, delegate bech32, did syntax, BCP-47 language,
 // http(s) doc_url, SRI-formatted doc_digest_sri.
 func (m *MsgCreateEcosystem) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Operator); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "operator: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
 	}
 	if m.Did == "" {
 		return errors.Wrap(ErrInvalidDID, "did is required")
@@ -45,13 +45,13 @@ func (m *MsgCreateEcosystem) ValidateBasic() error {
 }
 
 // MsgUpdateEcosystem.ValidateBasic implements MOD-ES-MSG-2-2-1 stateless
-// preconditions: signer bech32, operator bech32, id>0, did syntax.
+// preconditions: signer bech32, delegate bech32, id>0, did syntax.
 func (m *MsgUpdateEcosystem) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Operator); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "operator: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
 	}
 	if m.Id == 0 {
 		return errors.Wrap(ErrInvalidSubject, "id is required")
@@ -66,7 +66,7 @@ func (m *MsgUpdateEcosystem) ValidateBasic() error {
 }
 
 // MsgArchiveEcosystem.ValidateBasic implements MOD-ES-MSG-3-2-1 stateless
-// preconditions: signer bech32, operator bech32, id>0. `archive` is a proto3
+// preconditions: signer bech32, delegate bech32, id>0. `archive` is a proto3
 // bool — its presence/absence cannot be distinguished on the wire, so the
 // idempotency-abort branch in the keeper is what catches "false on
 // un-archived" submissions.
@@ -74,8 +74,8 @@ func (m *MsgArchiveEcosystem) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Operator); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "operator: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
 	}
 	if m.Id == 0 {
 		return errors.Wrap(ErrInvalidSubject, "id is required")

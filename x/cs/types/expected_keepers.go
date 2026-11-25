@@ -57,5 +57,5 @@ type CorporationKeeper interface {
 
 // DelegationKeeper backs AUTHZ-CHECK for delegable Msgs in x/cs.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, authority string, operator string, msgType detypes.MsgType, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, authority string, delegate string, msgType detypes.MsgType, now time.Time) error
 }

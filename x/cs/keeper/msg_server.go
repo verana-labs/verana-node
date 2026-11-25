@@ -27,14 +27,14 @@ var _ types.MsgServer = msgServer{}
 func (ms msgServer) CreateCredentialSchema(goCtx context.Context, msg *types.MsgCreateCredentialSchema) (*types.MsgCreateCredentialSchemaResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// [MOD-CS-MSG-1-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-CS-MSG-1-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
 		ctx.BlockTime(),
 	); err != nil {
@@ -66,14 +66,14 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-CS-MSG-2-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-CS-MSG-2-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA,
 		now,
 	); err != nil {
@@ -125,7 +125,7 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 			sdk.NewAttribute(types.AttributeKeyId, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, strconv.FormatUint(cs.EcosystemId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyIssuerGrantorValidationValidityPeriod, strconv.FormatUint(uint64(cs.IssuerGrantorValidationValidityPeriod), 10)),
 			sdk.NewAttribute(types.AttributeKeyVerifierGrantorValidationValidityPeriod, strconv.FormatUint(uint64(cs.VerifierGrantorValidationValidityPeriod), 10)),
 			sdk.NewAttribute(types.AttributeKeyIssuerValidationValidityPeriod, strconv.FormatUint(uint64(cs.IssuerValidationValidityPeriod), 10)),
@@ -175,14 +175,14 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	// [MOD-CS-MSG-3-2-1] [AUTHZ-CHECK] Verify operator authorization
+	// [MOD-CS-MSG-3-2-1] [AUTHZ-CHECK] Verify delegate authorization
 	if ms.delegationKeeper == nil {
-		return nil, fmt.Errorf("delegation keeper is required for operator authorization")
+		return nil, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(
 		ctx,
 		msg.Corporation,
-		msg.Operator,
+		msg.Delegate,
 		detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA,
 		now,
 	); err != nil {
@@ -229,7 +229,7 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 			sdk.NewAttribute(types.AttributeKeyId, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, strconv.FormatUint(cs.EcosystemId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyArchiveStatus, archiveStatus),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.Format(time.RFC3339)),
 		),

@@ -17,7 +17,7 @@ import (
 
 const (
 	testCorp     = "cosmos14wcc52lpsxwuxxhqjxrhvuumhm0xr6z247un93"
-	testOperator = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn"
+	testDelegate = "cosmos1fvz0kp4jfseea3zyduu78dd5yqcwrarwtxthjn"
 	testDigest   = "sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26"
 	testURL      = "https://example.com/gf-v1.html"
 )
@@ -25,7 +25,7 @@ const (
 // mockDelegation implements types.DelegationKeeper.
 type mockDelegation struct{ err error }
 
-func (m mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (m mockDelegation) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	return m.err
 }
 
@@ -69,7 +69,7 @@ func (m *mockCorporation) SetActiveVersion(_ context.Context, id uint64, v uint3
 func validMsg(corp, op string, ecoID uint64, version uint32) *types.MsgAddGovernanceFrameworkDocument {
 	return &types.MsgAddGovernanceFrameworkDocument{
 		Corporation:  corp,
-		Operator:     op,
+		Delegate:     op,
 		EcosystemId:  ecoID,
 		DocLanguage:  "en",
 		DocUrl:       testURL,
@@ -91,7 +91,7 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		now := time.Date(2026, 5, 20, 12, 0, 0, 0, time.UTC)
 		ctx = ctx.WithBlockTime(now)
 
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.NoError(t, err)
 
 		var gfvCount int
@@ -114,7 +114,7 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 			eco, corp,
 		)
 		ms := keeper.NewMsgServerImpl(k)
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.Error(t, err)
 	})
 
@@ -130,7 +130,7 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		}
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
 		ms := keeper.NewMsgServerImpl(k)
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 1, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 1, 1))
 		require.ErrorIs(t, err, types.ErrSubjectNotControlled)
 	})
 
@@ -143,9 +143,9 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
 		ms := keeper.NewMsgServerImpl(k)
 		// Set up a v1 first so MaxV becomes 1 and v2 attempt fails on active_version check.
-		_, _ = ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
-		_, _ = ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 2))
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 2))
+		_, _ = ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
+		_, _ = ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 2))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 2))
 		require.ErrorIs(t, err, types.ErrInvalidVersion)
 	})
 
@@ -158,10 +158,10 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
 		ms := keeper.NewMsgServerImpl(k)
 
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.NoError(t, err)
 
-		updated := validMsg(testCorp, testOperator, 0, 1)
+		updated := validMsg(testCorp, testDelegate, 0, 1)
 		updated.DocUrl = "https://example.com/gf-v1-updated.html"
 		_, err = ms.AddGovernanceFrameworkDocument(ctx, updated)
 		require.NoError(t, err)
@@ -183,7 +183,7 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		eco := &mockEcosystem{found: false} // GetEcosystemView returns (zero, false)
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
 		ms := keeper.NewMsgServerImpl(k)
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 42, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 42, 1))
 		require.ErrorIs(t, err, types.ErrSubjectNotFound)
 	})
 
@@ -194,7 +194,7 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		eco := &mockEcosystem{}
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
 		ms := keeper.NewMsgServerImpl(k)
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.ErrorIs(t, err, types.ErrSubjectNotFound)
 	})
 
@@ -205,7 +205,7 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		}
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, corp)
 		ms := keeper.NewMsgServerImpl(k)
-		bad := validMsg(testCorp, testOperator, 0, 1)
+		bad := validMsg(testCorp, testDelegate, 0, 1)
 		bad.DocUrl = "not a url"
 		_, err := ms.AddGovernanceFrameworkDocument(ctx, bad)
 		require.ErrorIs(t, err, types.ErrInvalidURL)
@@ -223,10 +223,10 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 
 		// Add v1 with "en" doc.
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 0, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.NoError(t, err)
 		// Add a SECOND v1 with "fr" doc — should reuse the same GFV.
-		frMsg := validMsg(testCorp, testOperator, 0, 1)
+		frMsg := validMsg(testCorp, testDelegate, 0, 1)
 		frMsg.DocLanguage = "fr"
 		frMsg.DocUrl = "https://example.com/v1-fr.html"
 		_, err = ms.AddGovernanceFrameworkDocument(ctx, frMsg)
@@ -258,7 +258,7 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, eco, corp)
 		ms := keeper.NewMsgServerImpl(k)
 
-		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testOperator, 7, 1))
+		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 7, 1))
 		require.NoError(t, err)
 
 		_ = k.GFVersion.Walk(ctx, nil, func(_ uint64, gfv types.GovernanceFrameworkVersion) (bool, error) {
@@ -267,4 +267,26 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 			return false, nil
 		})
 	})
+}
+
+// [MOD-GF-MSG-1-2-1] / [MOD-GF-MSG-2-2-1] the network path is signed by the
+// council account; there is no network framework to act on yet.
+func TestGovernanceFrameworkNetworkPath(t *testing.T) {
+	k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, &mockCorporation{})
+	ms := keeper.NewMsgServerImpl(k)
+	doc := func(authority string) *types.MsgAddGovernanceFrameworkDocument {
+		m := validMsg("", "", 0, 1)
+		m.Authority = authority
+		return m
+	}
+
+	_, err := ms.AddGovernanceFrameworkDocument(ctx, doc(testDelegate))
+	require.ErrorIs(t, err, sdkerrors.ErrUnauthorized)
+	_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: testDelegate})
+	require.ErrorIs(t, err, sdkerrors.ErrUnauthorized)
+
+	_, err = ms.AddGovernanceFrameworkDocument(ctx, doc(k.GetAuthority()))
+	require.ErrorIs(t, err, types.ErrNetworkPathUnavailable)
+	_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: k.GetAuthority()})
+	require.ErrorIs(t, err, types.ErrNetworkPathUnavailable)
 }

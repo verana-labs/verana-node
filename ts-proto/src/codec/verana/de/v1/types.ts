@@ -15,20 +15,19 @@ import Long = require("long");
 export const protobufPackage = "verana.de.v1";
 
 /**
- * OperatorAuthorization is the operator-delegation record. Per spec it is
- * keyed by its own uint64 id; (corporation_id, operator) is a unique secondary
- * index.
+ * DelegateAuthorization is the delegate authorization record. It is keyed by
+ * its own uint64 id; (corporation_id, delegate) is a unique secondary index.
  */
-export interface OperatorAuthorization {
-  /** id is the own uint64 key of this OperatorAuthorization. */
+export interface DelegateAuthorization {
+  /** id is the own uint64 key of this DelegateAuthorization. */
   id: number;
   /**
    * corporation_id is the id of the corporation granting the authorization. The
-   * (corporation_id, operator) tuple MUST be unique.
+   * (corporation_id, delegate) tuple MUST be unique.
    */
   corporationId: number;
-  /** operator is the account receiving the authorization. */
-  operator: string;
+  /** delegate is the account receiving the authorization. */
+  delegate: string;
   /** msg_types is the list of message types this authorization applies to. */
   msgTypes: MsgType[];
   /** spend_limit is the maximum amount of funds the grantee is allowed to spend. */
@@ -161,11 +160,11 @@ export interface VSOperatorAuthorization {
   records: ParticipantAuthorizationRecord[];
 }
 
-function createBaseOperatorAuthorization(): OperatorAuthorization {
+function createBaseDelegateAuthorization(): DelegateAuthorization {
   return {
     id: 0,
     corporationId: 0,
-    operator: "",
+    delegate: "",
     msgTypes: [],
     spendLimit: [],
     remainingSpend: [],
@@ -174,16 +173,16 @@ function createBaseOperatorAuthorization(): OperatorAuthorization {
   };
 }
 
-export const OperatorAuthorization = {
-  encode(message: OperatorAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const DelegateAuthorization = {
+  encode(message: DelegateAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== 0) {
       writer.uint32(8).uint64(message.id);
     }
     if (message.corporationId !== 0) {
       writer.uint32(16).uint64(message.corporationId);
     }
-    if (message.operator !== "") {
-      writer.uint32(26).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(26).string(message.delegate);
     }
     writer.uint32(34).fork();
     for (const v of message.msgTypes) {
@@ -205,10 +204,10 @@ export const OperatorAuthorization = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): OperatorAuthorization {
+  decode(input: _m0.Reader | Uint8Array, length?: number): DelegateAuthorization {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseOperatorAuthorization();
+    const message = createBaseDelegateAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -231,7 +230,7 @@ export const OperatorAuthorization = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 4:
           if (tag === 32) {
@@ -287,11 +286,11 @@ export const OperatorAuthorization = {
     return message;
   },
 
-  fromJSON(object: any): OperatorAuthorization {
+  fromJSON(object: any): DelegateAuthorization {
     return {
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
       spendLimit: globalThis.Array.isArray(object?.spendLimit)
         ? object.spendLimit.map((e: any) => Coin.fromJSON(e))
@@ -304,7 +303,7 @@ export const OperatorAuthorization = {
     };
   },
 
-  toJSON(message: OperatorAuthorization): unknown {
+  toJSON(message: DelegateAuthorization): unknown {
     const obj: any = {};
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -312,8 +311,8 @@ export const OperatorAuthorization = {
     if (message.corporationId !== 0) {
       obj.corporationId = Math.round(message.corporationId);
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.msgTypes?.length) {
       obj.msgTypes = message.msgTypes.map((e) => msgTypeToJSON(e));
@@ -333,14 +332,14 @@ export const OperatorAuthorization = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<OperatorAuthorization>, I>>(base?: I): OperatorAuthorization {
-    return OperatorAuthorization.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<DelegateAuthorization>, I>>(base?: I): DelegateAuthorization {
+    return DelegateAuthorization.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<OperatorAuthorization>, I>>(object: I): OperatorAuthorization {
-    const message = createBaseOperatorAuthorization();
+  fromPartial<I extends Exact<DeepPartial<DelegateAuthorization>, I>>(object: I): DelegateAuthorization {
+    const message = createBaseDelegateAuthorization();
     message.id = object.id ?? 0;
     message.corporationId = object.corporationId ?? 0;
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.msgTypes = object.msgTypes?.map((e) => e) || [];
     message.spendLimit = object.spendLimit?.map((e) => Coin.fromPartial(e)) || [];
     message.remainingSpend = object.remainingSpend?.map((e) => Coin.fromPartial(e)) || [];

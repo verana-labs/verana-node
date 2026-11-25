@@ -8,7 +8,7 @@
  * AUTHZ-CHECK-1). Signs in SIGN_MODE_LEGACY_AMINO_JSON.
  *
  * Requires: test:de-grant-perm-auth first (which now also grants
- * MsgTriggerResolver to the operator).
+ * MsgTriggerResolver to the delegate).
  *
  * Usage:
  *   npm run test:perm-trigger-resolver
@@ -34,7 +34,7 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 15;
+const DELEGATE_INDEX = 15;
 
 async function main() {
   console.log("=".repeat(60));
@@ -51,8 +51,8 @@ async function main() {
   console.log(`  Authority: ${setup.authorityAddress}`);
   console.log();
 
-  console.log("Step 2: Setting up operator wallet (legacy amino)...");
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  console.log("Step 2: Setting up delegate wallet (legacy amino)...");
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
   const client = await createSigningClient(wallet);
   console.log(`  Connected as ${account.address}`);
@@ -64,7 +64,7 @@ async function main() {
     const { schemaId, rootPermId, effectiveFrom } = await createPermPrerequisites(
       client,
       setup.authorityAddress,
-      setup.operatorAddress,
+      setup.delegateAddress,
       IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
     );
     console.log(`  Root Permission ID: ${rootPermId}`);
@@ -85,7 +85,7 @@ async function main() {
     const participantId = await createValidatedPermission(
       client,
       setup.authorityAddress,
-      setup.operatorAddress,
+      setup.delegateAddress,
       schemaId,
       rootPermId,
       generateUniqueDID(),
@@ -99,7 +99,7 @@ async function main() {
       typeUrl: typeUrls.MsgTriggerResolver,
       value: MsgTriggerResolver.fromPartial({
         corporation: setup.authorityAddress,
-        operator: setup.operatorAddress,
+        delegate: setup.delegateAddress,
         id: participantId,
       }),
     };

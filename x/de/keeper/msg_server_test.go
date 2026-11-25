@@ -107,45 +107,45 @@ func TestFeeAllowance_Validation(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// [MOD-DE-MSG-3/4] Grant / Revoke Operator Authorization (msg server)
+// [MOD-DE-MSG-3/4] Grant / Revoke Delegate Authorization (msg server)
 // ---------------------------------------------------------------------------
 
-func TestGrantOperatorAuthorization_NewAndUpdate(t *testing.T) {
+func TestGrantDelegateAuthorization_NewAndUpdate(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	list, err := qs.ListOperatorAuthorizations(ctx, &types.QueryListOperatorAuthorizationsRequest{Operator: grantee})
+	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
 	require.NoError(t, err)
-	require.Len(t, list.OperatorAuthorizations, 1)
-	firstID := list.OperatorAuthorizations[0].Id
+	require.Len(t, list.DelegateAuthorizations, 1)
+	firstID := list.DelegateAuthorizations[0].Id
 	require.NotZero(t, firstID)
-	require.Equal(t, grantee, list.OperatorAuthorizations[0].Operator)
+	require.Equal(t, grantee, list.DelegateAuthorizations[0].Delegate)
 
 	// Re-grant is an in-place update that preserves the id.
-	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtSchema},
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtSchema},
 	})
 	require.NoError(t, err)
-	list, err = qs.ListOperatorAuthorizations(ctx, &types.QueryListOperatorAuthorizationsRequest{Operator: grantee})
+	list, err = qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
 	require.NoError(t, err)
-	require.Len(t, list.OperatorAuthorizations, 1)
-	require.Equal(t, firstID, list.OperatorAuthorizations[0].Id)
-	require.Equal(t, []types.MsgType{mtSchema}, list.OperatorAuthorizations[0].MsgTypes)
+	require.Len(t, list.DelegateAuthorizations, 1)
+	require.Equal(t, firstID, list.DelegateAuthorizations[0].Id)
+	require.Equal(t, []types.MsgType{mtSchema}, list.DelegateAuthorizations[0].MsgTypes)
 
 	// [MOD-DE-QRY-3] get by id.
-	got, err := qs.GetOperatorAuthorization(ctx, &types.QueryGetOperatorAuthorizationRequest{Id: firstID})
+	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: firstID})
 	require.NoError(t, err)
-	require.Equal(t, grantee, got.OperatorAuthorization.Operator)
+	require.Equal(t, grantee, got.DelegateAuthorization.Delegate)
 }
 
-func TestGrantOperatorAuthorization_MutualExclusivity(t *testing.T) {
+func TestGrantDelegateAuthorization_MutualExclusivity(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
@@ -153,72 +153,95 @@ func TestGrantOperatorAuthorization_MutualExclusivity(t *testing.T) {
 	// Resolve the signing corporation to its co.id (same path MSG-3 uses).
 	co, err := f.corpKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
 	require.NoError(t, err)
-	// A VSOperatorAuthorization for (co.id, grantee) blocks the operator grant.
+	// A VSOperatorAuthorization for (co.id, grantee) blocks the delegate grant.
 	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, co.Id, grantee,
 		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}}))
 
-	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.ErrorIs(t, err, types.ErrVSOperatorAuthzExists)
 }
 
-// [MOD-DE-MSG-3] The operator path: an operator authorized for the de grant
+// [MOD-DE-MSG-3] The delegate path: a delegate authorized for the de grant
 // message can grant on the corporation's behalf; an unauthorized one cannot.
-func TestGrantOperatorAuthorization_OperatorPath(t *testing.T) {
+func TestGrantDelegateAuthorization_DelegatePath(t *testing.T) {
 	_, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
-	operator := acc("operator____________")
+	delegate := acc("delegate____________")
 	grantee := acc("grantee_____________")
 
-	// Corp authorizes the operator for the de grant message (group-proposal path).
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Operator: corporation, Grantee: operator,
+	// Corp authorizes the delegate for the de grant message (group-proposal path).
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: delegate,
 		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION},
 	})
 	require.NoError(t, err)
 
-	// The authorized operator grants to a third party on the corporation's behalf.
-	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Operator: operator, Grantee: grantee,
+	// The authorized delegate grants to a third party on the corporation's behalf.
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: delegate, Grantee: grantee,
 		MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	// An unauthorized operator is rejected by AUTHZ-CHECK-1.
+	// An unauthorized delegate is rejected by AUTHZ-CHECK-1.
 	stranger := acc("stranger____________")
-	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Operator: stranger, Grantee: grantee,
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: stranger, Grantee: grantee,
 		MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.Error(t, err)
 }
 
+// [MOD-DE-MSG-3-2] / [MOD-DE-MSG-4-2] the group-proposal path is delegate ==
+// corporation; an empty delegate is not a path.
+func TestGrantDelegateAuthorization_EmptyDelegate(t *testing.T) {
+	_, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	grantee := acc("grantee_____________")
+
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	})
+	require.ErrorIs(t, err, types.ErrAuthzNotFound)
+
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	})
+	require.NoError(t, err)
+
+	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Grantee: grantee,
+	})
+	require.ErrorIs(t, err, types.ErrAuthzNotFound)
+}
+
 // [MOD-DE-MSG-3-2] grantee MUST NOT be the corporation's own policy_address.
-func TestGrantOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
+func TestGrantDelegateAuthorization_OwnPolicyAddress(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
-	operator := acc("operator____________")
+	delegate := acc("delegate____________")
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Operator: corporation, Grantee: operator,
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: delegate,
 		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION},
 	})
 	require.NoError(t, err)
 
-	for name, msg := range map[string]*types.MsgGrantOperatorAuthorization{
-		"group proposal": {Corporation: corporation, Operator: corporation, Grantee: corporation},
-		"with feegrant":  {Corporation: corporation, Operator: corporation, Grantee: corporation, WithFeegrant: true, FeegrantSpendLimit: uvna(10)},
-		"operator path":  {Corporation: corporation, Operator: operator, Grantee: corporation},
-		"upper case":     {Corporation: corporation, Operator: corporation, Grantee: strings.ToUpper(corporation), WithFeegrant: true},
+	for name, msg := range map[string]*types.MsgGrantDelegateAuthorization{
+		"group proposal": {Corporation: corporation, Delegate: corporation, Grantee: corporation},
+		"with feegrant":  {Corporation: corporation, Delegate: corporation, Grantee: corporation, WithFeegrant: true, FeegrantSpendLimit: uvna(10)},
+		"delegate path":  {Corporation: corporation, Delegate: delegate, Grantee: corporation},
+		"upper case":     {Corporation: corporation, Delegate: corporation, Grantee: strings.ToUpper(corporation), WithFeegrant: true},
 	} {
 		t.Run(name, func(t *testing.T) {
 			msg.MsgTypes = []types.MsgType{mtEcosystem}
 			require.NoError(t, msg.ValidateBasic())
-			_, err := ms.GrantOperatorAuthorization(ctx, msg)
+			_, err := ms.GrantDelegateAuthorization(ctx, msg)
 			require.ErrorIs(t, err, types.ErrOwnPolicyAddress)
 
-			has, err := f.keeper.OperatorAuthorizationByCorpOp.Has(ctx, collections.Join(uint64(1), msg.Grantee))
+			has, err := f.keeper.DelegateAuthorizationByCorpDelegate.Has(ctx, collections.Join(uint64(1), msg.Grantee))
 			require.NoError(t, err)
 			require.False(t, has)
 			require.Empty(t, f.feegrants.grants)
@@ -226,30 +249,30 @@ func TestGrantOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
 	}
 }
 
-func TestRevokeOperatorAuthorization(t *testing.T) {
+func TestRevokeDelegateAuthorization(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	_, err = ms.RevokeOperatorAuthorization(ctx, &types.MsgRevokeOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee,
+	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee,
 	})
 	require.NoError(t, err)
-	list, err := qs.ListOperatorAuthorizations(ctx, &types.QueryListOperatorAuthorizationsRequest{Operator: grantee})
+	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
 	require.NoError(t, err)
-	require.Empty(t, list.OperatorAuthorizations)
+	require.Empty(t, list.DelegateAuthorizations)
 
 	// Revoking a missing entry aborts.
-	_, err = ms.RevokeOperatorAuthorization(ctx, &types.MsgRevokeOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee,
+	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee,
 	})
-	require.ErrorIs(t, err, types.ErrOperatorAuthzNotFound)
+	require.ErrorIs(t, err, types.ErrDelegateAuthzNotFound)
 }
 
 // ---------------------------------------------------------------------------
@@ -287,13 +310,13 @@ func TestGrantVSOperatorAuthorization_MutualExclusivity(t *testing.T) {
 	k := f.keeper
 	corpID := uint64(1)
 	vsOp := acc("vsop________________")
-	// Seed an OperatorAuthorization for (corpID, vsOp).
-	require.NoError(t, k.OperatorAuthorizations.Set(ctx, 99, types.OperatorAuthorization{Id: 99, CorporationId: corpID, Operator: vsOp, MsgTypes: []types.MsgType{mtEcosystem}}))
-	require.NoError(t, k.OperatorAuthorizationByCorpOp.Set(ctx, collections.Join(corpID, vsOp), 99))
+	// Seed an DelegateAuthorization for (corpID, vsOp).
+	require.NoError(t, k.DelegateAuthorizations.Set(ctx, 99, types.DelegateAuthorization{Id: 99, CorporationId: corpID, Delegate: vsOp, MsgTypes: []types.MsgType{mtEcosystem}}))
+	require.NoError(t, k.DelegateAuthorizationByCorpDelegate.Set(ctx, collections.Join(corpID, vsOp), 99))
 
 	err := k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
 		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}})
-	require.ErrorIs(t, err, types.ErrOperatorAuthzExistsMutex)
+	require.ErrorIs(t, err, types.ErrDelegateAuthzExistsMutex)
 }
 
 // [MOD-DE-MSG-5-2] vs_operator MUST NOT be the corporation's own policy_address.
@@ -534,7 +557,7 @@ func TestRecomputeFeeAllowance_QueuesWindowEnd(t *testing.T) {
 func TestQueriesNotFound(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
-	_, err := qs.GetOperatorAuthorization(ctx, &types.QueryGetOperatorAuthorizationRequest{Id: 999})
+	_, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: 999})
 	require.Error(t, err)
 	_, err = qs.GetVSOperatorAuthorization(ctx, &types.QueryGetVSOperatorAuthorizationRequest{Id: 999})
 	require.Error(t, err)

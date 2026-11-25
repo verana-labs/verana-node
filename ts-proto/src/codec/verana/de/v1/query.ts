@@ -7,7 +7,7 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
-import { OperatorAuthorization, VSOperatorAuthorization } from "./types";
+import { DelegateAuthorization, VSOperatorAuthorization } from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
@@ -23,24 +23,24 @@ export interface QueryParamsResponse {
 }
 
 /**
- * QueryListOperatorAuthorizationsRequest is the request type for the
- * Query/ListOperatorAuthorizations RPC method.
+ * QueryListDelegateAuthorizationsRequest is the request type for the
+ * Query/ListDelegateAuthorizations RPC method.
  */
-export interface QueryListOperatorAuthorizationsRequest {
+export interface QueryListDelegateAuthorizationsRequest {
   /** corporation_id filters by the corporation that granted the authorization. */
   corporationId: number;
-  /** operator filters by the operator account that received the authorization. */
-  operator: string;
+  /** delegate filters by the delegate account that received the authorization. */
+  delegate: string;
   /** response_max_size limits the number of results. Must be 1-1024, defaults to 64. */
   responseMaxSize: number;
 }
 
 /**
- * QueryListOperatorAuthorizationsResponse is the response type for the
- * Query/ListOperatorAuthorizations RPC method.
+ * QueryListDelegateAuthorizationsResponse is the response type for the
+ * Query/ListDelegateAuthorizations RPC method.
  */
-export interface QueryListOperatorAuthorizationsResponse {
-  operatorAuthorizations: OperatorAuthorization[];
+export interface QueryListDelegateAuthorizationsResponse {
+  delegateAuthorizations: DelegateAuthorization[];
 }
 
 /**
@@ -65,20 +65,20 @@ export interface QueryListVSOperatorAuthorizationsResponse {
 }
 
 /**
- * QueryGetOperatorAuthorizationRequest is the request type for the
- * Query/GetOperatorAuthorization RPC method.
+ * QueryGetDelegateAuthorizationRequest is the request type for the
+ * Query/GetDelegateAuthorization RPC method.
  */
-export interface QueryGetOperatorAuthorizationRequest {
-  /** id is the OperatorAuthorization id to fetch. */
+export interface QueryGetDelegateAuthorizationRequest {
+  /** id is the DelegateAuthorization id to fetch. */
   id: number;
 }
 
 /**
- * QueryGetOperatorAuthorizationResponse is the response type for the
- * Query/GetOperatorAuthorization RPC method.
+ * QueryGetDelegateAuthorizationResponse is the response type for the
+ * Query/GetDelegateAuthorization RPC method.
  */
-export interface QueryGetOperatorAuthorizationResponse {
-  operatorAuthorization: OperatorAuthorization | undefined;
+export interface QueryGetDelegateAuthorizationResponse {
+  delegateAuthorization: DelegateAuthorization | undefined;
 }
 
 /**
@@ -200,17 +200,17 @@ export const QueryParamsResponse = {
   },
 };
 
-function createBaseQueryListOperatorAuthorizationsRequest(): QueryListOperatorAuthorizationsRequest {
-  return { corporationId: 0, operator: "", responseMaxSize: 0 };
+function createBaseQueryListDelegateAuthorizationsRequest(): QueryListDelegateAuthorizationsRequest {
+  return { corporationId: 0, delegate: "", responseMaxSize: 0 };
 }
 
-export const QueryListOperatorAuthorizationsRequest = {
-  encode(message: QueryListOperatorAuthorizationsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryListDelegateAuthorizationsRequest = {
+  encode(message: QueryListDelegateAuthorizationsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.corporationId !== 0) {
       writer.uint32(8).uint64(message.corporationId);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.responseMaxSize !== 0) {
       writer.uint32(24).uint32(message.responseMaxSize);
@@ -218,10 +218,10 @@ export const QueryListOperatorAuthorizationsRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListOperatorAuthorizationsRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListDelegateAuthorizationsRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryListOperatorAuthorizationsRequest();
+    const message = createBaseQueryListDelegateAuthorizationsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -237,7 +237,7 @@ export const QueryListOperatorAuthorizationsRequest = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -255,21 +255,21 @@ export const QueryListOperatorAuthorizationsRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryListOperatorAuthorizationsRequest {
+  fromJSON(object: any): QueryListDelegateAuthorizationsRequest {
     return {
       corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       responseMaxSize: isSet(object.responseMaxSize) ? globalThis.Number(object.responseMaxSize) : 0,
     };
   },
 
-  toJSON(message: QueryListOperatorAuthorizationsRequest): unknown {
+  toJSON(message: QueryListDelegateAuthorizationsRequest): unknown {
     const obj: any = {};
     if (message.corporationId !== 0) {
       obj.corporationId = Math.round(message.corporationId);
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.responseMaxSize !== 0) {
       obj.responseMaxSize = Math.round(message.responseMaxSize);
@@ -277,38 +277,38 @@ export const QueryListOperatorAuthorizationsRequest = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QueryListOperatorAuthorizationsRequest>, I>>(
+  create<I extends Exact<DeepPartial<QueryListDelegateAuthorizationsRequest>, I>>(
     base?: I,
-  ): QueryListOperatorAuthorizationsRequest {
-    return QueryListOperatorAuthorizationsRequest.fromPartial(base ?? ({} as any));
+  ): QueryListDelegateAuthorizationsRequest {
+    return QueryListDelegateAuthorizationsRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QueryListOperatorAuthorizationsRequest>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryListDelegateAuthorizationsRequest>, I>>(
     object: I,
-  ): QueryListOperatorAuthorizationsRequest {
-    const message = createBaseQueryListOperatorAuthorizationsRequest();
+  ): QueryListDelegateAuthorizationsRequest {
+    const message = createBaseQueryListDelegateAuthorizationsRequest();
     message.corporationId = object.corporationId ?? 0;
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.responseMaxSize = object.responseMaxSize ?? 0;
     return message;
   },
 };
 
-function createBaseQueryListOperatorAuthorizationsResponse(): QueryListOperatorAuthorizationsResponse {
-  return { operatorAuthorizations: [] };
+function createBaseQueryListDelegateAuthorizationsResponse(): QueryListDelegateAuthorizationsResponse {
+  return { delegateAuthorizations: [] };
 }
 
-export const QueryListOperatorAuthorizationsResponse = {
-  encode(message: QueryListOperatorAuthorizationsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.operatorAuthorizations) {
-      OperatorAuthorization.encode(v!, writer.uint32(10).fork()).ldelim();
+export const QueryListDelegateAuthorizationsResponse = {
+  encode(message: QueryListDelegateAuthorizationsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.delegateAuthorizations) {
+      DelegateAuthorization.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListOperatorAuthorizationsResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListDelegateAuthorizationsResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryListOperatorAuthorizationsResponse();
+    const message = createBaseQueryListDelegateAuthorizationsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -317,7 +317,7 @@ export const QueryListOperatorAuthorizationsResponse = {
             break;
           }
 
-          message.operatorAuthorizations.push(OperatorAuthorization.decode(reader, reader.uint32()));
+          message.delegateAuthorizations.push(DelegateAuthorization.decode(reader, reader.uint32()));
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -328,32 +328,32 @@ export const QueryListOperatorAuthorizationsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryListOperatorAuthorizationsResponse {
+  fromJSON(object: any): QueryListDelegateAuthorizationsResponse {
     return {
-      operatorAuthorizations: globalThis.Array.isArray(object?.operatorAuthorizations)
-        ? object.operatorAuthorizations.map((e: any) => OperatorAuthorization.fromJSON(e))
+      delegateAuthorizations: globalThis.Array.isArray(object?.delegateAuthorizations)
+        ? object.delegateAuthorizations.map((e: any) => DelegateAuthorization.fromJSON(e))
         : [],
     };
   },
 
-  toJSON(message: QueryListOperatorAuthorizationsResponse): unknown {
+  toJSON(message: QueryListDelegateAuthorizationsResponse): unknown {
     const obj: any = {};
-    if (message.operatorAuthorizations?.length) {
-      obj.operatorAuthorizations = message.operatorAuthorizations.map((e) => OperatorAuthorization.toJSON(e));
+    if (message.delegateAuthorizations?.length) {
+      obj.delegateAuthorizations = message.delegateAuthorizations.map((e) => DelegateAuthorization.toJSON(e));
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QueryListOperatorAuthorizationsResponse>, I>>(
+  create<I extends Exact<DeepPartial<QueryListDelegateAuthorizationsResponse>, I>>(
     base?: I,
-  ): QueryListOperatorAuthorizationsResponse {
-    return QueryListOperatorAuthorizationsResponse.fromPartial(base ?? ({} as any));
+  ): QueryListDelegateAuthorizationsResponse {
+    return QueryListDelegateAuthorizationsResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QueryListOperatorAuthorizationsResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryListDelegateAuthorizationsResponse>, I>>(
     object: I,
-  ): QueryListOperatorAuthorizationsResponse {
-    const message = createBaseQueryListOperatorAuthorizationsResponse();
-    message.operatorAuthorizations = object.operatorAuthorizations?.map((e) => OperatorAuthorization.fromPartial(e)) ||
+  ): QueryListDelegateAuthorizationsResponse {
+    const message = createBaseQueryListDelegateAuthorizationsResponse();
+    message.delegateAuthorizations = object.delegateAuthorizations?.map((e) => DelegateAuthorization.fromPartial(e)) ||
       [];
     return message;
   },
@@ -518,22 +518,22 @@ export const QueryListVSOperatorAuthorizationsResponse = {
   },
 };
 
-function createBaseQueryGetOperatorAuthorizationRequest(): QueryGetOperatorAuthorizationRequest {
+function createBaseQueryGetDelegateAuthorizationRequest(): QueryGetDelegateAuthorizationRequest {
   return { id: 0 };
 }
 
-export const QueryGetOperatorAuthorizationRequest = {
-  encode(message: QueryGetOperatorAuthorizationRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryGetDelegateAuthorizationRequest = {
+  encode(message: QueryGetDelegateAuthorizationRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== 0) {
       writer.uint32(8).uint64(message.id);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetOperatorAuthorizationRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetDelegateAuthorizationRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryGetOperatorAuthorizationRequest();
+    const message = createBaseQueryGetDelegateAuthorizationRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -553,11 +553,11 @@ export const QueryGetOperatorAuthorizationRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetOperatorAuthorizationRequest {
+  fromJSON(object: any): QueryGetDelegateAuthorizationRequest {
     return { id: isSet(object.id) ? globalThis.Number(object.id) : 0 };
   },
 
-  toJSON(message: QueryGetOperatorAuthorizationRequest): unknown {
+  toJSON(message: QueryGetDelegateAuthorizationRequest): unknown {
     const obj: any = {};
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -565,36 +565,36 @@ export const QueryGetOperatorAuthorizationRequest = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QueryGetOperatorAuthorizationRequest>, I>>(
+  create<I extends Exact<DeepPartial<QueryGetDelegateAuthorizationRequest>, I>>(
     base?: I,
-  ): QueryGetOperatorAuthorizationRequest {
-    return QueryGetOperatorAuthorizationRequest.fromPartial(base ?? ({} as any));
+  ): QueryGetDelegateAuthorizationRequest {
+    return QueryGetDelegateAuthorizationRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QueryGetOperatorAuthorizationRequest>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryGetDelegateAuthorizationRequest>, I>>(
     object: I,
-  ): QueryGetOperatorAuthorizationRequest {
-    const message = createBaseQueryGetOperatorAuthorizationRequest();
+  ): QueryGetDelegateAuthorizationRequest {
+    const message = createBaseQueryGetDelegateAuthorizationRequest();
     message.id = object.id ?? 0;
     return message;
   },
 };
 
-function createBaseQueryGetOperatorAuthorizationResponse(): QueryGetOperatorAuthorizationResponse {
-  return { operatorAuthorization: undefined };
+function createBaseQueryGetDelegateAuthorizationResponse(): QueryGetDelegateAuthorizationResponse {
+  return { delegateAuthorization: undefined };
 }
 
-export const QueryGetOperatorAuthorizationResponse = {
-  encode(message: QueryGetOperatorAuthorizationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.operatorAuthorization !== undefined) {
-      OperatorAuthorization.encode(message.operatorAuthorization, writer.uint32(10).fork()).ldelim();
+export const QueryGetDelegateAuthorizationResponse = {
+  encode(message: QueryGetDelegateAuthorizationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.delegateAuthorization !== undefined) {
+      DelegateAuthorization.encode(message.delegateAuthorization, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetOperatorAuthorizationResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetDelegateAuthorizationResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryGetOperatorAuthorizationResponse();
+    const message = createBaseQueryGetDelegateAuthorizationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -603,7 +603,7 @@ export const QueryGetOperatorAuthorizationResponse = {
             break;
           }
 
-          message.operatorAuthorization = OperatorAuthorization.decode(reader, reader.uint32());
+          message.delegateAuthorization = DelegateAuthorization.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -614,34 +614,34 @@ export const QueryGetOperatorAuthorizationResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetOperatorAuthorizationResponse {
+  fromJSON(object: any): QueryGetDelegateAuthorizationResponse {
     return {
-      operatorAuthorization: isSet(object.operatorAuthorization)
-        ? OperatorAuthorization.fromJSON(object.operatorAuthorization)
+      delegateAuthorization: isSet(object.delegateAuthorization)
+        ? DelegateAuthorization.fromJSON(object.delegateAuthorization)
         : undefined,
     };
   },
 
-  toJSON(message: QueryGetOperatorAuthorizationResponse): unknown {
+  toJSON(message: QueryGetDelegateAuthorizationResponse): unknown {
     const obj: any = {};
-    if (message.operatorAuthorization !== undefined) {
-      obj.operatorAuthorization = OperatorAuthorization.toJSON(message.operatorAuthorization);
+    if (message.delegateAuthorization !== undefined) {
+      obj.delegateAuthorization = DelegateAuthorization.toJSON(message.delegateAuthorization);
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QueryGetOperatorAuthorizationResponse>, I>>(
+  create<I extends Exact<DeepPartial<QueryGetDelegateAuthorizationResponse>, I>>(
     base?: I,
-  ): QueryGetOperatorAuthorizationResponse {
-    return QueryGetOperatorAuthorizationResponse.fromPartial(base ?? ({} as any));
+  ): QueryGetDelegateAuthorizationResponse {
+    return QueryGetDelegateAuthorizationResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QueryGetOperatorAuthorizationResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryGetDelegateAuthorizationResponse>, I>>(
     object: I,
-  ): QueryGetOperatorAuthorizationResponse {
-    const message = createBaseQueryGetOperatorAuthorizationResponse();
-    message.operatorAuthorization =
-      (object.operatorAuthorization !== undefined && object.operatorAuthorization !== null)
-        ? OperatorAuthorization.fromPartial(object.operatorAuthorization)
+  ): QueryGetDelegateAuthorizationResponse {
+    const message = createBaseQueryGetDelegateAuthorizationResponse();
+    message.delegateAuthorization =
+      (object.delegateAuthorization !== undefined && object.delegateAuthorization !== null)
+        ? DelegateAuthorization.fromPartial(object.delegateAuthorization)
         : undefined;
     return message;
   },
@@ -780,18 +780,18 @@ export const QueryGetVSOperatorAuthorizationResponse = {
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
-  /** ListOperatorAuthorizations returns operator authorizations matching optional filters. */
-  ListOperatorAuthorizations(
-    request: QueryListOperatorAuthorizationsRequest,
-  ): Promise<QueryListOperatorAuthorizationsResponse>;
+  /** [MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters. */
+  ListDelegateAuthorizations(
+    request: QueryListDelegateAuthorizationsRequest,
+  ): Promise<QueryListDelegateAuthorizationsResponse>;
   /** ListVSOperatorAuthorizations returns VS operator authorizations matching optional filters. */
   ListVSOperatorAuthorizations(
     request: QueryListVSOperatorAuthorizationsRequest,
   ): Promise<QueryListVSOperatorAuthorizationsResponse>;
-  /** [MOD-DE-QRY-3] GetOperatorAuthorization returns a single OperatorAuthorization by id. */
-  GetOperatorAuthorization(
-    request: QueryGetOperatorAuthorizationRequest,
-  ): Promise<QueryGetOperatorAuthorizationResponse>;
+  /** [MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id. */
+  GetDelegateAuthorization(
+    request: QueryGetDelegateAuthorizationRequest,
+  ): Promise<QueryGetDelegateAuthorizationResponse>;
   /** [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id. */
   GetVSOperatorAuthorization(
     request: QueryGetVSOperatorAuthorizationRequest,
@@ -806,9 +806,9 @@ export class QueryClientImpl implements Query {
     this.service = opts?.service || QueryServiceName;
     this.rpc = rpc;
     this.Params = this.Params.bind(this);
-    this.ListOperatorAuthorizations = this.ListOperatorAuthorizations.bind(this);
+    this.ListDelegateAuthorizations = this.ListDelegateAuthorizations.bind(this);
     this.ListVSOperatorAuthorizations = this.ListVSOperatorAuthorizations.bind(this);
-    this.GetOperatorAuthorization = this.GetOperatorAuthorization.bind(this);
+    this.GetDelegateAuthorization = this.GetDelegateAuthorization.bind(this);
     this.GetVSOperatorAuthorization = this.GetVSOperatorAuthorization.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
@@ -817,12 +817,12 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryParamsResponse.decode(_m0.Reader.create(data)));
   }
 
-  ListOperatorAuthorizations(
-    request: QueryListOperatorAuthorizationsRequest,
-  ): Promise<QueryListOperatorAuthorizationsResponse> {
-    const data = QueryListOperatorAuthorizationsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListOperatorAuthorizations", data);
-    return promise.then((data) => QueryListOperatorAuthorizationsResponse.decode(_m0.Reader.create(data)));
+  ListDelegateAuthorizations(
+    request: QueryListDelegateAuthorizationsRequest,
+  ): Promise<QueryListDelegateAuthorizationsResponse> {
+    const data = QueryListDelegateAuthorizationsRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "ListDelegateAuthorizations", data);
+    return promise.then((data) => QueryListDelegateAuthorizationsResponse.decode(_m0.Reader.create(data)));
   }
 
   ListVSOperatorAuthorizations(
@@ -833,12 +833,12 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryListVSOperatorAuthorizationsResponse.decode(_m0.Reader.create(data)));
   }
 
-  GetOperatorAuthorization(
-    request: QueryGetOperatorAuthorizationRequest,
-  ): Promise<QueryGetOperatorAuthorizationResponse> {
-    const data = QueryGetOperatorAuthorizationRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "GetOperatorAuthorization", data);
-    return promise.then((data) => QueryGetOperatorAuthorizationResponse.decode(_m0.Reader.create(data)));
+  GetDelegateAuthorization(
+    request: QueryGetDelegateAuthorizationRequest,
+  ): Promise<QueryGetDelegateAuthorizationResponse> {
+    const data = QueryGetDelegateAuthorizationRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GetDelegateAuthorization", data);
+    return promise.then((data) => QueryGetDelegateAuthorizationResponse.decode(_m0.Reader.create(data)));
   }
 
   GetVSOperatorAuthorization(

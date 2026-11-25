@@ -68,7 +68,7 @@ echo "************************ Running test-harness journey 110 ****************
 echo "*****************************************************************************************"
 go run cmd/main.go 110
 
-# Credential Schema Operator Authorization Journeys
+# Credential Schema Delegate Authorization Journeys
 echo "*****************************************************************************************"
 echo "************************ Running test-harness journey 201 *******************************"
 echo "*****************************************************************************************"
@@ -79,15 +79,15 @@ echo "************************ Running test-harness journey 202 ****************
 echo "*****************************************************************************************"
 go run cmd/main.go 202
 
-# Permission Operator Authorization Journeys
+# Permission Delegate Authorization Journeys
 echo "*****************************************************************************************"
 echo "************************ Running test-harness journey 301 *******************************"
 echo "*****************************************************************************************"
 go run cmd/main.go 301
 
-# Journeys 302-310 rewritten for spec v4-rc2 AUTHZ-CHECK-5: the operator acts on
+# Journeys 302-310 rewritten for spec v4-rc2 AUTHZ-CHECK-5: the delegate acts on
 # behalf of journey301's registered Corporation (policy_address) via group-granted
-# operator authorization + the *WithAuthority helpers. All validated live in natural
+# delegate authorization + the *WithAuthority helpers. All validated live in natural
 # order; journey307 exercises the full VSOA record lifecycle + CSPS (AUTHZ-CHECK-3).
 for J in 302 303 304 305 306 307 308 309 310; do
   echo "*****************************************************************************************"
@@ -101,7 +101,7 @@ done
 echo "************************ Running test-harness journey 311 *******************************"
 go run cmd/main.go 311
 
-# Journey 312 (PP operator spend_limit enforcement, AUTHZ-CHECK-1) is self-contained:
+# Journey 312 (PP delegate spend_limit enforcement, AUTHZ-CHECK-1) is self-contained:
 # it builds its own ecosystem -> schema -> fee-bearing root off journey301's corp.
 echo "************************ Running test-harness journey 312 *******************************"
 go run cmd/main.go 312

@@ -109,8 +109,8 @@ func TestMsgTypeURL(t *testing.T) {
 		types.MsgType_MSG_TYPE_SELF_CREATE_ACCREDITATION:                    {"/verana.pp.v1.MsgSelfCreateParticipant"},
 		types.MsgType_MSG_TYPE_TRIGGER_RESOLVER:                             {"/verana.pp.v1.MsgTriggerResolver"},
 		types.MsgType_MSG_TYPE_REPAY_SLASH:                                  {"/verana.td.v1.MsgRepaySlashedTrustDeposit", "/verana.pp.v1.MsgRepayParticipantSlashedTrustDeposit"},
-		types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION:                 {"/verana.de.v1.MsgGrantOperatorAuthorization"},
-		types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION:                {"/verana.de.v1.MsgRevokeOperatorAuthorization"},
+		types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION:                 {"/verana.de.v1.MsgGrantDelegateAuthorization"},
+		types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION:                {"/verana.de.v1.MsgRevokeDelegateAuthorization"},
 		types.MsgType_MSG_TYPE_STORE_DIGEST:                                 {"/verana.di.v1.MsgStoreDigest"},
 		types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION:               {"/verana.pp.v1.MsgCreateOrUpdateParticipantSession"},
 	}

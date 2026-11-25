@@ -19,26 +19,26 @@ import (
 // RunPermissionCSPSJourney implements Journey 307: Test CreateOrUpdatePermissionSession (CSPS)
 // with VS Operator Authorization.
 //
-// This journey uses the operator's own address as authority (not the group policy)
-// to avoid mutual exclusivity conflicts between OperatorAuthorization and
+// This journey uses the delegate's own address as authority (not the group policy)
+// to avoid mutual exclusivity conflicts between DelegateAuthorization and
 // VSOperatorAuthorization in the DE module.
 //
-// TEST 1: CreateOrUpdatePermissionSession (unauthorized operator → fail, authorized → succeed)
+// TEST 1: CreateOrUpdatePermissionSession (unauthorized delegate → fail, authorized → succeed)
 // TEST 2: Verify session fields
 // TEST 3: Update existing session
 // TEST 4: Negative tests (wrong authority)
-// Depends on Journey 301 (setup), 302 (group/operator), 304 (root permission).
+// Depends on Journey 301 (setup), 302 (group/delegate), 304 (root permission).
 func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) error {
 	fmt.Println("Starting Journey 307: CreateOrUpdatePermissionSession with VS Operator Authorization")
 
 	// Load results from prior journeys
-	// Use journey302's TR (controller = operatorAddr) since we use self-delegation
+	// Use journey302's TR (controller = delegateAddr) since we use self-delegation
 	setup302 := lib.LoadJourneyResult("journey302")
-	operatorAccount := lib.GetAccount(client, permOperatorName)
-	operatorAddr := setup302.OperatorAddr
-	// Corp pattern (spec v4 / AUTHZ-CHECK-5): the operator acts on behalf of the
+	delegateAccount := lib.GetAccount(client, permDelegateName)
+	delegateAddr := setup302.DelegateAddr
+	// Corp pattern (spec v4 / AUTHZ-CHECK-5): the delegate acts on behalf of the
 	// registered Corporation (policyAddr from journey302); the vs_operator
-	// (cooluser) is a distinct account, so no OperatorAuthorization/VSOA mutual
+	// (cooluser) is a distinct account, so no DelegateAuthorization/VSOA mutual
 	// exclusivity conflict.
 	policyAddr := setup302.GroupPolicyAddr
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
@@ -47,23 +47,23 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	vsOperatorAccount := lib.GetAccount(client, "cooluser")
 	vsOperatorAddr, _ := vsOperatorAccount.Address("verana")
 
-	fmt.Printf("  Operator: %s\n", operatorAddr)
+	fmt.Printf("  Delegate: %s\n", delegateAddr)
 	fmt.Printf("  VS Operator: %s\n", vsOperatorAddr)
 
 	trID, _ := strconv.ParseUint(setup302.EcosystemID, 10, 64)
 
 	// =========================================================================
-	// PREREQUISITES: All operations use operatorAddr as authority (self-delegation)
-	// to avoid mutual exclusivity between OperatorAuthorization and
+	// PREREQUISITES: All operations use delegateAddr as authority (self-delegation)
+	// to avoid mutual exclusivity between DelegateAuthorization and
 	// VSOperatorAuthorization in the DE module.
 	// =========================================================================
 	fmt.Println("\n=== PREREQUISITES: Create CS, root perm, and ISSUER perms ===")
 
-	// --- Prerequisite 1: Grant operator authz from the Corporation group ---
-	fmt.Println("\n--- Prerequisite 1: Grant operator authz via the Corporation group ---")
-	err := lib.GrantOperatorAuthorizationViaGroup(
+	// --- Prerequisite 1: Grant delegate authz from the Corporation group ---
+	fmt.Println("\n--- Prerequisite 1: Grant delegate authz via the Corporation group ---")
+	err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{
 			detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA,
 			detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING,
@@ -74,14 +74,14 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	if err != nil {
 		return fmt.Errorf("prerequisite 1 failed: %w", err)
 	}
-	fmt.Println("OK Prerequisite 1: Granted operator authz from Corporation")
-	waitForTx("operator authz grant")
+	fmt.Println("OK Prerequisite 1: Granted delegate authz from Corporation")
+	waitForTx("delegate authz grant")
 
 	// --- Prerequisite 2: Create CS for ISSUER perm ---
 	fmt.Println("\n--- Prerequisite 2: Create Credential Schema (CS1) ---")
 	schemaData := lib.GenerateSimpleSchema(setup302.EcosystemID)
 	cs1IDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, schemaData,
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
@@ -93,13 +93,13 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	fmt.Printf("OK Prerequisite 2: CS1 created with ID: %d\n", cs1ID)
 	waitForTx("CS1 creation")
 
-	// --- Prerequisite 3: Create root permission on CS1 (authority=operatorAddr) ---
+	// --- Prerequisite 3: Create root permission on CS1 (authority=delegateAddr) ---
 	fmt.Println("\n--- Prerequisite 3: Create root permission on CS1 ---")
 	rootPermDID := lib.GenerateUniqueDID(client, ctx)
 	effectiveFrom := time.Now().Add(5 * time.Second)
 	effectiveUntil := effectiveFrom.Add(360 * 24 * time.Hour)
 	rootPermID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		cs1ID, rootPermDID, &effectiveFrom, &effectiveUntil, 0, 0, 0,
 	)
 	if err != nil {
@@ -112,10 +112,10 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	fmt.Println("  Waiting for root permission to become effective...")
 	time.Sleep(15 * time.Second)
 
-	// --- Prerequisite 4: Create ISSUER perm with vs_operator (authority=operatorAddr) ---
+	// --- Prerequisite 4: Create ISSUER perm with vs_operator (authority=delegateAddr) ---
 	fmt.Println("\n--- Prerequisite 4: Create ISSUER perm with vs_operator ---")
 	issuerDID := lib.GenerateUniqueDID(client, ctx)
-	issuerPermIDStr, err := lib.StartPermissionVP(client, ctx, operatorAccount, permtypes.MsgStartParticipantOP{
+	issuerPermIDStr, err := lib.StartPermissionVP(client, ctx, delegateAccount, permtypes.MsgStartParticipantOP{
 		Corporation:             policyAddr,
 		Role:                    permtypes.ParticipantRole_ISSUER,
 		ValidatorParticipantId:  rootPermID,
@@ -136,7 +136,7 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	// effective_until the record stays disabled and AUTHZ-CHECK-3 would reject CSPS.
 	fmt.Println("\n--- Prerequisite 5: Validate ISSUER perm (activates VS operator auth) ---")
 	issuerEffUntil := time.Now().Add(365 * 24 * time.Hour)
-	_, err = lib.SetPermissionVPToValidated(client, ctx, operatorAccount, permtypes.MsgSetParticipantOPToValidated{
+	_, err = lib.SetPermissionVPToValidated(client, ctx, delegateAccount, permtypes.MsgSetParticipantOPToValidated{
 		Corporation:    policyAddr,
 		Id:             issuerPermID,
 		EffectiveUntil: &issuerEffUntil,
@@ -157,12 +157,12 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	}
 	fmt.Printf("  Verified: ISSUER perm is VALIDATED, vs_operator=%s\n", issuerPerm.VsOperator)
 
-	// --- Prerequisite 6: Create CS2 + root2 + agent perm (authority=operatorAddr) ---
+	// --- Prerequisite 6: Create CS2 + root2 + agent perm (authority=delegateAddr) ---
 	// Use a second CS to avoid overlap with the issuer perm on CS1
 	fmt.Println("\n--- Prerequisite 6: Create CS2 for agent perm ---")
 	schemaData2 := lib.GenerateSimpleSchema(setup302.EcosystemID)
 	cs2IDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, schemaData2,
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
@@ -179,7 +179,7 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	effectiveFrom2 := time.Now().Add(5 * time.Second)
 	effectiveUntil2 := effectiveFrom2.Add(360 * 24 * time.Hour)
 	rootPerm2ID, err := lib.CreateRootPermissionWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		cs2ID, rootPerm2DID, &effectiveFrom2, &effectiveUntil2, 0, 0, 0,
 	)
 	if err != nil {
@@ -194,7 +194,7 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 
 	fmt.Println("\n--- Prerequisite 6c: Create agent ISSUER perm on CS2 ---")
 	agentDID := lib.GenerateUniqueDID(client, ctx)
-	agentPermIDStr, err := lib.StartPermissionVP(client, ctx, operatorAccount, permtypes.MsgStartParticipantOP{
+	agentPermIDStr, err := lib.StartPermissionVP(client, ctx, delegateAccount, permtypes.MsgStartParticipantOP{
 		Corporation:            policyAddr,
 		Role:                   permtypes.ParticipantRole_ISSUER,
 		ValidatorParticipantId: rootPerm2ID,
@@ -208,7 +208,7 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	waitForTx("agent perm start")
 
 	fmt.Println("\n--- Prerequisite 6d: Validate agent perm ---")
-	_, err = lib.SetPermissionVPToValidated(client, ctx, operatorAccount, permtypes.MsgSetParticipantOPToValidated{
+	_, err = lib.SetPermissionVPToValidated(client, ctx, delegateAccount, permtypes.MsgSetParticipantOPToValidated{
 		Corporation: policyAddr,
 		Id:          agentPermID,
 	})
@@ -222,21 +222,21 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	walletAgentPermID := agentPermID
 
 	fmt.Println("\n=== Prerequisites complete ===")
-	fmt.Printf("  Issuer perm ID:       %d (authority=%s, vs_operator=%s)\n", issuerPermID, operatorAddr, vsOperatorAddr)
-	fmt.Printf("  Agent perm ID:        %d (authority=%s)\n", agentPermID, operatorAddr)
+	fmt.Printf("  Issuer perm ID:       %d (authority=%s, vs_operator=%s)\n", issuerPermID, delegateAddr, vsOperatorAddr)
+	fmt.Printf("  Agent perm ID:        %d (authority=%s)\n", agentPermID, delegateAddr)
 	fmt.Printf("  Wallet agent perm ID: %d (same as agent)\n", walletAgentPermID)
 
 	// =========================================================================
 	// TEST 1: CreateOrUpdatePermissionSession
-	// (fail with unauthorized operator, succeed with authorized operator)
+	// (fail with unauthorized delegate, succeed with authorized delegate)
 	// =========================================================================
 	fmt.Println("\n=== TEST 1: CreateOrUpdatePermissionSession ===")
 
 	sessionID := uuid.New().String()
 
-	// 1a: Unauthorized operator (ec_operator) tries CSPS (expect failure)
-	// Note: cooluser is the vs_operator (authorized), so we use ec_operator instead.
-	fmt.Println("\n--- Step 1a: Unauthorized operator tries CSPS (expect failure) ---")
+	// 1a: Unauthorized delegate (ec_delegate) tries CSPS (expect failure)
+	// Note: cooluser is the vs_operator (authorized), so we use ec_delegate instead.
+	fmt.Println("\n--- Step 1a: Unauthorized delegate tries CSPS (expect failure) ---")
 	// A funded account with no VS-operator authorization (guaranteed present from
 	// journey301's group setup) serves as the unauthorized signer.
 	unauthorizedAccount := lib.GetAccount(client, permGroupMember2Name)
@@ -247,7 +247,7 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	if err := expectAuthorizationError("Step 1a", err); err != nil {
 		return err
 	}
-	fmt.Println("OK Step 1a: Unauthorized operator correctly rejected")
+	fmt.Println("OK Step 1a: Unauthorized delegate correctly rejected")
 	waitForTx("CSPS rejection")
 
 	// 1b: Authorized vs_operator tries CSPS (expect success — VS operator auth was granted during validation)
@@ -268,7 +268,7 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	fmt.Println("\n=== TEST 2: Verify session fields ===")
 	verified := lib.VerifyPermissionSession(
 		client, ctx, sessionID,
-		operatorAddr, agentPermID, issuerPermID, 0,
+		delegateAddr, agentPermID, issuerPermID, 0,
 	)
 	if !verified {
 		return fmt.Errorf("step 2 failed: session verification failed")
@@ -292,7 +292,7 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 	// Verify the session still has correct fields after update
 	verified = lib.VerifyPermissionSession(
 		client, ctx, sessionID,
-		operatorAddr, agentPermID, issuerPermID, 0,
+		delegateAddr, agentPermID, issuerPermID, 0,
 	)
 	if !verified {
 		return fmt.Errorf("step 3 verification failed: session verification after update failed")
@@ -324,15 +324,15 @@ func RunPermissionCSPSJourney(ctx context.Context, client cosmosclient.Client) e
 		PermissionID:    strconv.FormatUint(issuerPermID, 10),
 		GroupID:         setup302.GroupID,
 		GroupPolicyAddr: setup302.GroupPolicyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey307", result)
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 307 completed successfully!")
 	fmt.Println("CreateOrUpdatePermissionSession tested:")
-	fmt.Println("  - Unauthorized operator rejected")
-	fmt.Println("  - Authorized operator succeeded (VS operator auth)")
+	fmt.Println("  - Unauthorized delegate rejected")
+	fmt.Println("  - Authorized delegate succeeded (VS operator auth)")
 	fmt.Println("  - Session fields verified")
 	fmt.Println("  - Session update succeeded")
 	fmt.Println("  - Wrong authority rejected")

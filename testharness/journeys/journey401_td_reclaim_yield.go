@@ -33,16 +33,16 @@ func queryTrustDepositByAddr(addr string) (*tdtypes.TrustDeposit, error) {
 }
 
 // RunTDReclaimYieldJourney implements Journey 401: Test ReclaimTrustDepositYield
-// and RepaySlashedTrustDeposit with operator authorization (authority/operator pattern).
+// and RepaySlashedTrustDeposit with delegate authorization (authority/delegate pattern).
 //
 // TEST 1: ReclaimTrustDepositYield (fail without auth, grant auth, try with auth)
 // TEST 2: RepaySlashedTrustDeposit (fail without auth, grant auth, wrong amount, correct amount)
 //
-// Depends on Journey 301 (group setup), 302 (operator setup), 304 (root permission
+// Depends on Journey 301 (group setup), 302 (delegate setup), 304 (root permission
 // that generates trust deposits), and 308 (which slashes a permission TD, creating
 // a slashed account-level TD for the group policy address).
 func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 401: TD ReclaimTrustDepositYield + RepaySlashedTrustDeposit with Operator Authorization")
+	fmt.Println("Starting Journey 401: TD ReclaimTrustDepositYield + RepaySlashedTrustDeposit with Delegate Authorization")
 
 	// Load results from prior journeys
 	setup301 := lib.LoadJourneyResult("journey301")
@@ -50,13 +50,13 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 	setup304 := lib.LoadJourneyResult("journey304")
 	setup308 := lib.LoadJourneyResult("journey308")
 	policyAddr := setup302.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, permOperatorName)
-	operatorAddr := setup302.OperatorAddr
+	delegateAccount := lib.GetAccount(client, permDelegateName)
+	delegateAddr := setup302.DelegateAddr
 	adminAccount := lib.GetAccount(client, permGroupAdminName)
 	member1Account := lib.GetAccount(client, permGroupMember1Name)
 
 	fmt.Printf("  Group Policy:  %s\n", policyAddr)
-	fmt.Printf("  Operator:      %s\n", operatorAddr)
+	fmt.Printf("  Delegate:      %s\n", delegateAddr)
 	fmt.Printf("  TR ID (j304):  %s\n", setup304.EcosystemID)
 	fmt.Printf("  Perm ID (j308): %s\n", setup308.PermissionID)
 	_ = setup301 // used for GroupID in saved results
@@ -67,8 +67,8 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 	fmt.Println("\n=== TEST 1: ReclaimTrustDepositYield ===")
 
 	// 1a: void in v5 (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries ReclaimTrustDepositYield, void in v5 (expect failure) ---")
-	_, err := lib.ReclaimTrustDepositYieldWithAuthority(client, ctx, operatorAccount, policyAddr)
+	fmt.Println("\n--- Step 1a: Delegate tries ReclaimTrustDepositYield, void in v5 (expect failure) ---")
+	_, err := lib.ReclaimTrustDepositYieldWithAuthority(client, ctx, delegateAccount, policyAddr)
 	if err := expectAuthorizationError("Step 1a", err); err != nil {
 		return err
 	}
@@ -103,8 +103,8 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 	fmt.Println("\n=== TEST 2: RepaySlashedTrustDeposit ===")
 
 	// 2a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 2a: Operator tries RepaySlashedTrustDeposit without auth (expect failure) ---")
-	_, err = lib.RepaySlashedTrustDeposit(client, ctx, operatorAccount, policyAddr, 10)
+	fmt.Println("\n--- Step 2a: Delegate tries RepaySlashedTrustDeposit without auth (expect failure) ---")
+	_, err = lib.RepaySlashedTrustDeposit(client, ctx, delegateAccount, policyAddr, 10)
 	if err := expectAuthorizationError("Step 2a", err); err != nil {
 		return err
 	}
@@ -112,10 +112,10 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 	waitForTx("repay slash rejection")
 
 	// 2b: Grant authorization for RepaySlashedTrustDeposit
-	fmt.Println("\n--- Step 2b: Grant operator auth for RepaySlashedTrustDeposit ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 2b: Grant delegate auth for RepaySlashedTrustDeposit ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
+		policyAddr, delegateAddr, delegateAddr,
 		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_REPAY_SLASH},
 	)
 	if err != nil {
@@ -139,9 +139,9 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 		fmt.Println("  Skipping repay tests (2d, 2e, 2f) since there is nothing to repay.")
 	} else {
 		// 2d: Try with wrong amount (expect error)
-		fmt.Println("\n--- Step 2d: Operator tries RepaySlashedTrustDeposit with wrong amount (expect failure) ---")
+		fmt.Println("\n--- Step 2d: Delegate tries RepaySlashedTrustDeposit with wrong amount (expect failure) ---")
 		wrongAmount := outstandingSlash + 999999
-		_, err = lib.RepaySlashedTrustDeposit(client, ctx, operatorAccount, policyAddr, wrongAmount)
+		_, err = lib.RepaySlashedTrustDeposit(client, ctx, delegateAccount, policyAddr, wrongAmount)
 		if err == nil {
 			return fmt.Errorf("step 2d failed: expected error for wrong repay amount %d, got nil", wrongAmount)
 		}
@@ -149,8 +149,8 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 		waitForTx("wrong repay amount rejection")
 
 		// 2e: Try with correct amount (expect success)
-		fmt.Println("\n--- Step 2e: Operator repays slashed trust deposit with correct amount ---")
-		_, err = lib.RepaySlashedTrustDeposit(client, ctx, operatorAccount, policyAddr, outstandingSlash)
+		fmt.Println("\n--- Step 2e: Delegate repays slashed trust deposit with correct amount ---")
+		_, err = lib.RepaySlashedTrustDeposit(client, ctx, delegateAccount, policyAddr, outstandingSlash)
 		if err != nil {
 			return fmt.Errorf("step 2e failed: %w", err)
 		}
@@ -197,7 +197,7 @@ func RunTDReclaimYieldJourney(ctx context.Context, client cosmosclient.Client) e
 		PermissionID:    setup308.PermissionID,
 		GroupID:         setup301.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey401", result)
 

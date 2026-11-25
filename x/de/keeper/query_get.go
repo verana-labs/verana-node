@@ -12,9 +12,9 @@ import (
 	"github.com/verana-labs/verana-node/x/de/types"
 )
 
-// GetOperatorAuthorization implements [MOD-DE-QRY-3]: fetch an
-// OperatorAuthorization by id.
-func (q queryServer) GetOperatorAuthorization(ctx context.Context, req *types.QueryGetOperatorAuthorizationRequest) (*types.QueryGetOperatorAuthorizationResponse, error) {
+// GetDelegateAuthorization implements [MOD-DE-QRY-3]: fetch an
+// DelegateAuthorization by id.
+func (q queryServer) GetDelegateAuthorization(ctx context.Context, req *types.QueryGetDelegateAuthorizationRequest) (*types.QueryGetDelegateAuthorizationResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -22,15 +22,15 @@ func (q queryServer) GetOperatorAuthorization(ctx context.Context, req *types.Qu
 		return nil, status.Error(codes.InvalidArgument, "id must be greater than 0")
 	}
 
-	oa, err := q.k.OperatorAuthorizations.Get(ctx, req.Id)
+	da, err := q.k.DelegateAuthorizations.Get(ctx, req.Id)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
-			return nil, status.Errorf(codes.NotFound, "operator authorization %d not found", req.Id)
+			return nil, status.Errorf(codes.NotFound, "delegate authorization %d not found", req.Id)
 		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryGetOperatorAuthorizationResponse{OperatorAuthorization: oa}, nil
+	return &types.QueryGetDelegateAuthorizationResponse{DelegateAuthorization: da}, nil
 }
 
 // GetVSOperatorAuthorization implements [MOD-DE-QRY-4]: fetch a

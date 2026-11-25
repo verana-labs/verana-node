@@ -30,9 +30,9 @@ func TestGenesis(t *testing.T) {
 func TestGenesisRoundtripAuthorizations(t *testing.T) {
 	f := initFixture(t)
 	ts := time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC)
-	op := sdk.AccAddress([]byte("xr_authz_operator___")).String()
-	authz := types.ExchangeRateAuthorization{XrId: 1, Operator: op, Expiration: ts, MaxDeviationBps: 500}
-	require.NoError(t, f.keeper.ExchangeRateAuthorizations.Set(f.ctx, collections.Join(authz.XrId, authz.Operator), authz))
+	op := sdk.AccAddress([]byte("xr_authz_feeder_____")).String()
+	authz := types.ExchangeRateAuthorization{XrId: 1, Feeder: op, Expiration: ts, MaxDeviationBps: 500}
+	require.NoError(t, f.keeper.ExchangeRateAuthorizations.Set(f.ctx, collections.Join(authz.XrId, authz.Feeder), authz))
 
 	got, err := f.keeper.ExportGenesis(f.ctx)
 	require.NoError(t, err)
@@ -40,9 +40,9 @@ func TestGenesisRoundtripAuthorizations(t *testing.T) {
 
 	f2 := initFixture(t)
 	require.NoError(t, f2.keeper.InitGenesis(f2.ctx, *got))
-	imported, err := f2.keeper.ExchangeRateAuthorizations.Get(f2.ctx, collections.Join(authz.XrId, authz.Operator))
+	imported, err := f2.keeper.ExchangeRateAuthorizations.Get(f2.ctx, collections.Join(authz.XrId, authz.Feeder))
 	require.NoError(t, err)
-	require.Equal(t, op, imported.Operator)
+	require.Equal(t, op, imported.Feeder)
 	require.Equal(t, uint32(500), imported.MaxDeviationBps)
 	require.True(t, imported.Expiration.Equal(ts))
 }

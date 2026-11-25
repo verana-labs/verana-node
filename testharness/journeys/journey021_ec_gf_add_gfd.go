@@ -19,7 +19,7 @@ func RunEcGFAddGFDJourney(ctx context.Context, client cosmosclient.Client) error
 	setup020 := lib.LoadJourneyResult("journey020")
 
 	policyAddr := setup001.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, corpAOperator)
+	delegateAccount := lib.GetAccount(client, corpADelegate)
 
 	var ecID uint64
 	fmt.Sscanf(setup020.EcosystemID, "%d", &ecID)
@@ -33,7 +33,7 @@ func RunEcGFAddGFDJourney(ctx context.Context, client cosmosclient.Client) error
 	// =========================================================================
 	fmt.Println("\n--- Step 1: AddGFD v2 English for ec-alpha ---")
 	err := lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, "en",
 		"https://example.com/ec-alpha-gf-v2-en.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -48,7 +48,7 @@ func RunEcGFAddGFDJourney(ctx context.Context, client cosmosclient.Client) error
 	// Step 1b: AddGFD for version that skips ahead (v4 when max=2) — must abort
 	fmt.Println("\n--- Step 1b: AddGFD v4 (skip v3, expect failure) ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, "en",
 		"https://example.com/ec-alpha-gf-v4-en.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -65,7 +65,7 @@ func RunEcGFAddGFDJourney(ctx context.Context, client cosmosclient.Client) error
 	fmt.Println("\n--- Step 2: AddGFD v2 French + Spanish translations ---")
 	for _, lang := range []string{"fr", "es"} {
 		err = lib.AddGFDWithAuthority(
-			client, ctx, operatorAccount, policyAddr,
+			client, ctx, delegateAccount, policyAddr,
 			ecID, lang,
 			fmt.Sprintf("https://example.com/ec-alpha-gf-v2-%s.pdf", lang),
 			"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -83,7 +83,7 @@ func RunEcGFAddGFDJourney(ctx context.Context, client cosmosclient.Client) error
 	// =========================================================================
 	fmt.Println("\n--- Step 3: AddGFD v3 English (for use in Journey 022) ---")
 	err = lib.AddGFDWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		ecID, "en",
 		"https://example.com/ec-alpha-gf-v3-en.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",

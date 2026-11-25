@@ -11,8 +11,8 @@ import {
   MsgUpdateCredentialSchema,
 } from "./codec/verana/cs/v1/tx";
 import {
-  MsgGrantOperatorAuthorization,
-  MsgRevokeOperatorAuthorization,
+  MsgGrantDelegateAuthorization,
+  MsgRevokeDelegateAuthorization,
 } from "./codec/verana/de/v1/tx";
 import { MsgStoreDigest } from "./codec/verana/di/v1/tx";
 import {
@@ -60,8 +60,8 @@ import {
   MsgUpdateCredentialSchemaAminoConverter,
 } from "./amino-converter/cs";
 import {
-  MsgGrantOperatorAuthorizationAminoConverter,
-  MsgRevokeOperatorAuthorizationAminoConverter,
+  MsgGrantDelegateAuthorizationAminoConverter,
+  MsgRevokeDelegateAuthorizationAminoConverter,
 } from "./amino-converter/de";
 import { MsgStoreDigestAminoConverter } from "./amino-converter/di";
 import {
@@ -126,8 +126,8 @@ export const veranaTypeUrls = {
   MsgReclaimTrustDepositYield: "/verana.td.v1.MsgReclaimTrustDepositYield",
   MsgSlashTrustDeposit: "/verana.td.v1.MsgSlashTrustDeposit",
   MsgRepaySlashedTrustDeposit: "/verana.td.v1.MsgRepaySlashedTrustDeposit",
-  MsgGrantOperatorAuthorization: "/verana.de.v1.MsgGrantOperatorAuthorization",
-  MsgRevokeOperatorAuthorization: "/verana.de.v1.MsgRevokeOperatorAuthorization",
+  MsgGrantDelegateAuthorization: "/verana.de.v1.MsgGrantDelegateAuthorization",
+  MsgRevokeDelegateAuthorization: "/verana.de.v1.MsgRevokeDelegateAuthorization",
   MsgStoreDigest: "/verana.di.v1.MsgStoreDigest",
   MsgCreateExchangeRate: "/verana.xr.v1.MsgCreateExchangeRate",
   MsgUpdateExchangeRate: "/verana.xr.v1.MsgUpdateExchangeRate",
@@ -164,8 +164,8 @@ export const veranaRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
   [veranaTypeUrls.MsgReclaimTrustDepositYield, MsgReclaimTrustDepositYield as GeneratedType],
   [veranaTypeUrls.MsgSlashTrustDeposit, MsgSlashTrustDeposit as GeneratedType],
   [veranaTypeUrls.MsgRepaySlashedTrustDeposit, MsgRepaySlashedTrustDeposit as GeneratedType],
-  [veranaTypeUrls.MsgGrantOperatorAuthorization, MsgGrantOperatorAuthorization as GeneratedType],
-  [veranaTypeUrls.MsgRevokeOperatorAuthorization, MsgRevokeOperatorAuthorization as GeneratedType],
+  [veranaTypeUrls.MsgGrantDelegateAuthorization, MsgGrantDelegateAuthorization as GeneratedType],
+  [veranaTypeUrls.MsgRevokeDelegateAuthorization, MsgRevokeDelegateAuthorization as GeneratedType],
   [veranaTypeUrls.MsgStoreDigest, MsgStoreDigest as GeneratedType],
   [veranaTypeUrls.MsgCreateExchangeRate, MsgCreateExchangeRate as GeneratedType],
   [veranaTypeUrls.MsgUpdateExchangeRate, MsgUpdateExchangeRate as GeneratedType],
@@ -214,8 +214,8 @@ export function createVeranaAminoTypes(): AminoTypes {
     [veranaTypeUrls.MsgReclaimTrustDepositYield]: MsgReclaimTrustDepositYieldAminoConverter,
     [veranaTypeUrls.MsgSlashTrustDeposit]: MsgSlashTrustDepositAminoConverter,
     [veranaTypeUrls.MsgRepaySlashedTrustDeposit]: MsgRepaySlashedTrustDepositAminoConverter,
-    [veranaTypeUrls.MsgGrantOperatorAuthorization]: MsgGrantOperatorAuthorizationAminoConverter,
-    [veranaTypeUrls.MsgRevokeOperatorAuthorization]: MsgRevokeOperatorAuthorizationAminoConverter,
+    [veranaTypeUrls.MsgGrantDelegateAuthorization]: MsgGrantDelegateAuthorizationAminoConverter,
+    [veranaTypeUrls.MsgRevokeDelegateAuthorization]: MsgRevokeDelegateAuthorizationAminoConverter,
     [veranaTypeUrls.MsgStoreDigest]: MsgStoreDigestAminoConverter,
     [veranaTypeUrls.MsgCreateExchangeRate]: MsgCreateExchangeRateAminoConverter,
     [veranaTypeUrls.MsgUpdateExchangeRate]: MsgUpdateExchangeRateAminoConverter,

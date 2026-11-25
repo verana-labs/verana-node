@@ -61,12 +61,12 @@ func TestStoreDigest_HappyPath(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	authority := sdk.AccAddress([]byte("authority_address_")).String()
-	operator := sdk.AccAddress([]byte("operator_address__")).String()
+	delegate := sdk.AccAddress([]byte("delegate_address__")).String()
 	digest := "sha256-abc123def456"
 
 	resp, err := ms.StoreDigest(f.ctx, &types.MsgStoreDigest{
 		Authority: authority,
-		Operator:  operator,
+		Delegate:  delegate,
 		Digest:    digest,
 	})
 	require.NoError(t, err)
@@ -81,11 +81,11 @@ func TestStoreDigest_HappyPath(t *testing.T) {
 func TestStoreDigest_EmptyDigest(t *testing.T) {
 	// ValidateBasic is called before the handler in a real chain, so test it directly.
 	authority := sdk.AccAddress([]byte("authority_address_")).String()
-	operator := sdk.AccAddress([]byte("operator_address__")).String()
+	delegate := sdk.AccAddress([]byte("delegate_address__")).String()
 
 	msg := &types.MsgStoreDigest{
 		Authority: authority,
-		Operator:  operator,
+		Delegate:  delegate,
 		Digest:    "",
 	}
 	err := msg.ValidateBasic()
@@ -96,7 +96,7 @@ func TestStoreDigest_EmptyDigest(t *testing.T) {
 func TestStoreDigest_InvalidAuthority(t *testing.T) {
 	msg := &types.MsgStoreDigest{
 		Authority: "bad-address",
-		Operator:  sdk.AccAddress([]byte("operator_address__")).String(),
+		Delegate:  sdk.AccAddress([]byte("delegate_address__")).String(),
 		Digest:    "sha256-abc123",
 	}
 	err := msg.ValidateBasic()
@@ -104,15 +104,15 @@ func TestStoreDigest_InvalidAuthority(t *testing.T) {
 	require.Contains(t, err.Error(), "invalid authority address")
 }
 
-func TestStoreDigest_InvalidOperator(t *testing.T) {
+func TestStoreDigest_InvalidDelegate(t *testing.T) {
 	msg := &types.MsgStoreDigest{
 		Authority: sdk.AccAddress([]byte("authority_address_")).String(),
-		Operator:  "bad-operator",
+		Delegate:  "bad-delegate",
 		Digest:    "sha256-abc123",
 	}
 	err := msg.ValidateBasic()
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "invalid operator address")
+	require.Contains(t, err.Error(), "invalid delegate address")
 }
 
 func TestStoreDigest_AuthzFailure(t *testing.T) {
@@ -123,11 +123,11 @@ func TestStoreDigest_AuthzFailure(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	authority := sdk.AccAddress([]byte("authority_address_")).String()
-	operator := sdk.AccAddress([]byte("operator_address__")).String()
+	delegate := sdk.AccAddress([]byte("delegate_address__")).String()
 
 	resp, err := ms.StoreDigest(f.ctx, &types.MsgStoreDigest{
 		Authority: authority,
-		Operator:  operator,
+		Delegate:  delegate,
 		Digest:    "sha256-abc123",
 	})
 	require.Error(t, err)
@@ -142,12 +142,12 @@ func TestStoreDigest_AuthzSuccess(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	authority := sdk.AccAddress([]byte("authority_address_")).String()
-	operator := sdk.AccAddress([]byte("operator_address__")).String()
+	delegate := sdk.AccAddress([]byte("delegate_address__")).String()
 	digest := "sha256-authzsuccess"
 
 	resp, err := ms.StoreDigest(f.ctx, &types.MsgStoreDigest{
 		Authority: authority,
-		Operator:  operator,
+		Delegate:  delegate,
 		Digest:    digest,
 	})
 	require.NoError(t, err)
@@ -165,12 +165,12 @@ func TestStoreDigest_DuplicateDigest(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	authority := sdk.AccAddress([]byte("authority_address_")).String()
-	operator := sdk.AccAddress([]byte("operator_address__")).String()
+	delegate := sdk.AccAddress([]byte("delegate_address__")).String()
 	digest := "sha256-duplicate"
 
 	msg := &types.MsgStoreDigest{
 		Authority: authority,
-		Operator:  operator,
+		Delegate:  delegate,
 		Digest:    digest,
 	}
 

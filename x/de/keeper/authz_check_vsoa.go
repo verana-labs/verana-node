@@ -32,7 +32,7 @@ func (k Keeper) emitVSOperatorAuthzUpdated(ctx context.Context, vsoaID, particip
 func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 	ctx context.Context,
 	corporationID uint64,
-	operator string,
+	vsOperator string,
 	participantID uint64,
 	msgType types.MsgType,
 ) error {
@@ -55,8 +55,8 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 		return fmt.Errorf("failed to load VSOperatorAuthorization %d: %w", vsoaID, err)
 	}
 
-	// 3. Record MUST belong to VSOperatorAuthorization[corporationID, operator].
-	if vsoa.CorporationId != corporationID || vsoa.VsOperator != operator {
+	// 3. Record MUST belong to VSOperatorAuthorization[corporationID, vsOperator].
+	if vsoa.CorporationId != corporationID || vsoa.VsOperator != vsOperator {
 		return types.ErrVSOperatorAuthzNotFound
 	}
 
@@ -100,7 +100,7 @@ func (k Keeper) CheckVSOperatorAuthorizationOnParticipant(
 func (k Keeper) ConsumeRecordSpend(
 	ctx context.Context,
 	corporationID uint64,
-	operator string,
+	vsOperator string,
 	participantID uint64,
 	amount sdk.Coins,
 ) error {
@@ -115,7 +115,7 @@ func (k Keeper) ConsumeRecordSpend(
 	if err != nil {
 		return fmt.Errorf("failed to load VSOperatorAuthorization %d: %w", vsoaID, err)
 	}
-	if vsoa.CorporationId != corporationID || vsoa.VsOperator != operator {
+	if vsoa.CorporationId != corporationID || vsoa.VsOperator != vsOperator {
 		return types.ErrVSOperatorAuthzNotFound
 	}
 	idx := -1

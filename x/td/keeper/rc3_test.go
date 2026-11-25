@@ -95,7 +95,7 @@ func TestRepay_ReslashKeepsCumulativeGuard(t *testing.T) {
 	}))
 
 	_, err := ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
-		Corporation: acct, Operator: acct, Deposit: 100,
+		Corporation: acct, Delegate: acct, Deposit: 100,
 	})
 	require.NoError(t, err)
 	td, err := k.TrustDeposit.Get(ctx, corpID)

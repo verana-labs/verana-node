@@ -45,7 +45,7 @@ func (ms msgServer) GrantExchangeRateAuthorization(ctx context.Context, msg *typ
 	// Build the authorization record (zero min_interval / max_deviation_bps = unset).
 	authz := types.ExchangeRateAuthorization{
 		XrId:            msg.XrId,
-		Operator:        msg.Operator,
+		Feeder:          msg.Feeder,
 		Expiration:      *msg.Expiration,
 		MaxDeviationBps: msg.MaxDeviationBps,
 	}
@@ -53,7 +53,7 @@ func (ms msgServer) GrantExchangeRateAuthorization(ctx context.Context, msg *typ
 		authz.MinInterval = *msg.MinInterval
 	}
 
-	key := collections.Join(msg.XrId, msg.Operator)
+	key := collections.Join(msg.XrId, msg.Feeder)
 	if err := ms.ExchangeRateAuthorizations.Set(ctx, key, authz); err != nil {
 		return nil, errorsmod.Wrap(err, "failed to store exchange rate authorization")
 	}
@@ -62,7 +62,7 @@ func (ms msgServer) GrantExchangeRateAuthorization(ctx context.Context, msg *typ
 		sdk.NewEvent(
 			types.EventTypeGrantExchangeRateAuthz,
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.XrId)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Feeder),
 			sdk.NewAttribute(types.AttributeKeyExpiration, authz.Expiration.UTC().Format(time.RFC3339Nano)),
 			sdk.NewAttribute(types.AttributeKeyMinInterval, fmt.Sprintf("%d", authz.MinInterval)),
 			sdk.NewAttribute(types.AttributeKeyMaxDeviationBps, fmt.Sprintf("%d", authz.MaxDeviationBps)),

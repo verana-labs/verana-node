@@ -163,9 +163,9 @@ func TestEndBlock_StalePopKeepsBudget(t *testing.T) {
 	require.True(t, pa.PeriodReset.Equal(now.Add(types.DefaultVsOperatorFeePeriod)))
 }
 
-// [MOD-DE-MSG-1-4] The operator path is untouched: an explicit re-grant seeds
+// [MOD-DE-MSG-1-4] The delegate path is untouched: an explicit re-grant seeds
 // a fresh budget.
-func TestGrantFeeAllowance_OperatorPathFreshBudget(t *testing.T) {
+func TestGrantFeeAllowance_DelegatePathFreshBudget(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	grantee := acc("grantee_____________")

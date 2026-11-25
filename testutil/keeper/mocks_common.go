@@ -62,18 +62,18 @@ func (m *MockTrustDepositKeeper) BurnEcosystemSlashedTrustDeposit(_ sdk.Context,
 
 // MockDelegationKeeper is a mock implementation of the DelegationKeeper
 // interface used by cs / perm / td / ec tests. By default it allows all
-// operator authorizations (ErrToReturn is nil). Set ErrToReturn to simulate
+// delegate authorizations (ErrToReturn is nil). Set ErrToReturn to simulate
 // authorization failures. Extracted from the pre-rename
 // testutil/keeper/trustregistry.go.
 type MockDelegationKeeper struct {
 	ErrToReturn error
 
-	OperatorSpendCalls []sdk.Coins
+	DelegateSpendCalls []sdk.Coins
 
 	// Per-method overrides take precedence over ErrToReturn when non-nil, so a
 	// test can fail one authorization path while another succeeds (e.g. force the
-	// operator path to fail to exercise the vs-operator delegation path).
-	OperatorAuthErr   error
+	// delegate path to fail to exercise the vs-operator delegation path).
+	DelegateAuthErr   error
 	VSOperatorAuthErr error
 	FeeGrantErr       error
 
@@ -99,9 +99,9 @@ func (m *MockDelegationKeeper) Reset() {
 	m.SyncVSOACalls = nil
 }
 
-func (m *MockDelegationKeeper) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
-	if m.OperatorAuthErr != nil {
-		return m.OperatorAuthErr
+func (m *MockDelegationKeeper) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+	if m.DelegateAuthErr != nil {
+		return m.DelegateAuthErr
 	}
 	return m.ErrToReturn
 }
@@ -122,8 +122,8 @@ func (m *MockDelegationKeeper) CheckVSOperatorFeeGrant(_ context.Context, partic
 	return m.ErrToReturn
 }
 
-func (m *MockDelegationKeeper) ConsumeOperatorSpend(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time, amount sdk.Coins) error {
-	m.OperatorSpendCalls = append(m.OperatorSpendCalls, amount)
+func (m *MockDelegationKeeper) ConsumeDelegateSpend(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time, amount sdk.Coins) error {
+	m.DelegateSpendCalls = append(m.DelegateSpendCalls, amount)
 	return m.ErrToReturn
 }
 

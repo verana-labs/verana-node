@@ -13,13 +13,13 @@ import (
 )
 
 // mockDelegation lets a test pre-program AUTHZ-CHECK-1 results.
-// Default zero value returns nil from CheckOperatorAuthorization (auth granted).
+// Default zero value returns nil from CheckDelegateAuthorization (auth granted).
 type mockDelegation struct {
 	err   error
 	calls int
 }
 
-func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
+func (m *mockDelegation) CheckDelegateAuthorization(_ context.Context, _, _ string, _ detypes.MsgType, _ time.Time) error {
 	m.calls++
 	return m.err
 }

@@ -1,9 +1,9 @@
 /**
- * Journey: DE Grant Operator Authorization (EC + GF message types)
+ * Journey: DE Grant Delegate Authorization (EC + GF message types)
  *
- * Grants operator authorization from the active Corporation (created by
- * coCreateCorporation) to an operator account, covering all EC and GF
- * message types. The operator can then sign EC/GF messages on behalf of
+ * Grants delegate authorization from the active Corporation (created by
+ * coCreateCorporation) to a delegate account, covering all EC and GF
+ * message types. The delegate can then sign EC/GF messages on behalf of
  * the Corporation.
  *
  * Flow: x/group proposal submitted by the sole group member (index 10),
@@ -12,7 +12,7 @@
  * Signing: all messages use SIGN_MODE_LEGACY_AMINO_JSON. Group coordination
  * (MsgSubmitProposal, MsgVote) amino converters are implemented in
  * ts-proto/src/amino-converter/group.ts with recursive Any transcoding.
- * MsgGrantOperatorAuthorization is the inner executed message and is
+ * MsgGrantDelegateAuthorization is the inner executed message and is
  * amino-encoded as part of the proposal messages array.
  *
  * Requires: test:co-create must be run first.
@@ -32,7 +32,7 @@ import {
   config,
 } from "../helpers/client";
 import { typeUrls } from "../helpers/registry";
-import { MsgGrantOperatorAuthorization } from "../../../src/codec/verana/de/v1/tx";
+import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
 import { saveEcAuthzSetup, getActiveCorporation } from "../helpers/journeyResults";
@@ -43,13 +43,13 @@ const COOLUSER_MNEMONIC =
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
 // Signer (index 10) is the sole group member and acts as proposer + voter.
-// Operator (index 11) is the grantee.
+// Delegate (index 11) is the grantee.
 const SIGNER_INDEX = 10;
-const OPERATOR_INDEX = 11;
+const DELEGATE_INDEX = 11;
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: DE Grant Operator Authorization (EC + GF)");
+  console.log("Journey: DE Grant Delegate Authorization (EC + GF)");
   console.log("=".repeat(60));
   console.log();
 
@@ -67,50 +67,50 @@ async function main() {
   // Step 2: Create wallets (both amino — SIGN_MODE_LEGACY_AMINO_JSON).
   console.log("Step 2: Creating wallets...");
   const signerWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, SIGNER_INDEX);
-  const operatorWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  const delegateWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
 
   const signerAccount = await getAccountInfo(signerWallet);
-  const operatorAccount = await getAccountInfo(operatorWallet);
+  const delegateAccount = await getAccountInfo(delegateWallet);
 
   console.log(`  Signer:   ${signerAccount.address} (derivation index ${SIGNER_INDEX}, SIGN_MODE_LEGACY_AMINO_JSON)`);
-  console.log(`  Operator: ${operatorAccount.address} (derivation index ${OPERATOR_INDEX})`);
+  console.log(`  Delegate: ${delegateAccount.address} (derivation index ${DELEGATE_INDEX})`);
   console.log();
 
-  // Step 3: Fund operator (signer was already funded by test:co-create)
-  console.log("Step 3: Funding operator...");
+  // Step 3: Fund delegate (signer was already funded by test:co-create)
+  console.log("Step 3: Funding delegate...");
   const cooluserWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, 0);
   const cooluserAccount = await getAccountInfo(cooluserWallet);
 
   const fundOpResult = await fundAccount(
     COOLUSER_MNEMONIC,
     cooluserAccount.address,
-    operatorAccount.address,
+    delegateAccount.address,
     "50000000uvna",
   );
   if (fundOpResult.code !== 0) {
-    console.log(`  ❌ Failed to fund operator: ${fundOpResult.rawLog}`);
+    console.log(`  ❌ Failed to fund delegate: ${fundOpResult.rawLog}`);
     process.exit(1);
   }
-  console.log(`  ✓ Funded operator with 50 VNA`);
+  console.log(`  ✓ Funded delegate with 50 VNA`);
 
   const qc1 = await createQueryClient();
-  console.log("  ⏳ Waiting for operator funding tx to confirm...");
+  console.log("  ⏳ Waiting for delegate funding tx to confirm...");
   for (let i = 0; i < 30; i++) {
     try {
       const tx = await qc1.getTx(fundOpResult.transactionHash);
-      if (tx) { console.log(`  ✓ Operator funding confirmed at block ${tx.height}`); break; }
+      if (tx) { console.log(`  ✓ Delegate funding confirmed at block ${tx.height}`); break; }
     } catch {}
     await new Promise((r) => setTimeout(r, 1000));
   }
   qc1.disconnect();
   console.log();
 
-  // Step 4: Grant operator authorization via x/group proposal flow.
+  // Step 4: Grant delegate authorization via x/group proposal flow.
   // The policy_address (corp.policyAddress) is both the group policy and the
-  // `corporation` field of MsgGrantOperatorAuthorization. Since the signer
+  // `corporation` field of MsgGrantDelegateAuthorization. Since the signer
   // (index 10) is the sole group member with weight=1 and threshold=1, a single
   // proposal + YES vote with EXEC_TRY executes immediately.
-  console.log("Step 4: Building MsgGrantOperatorAuthorization...");
+  console.log("Step 4: Building MsgGrantDelegateAuthorization...");
 
   const allMsgTypes = [
     MsgType.MSG_TYPE_CREATE_ECOSYSTEM,
@@ -126,14 +126,14 @@ async function main() {
   }
   console.log();
 
-  // Encode MsgGrantOperatorAuthorization as raw bytes for the Any wrapper.
-  const innerMsgValue = MsgGrantOperatorAuthorization.encode(
-    MsgGrantOperatorAuthorization.fromPartial({
+  // Encode MsgGrantDelegateAuthorization as raw bytes for the Any wrapper.
+  const innerMsgValue = MsgGrantDelegateAuthorization.encode(
+    MsgGrantDelegateAuthorization.fromPartial({
       corporation: corp.policyAddress,
-      // Group-proposal path: operator == corporation policy_address (the group
+      // Group-proposal path: delegate == corporation policy_address (the group
       // account is the signer), so AUTHZ-CHECK-1 is skipped.
-      operator: corp.policyAddress,
-      grantee: operatorAccount.address,
+      delegate: corp.policyAddress,
+      grantee: delegateAccount.address,
       msgTypes: allMsgTypes,
       withFeegrant: false,
     }),
@@ -144,10 +144,10 @@ async function main() {
     value: MsgSubmitProposal.fromPartial({
       groupPolicyAddress: corp.policyAddress,
       proposers: [signerAccount.address],
-      metadata: "Grant EC+GF operator authz",
-      title: "Grant EC+GF operator authz",
-      summary: "Grant operator authorization for EC and GF message types",
-      messages: [{ typeUrl: typeUrls.MsgGrantOperatorAuthorization, value: innerMsgValue }],
+      metadata: "Grant EC+GF delegate authz",
+      title: "Grant EC+GF delegate authz",
+      summary: "Grant delegate authorization for EC and GF message types",
+      messages: [{ typeUrl: typeUrls.MsgGrantDelegateAuthorization, value: innerMsgValue }],
       exec: Exec.EXEC_UNSPECIFIED,
     }),
   };
@@ -158,12 +158,12 @@ async function main() {
     // Step 4a: Submit proposal
     console.log("Step 4a: Submitting x/group proposal (SIGN_MODE_LEGACY_AMINO_JSON)...");
     const proposalFee = await calculateFeeWithSimulation(
-      client, signerAccount.address, [proposalMsg], "Submit grant operator authz proposal",
+      client, signerAccount.address, [proposalMsg], "Submit grant delegate authz proposal",
     );
     console.log(`  Gas: ${proposalFee.gas}, Fee: ${proposalFee.amount[0].amount}${proposalFee.amount[0].denom}`);
 
     const proposalResult = await signAndBroadcastWithRetry(
-      client, signerAccount.address, [proposalMsg], proposalFee, "Submit grant operator authz proposal",
+      client, signerAccount.address, [proposalMsg], proposalFee, "Submit grant delegate authz proposal",
     );
 
     if (proposalResult.code !== 0) {
@@ -244,13 +244,13 @@ async function main() {
     qc3.disconnect();
 
     console.log();
-    console.log("✅ SUCCESS! Operator authorization granted via x/group proposal!");
+    console.log("✅ SUCCESS! Delegate authorization granted via x/group proposal!");
     console.log("=".repeat(60));
     console.log(`  Proposal Tx: ${proposalResult.transactionHash}`);
     console.log(`  Vote Tx:     ${voteResult.transactionHash}`);
 
-    saveEcAuthzSetup(corp.policyAddress, operatorAccount.address);
-    console.log("  💾 Saved EC authz setup (corporation + operator) for EC/GF journeys");
+    saveEcAuthzSetup(corp.policyAddress, delegateAccount.address);
+    console.log("  💾 Saved EC authz setup (corporation + delegate) for EC/GF journeys");
 
   } catch (error: any) {
     console.log("❌ ERROR! Transaction failed with exception:");

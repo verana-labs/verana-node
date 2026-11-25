@@ -14,7 +14,7 @@ import (
 // UpdateCorporation implements MOD-CO-MSG-2.
 //
 // Rotates the DID of an existing Corporation. The corporation field on the msg
-// is the policy_address (= AUTHZ-CHECK-5 subject); the operator must hold a
+// is the policy_address (= AUTHZ-CHECK-5 subject); the delegate must hold a
 // delegation from that Corporation for THIS msg type. Language is immutable.
 func (ms msgServer) UpdateCorporation(goCtx context.Context, msg *types.MsgUpdateCorporation) (*types.MsgUpdateCorporationResponse, error) {
 	if err := msg.ValidateBasic(); err != nil {
@@ -35,10 +35,10 @@ func (ms msgServer) UpdateCorporation(goCtx context.Context, msg *types.MsgUpdat
 		return nil, fmt.Errorf("store inconsistency: corporation id %d resolved by index but missing from primary: %w", coID, err)
 	}
 
-	// AUTHZ-CHECK-1: operator must hold a delegation from the Corporation for
+	// AUTHZ-CHECK-1: delegate must hold a delegation from the Corporation for
 	// this msg type. msg.Corporation is the policy_address — DE's check accepts
 	// the address form.
-	if err := ms.delegationKeeper.CheckOperatorAuthorization(ctx, msg.Corporation, msg.Operator, detypes.MsgType_MSG_TYPE_UPDATE_CORPORATION, ctx.BlockTime()); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_CORPORATION, ctx.BlockTime()); err != nil {
 		return nil, err
 	}
 

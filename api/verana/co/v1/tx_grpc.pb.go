@@ -38,7 +38,7 @@ type MsgClient interface {
 	// Corporation VPR entry.
 	CreateCorporation(ctx context.Context, in *MsgCreateCorporation, opts ...grpc.CallOption) (*MsgCreateCorporationResponse, error)
 	// [MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing
-	// Corporation. Signers: corporation (policy_address) + operator.
+	// Corporation. Signer: delegate.
 	UpdateCorporation(ctx context.Context, in *MsgUpdateCorporation, opts ...grpc.CallOption) (*MsgUpdateCorporationResponse, error)
 }
 
@@ -94,7 +94,7 @@ type MsgServer interface {
 	// Corporation VPR entry.
 	CreateCorporation(context.Context, *MsgCreateCorporation) (*MsgCreateCorporationResponse, error)
 	// [MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing
-	// Corporation. Signers: corporation (policy_address) + operator.
+	// Corporation. Signer: delegate.
 	UpdateCorporation(context.Context, *MsgUpdateCorporation) (*MsgUpdateCorporationResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

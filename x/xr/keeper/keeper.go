@@ -27,7 +27,7 @@ type Keeper struct {
 	Counter       collections.Map[string, uint64]
 	// PairIndex maps "baseType:baseAsset:quoteType:quoteAsset" -> exchange rate id for uniqueness checks
 	PairIndex collections.Map[string, uint64]
-	// ExchangeRateAuthorizations is keyed by (xr_id, operator).
+	// ExchangeRateAuthorizations is keyed by (xr_id, feeder).
 	ExchangeRateAuthorizations collections.Map[collections.Pair[uint64, string], types.ExchangeRateAuthorization]
 }
 

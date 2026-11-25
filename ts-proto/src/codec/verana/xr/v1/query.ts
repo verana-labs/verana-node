@@ -80,7 +80,7 @@ export interface QueryGetExchangeRateResponse {
   exchangeRate:
     | ExchangeRate
     | undefined;
-  /** authorizations lists the operators authorized to update this exchange rate. [MOD-XR-QRY-1] */
+  /** authorizations lists the feeders authorized to update this exchange rate. [MOD-XR-QRY-1] */
   authorizations: ExchangeRateAuthorization[];
 }
 

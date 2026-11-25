@@ -8,9 +8,9 @@ import { clean, u64ToStr } from "./util/helpers";
 
 export const MsgCreateEcosystemAminoConverter: AminoConverter = {
   aminoType: "verana/x/ec/MsgCreateEcosystem",
-  toAmino: ({ corporation, operator, did, language, docUrl, docDigestSri }: MsgCreateEcosystem) => clean({
+  toAmino: ({ corporation, delegate, did, language, docUrl, docDigestSri }: MsgCreateEcosystem) => clean({
     corporation: corporation || undefined,
-    operator: operator || undefined,
+    delegate: delegate || undefined,
     did: did || undefined,
     language: language || undefined,
     doc_url: docUrl || undefined,
@@ -19,7 +19,7 @@ export const MsgCreateEcosystemAminoConverter: AminoConverter = {
   fromAmino: (value: any) =>
     MsgCreateEcosystem.fromPartial({
       corporation: value.corporation ?? "",
-      operator: value.operator ?? "",
+      delegate: value.delegate ?? "",
       did: value.did ?? "",
       language: value.language ?? "",
       docUrl: value.doc_url ?? "",
@@ -29,16 +29,16 @@ export const MsgCreateEcosystemAminoConverter: AminoConverter = {
 
 export const MsgUpdateEcosystemAminoConverter: AminoConverter = {
   aminoType: "verana/x/ec/MsgUpdateEcosystem",
-  toAmino: ({ corporation, operator, id, did }: MsgUpdateEcosystem) => clean({
+  toAmino: ({ corporation, delegate, id, did }: MsgUpdateEcosystem) => clean({
     corporation: corporation || undefined,
-    operator: operator || undefined,
+    delegate: delegate || undefined,
     id: u64ToStr(id as any),
     did: did || undefined,
   }),
   fromAmino: (value: any) =>
     MsgUpdateEcosystem.fromPartial({
       corporation: value.corporation ?? "",
-      operator: value.operator ?? "",
+      delegate: value.delegate ?? "",
       id: value.id != null ? Number(value.id) : 0,
       did: value.did ?? "",
     }),
@@ -46,16 +46,16 @@ export const MsgUpdateEcosystemAminoConverter: AminoConverter = {
 
 export const MsgArchiveEcosystemAminoConverter: AminoConverter = {
   aminoType: "verana/x/ec/MsgArchiveEcosystem",
-  toAmino: ({ corporation, operator, id, archive }: MsgArchiveEcosystem) => clean({
+  toAmino: ({ corporation, delegate, id, archive }: MsgArchiveEcosystem) => clean({
     corporation: corporation || undefined,
-    operator: operator || undefined,
+    delegate: delegate || undefined,
     id: u64ToStr(id as any),
     archive: archive,
   }),
   fromAmino: (value: any) =>
     MsgArchiveEcosystem.fromPartial({
       corporation: value.corporation ?? "",
-      operator: value.operator ?? "",
+      delegate: value.delegate ?? "",
       id: value.id != null ? Number(value.id) : 0,
       archive: value.archive ?? false,
     }),

@@ -44,7 +44,7 @@ func TestStartParticipantOP_DIDCorporationConsistency(t *testing.T) {
 
 	// Bad path: corpA tries to start a participant under a did corpB controls.
 	_, err = ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
-		Corporation: corpA, Operator: corpA, Role: types.ParticipantRole_ISSUER,
+		Corporation: corpA, Delegate: corpA, Role: types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorID, Did: sharedDID,
 	})
 	require.Error(t, err)
@@ -52,7 +52,7 @@ func TestStartParticipantOP_DIDCorporationConsistency(t *testing.T) {
 
 	// Happy path: a did not controlled by anyone else is accepted.
 	_, err = ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
-		Corporation: corpA, Operator: corpA, Role: types.ParticipantRole_ISSUER,
+		Corporation: corpA, Delegate: corpA, Role: types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorID, Did: "did:example:start-fresh",
 	})
 	require.NoError(t, err)
@@ -80,7 +80,7 @@ func TestStartParticipantOP_RejectsDIDOwnedByForeignEcosystem(t *testing.T) {
 	delKeeper.Reset()
 
 	_, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
-		Corporation: corpA, Operator: corpA, Role: types.ParticipantRole_ISSUER,
+		Corporation: corpA, Delegate: corpA, Role: types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorID, Did: sharedDID,
 	})
 	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)
@@ -115,7 +115,7 @@ func TestCreateRootParticipant_DIDCorporationConsistency(t *testing.T) {
 
 	// Bad path: corpA creates a root participant under a did corpB controls.
 	_, err = ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-		Corporation: corpA, Operator: corpA, SchemaId: 1, Did: sharedDID,
+		Corporation: corpA, Delegate: corpA, SchemaId: 1, Did: sharedDID,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 	})
 	require.Error(t, err)
@@ -123,7 +123,7 @@ func TestCreateRootParticipant_DIDCorporationConsistency(t *testing.T) {
 
 	// Happy path: corpA creates a root participant under its own ecosystem did.
 	_, err = ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-		Corporation: corpA, Operator: corpA, SchemaId: 1, Did: ecoDID,
+		Corporation: corpA, Delegate: corpA, SchemaId: 1, Did: ecoDID,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 	})
 	require.NoError(t, err)
@@ -167,7 +167,7 @@ func TestSelfCreateParticipant_DIDCorporationConsistency(t *testing.T) {
 
 	// Bad path: corpA self-creates under a did corpB controls.
 	_, err = ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-		Corporation: corpA, Operator: corpA, Role: types.ParticipantRole_ISSUER,
+		Corporation: corpA, Delegate: corpA, Role: types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorID, Did: sharedDID,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 	})
@@ -176,7 +176,7 @@ func TestSelfCreateParticipant_DIDCorporationConsistency(t *testing.T) {
 
 	// Happy path: a fresh did is accepted.
 	_, err = ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-		Corporation: corpA, Operator: corpA, Role: types.ParticipantRole_ISSUER,
+		Corporation: corpA, Delegate: corpA, Role: types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorID, Did: "did:example:self-fresh",
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 	})
@@ -206,7 +206,7 @@ func TestCreateRootParticipant_RejectsDIDOwnedByForeignEcosystem(t *testing.T) {
 	trkKeeper.CreateMockEcosystem(corpB, sharedDID)
 
 	_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-		Corporation: corpA, Operator: corpA, SchemaId: 1, Did: sharedDID,
+		Corporation: corpA, Delegate: corpA, SchemaId: 1, Did: sharedDID,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 	})
 	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)
@@ -244,7 +244,7 @@ func TestSelfCreateParticipant_RejectsDIDOwnedByForeignEcosystem(t *testing.T) {
 	delKeeper.Reset()
 
 	_, err = ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-		Corporation: corpA, Operator: corpA, Role: types.ParticipantRole_ISSUER,
+		Corporation: corpA, Delegate: corpA, Role: types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorID, Did: sharedDID,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 	})
@@ -273,7 +273,7 @@ func TestStartParticipantOP_RejectsDIDOwnedByForeignCorporation(t *testing.T) {
 	delKeeper.Reset()
 
 	_, err := ms.StartParticipantOP(sdkCtx, &types.MsgStartParticipantOP{
-		Corporation: corpA, Operator: corpA, Role: types.ParticipantRole_ISSUER,
+		Corporation: corpA, Delegate: corpA, Role: types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorID, Did: sharedDID,
 	})
 	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)

@@ -86,9 +86,9 @@ func (msg *MsgStartParticipantOP) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-1-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-1-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	if msg.ValidatorParticipantId == 0 {
@@ -154,9 +154,9 @@ func (msg *MsgRenewParticipantOP) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-2-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-2-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// Validate participant ID
@@ -174,9 +174,9 @@ func (msg *MsgSetParticipantOPToValidated) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-3-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-3-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// Validate participant ID
@@ -208,9 +208,9 @@ func (msg *MsgCancelParticipantOPLastRequest) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// Validate operator address
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// Validate delegate address
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// Validate participant ID
@@ -227,9 +227,9 @@ func (msg *MsgCreateRootParticipant) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// Validate operator address
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// Validate delegate address
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// if a mandatory parameter is not present, transaction MUST abort
@@ -287,9 +287,9 @@ func (msg *MsgSetParticipantEffectiveUntil) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// Validate operator address
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// Validate delegate address
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// if a mandatory parameter is not present, transaction MUST abort
@@ -312,9 +312,9 @@ func (msg *MsgRevokeParticipant) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// Validate operator address
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// Validate delegate address
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// Validate participant ID
@@ -329,8 +329,8 @@ func (msg *MsgTriggerResolver) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 	if msg.Id == 0 {
 		return fmt.Errorf("participant ID cannot be 0")
@@ -344,9 +344,9 @@ func (msg *MsgCreateOrUpdateParticipantSession) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-10-2] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-10-2] vs_account (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.VsAccount); err != nil {
+		return fmt.Errorf("invalid vs_account address: %w", err)
 	}
 
 	// Validate UUID format
@@ -376,9 +376,9 @@ func (msg *MsgSlashParticipantTrustDeposit) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-12-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-12-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// if a mandatory parameter is not present, transaction MUST abort
@@ -404,9 +404,9 @@ func (msg *MsgRepayParticipantSlashedTrustDeposit) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-13-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-13-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// [MOD-PP-MSG-13-2-1] id MUST be a valid uint64
@@ -423,9 +423,9 @@ func (msg *MsgSelfCreateParticipant) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// [MOD-PP-MSG-14-2-1] operator (account): signature must be verified
-	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
-		return fmt.Errorf("invalid operator address: %w", err)
+	// [MOD-PP-MSG-14-2-1] delegate (account): signature must be verified
+	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
 	}
 
 	// type (ParticipantRole) (mandatory): MUST be ISSUER or VERIFIER, else abort

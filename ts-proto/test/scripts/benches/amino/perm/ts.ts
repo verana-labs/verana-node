@@ -35,7 +35,7 @@ function buildCreatePermissionMsgs(): { clientMsg: AminoMsg; serverMsg: AminoMsg
   const address = "verana16mzeyu9l6kua2cdg9x0jk5g6e7h0kk8q6uadu4";
   const protoMsg = MsgSelfCreateParticipant.fromPartial({
     corporation: address,
-    operator: address,
+    delegate: address,
     role: ParticipantRole.VERIFIER,
     validatorParticipantId: 1,
     did: "did:verana:test:bench",

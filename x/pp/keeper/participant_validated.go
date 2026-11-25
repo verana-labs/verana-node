@@ -185,7 +185,7 @@ func (ms msgServer) executeSetParticipantVPToValidated(
 			sdk.NewAttribute(types.AttributeKeyParticipantID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
 			sdk.NewAttribute(types.AttributeKeyCorporationID, strconv.FormatUint(applicantParticipant.CorporationId, 10)),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
+			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
 			sdk.NewAttribute(types.AttributeKeyValidatorParticipantID, strconv.FormatUint(applicantParticipant.ValidatorParticipantId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOpSummaryDigest, msg.OpSummaryDigest),
 			sdk.NewAttribute(types.AttributeKeyEffectiveUntil, formatTimePtr(applicantParticipant.EffectiveUntil)),

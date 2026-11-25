@@ -103,10 +103,10 @@ type JourneyResult struct {
 	// Journey 15 fields
 	FailedPermissionID string
 
-	// Journey 101 fields (TR Operator Authorization)
+	// Journey 101 fields (TR Delegate Authorization)
 	GroupID         string
 	GroupPolicyAddr string
-	OperatorAddr    string
+	DelegateAddr    string
 	AdminAddr       string
 	Member1Addr     string
 	Member2Addr     string
@@ -115,7 +115,7 @@ type JourneyResult struct {
 	ExchangeRateID string
 
 	// Journey 001-007 fields (CO/GF dedicated journeys — Corp A)
-	// GroupID / GroupPolicyAddr / OperatorAddr are reused from Journey 101 fields above.
+	// GroupID / GroupPolicyAddr / DelegateAddr are reused from Journey 101 fields above.
 	GFV2Id    string // GFV id for corp's own v2 governance framework version
 	EcAlphaId string // Ecosystem id created in Journey 020
 }

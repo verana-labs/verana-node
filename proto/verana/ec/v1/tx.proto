@@ -39,16 +39,16 @@ message MsgUpdateParams {
 
 message MsgUpdateParamsResponse {}
 
-// MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `operator`;
+// MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `delegate`;
 // AUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the
 // controlling Corporation entry. Seeds v1 of the Ecosystem's Governance
 // Framework via MOD-GF.
 message MsgCreateEcosystem {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/ec/MsgCreateEcosystem";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string did = 3;
   string language = 4;
   string doc_url = 5;
@@ -61,11 +61,11 @@ message MsgCreateEcosystemResponse {
 
 // MsgUpdateEcosystem implements MOD-ES-MSG-2. Only `did` is mutable.
 message MsgUpdateEcosystem {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/ec/MsgUpdateEcosystem";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
   string did = 4;
 }
@@ -75,11 +75,11 @@ message MsgUpdateEcosystemResponse {}
 // MsgArchiveEcosystem implements MOD-ES-MSG-3. `archive` is a boolean toggle;
 // submitting the current state is an idempotency abort.
 message MsgArchiveEcosystem {
-  option (cosmos.msg.v1.signer) = "operator";
+  option (cosmos.msg.v1.signer) = "delegate";
   option (amino.name) = "verana/x/ec/MsgArchiveEcosystem";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string operator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 id = 3;
   bool archive = 4;
 }

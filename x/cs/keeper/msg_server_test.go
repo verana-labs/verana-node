@@ -25,7 +25,7 @@ func TestMsgServerCreateCredentialSchema(t *testing.T) {
 	k, ms, mockTrk, ctx := setupMsgServer(t)
 
 	authority := sdk.AccAddress([]byte("test_authority______")).String()
-	operator := sdk.AccAddress([]byte("test_operator_______")).String()
+	delegate := sdk.AccAddress([]byte("test_delegate_______")).String()
 	validDid := "did:example:123456789abcdefghi"
 
 	// First create a trust registry with authority as controller
@@ -183,31 +183,31 @@ func TestMsgServerCreateCredentialSchema(t *testing.T) {
 	}{
 		{
 			name:              "Valid Create Credential Schema with placeholder $id",
-			msg:               keeper.CreateMsgWithValidityPeriods(authority, operator, trID, validJsonSchemaWithPlaceholder, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
+			msg:               keeper.CreateMsgWithValidityPeriods(authority, delegate, trID, validJsonSchemaWithPlaceholder, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
 			isValid:           true,
 			expectIdInjection: true,
 		},
 		{
 			name:              "Valid Create Credential Schema with no $id",
-			msg:               keeper.CreateMsgWithValidityPeriods(authority, operator, trID, validJsonSchemaNoId, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
+			msg:               keeper.CreateMsgWithValidityPeriods(authority, delegate, trID, validJsonSchemaNoId, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
 			isValid:           true,
 			expectIdInjection: true,
 		},
 		{
 			name:              "Valid Create Credential Schema with wrong $id",
-			msg:               keeper.CreateMsgWithValidityPeriods(authority, operator, trID, validJsonSchemaWrongId, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
+			msg:               keeper.CreateMsgWithValidityPeriods(authority, delegate, trID, validJsonSchemaWrongId, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
 			isValid:           true,
 			expectIdInjection: true,
 		},
 		{
 			name:              "Non-existent Trust Registry",
-			msg:               keeper.CreateMsgWithValidityPeriods(authority, operator, 999, validJsonSchemaWithPlaceholder, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
+			msg:               keeper.CreateMsgWithValidityPeriods(authority, delegate, 999, validJsonSchemaWithPlaceholder, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
 			isValid:           false,
 			expectIdInjection: false,
 		},
 		{
 			name:              "Wrong Trust Registry Controller",
-			msg:               keeper.CreateMsgWithValidityPeriods(sdk.AccAddress([]byte("wrong_authority_____")).String(), operator, trID, validJsonSchemaWithPlaceholder, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
+			msg:               keeper.CreateMsgWithValidityPeriods(sdk.AccAddress([]byte("wrong_authority_____")).String(), delegate, trID, validJsonSchemaWithPlaceholder, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384"),
 			isValid:           false,
 			expectIdInjection: false,
 		},
@@ -262,7 +262,7 @@ func TestCanonicalIdInjection(t *testing.T) {
 	k, ms, mockTrk, ctx := setupMsgServer(t)
 
 	authority := sdk.AccAddress([]byte("test_authority______")).String()
-	operator := sdk.AccAddress([]byte("test_operator_______")).String()
+	delegate := sdk.AccAddress([]byte("test_delegate_______")).String()
 	validDid := "did:example:123456789abcdefghi"
 
 	trID := mockTrk.CreateMockEcosystem(authority, validDid)
@@ -339,7 +339,7 @@ func TestCanonicalIdInjection(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			createMsg := keeper.CreateMsgWithValidityPeriods(authority, operator, trID, tc.inputSchema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
+			createMsg := keeper.CreateMsgWithValidityPeriods(authority, delegate, trID, tc.inputSchema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 			resp, err := ms.CreateCredentialSchema(ctx, createMsg)
 			require.NoError(t, err)
 			require.NotNil(t, resp)
@@ -381,7 +381,7 @@ func TestQueryCanonicalId(t *testing.T) {
 	k, ms, mockTrk, ctx := setupMsgServer(t)
 
 	authority := sdk.AccAddress([]byte("test_authority______")).String()
-	operator := sdk.AccAddress([]byte("test_operator_______")).String()
+	delegate := sdk.AccAddress([]byte("test_delegate_______")).String()
 	validDid := "did:example:123456789abcdefghi"
 
 	trID := mockTrk.CreateMockEcosystem(authority, validDid)
@@ -398,7 +398,7 @@ func TestQueryCanonicalId(t *testing.T) {
   "additionalProperties": false
 }`
 
-	createMsg := keeper.CreateMsgWithValidityPeriods(authority, operator, trID, schemaNoId, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
+	createMsg := keeper.CreateMsgWithValidityPeriods(authority, delegate, trID, schemaNoId, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 	resp, err := ms.CreateCredentialSchema(ctx, createMsg)
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -463,7 +463,7 @@ func TestUpdateCredentialSchema(t *testing.T) {
 	k, ms, mockTrk, ctx := setupMsgServer(t)
 
 	authority := sdk.AccAddress([]byte("test_authority______")).String()
-	operator := sdk.AccAddress([]byte("test_operator_______")).String()
+	delegate := sdk.AccAddress([]byte("test_delegate_______")).String()
 	validDid := "did:example:123456789abcdefghi"
 
 	trID := mockTrk.CreateMockEcosystem(authority, validDid)
@@ -480,7 +480,7 @@ func TestUpdateCredentialSchema(t *testing.T) {
         "required": ["name"],
         "additionalProperties": false
     }`
-	createMsg := keeper.CreateMsgWithValidityPeriods(authority, operator, trID, validJsonSchema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
+	createMsg := keeper.CreateMsgWithValidityPeriods(authority, delegate, trID, validJsonSchema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 
 	schemaID, err := ms.CreateCredentialSchema(ctx, createMsg)
 	require.NoError(t, err)
@@ -496,24 +496,24 @@ func TestUpdateCredentialSchema(t *testing.T) {
 	}{
 		{
 			name:    "valid update",
-			msg:     keeper.CreateUpdateMsgWithValidityPeriods(authority, operator, schemaID.Id, 365, 365, 180, 180, 180),
+			msg:     keeper.CreateUpdateMsgWithValidityPeriods(authority, delegate, schemaID.Id, 365, 365, 180, 180, 180),
 			expPass: true,
 		},
 		{
 			name:          "non-existent schema",
-			msg:           keeper.CreateUpdateMsgWithValidityPeriods(authority, operator, 999, 365, 365, 180, 180, 180),
+			msg:           keeper.CreateUpdateMsgWithValidityPeriods(authority, delegate, 999, 365, 365, 180, 180, 180),
 			expPass:       false,
 			errorContains: "credential schema not found",
 		},
 		{
 			name:          "unauthorized update - not controller",
-			msg:           keeper.CreateUpdateMsgWithValidityPeriods(sdk.AccAddress([]byte("wrong_authority_____")).String(), operator, schemaID.Id, 365, 365, 180, 180, 180),
+			msg:           keeper.CreateUpdateMsgWithValidityPeriods(sdk.AccAddress([]byte("wrong_authority_____")).String(), delegate, schemaID.Id, 365, 365, 180, 180, 180),
 			expPass:       false,
 			errorContains: "does not control",
 		},
 		{
 			name:          "invalid validity period - exceeds maximum",
-			msg:           keeper.CreateUpdateMsgWithValidityPeriods(authority, operator, schemaID.Id, 99999, 365, 180, 180, 180),
+			msg:           keeper.CreateUpdateMsgWithValidityPeriods(authority, delegate, schemaID.Id, 99999, 365, 180, 180, 180),
 			expPass:       false,
 			errorContains: "exceeds maximum",
 		},
@@ -559,7 +559,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 	k, ms, mockTrk, ctx := setupMsgServer(t)
 
 	authority := sdk.AccAddress([]byte("test_authority______")).String()
-	operator := sdk.AccAddress([]byte("test_operator_______")).String()
+	delegate := sdk.AccAddress([]byte("test_delegate_______")).String()
 	validDid := "did:example:123456789abcdefghi"
 
 	trID := mockTrk.CreateMockEcosystem(authority, validDid)
@@ -576,7 +576,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
         "required": ["name"],
         "additionalProperties": false
     }`
-	createMsg := keeper.CreateMsgWithValidityPeriods(authority, operator, trID, validJsonSchema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
+	createMsg := keeper.CreateMsgWithValidityPeriods(authority, delegate, trID, validJsonSchema, 365, 365, 180, 180, 180, 2, 2, 2, 1, "tu", "sha384")
 
 	schemaID, err := ms.CreateCredentialSchema(ctx, createMsg)
 	require.NoError(t, err)
@@ -596,7 +596,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "valid archive",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Operator:    operator,
+				Delegate:    delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
@@ -607,7 +607,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "unarchive succeeds",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Operator:    operator,
+				Delegate:    delegate,
 				Id:          schemaID.Id,
 				Archive:     false,
 			},
@@ -618,7 +618,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "unarchive not archived",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Operator:    operator,
+				Delegate:    delegate,
 				Id:          schemaID.Id,
 				Archive:     false,
 			},
@@ -630,7 +630,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "re-archive for next case",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Operator:    operator,
+				Delegate:    delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
@@ -641,7 +641,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "already archived",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Operator:    operator,
+				Delegate:    delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
@@ -652,7 +652,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "non-existent schema",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Operator:    operator,
+				Delegate:    delegate,
 				Id:          999,
 				Archive:     true,
 			},
@@ -663,7 +663,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "unauthorized archive - not controller",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: sdk.AccAddress([]byte("wrong_authority_____")).String(),
-				Operator:    operator,
+				Delegate:    delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
@@ -675,7 +675,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "already archived again",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Operator:    operator,
+				Delegate:    delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
