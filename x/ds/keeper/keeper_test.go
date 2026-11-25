@@ -23,7 +23,6 @@ import (
 	"github.com/verana-labs/verana-node/x/ds/keeper"
 	module "github.com/verana-labs/verana-node/x/ds/module"
 	"github.com/verana-labs/verana-node/x/ds/types"
-	tdtypes "github.com/verana-labs/verana-node/x/td/types"
 )
 
 const (
@@ -68,7 +67,6 @@ func (b *mockBank) BlockedAddr(addr sdk.AccAddress) bool { return b.blocked[addr
 
 type mockStaking struct{ validators []stakingtypes.Validator }
 
-func (s *mockStaking) BondDenom(context.Context) (string, error) { return denom, nil }
 func (s *mockStaking) GetAllValidators(context.Context) ([]stakingtypes.Validator, error) {
 	return s.validators, nil
 }
@@ -82,28 +80,29 @@ type mockXr struct {
 	scale int64
 }
 
-func (x *mockXr) GetPrice(_ context.Context, bt cstypes.PricingAssetType, b string, qt cstypes.PricingAssetType, q string, amount string) (string, error) {
+func (x *mockXr) GetPrice(_ context.Context, bt cstypes.PricingAssetType, b string, qt cstypes.PricingAssetType, q string, a math.Int) (math.Int, error) {
 	if bt != cstypes.PricingAssetType_FIAT || b != fiat || qt != cstypes.PricingAssetType_COIN || q != denom {
-		return "", errors.New("unexpected pair")
-	}
-	a, ok := math.NewIntFromString(amount)
-	if !ok {
-		return "", errors.New("invalid amount")
+		return math.Int{}, errors.New("unexpected pair")
 	}
 	if a.IsZero() {
-		return "0", nil
+		return a, nil
 	}
 	if x.rate == nil {
-		return "", errors.New("exchange rate is expired")
+		return math.Int{}, errors.New("exchange rate is expired")
 	}
-	return a.Mul(*x.rate).Quo(math.NewIntWithDecimal(1, int(x.scale))).String(), nil
+	return a.Mul(*x.rate).Quo(math.NewIntWithDecimal(1, int(x.scale))), nil
+}
+
+func (x *mockXr) GenesisRate(context.Context) (uint64, uint32, error) {
+	if x.rate == nil {
+		return 0, 0, errors.New("exchange rate is expired")
+	}
+	return x.rate.Uint64(), uint32(x.scale), nil
 }
 
 type mockTd struct{}
 
-func (mockTd) GetParams(context.Context) tdtypes.Params {
-	return tdtypes.Params{MainFiatCurrency: fiat}
-}
+func (mockTd) MainFiatCurrency(context.Context) string { return fiat }
 
 type fixture struct {
 	ctx          sdk.Context

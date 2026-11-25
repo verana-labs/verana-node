@@ -196,14 +196,18 @@ func TestPayoutEpoch_Skipped(t *testing.T) {
 		name        string
 		epochBlocks uint64
 		noRate      bool
+		zeroBudgets bool
 	}{
-		{"no block", 0, false},
-		{"no valid rate", 100, true},
+		{"no block", 0, false, false},
+		{"no valid rate", 100, true, false},
+		{"no valid rate, zero budgets", 100, true, true},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			f := initFixture(t)
-			setBudgets(t, f, nil)
+			if !tc.zeroBudgets {
+				setBudgets(t, f, nil)
+			}
 			val, _ := f.addValidator(t, "val", 10)
 			if tc.epochBlocks > 0 {
 				setBlocks(t, f, tc.epochBlocks, map[string]types.ValidatorBlocks{val.String(): {SignedBlocks: 100, MemberBlocks: 100}})

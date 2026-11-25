@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"cosmossdk.io/core/address"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
-	tdtypes "github.com/verana-labs/verana-node/x/td/types"
 )
 
 type BankKeeper interface {
@@ -19,16 +19,17 @@ type BankKeeper interface {
 }
 
 type StakingKeeper interface {
-	BondDenom(ctx context.Context) (string, error)
 	GetAllValidators(ctx context.Context) ([]stakingtypes.Validator, error)
 	ValidatorAddressCodec() address.Codec
 }
 
 type ExchangeRateKeeper interface {
-	GetPrice(ctx context.Context, baseAssetType cstypes.PricingAssetType, baseAsset string, quoteAssetType cstypes.PricingAssetType, quoteAsset string, amount string) (string, error)
+	GetPrice(ctx context.Context, baseAssetType cstypes.PricingAssetType, baseAsset string, quoteAssetType cstypes.PricingAssetType, quoteAsset string, amount math.Int) (math.Int, error)
+	// GenesisRate fails while the genesis exchange rate is disabled or expired.
+	GenesisRate(ctx context.Context) (uint64, uint32, error)
 }
 
 // TrustDepositKeeper provides main_fiat_currency.
 type TrustDepositKeeper interface {
-	GetParams(ctx context.Context) tdtypes.Params
+	MainFiatCurrency(ctx context.Context) string
 }

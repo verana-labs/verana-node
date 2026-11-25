@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/comet"
@@ -14,6 +13,7 @@ import (
 	"github.com/verana-labs/verana-node/util/events"
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 	"github.com/verana-labs/verana-node/x/ds/types"
+	tdtypes "github.com/verana-labs/verana-node/x/td/types"
 )
 
 // CountBlock adds the block to the open epoch: a member block for every
@@ -95,16 +95,17 @@ func (k Keeper) PayoutEpoch(ctx context.Context, epoch uint64) error {
 		ev.Bool(types.AttributeKeySkipped, true).Emit(sdkCtx)
 		return nil
 	}
+	if _, _, err := k.xr.GenesisRate(ctx); err != nil {
+		ev.Bool(types.AttributeKeySkipped, true).Emit(sdkCtx)
+		return nil
+	}
 
 	params, err := k.Params.Get(ctx)
 	if err != nil {
 		return err
 	}
-	denom, err := k.staking.BondDenom(ctx)
-	if err != nil {
-		return err
-	}
-	fiat := k.td.K.GetParams(ctx).MainFiatCurrency
+	denom := tdtypes.BondDenom
+	fiat := k.td.K.MainFiatCurrency(ctx)
 	var budgets [3]math.Int
 	for i, b := range []math.LegacyDec{params.ValidatorNodeBudget, params.CouncilBudget, params.FoundationBudget} {
 		budgets[i], err = k.toNative(ctx, fiat, denom, b)
@@ -185,15 +186,7 @@ func validatorPayout(budget math.Int, b types.ValidatorBlocks, epochBlocks uint6
 
 // toNative converts a budget in minor units of the main fiat currency through Get Price.
 func (k Keeper) toNative(ctx context.Context, fiat, denom string, amount math.LegacyDec) (math.Int, error) {
-	s, err := k.xr.GetPrice(ctx, cstypes.PricingAssetType_FIAT, fiat, cstypes.PricingAssetType_COIN, denom, amount.TruncateInt().String())
-	if err != nil {
-		return math.Int{}, err
-	}
-	v, ok := math.NewIntFromString(s)
-	if !ok {
-		return math.Int{}, fmt.Errorf("invalid price %q", s)
-	}
-	return v, nil
+	return k.xr.GetPrice(ctx, cstypes.PricingAssetType_FIAT, fiat, cstypes.PricingAssetType_COIN, denom, amount.TruncateInt())
 }
 
 func (k Keeper) pay(ctx context.Context, to sdk.AccAddress, denom string, amount math.Int) error {
