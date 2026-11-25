@@ -21,7 +21,7 @@ func TestMsgStartParticipantOP_ValidateBasic(t *testing.T) {
 	valid := func() *types.MsgStartParticipantOP {
 		return &types.MsgStartParticipantOP{
 			Corporation:            validAddr,
-			Operator:               validAddr,
+			Delegate:               validAddr,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: 1,
 			Did:                    validDid,

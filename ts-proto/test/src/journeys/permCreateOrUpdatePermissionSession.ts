@@ -35,12 +35,13 @@ import { ParticipantRole, OptionalUInt64 } from "../../../src/codec/verana/pp/v1
 import { IssuerOnboardingMode, VerifierOnboardingMode } from "../../../src/codec/verana/cs/v1/types";
 import { getPermAuthzSetup } from "../helpers/journeyResults";
 import { createPermPrerequisites, extractIdFromEvents } from "../helpers/permissionHelpers";
+import { MsgType } from "../../../src/codec/verana/de/v1/msg_type";
 
 const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 15;
+const DELEGATE_INDEX = 15;
 
 async function main() {
   console.log("=".repeat(60));
@@ -56,12 +57,12 @@ async function main() {
     process.exit(1);
   }
   console.log(`  Authority: ${setup.authorityAddress}`);
-  console.log(`  Operator:  ${setup.operatorAddress}`);
+  console.log(`  Delegate:  ${setup.delegateAddress}`);
   console.log();
 
-  // Step 2: Connect operator
-  console.log("Step 2: Setting up operator wallet...");
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Connect delegate
+  console.log("Step 2: Setting up delegate wallet...");
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
   const client = await createSigningClient(wallet);
   console.log(`  Connected as ${account.address}`);
@@ -73,7 +74,7 @@ async function main() {
     const { schemaId, rootPermId, did, effectiveFrom } = await createPermPrerequisites(
       client,
       setup.authorityAddress,
-      setup.operatorAddress,
+      setup.delegateAddress,
       IssuerOnboardingMode.ISSUER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
     );
     console.log(`  Schema ID: ${schemaId}, Root Permission ID: ${rootPermId}`);
@@ -92,7 +93,7 @@ async function main() {
 
     // Step 5: Start VP for ISSUER with vs_operator enabled
     // Use a distinct vs_operator account (derivation index 16) to avoid mutual
-    // exclusivity conflict with the OperatorAuthorization for setup.operatorAddress.
+    // exclusivity conflict with the DelegateAuthorization for setup.delegateAddress.
     console.log("Step 5: Starting VP with vs_operator enabled...");
     const vsOperatorWallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, 16);
     const vsOperatorAccount = await getAccountInfo(vsOperatorWallet);
@@ -102,7 +103,7 @@ async function main() {
       typeUrl: typeUrls.MsgStartParticipantOP,
       value: MsgStartParticipantOP.fromPartial({
         corporation: setup.authorityAddress,
-        operator: setup.operatorAddress,
+        delegate: setup.delegateAddress,
         role: ParticipantRole.ISSUER,
         validatorParticipantId: rootPermId,
         did,
@@ -112,7 +113,7 @@ async function main() {
         vsOperator: vsOperatorAccount.address,
         // Spec v4-rc2: presence of msg_types (not a boolean flag) triggers the
         // VSOA record; the vs_operator is authorized to run CSPS on behalf.
-        vsOperatorAuthzMsgTypes: [typeUrls.MsgCreateOrUpdateParticipantSession],
+        vsOperatorAuthzMsgTypes: [MsgType.MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE],
       }),
     };
 
@@ -134,7 +135,7 @@ async function main() {
       typeUrl: typeUrls.MsgSetParticipantOPToValidated,
       value: MsgSetParticipantOPToValidated.fromPartial({
         corporation: setup.authorityAddress,
-        operator: setup.operatorAddress,
+        delegate: setup.delegateAddress,
         id: issuerParticipantId,
         effectiveUntil,
         validationFees: 5,
@@ -179,7 +180,7 @@ async function main() {
       typeUrl: typeUrls.MsgCreateOrUpdateParticipantSession,
       value: MsgCreateOrUpdateParticipantSession.fromPartial({
         corporation: setup.authorityAddress,
-        operator: vsOperatorAccount.address,
+        vsAccount: vsOperatorAccount.address,
         id: sessionId,
         issuerParticipantId: issuerParticipantId,
         verifierParticipantId: 0,
@@ -210,7 +211,7 @@ async function main() {
       typeUrl: typeUrls.MsgCreateOrUpdateParticipantSession,
       value: MsgCreateOrUpdateParticipantSession.fromPartial({
         corporation: setup.authorityAddress,
-        operator: vsOperatorAccount.address,
+        vsAccount: vsOperatorAccount.address,
         id: sessionId,
         issuerParticipantId: issuerParticipantId,
         verifierParticipantId: 0,

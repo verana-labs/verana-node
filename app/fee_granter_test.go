@@ -110,7 +110,7 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 		require.NoError(t, err)
 		*p.pid = id
 		rec := detypes.ParticipantAuthorizationRecord{
-			ParticipantId: id, MsgTypes: []string{pptypes.MsgTriggerResolverTypeURL}, WithFeegrant: p.withFee,
+			ParticipantId: id, MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_TRIGGER_RESOLVER}, WithFeegrant: p.withFee,
 		}
 		if p.withFee {
 			rec.FeeSpendLimit = sdk.NewCoins(sdk.NewInt64Coin("uvna", 1e9))
@@ -121,7 +121,7 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 	require.NoError(t, a.FeeGrantKeeper.GrantAllowance(ctx, e.corp, e.execAddr(), &feegrant.BasicAllowance{}))
 	require.NoError(t, a.FeeGrantKeeper.GrantAllowance(ctx, e.other, e.opAddr(), &feegrant.BasicAllowance{}))
 	require.NoError(t, a.AuthzKeeper.SaveGrant(ctx, e.execAddr(), e.opAddr(),
-		authz.NewGenericAuthorization(pptypes.MsgTriggerResolverTypeURL), nil))
+		authz.NewGenericAuthorization(sdk.MsgTypeURL(&pptypes.MsgTriggerResolver{})), nil))
 	e.finalize(t)
 	return e
 }
@@ -149,7 +149,7 @@ func (e *feeGranterEnv) finalize(t *testing.T, txs ...[]byte) []*abci.ExecTxResu
 }
 
 func (e *feeGranterEnv) trigger(pid uint64) *pptypes.MsgTriggerResolver {
-	return &pptypes.MsgTriggerResolver{Corporation: e.corp.String(), Operator: e.opAddr().String(), Id: pid}
+	return &pptypes.MsgTriggerResolver{Corporation: e.corp.String(), Delegate: e.opAddr().String(), Id: pid}
 }
 
 // signedTx signs msgs with signer, paying 1000uvna through granter when set.
@@ -231,7 +231,7 @@ func TestVSOperatorFeeGrantCheckUsesTxFeeGranter(t *testing.T) {
 		{"corp pays, with_feegrant", e.op, e.corp, []sdk.Msg{e.trigger(e.feePID)}, e.corp, ""},
 		{"corp pays, no with_feegrant", e.op, e.corp, []sdk.Msg{e.trigger(e.noFeePID)}, e.corp, notAuthorized},
 		{"corp pays, second msg lacks with_feegrant", e.op, e.corp, []sdk.Msg{e.trigger(e.feePID), e.trigger(e.noFeePID)}, e.corp, notAuthorized},
-		{"operator pays", e.op, nil, []sdk.Msg{e.trigger(e.noFeePID)}, e.opAddr(), ""},
+		{"delegate pays", e.op, nil, []sdk.Msg{e.trigger(e.noFeePID)}, e.opAddr(), ""},
 		{"other granter pays", e.op, e.other, []sdk.Msg{e.trigger(e.noFeePID)}, e.other, ""},
 		{"MsgExec, corp pays, with_feegrant", e.exec, e.corp, []sdk.Msg{execMsg(e, e.trigger(e.feePID))}, e.corp, ""},
 		{"MsgExec, corp pays, no with_feegrant", e.exec, e.corp, []sdk.Msg{execMsg(e, e.trigger(e.noFeePID))}, e.corp, notAuthorized},

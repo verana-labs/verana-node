@@ -8,8 +8,7 @@ import sdkerrors "cosmossdk.io/errors"
 var (
 	ErrInvalidSigner               = sdkerrors.Register(ModuleName, 1100, "expected council account as authority for proposal message")
 	ErrEcosystemNotFound           = sdkerrors.Register(ModuleName, 1101, "ecosystem not found")
-	ErrCorporationNotRegistered    = sdkerrors.Register(ModuleName, 1102, "signing account is not the policy_address of a registered Corporation")
-	ErrUnauthorizedOperator        = sdkerrors.Register(ModuleName, 1103, "signing corporation does not control this ecosystem")
+	ErrUnauthorizedDelegate        = sdkerrors.Register(ModuleName, 1103, "signing corporation does not control this ecosystem")
 	ErrDIDOwnershipConflict        = sdkerrors.Register(ModuleName, 1104, "did already bound to an ecosystem controlled by a different corporation")
 	ErrAlreadyInTargetArchiveState = sdkerrors.Register(ModuleName, 1105, "ecosystem already in target archive state")
 	ErrInvalidDID                  = sdkerrors.Register(ModuleName, 1106, "invalid DID")

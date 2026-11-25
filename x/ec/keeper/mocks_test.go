@@ -5,24 +5,27 @@ import (
 	"errors"
 	"time"
 
-	gftypes "github.com/verana-labs/verana-node/x/gf/types"
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/ec/types"
+	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
 
 // mockDelegation: configurable AUTHZ-CHECK result. Default returns nil (auth granted).
 type mockDelegation struct {
-	err   error
-	calls int
+	err       error
+	calls     int
+	gotCorpID uint64
 }
 
-func (m *mockDelegation) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (m *mockDelegation) CheckDelegateAuthorization(_ context.Context, corporationID uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	m.calls++
+	m.gotCorpID = corporationID
 	return m.err
 }
 
 // mockCorporation: AUTHZ-CHECK-5 resolver. Pre-program signer → CorporationView.
-// If addr is not registered, returns (zero, false) — that surfaces as
-// ErrCorporationNotRegistered in the keeper.
+// An unregistered addr fails with cotypes.ErrCorporationNotRegistered.
 type mockCorporation struct {
 	byAddr    map[string]types.CorporationView
 	didOwners map[string]uint64 // Corporation.did -> corp id
@@ -40,9 +43,12 @@ func (m *mockCorporation) registerDID(did string, corpID uint64) {
 	m.didOwners[did] = corpID
 }
 
-func (m *mockCorporation) ResolveByPolicyAddress(_ context.Context, addr string) (types.CorporationView, bool) {
+func (m *mockCorporation) ResolveCorporationByPolicyAddress(_ context.Context, addr string) (types.CorporationView, error) {
 	v, ok := m.byAddr[addr]
-	return v, ok
+	if !ok {
+		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
+	}
+	return v, nil
 }
 
 func (m *mockCorporation) ResolveDIDOwner(_ context.Context, did string) (uint64, bool, error) {
@@ -68,7 +74,7 @@ type mockGF struct {
 	createErr   error
 	createCalls int
 	createArgs  struct {
-		ecID                            uint64
+		ecID                           uint64
 		language, docURL, docDigestSRI string
 	}
 

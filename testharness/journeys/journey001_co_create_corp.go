@@ -11,13 +11,14 @@ import (
 	"github.com/ignite/cli/v28/ignite/pkg/cosmosclient"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 const (
 	corpAAdminName   = "corp_a_admin"
 	corpAMember1Name = "corp_a_member1"
 	corpAMember2Name = "corp_a_member2"
-	corpAOperator    = "corp_a_operator"
+	corpADelegate    = "corp_a_delegate"
 )
 
 func getOrCreateCorpAAccount(client cosmosclient.Client, name string) cosmosaccount.Account {
@@ -33,10 +34,10 @@ func getOrCreateCorpAAccount(client cosmosclient.Client, name string) cosmosacco
 	return account
 }
 
-// RunCorpCreateJourney implements Journey 001: Create Corporation A and bootstrap operator authorization.
-// [MOD-CO-MSG-1] CreateCorporation + [MOD-DE-MSG-1] GrantOperatorAuthorization (bootstrap path).
+// RunCorpCreateJourney implements Journey 001: Create Corporation A and bootstrap delegate authorization.
+// [MOD-CO-MSG-1] CreateCorporation + [MOD-DE-MSG-1] GrantDelegateAuthorization (bootstrap path).
 func RunCorpCreateJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 001: CreateCorporation (Corp A) + Bootstrap Operator Authz")
+	fmt.Println("Starting Journey 001: CreateCorporation (Corp A) + Bootstrap Delegate Authz")
 
 	// =========================================================================
 	// Step 1: Create and fund accounts
@@ -46,17 +47,17 @@ func RunCorpCreateJourney(ctx context.Context, client cosmosclient.Client) error
 	adminAccount := getOrCreateCorpAAccount(client, corpAAdminName)
 	member1Account := getOrCreateCorpAAccount(client, corpAMember1Name)
 	member2Account := getOrCreateCorpAAccount(client, corpAMember2Name)
-	operatorAccount := getOrCreateCorpAAccount(client, corpAOperator)
+	delegateAccount := getOrCreateCorpAAccount(client, corpADelegate)
 
 	adminAddr, _ := adminAccount.Address(lib.GetAddressPrefix())
 	member1Addr, _ := member1Account.Address(lib.GetAddressPrefix())
 	member2Addr, _ := member2Account.Address(lib.GetAddressPrefix())
-	operatorAddr, _ := operatorAccount.Address(lib.GetAddressPrefix())
+	delegateAddr, _ := delegateAccount.Address(lib.GetAddressPrefix())
 
 	fmt.Printf("  Admin:    %s\n", adminAddr)
 	fmt.Printf("  Member1:  %s\n", member1Addr)
 	fmt.Printf("  Member2:  %s\n", member2Addr)
-	fmt.Printf("  Operator: %s\n", operatorAddr)
+	fmt.Printf("  Delegate: %s\n", delegateAddr)
 
 	fundAmount := math.NewInt(50000000) // 50 VNA each
 	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, adminAddr, fundAmount)
@@ -65,8 +66,8 @@ func RunCorpCreateJourney(ctx context.Context, client cosmosclient.Client) error
 	waitForTx("member1 funding")
 	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, member2Addr, fundAmount)
 	waitForTx("member2 funding")
-	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, operatorAddr, fundAmount)
-	waitForTx("operator funding")
+	lib.SendFunds(client, ctx, lib.COOLUSER_ADDRESS, delegateAddr, fundAmount)
+	waitForTx("delegate funding")
 	fmt.Println("✅ Step 1: All accounts funded with 50 VNA")
 
 	// =========================================================================
@@ -132,25 +133,25 @@ func RunCorpCreateJourney(ctx context.Context, client cosmosclient.Client) error
 		corpID, corpResp.Corporation.Did, corpResp.Corporation.Language)
 
 	// =========================================================================
-	// Step 5: Bootstrap operator authorization [MOD-DE-MSG-1] — Operator="" path
+	// Step 5: Bootstrap delegate authorization [MOD-DE-MSG-1] — Delegate="" path
 	// =========================================================================
-	fmt.Println("\n--- Step 5: Bootstrap operator authz (Operator=empty → bypass AUTHZ-CHECK) ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 5: Bootstrap delegate authz (Delegate=empty → bypass AUTHZ-CHECK) ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{
-			"/verana.ec.v1.MsgCreateEcosystem",
-			"/verana.ec.v1.MsgUpdateEcosystem",
-			"/verana.ec.v1.MsgArchiveEcosystem",
-			"/verana.gf.v1.MsgAddGovernanceFrameworkDocument",
-			"/verana.gf.v1.MsgIncreaseActiveGovernanceFrameworkVersion",
-			"/verana.co.v1.MsgUpdateCorporation",
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{
+			detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM,
+			detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM,
+			detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM,
+			detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT,
+			detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION,
+			detypes.MsgType_MSG_TYPE_UPDATE_CORPORATION,
 		},
 	)
 	if err != nil {
 		return fmt.Errorf("step 5 failed: %w", err)
 	}
-	fmt.Printf("✅ Step 5: Bootstrapped operator authz for %s\n", operatorAddr)
+	fmt.Printf("✅ Step 5: Bootstrapped delegate authz for %s\n", delegateAddr)
 	waitForTx("bootstrap authz")
 
 	// =========================================================================
@@ -160,7 +161,7 @@ func RunCorpCreateJourney(ctx context.Context, client cosmosclient.Client) error
 		EcosystemID:     strconv.FormatUint(corpID, 10),
 		DID:             corpDID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 		AdminAddr:       adminAddr,
 		Member1Addr:     member1Addr,
 		Member2Addr:     member2Addr,
@@ -169,7 +170,7 @@ func RunCorpCreateJourney(ctx context.Context, client cosmosclient.Client) error
 
 	fmt.Println("\n========================================")
 	fmt.Println("Journey 001 completed successfully!")
-	fmt.Println("Corp A created. Operator authz bootstrapped.")
+	fmt.Println("Corp A created. Delegate authz bootstrapped.")
 	fmt.Println("========================================")
 
 	return nil

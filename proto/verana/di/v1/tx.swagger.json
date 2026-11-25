@@ -87,9 +87,9 @@
           "type": "string",
           "description": "authority is the corporation (group account) on whose behalf this message\nis executed."
         },
-        "operator": {
+        "delegate": {
           "type": "string",
-          "description": "operator is the account authorized by the corporation to run this Msg."
+          "description": "delegate is the account authorized by the corporation to run this Msg."
         },
         "digest": {
           "type": "string",

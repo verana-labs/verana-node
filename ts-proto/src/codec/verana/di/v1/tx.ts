@@ -17,8 +17,8 @@ export interface MsgStoreDigest {
    * is executed.
    */
   authority: string;
-  /** operator is the account authorized by the corporation to run this Msg. */
-  operator: string;
+  /** delegate is the account authorized by the corporation to run this Msg. */
+  delegate: string;
   /**
    * digest is the digest string to store. It is opaque to the chain: bounded at
    * 256 bytes, but no format is imposed and it is never recomputed against any
@@ -41,7 +41,7 @@ export interface Digest {
 }
 
 function createBaseMsgStoreDigest(): MsgStoreDigest {
-  return { authority: "", operator: "", digest: "" };
+  return { authority: "", delegate: "", digest: "" };
 }
 
 export const MsgStoreDigest = {
@@ -49,8 +49,8 @@ export const MsgStoreDigest = {
     if (message.authority !== "") {
       writer.uint32(10).string(message.authority);
     }
-    if (message.operator !== "") {
-      writer.uint32(18).string(message.operator);
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     if (message.digest !== "") {
       writer.uint32(26).string(message.digest);
@@ -77,7 +77,7 @@ export const MsgStoreDigest = {
             break;
           }
 
-          message.operator = reader.string();
+          message.delegate = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -98,7 +98,7 @@ export const MsgStoreDigest = {
   fromJSON(object: any): MsgStoreDigest {
     return {
       authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
-      operator: isSet(object.operator) ? globalThis.String(object.operator) : "",
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       digest: isSet(object.digest) ? globalThis.String(object.digest) : "",
     };
   },
@@ -108,8 +108,8 @@ export const MsgStoreDigest = {
     if (message.authority !== "") {
       obj.authority = message.authority;
     }
-    if (message.operator !== "") {
-      obj.operator = message.operator;
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     if (message.digest !== "") {
       obj.digest = message.digest;
@@ -123,7 +123,7 @@ export const MsgStoreDigest = {
   fromPartial<I extends Exact<DeepPartial<MsgStoreDigest>, I>>(object: I): MsgStoreDigest {
     const message = createBaseMsgStoreDigest();
     message.authority = object.authority ?? "";
-    message.operator = object.operator ?? "";
+    message.delegate = object.delegate ?? "";
     message.digest = object.digest ?? "";
     return message;
   },

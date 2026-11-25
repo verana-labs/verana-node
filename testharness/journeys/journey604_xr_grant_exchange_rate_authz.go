@@ -14,9 +14,9 @@ import (
 )
 
 // RunXrGrantExchangeRateAuthzJourney implements Journey 604: XR Grant Exchange Rate Authorization (governance)
-// Grants an ExchangeRateAuthorization to an operator for a specific exchange rate via council proposal [MOD-XR-MSG-4],
+// Grants an ExchangeRateAuthorization to a feeder for a specific exchange rate via council proposal [MOD-XR-MSG-4],
 // then verifies it appears in GetExchangeRate.authorizations [MOD-XR-QRY-1].
-// Depends on Journey 601 (exchange rate ID) and Journey 301 (operator).
+// Depends on Journey 601 (exchange rate ID) and Journey 301 (feeder).
 func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient.Client) error {
 	fmt.Println("Starting Journey 604: XR Grant Exchange Rate Authorization via Council")
 
@@ -35,10 +35,10 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 	if err != nil {
 		return fmt.Errorf("step 1 failed: could not parse exchange rate ID: %w", err)
 	}
-	operatorAddr := setup301.OperatorAddr
+	feederAddr := setup301.DelegateAddr
 
 	fmt.Printf("  Exchange Rate ID: %d\n", exchangeRateID)
-	fmt.Printf("  Operator:         %s\n", operatorAddr)
+	fmt.Printf("  Feeder:         %s\n", feederAddr)
 	fmt.Println("✅ Step 1: Loaded journey results")
 
 	// =========================================================================
@@ -50,14 +50,14 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 	grantMsg := &xrtypes.MsgGrantExchangeRateAuthorization{
 		Authority:  council,
 		XrId:       exchangeRateID,
-		Feeder:     operatorAddr,
+		Feeder:     feederAddr,
 		Expiration: &expiration,
 	}
 
 	proposalID, err := lib.SubmitCouncilProposal(
 		client, ctx, cooluser,
 		"Grant Exchange Rate Authorization",
-		fmt.Sprintf("Authorize operator %s to update exchange rate %d", operatorAddr, exchangeRateID),
+		fmt.Sprintf("Authorize feeder %s to update exchange rate %d", feederAddr, exchangeRateID),
 		grantMsg,
 	)
 	if err != nil {
@@ -90,21 +90,21 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 
 	found := false
 	for _, a := range getResp.Authorizations {
-		if a.Feeder == operatorAddr {
+		if a.Feeder == feederAddr {
 			found = true
 			break
 		}
 	}
 	if !found {
-		return fmt.Errorf("step 4 failed: authorization for operator %s not found on exchange rate %d", operatorAddr, exchangeRateID)
+		return fmt.Errorf("step 4 failed: authorization for feeder %s not found on exchange rate %d", feederAddr, exchangeRateID)
 	}
 
-	fmt.Printf("  Authorizations: %d (operator %s present)\n", len(getResp.Authorizations), operatorAddr)
+	fmt.Printf("  Authorizations: %d (feeder %s present)\n", len(getResp.Authorizations), feederAddr)
 	fmt.Println("✅ Step 4: Exchange rate authorization granted and verified")
 
 	lib.SaveJourneyResult("journey604", lib.JourneyResult{
 		ExchangeRateID: setup601.ExchangeRateID,
-		OperatorAddr:   operatorAddr,
+		DelegateAddr:   feederAddr,
 	})
 
 	fmt.Println("\n========================================")

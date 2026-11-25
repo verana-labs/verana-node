@@ -9,6 +9,7 @@ import (
 	"cosmossdk.io/collections"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	feegrant "github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/stretchr/testify/require"
 
 	"github.com/verana-labs/verana-node/x/de/keeper"
@@ -25,12 +26,14 @@ func setupMsgServer(t *testing.T) (*fixture, types.MsgServer, sdk.Context) {
 
 func acc(s string) string { return sdk.AccAddress([]byte(s)).String() }
 
-// vpr msg types used in records / fee grants (must be VPR delegable).
+// testCorpID is the id mockCorpKeeper resolves every corporation account to.
+const testCorpID uint64 = 1
+
 const (
-	mtEcosystem = "/verana.ec.v1.MsgCreateEcosystem"
-	mtSchema    = "/verana.cs.v1.MsgCreateCredentialSchema"
-	mtValidated = "/verana.pp.v1.MsgSetParticipantOPToValidated"
-	mtCSPS      = "/verana.pp.v1.MsgCreateOrUpdateParticipantSession"
+	mtEcosystem = types.MsgType_MSG_TYPE_CREATE_ECOSYSTEM
+	mtSchema    = types.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA
+	mtValidated = types.MsgType_MSG_TYPE_VALIDATE_ONBOARDING
+	mtIssuance  = types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE
 )
 
 func TestMsgServer(t *testing.T) {
@@ -48,7 +51,7 @@ func TestGrantAndRevokeFeeAllowance(t *testing.T) {
 	k := f.keeper
 	grantee := acc("grantee_____________")
 	corpID := uint64(7)
-	msgTypes := []string{mtEcosystem}
+	msgTypes := []types.MsgType{mtEcosystem}
 
 	require.NoError(t, k.GrantFeeAllowance(ctx, corpID, grantee, msgTypes, nil, nil, nil))
 	fg, err := k.FeeGrants.Get(ctx, collections.Join(corpID, grantee))
@@ -58,10 +61,10 @@ func TestGrantAndRevokeFeeAllowance(t *testing.T) {
 	require.Equal(t, msgTypes, fg.MsgTypes)
 
 	// Update in place with new msg types.
-	require.NoError(t, k.GrantFeeAllowance(ctx, corpID, grantee, []string{mtSchema}, nil, nil, nil))
+	require.NoError(t, k.GrantFeeAllowance(ctx, corpID, grantee, []types.MsgType{mtSchema}, nil, nil, nil))
 	fg, err = k.FeeGrants.Get(ctx, collections.Join(corpID, grantee))
 	require.NoError(t, err)
-	require.Equal(t, []string{mtSchema}, fg.MsgTypes)
+	require.Equal(t, []types.MsgType{mtSchema}, fg.MsgTypes)
 
 	require.NoError(t, k.RevokeFeeAllowance(ctx, corpID, grantee))
 	has, err := k.FeeGrants.Has(ctx, collections.Join(corpID, grantee))
@@ -69,15 +72,37 @@ func TestGrantAndRevokeFeeAllowance(t *testing.T) {
 	require.False(t, has)
 }
 
+func TestGrantFeeAllowance_TypeURLs(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	grantee := acc("grantee_____________")
+	mts := []types.MsgType{
+		types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE,
+		mtEcosystem,
+		types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION,
+	}
+	require.NoError(t, f.keeper.GrantFeeAllowance(ctx, 7, grantee, mts, nil, nil, nil))
+
+	fg, err := f.keeper.FeeGrants.Get(ctx, collections.Join(uint64(7), grantee))
+	require.NoError(t, err)
+	require.Equal(t, mts, fg.MsgTypes)
+
+	granter, _ := sdk.AccAddressFromBech32(corpPolicyAddr(7))
+	granteeAddr, _ := sdk.AccAddressFromBech32(grantee)
+	a, err := f.feegrants.GetAllowance(ctx, granter, granteeAddr)
+	require.NoError(t, err)
+	require.Equal(t, []string{
+		"/verana.pp.v1.MsgCreateOrUpdateParticipantSession",
+		"/verana.ec.v1.MsgCreateEcosystem",
+	}, a.(*feegrant.AllowedMsgAllowance).AllowedMessages)
+}
+
 func TestFeeAllowance_Validation(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	grantee := acc("grantee_____________")
 
-	// non-delegable msg type
-	require.Error(t, k.GrantFeeAllowance(ctx, 1, grantee, []string{"/verana.de.v1.MsgUpdateParams"}, nil, nil, nil))
-	// empty msg types
-	require.Error(t, k.GrantFeeAllowance(ctx, 1, grantee, nil, nil, nil, nil))
+	require.ErrorIs(t, k.GrantFeeAllowance(ctx, 1, grantee, []types.MsgType{types.MsgType_MSG_TYPE_UNSPECIFIED}, nil, nil, nil), types.ErrInvalidMsgType)
+	require.ErrorIs(t, k.GrantFeeAllowance(ctx, 1, grantee, nil, nil, nil, nil), types.ErrInvalidMsgType)
 
 	require.ErrorContains(t, k.RevokeFeeAllowance(ctx, 0, grantee), "grantor_corporation_id")
 	require.ErrorContains(t, k.RevokeFeeAllowance(ctx, 1, ""), "grantee")
@@ -86,45 +111,45 @@ func TestFeeAllowance_Validation(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// [MOD-DE-MSG-3/4] Grant / Revoke Operator Authorization (msg server)
+// [MOD-DE-MSG-3/4] Grant / Revoke Delegate Authorization (msg server)
 // ---------------------------------------------------------------------------
 
-func TestGrantOperatorAuthorization_NewAndUpdate(t *testing.T) {
+func TestGrantDelegateAuthorization_NewAndUpdate(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []string{mtEcosystem},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	list, err := qs.ListOperatorAuthorizations(ctx, &types.QueryListOperatorAuthorizationsRequest{Operator: grantee})
+	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
 	require.NoError(t, err)
-	require.Len(t, list.OperatorAuthorizations, 1)
-	firstID := list.OperatorAuthorizations[0].Id
+	require.Len(t, list.DelegateAuthorizations, 1)
+	firstID := list.DelegateAuthorizations[0].Id
 	require.NotZero(t, firstID)
-	require.Equal(t, grantee, list.OperatorAuthorizations[0].Operator)
+	require.Equal(t, grantee, list.DelegateAuthorizations[0].Delegate)
 
 	// Re-grant is an in-place update that preserves the id.
-	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []string{mtSchema},
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtSchema},
 	})
 	require.NoError(t, err)
-	list, err = qs.ListOperatorAuthorizations(ctx, &types.QueryListOperatorAuthorizationsRequest{Operator: grantee})
+	list, err = qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
 	require.NoError(t, err)
-	require.Len(t, list.OperatorAuthorizations, 1)
-	require.Equal(t, firstID, list.OperatorAuthorizations[0].Id)
-	require.Equal(t, []string{mtSchema}, list.OperatorAuthorizations[0].MsgTypes)
+	require.Len(t, list.DelegateAuthorizations, 1)
+	require.Equal(t, firstID, list.DelegateAuthorizations[0].Id)
+	require.Equal(t, []types.MsgType{mtSchema}, list.DelegateAuthorizations[0].MsgTypes)
 
 	// [MOD-DE-QRY-3] get by id.
-	got, err := qs.GetOperatorAuthorization(ctx, &types.QueryGetOperatorAuthorizationRequest{Id: firstID})
+	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: firstID})
 	require.NoError(t, err)
-	require.Equal(t, grantee, got.OperatorAuthorization.Operator)
+	require.Equal(t, grantee, got.DelegateAuthorization.Delegate)
 }
 
-func TestGrantOperatorAuthorization_MutualExclusivity(t *testing.T) {
+func TestGrantDelegateAuthorization_MutualExclusivity(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
@@ -132,72 +157,95 @@ func TestGrantOperatorAuthorization_MutualExclusivity(t *testing.T) {
 	// Resolve the signing corporation to its co.id (same path MSG-3 uses).
 	co, err := f.corpKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
 	require.NoError(t, err)
-	// A VSOperatorAuthorization for (co.id, grantee) blocks the operator grant.
+	// A VSOperatorAuthorization for (co.id, grantee) blocks the delegate grant.
 	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, co.Id, grantee,
-		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []string{mtValidated}}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}}))
 
-	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []string{mtEcosystem},
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.ErrorIs(t, err, types.ErrVSOperatorAuthzExists)
 }
 
-// [MOD-DE-MSG-3] The operator path: an operator authorized for the de grant
+// [MOD-DE-MSG-3] The delegate path: a delegate authorized for the de grant
 // message can grant on the corporation's behalf; an unauthorized one cannot.
-func TestGrantOperatorAuthorization_OperatorPath(t *testing.T) {
+func TestGrantDelegateAuthorization_DelegatePath(t *testing.T) {
 	_, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
-	operator := acc("operator____________")
+	delegate := acc("delegate____________")
 	grantee := acc("grantee_____________")
 
-	// Corp authorizes the operator for the de grant message (group-proposal path).
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Operator: corporation, Grantee: operator,
-		MsgTypes: []string{"/verana.de.v1.MsgGrantOperatorAuthorization"},
+	// Corp authorizes the delegate for the de grant message (group-proposal path).
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: delegate,
+		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION},
 	})
 	require.NoError(t, err)
 
-	// The authorized operator grants to a third party on the corporation's behalf.
-	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Operator: operator, Grantee: grantee,
-		MsgTypes: []string{mtEcosystem},
+	// The authorized delegate grants to a third party on the corporation's behalf.
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: delegate, Grantee: grantee,
+		MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	// An unauthorized operator is rejected by AUTHZ-CHECK-1.
+	// An unauthorized delegate is rejected by AUTHZ-CHECK-1.
 	stranger := acc("stranger____________")
-	_, err = ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Operator: stranger, Grantee: grantee,
-		MsgTypes: []string{mtEcosystem},
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: stranger, Grantee: grantee,
+		MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.Error(t, err)
 }
 
-// [MOD-DE-MSG-3-2] grantee MUST NOT be the corporation's own policy_address.
-func TestGrantOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
-	f, ms, ctx := setupMsgServer(t)
+// [MOD-DE-MSG-3-2] / [MOD-DE-MSG-4-2] the group-proposal path is delegate ==
+// corporation; an empty delegate is not a path.
+func TestGrantDelegateAuthorization_EmptyDelegate(t *testing.T) {
+	_, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
-	operator := acc("operator____________")
+	grantee := acc("grantee_____________")
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Operator: corporation, Grantee: operator,
-		MsgTypes: []string{"/verana.de.v1.MsgGrantOperatorAuthorization"},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	})
+	require.ErrorIs(t, err, types.ErrAuthzNotFound)
+
+	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	for name, msg := range map[string]*types.MsgGrantOperatorAuthorization{
-		"group proposal": {Corporation: corporation, Operator: corporation, Grantee: corporation},
-		"with feegrant":  {Corporation: corporation, Operator: corporation, Grantee: corporation, WithFeegrant: true, FeegrantSpendLimit: uvna(10)},
-		"operator path":  {Corporation: corporation, Operator: operator, Grantee: corporation},
-		"upper case":     {Corporation: corporation, Operator: corporation, Grantee: strings.ToUpper(corporation), WithFeegrant: true},
+	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Grantee: grantee,
+	})
+	require.ErrorIs(t, err, types.ErrAuthzNotFound)
+}
+
+// [MOD-DE-MSG-3-2] grantee MUST NOT be the corporation's own policy_address.
+func TestGrantDelegateAuthorization_OwnPolicyAddress(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	delegate := acc("delegate____________")
+
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: delegate,
+		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION},
+	})
+	require.NoError(t, err)
+
+	for name, msg := range map[string]*types.MsgGrantDelegateAuthorization{
+		"group proposal": {Corporation: corporation, Delegate: corporation, Grantee: corporation},
+		"with feegrant":  {Corporation: corporation, Delegate: corporation, Grantee: corporation, WithFeegrant: true, FeegrantSpendLimit: uvna(10)},
+		"delegate path":  {Corporation: corporation, Delegate: delegate, Grantee: corporation},
+		"upper case":     {Corporation: corporation, Delegate: corporation, Grantee: strings.ToUpper(corporation), WithFeegrant: true},
 	} {
 		t.Run(name, func(t *testing.T) {
-			msg.MsgTypes = []string{mtEcosystem}
+			msg.MsgTypes = []types.MsgType{mtEcosystem}
 			require.NoError(t, msg.ValidateBasic())
-			_, err := ms.GrantOperatorAuthorization(ctx, msg)
+			_, err := ms.GrantDelegateAuthorization(ctx, msg)
 			require.ErrorIs(t, err, types.ErrOwnPolicyAddress)
 
-			has, err := f.keeper.OperatorAuthorizationByCorpOp.Has(ctx, collections.Join(uint64(1), msg.Grantee))
+			has, err := f.keeper.DelegateAuthorizationByCorpDelegate.Has(ctx, collections.Join(uint64(1), msg.Grantee))
 			require.NoError(t, err)
 			require.False(t, has)
 			require.Empty(t, f.feegrants.grants)
@@ -205,30 +253,30 @@ func TestGrantOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
 	}
 }
 
-func TestRevokeOperatorAuthorization(t *testing.T) {
+func TestRevokeDelegateAuthorization(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 
-	_, err := ms.GrantOperatorAuthorization(ctx, &types.MsgGrantOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee, MsgTypes: []string{mtEcosystem},
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	_, err = ms.RevokeOperatorAuthorization(ctx, &types.MsgRevokeOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee,
+	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee,
 	})
 	require.NoError(t, err)
-	list, err := qs.ListOperatorAuthorizations(ctx, &types.QueryListOperatorAuthorizationsRequest{Operator: grantee})
+	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
 	require.NoError(t, err)
-	require.Empty(t, list.OperatorAuthorizations)
+	require.Empty(t, list.DelegateAuthorizations)
 
 	// Revoking a missing entry aborts.
-	_, err = ms.RevokeOperatorAuthorization(ctx, &types.MsgRevokeOperatorAuthorization{
-		Corporation: corporation, Grantee: grantee,
+	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Delegate: corporation, Grantee: grantee,
 	})
-	require.ErrorIs(t, err, types.ErrOperatorAuthzNotFound)
+	require.ErrorIs(t, err, types.ErrDelegateAuthzNotFound)
 }
 
 // ---------------------------------------------------------------------------
@@ -241,7 +289,7 @@ func TestGrantVSOperatorAuthorization(t *testing.T) {
 	corpID := uint64(1)
 	vsOp := acc("vsop________________")
 	rec := func(pid uint64) types.ParticipantAuthorizationRecord {
-		return types.ParticipantAuthorizationRecord{ParticipantId: pid, MsgTypes: []string{mtValidated}}
+		return types.ParticipantAuthorizationRecord{ParticipantId: pid, MsgTypes: []types.MsgType{mtValidated}}
 	}
 
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, rec(10)))
@@ -249,9 +297,9 @@ func TestGrantVSOperatorAuthorization(t *testing.T) {
 
 	// Duplicate participant_id is rejected (global uniqueness).
 	require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, rec(10)), types.ErrParticipantRecordExists)
-	// Non-delegable msg type is rejected.
-	require.Error(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []string{"/verana.de.v1.MsgUpdateParams"}}))
+	// A value outside the VS account set is rejected.
+	require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
+		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []types.MsgType{mtEcosystem}}), types.ErrInvalidMsgType)
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, 10)
 	require.NoError(t, err)
@@ -266,13 +314,13 @@ func TestGrantVSOperatorAuthorization_MutualExclusivity(t *testing.T) {
 	k := f.keeper
 	corpID := uint64(1)
 	vsOp := acc("vsop________________")
-	// Seed an OperatorAuthorization for (corpID, vsOp).
-	require.NoError(t, k.OperatorAuthorizations.Set(ctx, 99, types.OperatorAuthorization{Id: 99, CorporationId: corpID, Operator: vsOp, MsgTypes: []string{mtEcosystem}}))
-	require.NoError(t, k.OperatorAuthorizationByCorpOp.Set(ctx, collections.Join(corpID, vsOp), 99))
+	// Seed an DelegateAuthorization for (corpID, vsOp).
+	require.NoError(t, k.DelegateAuthorizations.Set(ctx, 99, types.DelegateAuthorization{Id: 99, CorporationId: corpID, Delegate: vsOp, MsgTypes: []types.MsgType{mtEcosystem}}))
+	require.NoError(t, k.DelegateAuthorizationByCorpDelegate.Set(ctx, collections.Join(corpID, vsOp), 99))
 
 	err := k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []string{mtValidated}})
-	require.ErrorIs(t, err, types.ErrOperatorAuthzExistsMutex)
+		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}})
+	require.ErrorIs(t, err, types.ErrDelegateAuthzExistsMutex)
 }
 
 // [MOD-DE-MSG-5-2] vs_operator MUST NOT be the corporation's own policy_address.
@@ -285,7 +333,7 @@ func TestGrantVSOperatorAuthorization_OwnPolicyAddress(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 5)), types.ErrOwnPolicyAddress)
 			require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-				types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtValidated}}), types.ErrOwnPolicyAddress)
+				types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []types.MsgType{mtValidated}}), types.ErrOwnPolicyAddress)
 
 			has, err := k.VSOAByCorpOp.Has(ctx, collections.Join(uint64(1), vsOp))
 			require.NoError(t, err)
@@ -303,14 +351,14 @@ func TestGrantVSOperatorAuthorization_SingleCorp(t *testing.T) {
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []string{mtValidated}}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}}))
 	corp, err := k.VSOACorpByOperator.Get(ctx, vsOp)
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), corp)
 
 	// A different corporation cannot also authorize the same vs_operator.
 	err = k.GrantVSOperatorAuthorization(ctx, 2, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 2, MsgTypes: []string{mtValidated}})
+		types.ParticipantAuthorizationRecord{ParticipantId: 2, MsgTypes: []types.MsgType{mtValidated}})
 	require.ErrorIs(t, err, types.ErrVSOAOtherCorporation)
 
 	// Revoking the last record frees the vs_operator for another corporation.
@@ -318,7 +366,7 @@ func TestGrantVSOperatorAuthorization_SingleCorp(t *testing.T) {
 	_, err = k.VSOACorpByOperator.Get(ctx, vsOp)
 	require.ErrorIs(t, err, collections.ErrNotFound)
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 2, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 2, MsgTypes: []string{mtValidated}}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 2, MsgTypes: []types.MsgType{mtValidated}}))
 }
 
 // The single-corp check must not grow with the number of other VSOAs.
@@ -328,11 +376,11 @@ func TestGrantVSOperatorAuthorization_GasIndependentOfStoreSize(t *testing.T) {
 		k := f.keeper
 		for i := 0; i < others; i++ {
 			require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, acc(fmt.Sprintf("vsop_%015d", i)),
-				types.ParticipantAuthorizationRecord{ParticipantId: uint64(i + 1), MsgTypes: []string{mtValidated}}))
+				types.ParticipantAuthorizationRecord{ParticipantId: uint64(i + 1), MsgTypes: []types.MsgType{mtValidated}}))
 		}
 		ctx = ctx.WithGasMeter(storetypes.NewInfiniteGasMeter())
 		require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 2, acc("vsop_target_________"),
-			types.ParticipantAuthorizationRecord{ParticipantId: 1_000_000, MsgTypes: []string{mtValidated}}))
+			types.ParticipantAuthorizationRecord{ParticipantId: 1_000_000, MsgTypes: []types.MsgType{mtValidated}}))
 		return ctx.GasMeter().GasConsumed()
 	}
 	small := gasFor(5)
@@ -345,7 +393,7 @@ func TestRevokeVSOperatorAuthorization(t *testing.T) {
 	k := f.keeper
 	corpID := uint64(1)
 	vsOp := acc("vsop________________")
-	mt := []string{mtValidated}
+	mt := []types.MsgType{mtValidated}
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: mt}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: mt}))
 	vsoaID, _ := k.VSOAByParticipant.Get(ctx, 10)
@@ -381,24 +429,24 @@ func TestGrantVSOperatorAuthorization_BudgetRules(t *testing.T) {
 	now := ctx.BlockTime()
 
 	require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true,
 	}), types.ErrInvalidFeeSpendLimit)
 	require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true,
 		FeeSpendLimit: sdk.Coins{sdk.NewInt64Coin("uvna", 0)},
 	}), types.ErrInvalidFeeSpendLimit)
 	require.ErrorIs(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, FeeSpendLimit: spend,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, FeeSpendLimit: spend,
 	}), types.ErrInvalidFeeSpendLimit)
 	require.ErrorContains(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, Period: &period,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, Period: &period,
 	}), "period requires spend_limit")
 	require.ErrorContains(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, SpendLimit: spend, Expiration: &now,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, SpendLimit: spend, Expiration: &now,
 	}), "expiration requires period")
 
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: spend,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true, FeeSpendLimit: spend,
 		SpendLimit: spend, Period: &period,
 	}))
 }
@@ -412,9 +460,9 @@ func TestSyncVSOperatorAuthorization(t *testing.T) {
 	period := 48 * time.Hour
 	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 100))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtValidated}, SpendLimit: spend, Period: &period}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []types.MsgType{mtValidated}, SpendLimit: spend, Period: &period}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtValidated}}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []types.MsgType{mtValidated}}))
 	vsoaID, _ := k.VSOAByParticipant.Get(ctx, 10)
 
 	require.NoError(t, k.SyncVSOperatorAuthorization(ctx, 10))
@@ -450,15 +498,15 @@ func TestRecomputeFeeAllowance_Sum(t *testing.T) {
 
 	fee := func(n int64) sdk.Coins { return sdk.NewCoins(sdk.NewInt64Coin("uvna", n)) }
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee(5)}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true, FeeSpendLimit: fee(5)}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtValidated, mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee(3)}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []types.MsgType{mtValidated, mtIssuance}, WithFeegrant: true, FeeSpendLimit: fee(3)}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee(100)}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true, FeeSpendLimit: fee(100)}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 13, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee(2)}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 13, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true, FeeSpendLimit: fee(2)}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 14, MsgTypes: []string{mtCSPS}}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 14, MsgTypes: []types.MsgType{mtIssuance}}))
 
 	fg, err := k.FeeGrants.Get(ctx, collections.Join(corpID, vsOp))
 	require.NoError(t, err)
@@ -467,7 +515,7 @@ func TestRecomputeFeeAllowance_Sum(t *testing.T) {
 	require.Equal(t, vstypes.DefaultVsAccountFeePeriod, *fg.Period)
 	require.NotNil(t, fg.Expiration)
 	require.True(t, fg.Expiration.Equal(now.Add(vstypes.DefaultVsAccountFeePeriod)))
-	require.ElementsMatch(t, []string{mtCSPS, mtValidated}, fg.MsgTypes)
+	require.ElementsMatch(t, []types.MsgType{mtIssuance, mtValidated}, fg.MsgTypes)
 
 	// Pending entries contribute nothing: with only 12 left, the allowance goes.
 	for _, id := range []uint64{10, 11, 13, 14} {
@@ -490,11 +538,11 @@ func TestRecomputeFeeAllowance_QueuesWindowEnd(t *testing.T) {
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uvna", 5))
 
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true, FeeSpendLimit: fee}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []string{mtCSPS}, WithFeegrant: true, FeeSpendLimit: fee}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 11, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true, FeeSpendLimit: fee}))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp,
-		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []string{mtCSPS}}))
+		types.ParticipantAuthorizationRecord{ParticipantId: 12, MsgTypes: []types.MsgType{mtIssuance}}))
 
 	has, err := k.WindowEndQueue.Has(ctx, collections.Join(until, uint64(10)))
 	require.NoError(t, err)
@@ -513,7 +561,7 @@ func TestRecomputeFeeAllowance_QueuesWindowEnd(t *testing.T) {
 func TestQueriesNotFound(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
-	_, err := qs.GetOperatorAuthorization(ctx, &types.QueryGetOperatorAuthorizationRequest{Id: 999})
+	_, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: 999})
 	require.Error(t, err)
 	_, err = qs.GetVSOperatorAuthorization(ctx, &types.QueryGetVSOperatorAuthorizationRequest{Id: 999})
 	require.Error(t, err)

@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/pp/types"
 )
 
@@ -22,7 +23,7 @@ func TestMsgCreateRootParticipant_ValidateBasic(t *testing.T) {
 	valid := func() *types.MsgCreateRootParticipant {
 		return &types.MsgCreateRootParticipant{
 			Corporation:      validAddr,
-			Operator:         validAddr,
+			Delegate:         validAddr,
 			SchemaId:         1,
 			Did:              validDid,
 			ValidationFees:   0,
@@ -39,24 +40,24 @@ func TestMsgCreateRootParticipant_ValidateBasic(t *testing.T) {
 		{"valid baseline", func(m *types.MsgCreateRootParticipant) {}, ""},
 		{"empty corporation", func(m *types.MsgCreateRootParticipant) { m.Corporation = "" }, "invalid corporation address"},
 		{"invalid corporation bech32", func(m *types.MsgCreateRootParticipant) { m.Corporation = "not-bech32" }, "invalid corporation address"},
-		{"empty operator", func(m *types.MsgCreateRootParticipant) { m.Operator = "" }, "invalid operator address"},
-		{"invalid operator bech32", func(m *types.MsgCreateRootParticipant) { m.Operator = "cosmos1garbage" }, "invalid operator address"},
+		{"empty delegate", func(m *types.MsgCreateRootParticipant) { m.Delegate = "" }, "invalid delegate address"},
+		{"invalid delegate bech32", func(m *types.MsgCreateRootParticipant) { m.Delegate = "cosmos1garbage" }, "invalid delegate address"},
 		{"schema_id = 0", func(m *types.MsgCreateRootParticipant) { m.SchemaId = 0 }, "schema ID cannot be 0"},
 		{"empty did", func(m *types.MsgCreateRootParticipant) { m.Did = "" }, "DID is required"},
 		{"malformed did", func(m *types.MsgCreateRootParticipant) { m.Did = "not-a-did" }, "invalid DID format"},
 		{"vsoa params without effective_until (never-expiring)", func(m *types.MsgCreateRootParticipant) {
 			m.VsOperator = validAddr
-			m.VsOperatorAuthzMsgTypes = []string{types.MsgSetParticipantOPToValidatedTypeURL}
+			m.VsOperatorAuthzMsgTypes = []detypes.MsgType{detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING}
 		}, ""},
 		{"vsoa params with effective_until", func(m *types.MsgCreateRootParticipant) {
 			m.VsOperator = validAddr
-			m.VsOperatorAuthzMsgTypes = []string{types.MsgSetParticipantOPToValidatedTypeURL}
+			m.VsOperatorAuthzMsgTypes = []detypes.MsgType{detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING}
 			exp := time.Unix(2000000000, 0).UTC()
 			m.EffectiveUntil = &exp
 		}, ""},
 		{"vsoa msg_type not permitted for root", func(m *types.MsgCreateRootParticipant) {
 			m.VsOperator = validAddr
-			m.VsOperatorAuthzMsgTypes = []string{types.MsgCreateOrUpdateParticipantSessionTypeURL}
+			m.VsOperatorAuthzMsgTypes = []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE}
 			exp := time.Unix(2000000000, 0).UTC()
 			m.EffectiveUntil = &exp
 		}, "not permitted for root participant"},

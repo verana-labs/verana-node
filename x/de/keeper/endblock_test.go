@@ -15,7 +15,7 @@ import (
 
 func feegrantRecord(pid uint64, n int64) types.ParticipantAuthorizationRecord {
 	return types.ParticipantAuthorizationRecord{
-		ParticipantId: pid, MsgTypes: []string{mtCSPS}, WithFeegrant: true,
+		ParticipantId: pid, MsgTypes: []types.MsgType{mtIssuance}, WithFeegrant: true,
 		FeeSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", n)),
 	}
 }

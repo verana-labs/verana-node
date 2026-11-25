@@ -9,7 +9,7 @@ import (
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		OperatorAuthorizations:   []OperatorAuthorization{},
+		DelegateAuthorizations:   []DelegateAuthorization{},
 		FeeGrants:                []FeeGrant{},
 		VsOperatorAuthorizations: []VSOperatorAuthorization{},
 		WindowEndQueue:           []WindowEndQueueEntry{},
@@ -19,30 +19,30 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// OperatorAuthorization: id (key) non-zero + unique; (corporation_id,
-	// operator) secondary index unique.
+	// DelegateAuthorization: id (key) non-zero + unique; (corporation_id,
+	// delegate) secondary index unique.
 	oaIDs := make(map[uint64]bool)
 	oaCorpOp := make(map[string]bool)
-	for i, oa := range gs.OperatorAuthorizations {
-		if oa.Id == 0 {
-			return fmt.Errorf("operator_authorizations[%d]: id cannot be 0", i)
+	for i, da := range gs.DelegateAuthorizations {
+		if da.Id == 0 {
+			return fmt.Errorf("delegate_authorizations[%d]: id cannot be 0", i)
 		}
-		if oaIDs[oa.Id] {
-			return fmt.Errorf("operator_authorizations[%d]: duplicate id %d", i, oa.Id)
+		if oaIDs[da.Id] {
+			return fmt.Errorf("delegate_authorizations[%d]: duplicate id %d", i, da.Id)
 		}
-		oaIDs[oa.Id] = true
-		if oa.CorporationId == 0 {
-			return fmt.Errorf("operator_authorizations[%d]: corporation_id cannot be 0", i)
+		oaIDs[da.Id] = true
+		if da.CorporationId == 0 {
+			return fmt.Errorf("delegate_authorizations[%d]: corporation_id cannot be 0", i)
 		}
-		if _, err := sdk.AccAddressFromBech32(oa.Operator); err != nil {
-			return fmt.Errorf("operator_authorizations[%d]: invalid operator address: %w", i, err)
+		if _, err := sdk.AccAddressFromBech32(da.Delegate); err != nil {
+			return fmt.Errorf("delegate_authorizations[%d]: invalid delegate address: %w", i, err)
 		}
-		if len(oa.MsgTypes) == 0 {
-			return fmt.Errorf("operator_authorizations[%d]: msg_types cannot be empty", i)
+		if err := ValidateMsgTypes(da.MsgTypes, DelegateAuthorizationMsgTypes); err != nil {
+			return fmt.Errorf("delegate_authorizations[%d]: %w", i, err)
 		}
-		idx := fmt.Sprintf("%d/%s", oa.CorporationId, oa.Operator)
+		idx := fmt.Sprintf("%d/%s", da.CorporationId, da.Delegate)
 		if oaCorpOp[idx] {
-			return fmt.Errorf("operator_authorizations[%d]: duplicate (corporation_id, operator) %s", i, idx)
+			return fmt.Errorf("delegate_authorizations[%d]: duplicate (corporation_id, delegate) %s", i, idx)
 		}
 		oaCorpOp[idx] = true
 	}
@@ -56,8 +56,8 @@ func (gs GenesisState) Validate() error {
 		if _, err := sdk.AccAddressFromBech32(fg.Grantee); err != nil {
 			return fmt.Errorf("fee_grants[%d]: invalid grantee address: %w", i, err)
 		}
-		if len(fg.MsgTypes) == 0 {
-			return fmt.Errorf("fee_grants[%d]: msg_types cannot be empty", i)
+		if err := ValidateMsgTypes(fg.MsgTypes, FeeGrantMsgTypes); err != nil {
+			return fmt.Errorf("fee_grants[%d]: %w", i, err)
 		}
 		key := fmt.Sprintf("%d/%s", fg.GrantorCorporationId, fg.Grantee)
 		if fgKeys[key] {
@@ -102,8 +102,8 @@ func (gs GenesisState) Validate() error {
 				return fmt.Errorf("vs_operator_authorizations[%d].records[%d]: duplicate participant_id %d (must be globally unique)", i, j, rec.ParticipantId)
 			}
 			participantIDs[rec.ParticipantId] = true
-			if len(rec.MsgTypes) == 0 {
-				return fmt.Errorf("vs_operator_authorizations[%d].records[%d]: msg_types cannot be empty", i, j)
+			if err := ValidateMsgTypes(rec.MsgTypes, VerifiableServiceMsgTypes); err != nil {
+				return fmt.Errorf("vs_operator_authorizations[%d].records[%d]: %w", i, j, err)
 			}
 		}
 	}

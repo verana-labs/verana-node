@@ -22,6 +22,7 @@ import (
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
 
 	"github.com/verana-labs/verana-node/x/co/keeper"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 	gfkeeper "github.com/verana-labs/verana-node/x/gf/keeper"
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
@@ -29,7 +30,7 @@ import (
 // minimal stub keepers for building a real gfkeeper.Keeper instance.
 type adapterStubDel struct{}
 
-func (adapterStubDel) CheckOperatorAuthorization(_ context.Context, _, _, _ string, _ time.Time) error {
+func (adapterStubDel) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
 

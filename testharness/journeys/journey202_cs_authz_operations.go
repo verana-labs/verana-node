@@ -10,37 +10,38 @@ import (
 	cschema "github.com/verana-labs/verana-node/x/cs/types"
 
 	"github.com/verana-labs/verana-node/testharness/lib"
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
-// RunCredentialSchemaAuthzOperationsJourney implements Journey 202: Test all CS operations with operator authorization.
+// RunCredentialSchemaAuthzOperationsJourney implements Journey 202: Test all CS operations with delegate authorization.
 // For each of the 3 CS message types: (a) try without auth → fail, (b) grant auth, (c) try with auth → succeed.
 // Depends on Journey 201 (setup) having been run first.
 func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmosclient.Client) error {
-	fmt.Println("Starting Journey 202: CS Operations with Operator Authorization (fail-then-pass)")
+	fmt.Println("Starting Journey 202: CS Operations with Delegate Authorization (fail-then-pass)")
 
 	// Load results from Journey 201
 	setup := lib.LoadJourneyResult("journey201")
 	policyAddr := setup.GroupPolicyAddr
-	operatorAccount := lib.GetAccount(client, csOperatorName)
-	operatorAddr := setup.OperatorAddr
+	delegateAccount := lib.GetAccount(client, csDelegateName)
+	delegateAddr := setup.DelegateAddr
 	adminAccount := lib.GetAccount(client, csGroupAdminName)
 	member1Account := lib.GetAccount(client, csGroupMember1Name)
 
 	fmt.Printf("  Group Policy: %s\n", policyAddr)
-	fmt.Printf("  Operator:     %s\n", operatorAddr)
+	fmt.Printf("  Delegate:     %s\n", delegateAddr)
 
 	// =========================================================================
 	// PREREQUISITE: Create Trust Registry with controller = group policy
-	// To do this, we first grant TR create auth to the operator, then create the TR.
+	// To do this, we first grant TR create auth to the delegate, then create the TR.
 	// =========================================================================
 	fmt.Println("\n=== PREREQUISITE: Create Trust Registry (controller = group policy) ===")
 
-	// Grant TR create authorization to the operator
-	fmt.Println("\n--- Prerequisite 1: Grant operator auth for CreateEcosystem ---")
-	err := lib.GrantOperatorAuthorizationViaGroup(
+	// Grant TR create authorization to the delegate
+	fmt.Println("\n--- Prerequisite 1: Grant delegate auth for CreateEcosystem ---")
+	err := lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.ec.v1.MsgCreateEcosystem"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
 	)
 	if err != nil {
 		return fmt.Errorf("prerequisite 1 failed: %w", err)
@@ -52,7 +53,7 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	fmt.Println("\n--- Prerequisite 2: Create Trust Registry with controller = group policy ---")
 	did := lib.GenerateUniqueDID(client, ctx)
 	trIDStr, err := lib.CreateEcosystemWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		did,
 		"https://cs-test.com/governance-framework.pdf",
 		"sha384-MzNNbQTWCSUSi0bbz7dbua+RcENv7C6FvlmYJ1Y+I727HsPOHdzwELMYO9Mz68M26",
@@ -79,9 +80,9 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	schemaData := lib.GenerateSimpleSchema(trIDStr)
 
 	// 1a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 1a: Operator tries CreateCredentialSchema without auth (expect failure) ---")
+	fmt.Println("\n--- Step 1a: Delegate tries CreateCredentialSchema without auth (expect failure) ---")
 	_, err = lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, schemaData,
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN,
@@ -92,11 +93,11 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	waitForTx("CreateCS rejection")
 
 	// 1b: Grant authorization for CreateCredentialSchema
-	fmt.Println("\n--- Step 1b: Grant operator auth for CreateCredentialSchema ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 1b: Grant delegate auth for CreateCredentialSchema ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgCreateCredentialSchema"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("step 1b failed: %w", err)
@@ -105,9 +106,9 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	waitForTx("grant CreateCS auth")
 
 	// 1c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 1c: Operator creates credential schema with auth (expect success) ---")
+	fmt.Println("\n--- Step 1c: Delegate creates credential schema with auth (expect success) ---")
 	csIDStr, err := lib.CreateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		trID, schemaData,
 		cschema.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
 		cschema.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_OPEN,
@@ -131,9 +132,9 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	fmt.Println("\n=== TEST 2: UpdateCredentialSchema ===")
 
 	// 2a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 2a: Operator tries UpdateCredentialSchema without auth (expect failure) ---")
+	fmt.Println("\n--- Step 2a: Delegate tries UpdateCredentialSchema without auth (expect failure) ---")
 	err = lib.UpdateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, 365, 365, 180, 180, 90,
 	)
 	if err := expectAuthorizationError("Step 2a", err); err != nil {
@@ -142,11 +143,11 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	waitForTx("UpdateCS rejection")
 
 	// 2b: Grant authorization for UpdateCredentialSchema
-	fmt.Println("\n--- Step 2b: Grant operator auth for UpdateCredentialSchema ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 2b: Grant delegate auth for UpdateCredentialSchema ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgUpdateCredentialSchema"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("step 2b failed: %w", err)
@@ -155,9 +156,9 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	waitForTx("grant UpdateCS auth")
 
 	// 2c: Try WITH authorization (expect success)
-	fmt.Println("\n--- Step 2c: Operator updates credential schema with auth (expect success) ---")
+	fmt.Println("\n--- Step 2c: Delegate updates credential schema with auth (expect success) ---")
 	err = lib.UpdateCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, 365, 365, 180, 180, 90,
 	)
 	if err != nil {
@@ -184,9 +185,9 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	fmt.Println("\n=== TEST 3: ArchiveCredentialSchema ===")
 
 	// 3a: Try WITHOUT authorization (expect failure)
-	fmt.Println("\n--- Step 3a: Operator tries ArchiveCredentialSchema without auth (expect failure) ---")
+	fmt.Println("\n--- Step 3a: Delegate tries ArchiveCredentialSchema without auth (expect failure) ---")
 	err = lib.ArchiveCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, true,
 	)
 	if err := expectAuthorizationError("Step 3a", err); err != nil {
@@ -195,11 +196,11 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	waitForTx("ArchiveCS rejection")
 
 	// 3b: Grant authorization for ArchiveCredentialSchema
-	fmt.Println("\n--- Step 3b: Grant operator auth for ArchiveCredentialSchema ---")
-	err = lib.GrantOperatorAuthorizationViaGroup(
+	fmt.Println("\n--- Step 3b: Grant delegate auth for ArchiveCredentialSchema ---")
+	err = lib.GrantDelegateAuthorizationViaGroup(
 		client, ctx, adminAccount, member1Account,
-		policyAddr, operatorAddr, operatorAddr,
-		[]string{"/verana.cs.v1.MsgArchiveCredentialSchema"},
+		policyAddr, delegateAddr, delegateAddr,
+		[]detypes.MsgType{detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA},
 	)
 	if err != nil {
 		return fmt.Errorf("step 3b failed: %w", err)
@@ -208,9 +209,9 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	waitForTx("grant ArchiveCS auth")
 
 	// 3c: Try WITH authorization — archive (expect success)
-	fmt.Println("\n--- Step 3c: Operator archives credential schema with auth (expect success) ---")
+	fmt.Println("\n--- Step 3c: Delegate archives credential schema with auth (expect success) ---")
 	err = lib.ArchiveCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, true,
 	)
 	if err != nil {
@@ -230,9 +231,9 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	fmt.Println("✅ Step 3c: Verified credential schema is archived")
 
 	// 3d: [MOD-CS-MSG-3-3] spec v4 draft 13: archive is bidirectional; archive=false unarchives.
-	fmt.Println("\n--- Step 3d: Operator unarchives credential schema (expect success) ---")
+	fmt.Println("\n--- Step 3d: Delegate unarchives credential schema (expect success) ---")
 	err = lib.ArchiveCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, false,
 	)
 	if err != nil {
@@ -250,7 +251,7 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	// 3e: [MOD-CS-MSG-3-2-1] unarchiving a non-archived CS must abort.
 	fmt.Println("\n--- Step 3e: Unarchive a non-archived CS (expect failure) ---")
 	err = lib.ArchiveCredentialSchemaWithAuthority(
-		client, ctx, operatorAccount, policyAddr,
+		client, ctx, delegateAccount, policyAddr,
 		csID, false,
 	)
 	if err == nil {
@@ -259,12 +260,12 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 	fmt.Printf("✅ Step 3e: Correctly rejected unarchive on non-archived CS: %v\n", err)
 
 	// =========================================================================
-	// TEST 4: Unauthorized operator (negative test)
+	// TEST 4: Unauthorized delegate (negative test)
 	// =========================================================================
-	fmt.Println("\n=== TEST 4: Unauthorized operator (negative test) ===")
-	fmt.Println("\n--- Step 4: Unauthorized operator tries CreateCredentialSchema (expect failure) ---")
+	fmt.Println("\n=== TEST 4: Unauthorized delegate (negative test) ===")
+	fmt.Println("\n--- Step 4: Unauthorized delegate tries CreateCredentialSchema (expect failure) ---")
 
-	// Use cooluser as an unauthorized operator (has funds but no CS authorization)
+	// Use cooluser as an unauthorized delegate (has funds but no CS authorization)
 	cooluser := lib.GetAccount(client, lib.COOLUSER_NAME)
 
 	_, err = lib.CreateCredentialSchemaWithAuthority(
@@ -284,7 +285,7 @@ func RunCredentialSchemaAuthzOperationsJourney(ctx context.Context, client cosmo
 		DID:             did,
 		GroupID:         setup.GroupID,
 		GroupPolicyAddr: policyAddr,
-		OperatorAddr:    operatorAddr,
+		DelegateAddr:    delegateAddr,
 	}
 	lib.SaveJourneyResult("journey202", result)
 

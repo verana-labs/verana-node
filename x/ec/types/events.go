@@ -11,6 +11,6 @@ const (
 	AttributeKeyDID           = "did"
 	AttributeKeyLanguage      = "language"
 	AttributeKeyArchiveStatus = "archive_status"
-	AttributeKeyOperator      = "operator"
+	AttributeKeyDelegate      = "delegate"
 	AttributeKeyAuthority     = "authority"
 )

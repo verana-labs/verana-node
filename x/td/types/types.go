@@ -7,15 +7,15 @@ import (
 )
 
 // ValidateBasic implements sdk.Msg
-// [MOD-TD-MSG-2-1] spec: parameters are corporation + operator only.
+// [MOD-TD-MSG-2-1] spec: parameters are corporation + delegate only.
 func (msg *MsgReclaimTrustDepositYield) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Corporation)
 	if err != nil {
 		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
-	_, err = sdk.AccAddressFromBech32(msg.Operator)
+	_, err = sdk.AccAddressFromBech32(msg.Delegate)
 	if err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
 	}
 	return nil
 }
@@ -49,9 +49,9 @@ func (msg *MsgRepaySlashedTrustDeposit) ValidateBasic() error {
 		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
 
-	_, err = sdk.AccAddressFromBech32(msg.Operator)
+	_, err = sdk.AccAddressFromBech32(msg.Delegate)
 	if err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
 	}
 
 	if msg.Deposit == 0 {

@@ -1,5 +1,5 @@
 /**
- * Journey: CS Update Credential Schema (Operator-signed)
+ * Journey: CS Update Credential Schema (Delegate-signed)
  *
  * Updates a Credential Schema's validity periods.
  * Depends on: test:de-grant-cs-auth, test:cs-create
@@ -27,11 +27,11 @@ const COOLUSER_MNEMONIC =
   (process.env.MNEMONIC && process.env.MNEMONIC.trim()) ||
   "pink glory help gown abstract eight nice crazy forward ketchup skill cheese";
 
-const OPERATOR_INDEX = 13;
+const DELEGATE_INDEX = 13;
 
 async function main() {
   console.log("=".repeat(60));
-  console.log("Journey: CS Update Credential Schema (Operator-signed)");
+  console.log("Journey: CS Update Credential Schema (Delegate-signed)");
   console.log("=".repeat(60));
   console.log();
 
@@ -53,16 +53,16 @@ async function main() {
   console.log(`  EC ID:        ${activeCS.ecosystemId}`);
   console.log();
 
-  // Step 2: Create operator wallet and connect
-  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, OPERATOR_INDEX);
+  // Step 2: Create delegate wallet and connect
+  const wallet = await createAccountFromMnemonic(COOLUSER_MNEMONIC, DELEGATE_INDEX);
   const account = await getAccountInfo(wallet);
   const client = await createSigningClient(wallet);
 
-  console.log(`  Operator:  ${account.address}`);
+  console.log(`  Delegate:  ${account.address}`);
   console.log();
 
   // Step 3: Check balance
-  console.log("Step 3: Checking CS operator balance...");
+  console.log("Step 3: Checking CS delegate balance...");
   const balance = await client.getBalance(account.address, config.denom);
   console.log(`  Balance: ${balance.amount} ${balance.denom}`);
   if (BigInt(balance.amount) < BigInt(1000000)) {
@@ -83,7 +83,7 @@ async function main() {
     typeUrl: typeUrls.MsgUpdateCredentialSchema,
     value: MsgUpdateCredentialSchema.fromPartial({
       corporation: setup.authorityAddress,
-      operator: account.address,
+      delegate: account.address,
       id: activeCS.schemaId,
       issuerGrantorValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 730 }),
       verifierGrantorValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 730 }),
@@ -96,13 +96,13 @@ async function main() {
   try {
     const fee = await calculateFeeWithSimulation(
       client, account.address, [msg],
-      "Updating Credential Schema via operator",
+      "Updating Credential Schema via delegate",
     );
     console.log(`  Gas: ${fee.gas}, Fee: ${fee.amount[0].amount}${fee.amount[0].denom}`);
 
     const result = await signAndBroadcastWithRetry(
       client, account.address, [msg], fee,
-      "Updating Credential Schema via operator",
+      "Updating Credential Schema via delegate",
     );
 
     if (result.code === 0) {

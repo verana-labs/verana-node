@@ -39,7 +39,7 @@ func TestSetParticipantVPToValidated_OverlapAlignment(t *testing.T) {
 
 	validate := func(id uint64, until *time.Time) error {
 		_, err := ms.SetParticipantOPToValidated(ctx, &types.MsgSetParticipantOPToValidated{
-			Corporation: validatorAddr, Operator: validatorAddr,
+			Corporation: validatorAddr, Delegate: validatorAddr,
 			Id: id, OpSummaryDigest: "sha384-validDigest", EffectiveUntil: until,
 		})
 		return err
@@ -182,7 +182,7 @@ func TestSetParticipantEffectiveUntil_OverlapAlignment(t *testing.T) {
 
 	adjust := func(corp string, id uint64, until time.Time) error {
 		_, err := ms.SetParticipantEffectiveUntil(ctx, &types.MsgSetParticipantEffectiveUntil{
-			Corporation: corp, Operator: corp, Id: id, EffectiveUntil: &until,
+			Corporation: corp, Delegate: corp, Id: id, EffectiveUntil: &until,
 		})
 		return err
 	}
@@ -310,7 +310,7 @@ func TestSelfCreateParticipant_OverlapAlignment(t *testing.T) {
 
 	selfCreate := func(did string, from *time.Time, until *time.Time) error {
 		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Operator: authority,
+			Corporation: authority, Delegate: authority,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorID,
 			Did:                    did,
@@ -404,7 +404,7 @@ func TestTwoServicesEndToEnd(t *testing.T) {
 
 	startOP := func(did string) (uint64, error) {
 		resp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
-			Corporation: authority, Operator: authority,
+			Corporation: authority, Delegate: authority,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorID,
 			Did:                    did,
@@ -416,7 +416,7 @@ func TestTwoServicesEndToEnd(t *testing.T) {
 	}
 	validate := func(c sdk.Context, id uint64, until time.Time) error {
 		_, err := ms.SetParticipantOPToValidated(sdk.WrapSDKContext(c), &types.MsgSetParticipantOPToValidated{
-			Corporation: validatorAddr, Operator: validatorAddr,
+			Corporation: validatorAddr, Delegate: validatorAddr,
 			Id: id, OpSummaryDigest: "sha384-validDigest", EffectiveUntil: &until,
 		})
 		return err
@@ -481,7 +481,7 @@ func TestOverlapChecks_EntryStates(t *testing.T) {
 
 	validate := func(id uint64, until *time.Time) error {
 		_, err := ms.SetParticipantOPToValidated(ctx, &types.MsgSetParticipantOPToValidated{
-			Corporation: validatorAddr, Operator: validatorAddr,
+			Corporation: validatorAddr, Delegate: validatorAddr,
 			Id: id, OpSummaryDigest: "sha384-validDigest", EffectiveUntil: until,
 		})
 		return err
@@ -529,7 +529,7 @@ func TestOverlapChecks_EntryStates(t *testing.T) {
 		})
 		newUntil := now.Add(2 * time.Hour)
 		_, err := ms.SetParticipantEffectiveUntil(ctx, &types.MsgSetParticipantEffectiveUntil{
-			Corporation: corp, Operator: corp, Id: applicantID, EffectiveUntil: &newUntil,
+			Corporation: corp, Delegate: corp, Id: applicantID, EffectiveUntil: &newUntil,
 		})
 		require.NoError(t, err)
 	})
@@ -545,14 +545,14 @@ func TestOverlapChecks_EntryStates(t *testing.T) {
 		firstFrom := now.Add(1 * time.Hour)
 		firstUntil := now.Add(5 * time.Hour)
 		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Operator: authority,
+			Corporation: authority, Delegate: authority,
 			SchemaId: 11, Did: "did:example:pinroot",
 			EffectiveFrom: &firstFrom, EffectiveUntil: &firstUntil,
 		})
 		require.NoError(t, err)
 		secondUntil := now.Add(10 * time.Hour)
 		_, err = ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Operator: authority,
+			Corporation: authority, Delegate: authority,
 			SchemaId: 11, Did: "did:example:pinroot",
 			EffectiveFrom: &firstUntil, EffectiveUntil: &secondUntil,
 		})
@@ -662,7 +662,7 @@ func TestOverlapChecks_EntryStates_CreatePaths(t *testing.T) {
 		require.NoError(t, err)
 		until := now.Add(2 * time.Hour)
 		_, err = ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Operator: authority,
+			Corporation: authority, Delegate: authority,
 			SchemaId: 1, Did: validDid, EffectiveUntil: &until,
 		})
 		require.NoError(t, err)
@@ -688,7 +688,7 @@ func TestOverlapChecks_EntryStates_CreatePaths(t *testing.T) {
 		require.NoError(t, err)
 		until := now.Add(2 * time.Hour)
 		_, err = ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Operator: authority,
+			Corporation: authority, Delegate: authority,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorID,
 			Did:                    "did:example:pin_cp_svc",

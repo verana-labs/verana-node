@@ -30,7 +30,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 	valid := types.MsgAddGovernanceFrameworkDocument{
 		Corporation:  tCorp,
-		Operator:     tOp,
+		Delegate:     tOp,
 		DocLanguage:  "en",
 		DocUrl:       tURL,
 		DocDigestSri: tDigest,
@@ -51,9 +51,9 @@ func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 		m.Corporation = ""
 		require.Error(t, m.ValidateBasic())
 	})
-	t.Run("missing operator", func(t *testing.T) {
+	t.Run("missing delegate", func(t *testing.T) {
 		m := valid
-		m.Operator = ""
+		m.Delegate = ""
 		require.Error(t, m.ValidateBasic())
 	})
 	t.Run("missing doc_language", func(t *testing.T) {
@@ -93,12 +93,41 @@ func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 	})
 	// Negative version is unrepresentable now that Version is uint32 — the
 	// type system enforces it at compile time, so no runtime test is needed.
+
+	// [MOD-GF-MSG-1-1] network path: authority alone, corporation, delegate and
+	// ecosystem_id absent.
+	network := valid
+	network.Corporation, network.Delegate, network.Authority = "", "", tAuth
+	t.Run("network path", func(t *testing.T) {
+		m := network
+		require.NoError(t, m.ValidateBasic())
+	})
+	t.Run("network path with corporation", func(t *testing.T) {
+		m := network
+		m.Corporation = tCorp
+		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
+	})
+	t.Run("network path with delegate", func(t *testing.T) {
+		m := network
+		m.Delegate = tOp
+		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
+	})
+	t.Run("network path with ecosystem_id", func(t *testing.T) {
+		m := network
+		m.EcosystemId = 42
+		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
+	})
+	t.Run("invalid authority", func(t *testing.T) {
+		m := network
+		m.Authority = "bad"
+		require.Error(t, m.ValidateBasic())
+	})
 }
 
 func TestMsgIncreaseActiveGovernanceFrameworkVersion_ValidateBasic(t *testing.T) {
 	valid := types.MsgIncreaseActiveGovernanceFrameworkVersion{
 		Corporation: tCorp,
-		Operator:    tOp,
+		Delegate:    tOp,
 	}
 
 	t.Run("happy path (corporation-targeted)", func(t *testing.T) {
@@ -115,9 +144,26 @@ func TestMsgIncreaseActiveGovernanceFrameworkVersion_ValidateBasic(t *testing.T)
 		m.Corporation = ""
 		require.Error(t, m.ValidateBasic())
 	})
-	t.Run("missing operator", func(t *testing.T) {
+	t.Run("missing delegate", func(t *testing.T) {
 		m := valid
-		m.Operator = ""
+		m.Delegate = ""
 		require.Error(t, m.ValidateBasic())
+	})
+
+	// [MOD-GF-MSG-2-1] network path.
+	network := types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: tAuth}
+	t.Run("network path", func(t *testing.T) {
+		m := network
+		require.NoError(t, m.ValidateBasic())
+	})
+	t.Run("network path with corporation and delegate", func(t *testing.T) {
+		m := network
+		m.Corporation, m.Delegate = tCorp, tOp
+		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
+	})
+	t.Run("network path with ecosystem_id", func(t *testing.T) {
+		m := network
+		m.EcosystemId = 7
+		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
 	})
 }

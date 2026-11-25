@@ -17,188 +17,188 @@ import (
 	sync "sync"
 )
 
-var _ protoreflect.List = (*_OperatorAuthorization_4_list)(nil)
+var _ protoreflect.List = (*_DelegateAuthorization_4_list)(nil)
 
-type _OperatorAuthorization_4_list struct {
-	list *[]string
+type _DelegateAuthorization_4_list struct {
+	list *[]MsgType
 }
 
-func (x *_OperatorAuthorization_4_list) Len() int {
+func (x *_DelegateAuthorization_4_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_OperatorAuthorization_4_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfString((*x.list)[i])
+func (x *_DelegateAuthorization_4_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfEnum((protoreflect.EnumNumber)((*x.list)[i]))
 }
 
-func (x *_OperatorAuthorization_4_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+func (x *_DelegateAuthorization_4_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Enum()
+	concreteValue := (MsgType)(valueUnwrapped)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_OperatorAuthorization_4_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+func (x *_DelegateAuthorization_4_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Enum()
+	concreteValue := (MsgType)(valueUnwrapped)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_OperatorAuthorization_4_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message OperatorAuthorization at list field MsgTypes as it is not of Message kind"))
+func (x *_DelegateAuthorization_4_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message DelegateAuthorization at list field MsgTypes as it is not of Message kind"))
 }
 
-func (x *_OperatorAuthorization_4_list) Truncate(n int) {
+func (x *_DelegateAuthorization_4_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_OperatorAuthorization_4_list) NewElement() protoreflect.Value {
-	v := ""
-	return protoreflect.ValueOfString(v)
+func (x *_DelegateAuthorization_4_list) NewElement() protoreflect.Value {
+	v := 0
+	return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(v))
 }
 
-func (x *_OperatorAuthorization_4_list) IsValid() bool {
+func (x *_DelegateAuthorization_4_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_OperatorAuthorization_5_list)(nil)
+var _ protoreflect.List = (*_DelegateAuthorization_5_list)(nil)
 
-type _OperatorAuthorization_5_list struct {
+type _DelegateAuthorization_5_list struct {
 	list *[]*v1beta1.Coin
 }
 
-func (x *_OperatorAuthorization_5_list) Len() int {
+func (x *_DelegateAuthorization_5_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_OperatorAuthorization_5_list) Get(i int) protoreflect.Value {
+func (x *_DelegateAuthorization_5_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_OperatorAuthorization_5_list) Set(i int, value protoreflect.Value) {
+func (x *_DelegateAuthorization_5_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_OperatorAuthorization_5_list) Append(value protoreflect.Value) {
+func (x *_DelegateAuthorization_5_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_OperatorAuthorization_5_list) AppendMutable() protoreflect.Value {
+func (x *_DelegateAuthorization_5_list) AppendMutable() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_OperatorAuthorization_5_list) Truncate(n int) {
+func (x *_DelegateAuthorization_5_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_OperatorAuthorization_5_list) NewElement() protoreflect.Value {
+func (x *_DelegateAuthorization_5_list) NewElement() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_OperatorAuthorization_5_list) IsValid() bool {
+func (x *_DelegateAuthorization_5_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_OperatorAuthorization_6_list)(nil)
+var _ protoreflect.List = (*_DelegateAuthorization_6_list)(nil)
 
-type _OperatorAuthorization_6_list struct {
+type _DelegateAuthorization_6_list struct {
 	list *[]*v1beta1.Coin
 }
 
-func (x *_OperatorAuthorization_6_list) Len() int {
+func (x *_DelegateAuthorization_6_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_OperatorAuthorization_6_list) Get(i int) protoreflect.Value {
+func (x *_DelegateAuthorization_6_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_OperatorAuthorization_6_list) Set(i int, value protoreflect.Value) {
+func (x *_DelegateAuthorization_6_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_OperatorAuthorization_6_list) Append(value protoreflect.Value) {
+func (x *_DelegateAuthorization_6_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_OperatorAuthorization_6_list) AppendMutable() protoreflect.Value {
+func (x *_DelegateAuthorization_6_list) AppendMutable() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_OperatorAuthorization_6_list) Truncate(n int) {
+func (x *_DelegateAuthorization_6_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_OperatorAuthorization_6_list) NewElement() protoreflect.Value {
+func (x *_DelegateAuthorization_6_list) NewElement() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_OperatorAuthorization_6_list) IsValid() bool {
+func (x *_DelegateAuthorization_6_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_OperatorAuthorization                 protoreflect.MessageDescriptor
-	fd_OperatorAuthorization_id              protoreflect.FieldDescriptor
-	fd_OperatorAuthorization_corporation_id  protoreflect.FieldDescriptor
-	fd_OperatorAuthorization_operator        protoreflect.FieldDescriptor
-	fd_OperatorAuthorization_msg_types       protoreflect.FieldDescriptor
-	fd_OperatorAuthorization_spend_limit     protoreflect.FieldDescriptor
-	fd_OperatorAuthorization_remaining_spend protoreflect.FieldDescriptor
-	fd_OperatorAuthorization_expiration      protoreflect.FieldDescriptor
-	fd_OperatorAuthorization_period          protoreflect.FieldDescriptor
+	md_DelegateAuthorization                 protoreflect.MessageDescriptor
+	fd_DelegateAuthorization_id              protoreflect.FieldDescriptor
+	fd_DelegateAuthorization_corporation_id  protoreflect.FieldDescriptor
+	fd_DelegateAuthorization_delegate        protoreflect.FieldDescriptor
+	fd_DelegateAuthorization_msg_types       protoreflect.FieldDescriptor
+	fd_DelegateAuthorization_spend_limit     protoreflect.FieldDescriptor
+	fd_DelegateAuthorization_remaining_spend protoreflect.FieldDescriptor
+	fd_DelegateAuthorization_expiration      protoreflect.FieldDescriptor
+	fd_DelegateAuthorization_period          protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_de_v1_types_proto_init()
-	md_OperatorAuthorization = File_verana_de_v1_types_proto.Messages().ByName("OperatorAuthorization")
-	fd_OperatorAuthorization_id = md_OperatorAuthorization.Fields().ByName("id")
-	fd_OperatorAuthorization_corporation_id = md_OperatorAuthorization.Fields().ByName("corporation_id")
-	fd_OperatorAuthorization_operator = md_OperatorAuthorization.Fields().ByName("operator")
-	fd_OperatorAuthorization_msg_types = md_OperatorAuthorization.Fields().ByName("msg_types")
-	fd_OperatorAuthorization_spend_limit = md_OperatorAuthorization.Fields().ByName("spend_limit")
-	fd_OperatorAuthorization_remaining_spend = md_OperatorAuthorization.Fields().ByName("remaining_spend")
-	fd_OperatorAuthorization_expiration = md_OperatorAuthorization.Fields().ByName("expiration")
-	fd_OperatorAuthorization_period = md_OperatorAuthorization.Fields().ByName("period")
+	md_DelegateAuthorization = File_verana_de_v1_types_proto.Messages().ByName("DelegateAuthorization")
+	fd_DelegateAuthorization_id = md_DelegateAuthorization.Fields().ByName("id")
+	fd_DelegateAuthorization_corporation_id = md_DelegateAuthorization.Fields().ByName("corporation_id")
+	fd_DelegateAuthorization_delegate = md_DelegateAuthorization.Fields().ByName("delegate")
+	fd_DelegateAuthorization_msg_types = md_DelegateAuthorization.Fields().ByName("msg_types")
+	fd_DelegateAuthorization_spend_limit = md_DelegateAuthorization.Fields().ByName("spend_limit")
+	fd_DelegateAuthorization_remaining_spend = md_DelegateAuthorization.Fields().ByName("remaining_spend")
+	fd_DelegateAuthorization_expiration = md_DelegateAuthorization.Fields().ByName("expiration")
+	fd_DelegateAuthorization_period = md_DelegateAuthorization.Fields().ByName("period")
 }
 
-var _ protoreflect.Message = (*fastReflection_OperatorAuthorization)(nil)
+var _ protoreflect.Message = (*fastReflection_DelegateAuthorization)(nil)
 
-type fastReflection_OperatorAuthorization OperatorAuthorization
+type fastReflection_DelegateAuthorization DelegateAuthorization
 
-func (x *OperatorAuthorization) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_OperatorAuthorization)(x)
+func (x *DelegateAuthorization) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_DelegateAuthorization)(x)
 }
 
-func (x *OperatorAuthorization) slowProtoReflect() protoreflect.Message {
+func (x *DelegateAuthorization) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_de_v1_types_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -210,43 +210,43 @@ func (x *OperatorAuthorization) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_OperatorAuthorization_messageType fastReflection_OperatorAuthorization_messageType
-var _ protoreflect.MessageType = fastReflection_OperatorAuthorization_messageType{}
+var _fastReflection_DelegateAuthorization_messageType fastReflection_DelegateAuthorization_messageType
+var _ protoreflect.MessageType = fastReflection_DelegateAuthorization_messageType{}
 
-type fastReflection_OperatorAuthorization_messageType struct{}
+type fastReflection_DelegateAuthorization_messageType struct{}
 
-func (x fastReflection_OperatorAuthorization_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_OperatorAuthorization)(nil)
+func (x fastReflection_DelegateAuthorization_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_DelegateAuthorization)(nil)
 }
-func (x fastReflection_OperatorAuthorization_messageType) New() protoreflect.Message {
-	return new(fastReflection_OperatorAuthorization)
+func (x fastReflection_DelegateAuthorization_messageType) New() protoreflect.Message {
+	return new(fastReflection_DelegateAuthorization)
 }
-func (x fastReflection_OperatorAuthorization_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_OperatorAuthorization
+func (x fastReflection_DelegateAuthorization_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_DelegateAuthorization
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_OperatorAuthorization) Descriptor() protoreflect.MessageDescriptor {
-	return md_OperatorAuthorization
+func (x *fastReflection_DelegateAuthorization) Descriptor() protoreflect.MessageDescriptor {
+	return md_DelegateAuthorization
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_OperatorAuthorization) Type() protoreflect.MessageType {
-	return _fastReflection_OperatorAuthorization_messageType
+func (x *fastReflection_DelegateAuthorization) Type() protoreflect.MessageType {
+	return _fastReflection_DelegateAuthorization_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_OperatorAuthorization) New() protoreflect.Message {
-	return new(fastReflection_OperatorAuthorization)
+func (x *fastReflection_DelegateAuthorization) New() protoreflect.Message {
+	return new(fastReflection_DelegateAuthorization)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_OperatorAuthorization) Interface() protoreflect.ProtoMessage {
-	return (*OperatorAuthorization)(x)
+func (x *fastReflection_DelegateAuthorization) Interface() protoreflect.ProtoMessage {
+	return (*DelegateAuthorization)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -254,52 +254,52 @@ func (x *fastReflection_OperatorAuthorization) Interface() protoreflect.ProtoMes
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_OperatorAuthorization) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_DelegateAuthorization) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Id != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.Id)
-		if !f(fd_OperatorAuthorization_id, value) {
+		if !f(fd_DelegateAuthorization_id, value) {
 			return
 		}
 	}
 	if x.CorporationId != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.CorporationId)
-		if !f(fd_OperatorAuthorization_corporation_id, value) {
+		if !f(fd_DelegateAuthorization_corporation_id, value) {
 			return
 		}
 	}
-	if x.Operator != "" {
-		value := protoreflect.ValueOfString(x.Operator)
-		if !f(fd_OperatorAuthorization_operator, value) {
+	if x.Delegate != "" {
+		value := protoreflect.ValueOfString(x.Delegate)
+		if !f(fd_DelegateAuthorization_delegate, value) {
 			return
 		}
 	}
 	if len(x.MsgTypes) != 0 {
-		value := protoreflect.ValueOfList(&_OperatorAuthorization_4_list{list: &x.MsgTypes})
-		if !f(fd_OperatorAuthorization_msg_types, value) {
+		value := protoreflect.ValueOfList(&_DelegateAuthorization_4_list{list: &x.MsgTypes})
+		if !f(fd_DelegateAuthorization_msg_types, value) {
 			return
 		}
 	}
 	if len(x.SpendLimit) != 0 {
-		value := protoreflect.ValueOfList(&_OperatorAuthorization_5_list{list: &x.SpendLimit})
-		if !f(fd_OperatorAuthorization_spend_limit, value) {
+		value := protoreflect.ValueOfList(&_DelegateAuthorization_5_list{list: &x.SpendLimit})
+		if !f(fd_DelegateAuthorization_spend_limit, value) {
 			return
 		}
 	}
 	if len(x.RemainingSpend) != 0 {
-		value := protoreflect.ValueOfList(&_OperatorAuthorization_6_list{list: &x.RemainingSpend})
-		if !f(fd_OperatorAuthorization_remaining_spend, value) {
+		value := protoreflect.ValueOfList(&_DelegateAuthorization_6_list{list: &x.RemainingSpend})
+		if !f(fd_DelegateAuthorization_remaining_spend, value) {
 			return
 		}
 	}
 	if x.Expiration != nil {
 		value := protoreflect.ValueOfMessage(x.Expiration.ProtoReflect())
-		if !f(fd_OperatorAuthorization_expiration, value) {
+		if !f(fd_DelegateAuthorization_expiration, value) {
 			return
 		}
 	}
 	if x.Period != nil {
 		value := protoreflect.ValueOfMessage(x.Period.ProtoReflect())
-		if !f(fd_OperatorAuthorization_period, value) {
+		if !f(fd_DelegateAuthorization_period, value) {
 			return
 		}
 	}
@@ -316,29 +316,29 @@ func (x *fastReflection_OperatorAuthorization) Range(f func(protoreflect.FieldDe
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_OperatorAuthorization) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_DelegateAuthorization) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.OperatorAuthorization.id":
+	case "verana.de.v1.DelegateAuthorization.id":
 		return x.Id != uint64(0)
-	case "verana.de.v1.OperatorAuthorization.corporation_id":
+	case "verana.de.v1.DelegateAuthorization.corporation_id":
 		return x.CorporationId != uint64(0)
-	case "verana.de.v1.OperatorAuthorization.operator":
-		return x.Operator != ""
-	case "verana.de.v1.OperatorAuthorization.msg_types":
+	case "verana.de.v1.DelegateAuthorization.delegate":
+		return x.Delegate != ""
+	case "verana.de.v1.DelegateAuthorization.msg_types":
 		return len(x.MsgTypes) != 0
-	case "verana.de.v1.OperatorAuthorization.spend_limit":
+	case "verana.de.v1.DelegateAuthorization.spend_limit":
 		return len(x.SpendLimit) != 0
-	case "verana.de.v1.OperatorAuthorization.remaining_spend":
+	case "verana.de.v1.DelegateAuthorization.remaining_spend":
 		return len(x.RemainingSpend) != 0
-	case "verana.de.v1.OperatorAuthorization.expiration":
+	case "verana.de.v1.DelegateAuthorization.expiration":
 		return x.Expiration != nil
-	case "verana.de.v1.OperatorAuthorization.period":
+	case "verana.de.v1.DelegateAuthorization.period":
 		return x.Period != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.OperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.DelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.OperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.DelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -348,29 +348,29 @@ func (x *fastReflection_OperatorAuthorization) Has(fd protoreflect.FieldDescript
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OperatorAuthorization) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_DelegateAuthorization) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.OperatorAuthorization.id":
+	case "verana.de.v1.DelegateAuthorization.id":
 		x.Id = uint64(0)
-	case "verana.de.v1.OperatorAuthorization.corporation_id":
+	case "verana.de.v1.DelegateAuthorization.corporation_id":
 		x.CorporationId = uint64(0)
-	case "verana.de.v1.OperatorAuthorization.operator":
-		x.Operator = ""
-	case "verana.de.v1.OperatorAuthorization.msg_types":
+	case "verana.de.v1.DelegateAuthorization.delegate":
+		x.Delegate = ""
+	case "verana.de.v1.DelegateAuthorization.msg_types":
 		x.MsgTypes = nil
-	case "verana.de.v1.OperatorAuthorization.spend_limit":
+	case "verana.de.v1.DelegateAuthorization.spend_limit":
 		x.SpendLimit = nil
-	case "verana.de.v1.OperatorAuthorization.remaining_spend":
+	case "verana.de.v1.DelegateAuthorization.remaining_spend":
 		x.RemainingSpend = nil
-	case "verana.de.v1.OperatorAuthorization.expiration":
+	case "verana.de.v1.DelegateAuthorization.expiration":
 		x.Expiration = nil
-	case "verana.de.v1.OperatorAuthorization.period":
+	case "verana.de.v1.DelegateAuthorization.period":
 		x.Period = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.OperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.DelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.OperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.DelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -380,46 +380,46 @@ func (x *fastReflection_OperatorAuthorization) Clear(fd protoreflect.FieldDescri
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_OperatorAuthorization) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_DelegateAuthorization) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.OperatorAuthorization.id":
+	case "verana.de.v1.DelegateAuthorization.id":
 		value := x.Id
 		return protoreflect.ValueOfUint64(value)
-	case "verana.de.v1.OperatorAuthorization.corporation_id":
+	case "verana.de.v1.DelegateAuthorization.corporation_id":
 		value := x.CorporationId
 		return protoreflect.ValueOfUint64(value)
-	case "verana.de.v1.OperatorAuthorization.operator":
-		value := x.Operator
+	case "verana.de.v1.DelegateAuthorization.delegate":
+		value := x.Delegate
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.OperatorAuthorization.msg_types":
+	case "verana.de.v1.DelegateAuthorization.msg_types":
 		if len(x.MsgTypes) == 0 {
-			return protoreflect.ValueOfList(&_OperatorAuthorization_4_list{})
+			return protoreflect.ValueOfList(&_DelegateAuthorization_4_list{})
 		}
-		listValue := &_OperatorAuthorization_4_list{list: &x.MsgTypes}
+		listValue := &_DelegateAuthorization_4_list{list: &x.MsgTypes}
 		return protoreflect.ValueOfList(listValue)
-	case "verana.de.v1.OperatorAuthorization.spend_limit":
+	case "verana.de.v1.DelegateAuthorization.spend_limit":
 		if len(x.SpendLimit) == 0 {
-			return protoreflect.ValueOfList(&_OperatorAuthorization_5_list{})
+			return protoreflect.ValueOfList(&_DelegateAuthorization_5_list{})
 		}
-		listValue := &_OperatorAuthorization_5_list{list: &x.SpendLimit}
+		listValue := &_DelegateAuthorization_5_list{list: &x.SpendLimit}
 		return protoreflect.ValueOfList(listValue)
-	case "verana.de.v1.OperatorAuthorization.remaining_spend":
+	case "verana.de.v1.DelegateAuthorization.remaining_spend":
 		if len(x.RemainingSpend) == 0 {
-			return protoreflect.ValueOfList(&_OperatorAuthorization_6_list{})
+			return protoreflect.ValueOfList(&_DelegateAuthorization_6_list{})
 		}
-		listValue := &_OperatorAuthorization_6_list{list: &x.RemainingSpend}
+		listValue := &_DelegateAuthorization_6_list{list: &x.RemainingSpend}
 		return protoreflect.ValueOfList(listValue)
-	case "verana.de.v1.OperatorAuthorization.expiration":
+	case "verana.de.v1.DelegateAuthorization.expiration":
 		value := x.Expiration
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "verana.de.v1.OperatorAuthorization.period":
+	case "verana.de.v1.DelegateAuthorization.period":
 		value := x.Period
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.OperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.DelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.OperatorAuthorization does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.DelegateAuthorization does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -433,35 +433,35 @@ func (x *fastReflection_OperatorAuthorization) Get(descriptor protoreflect.Field
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OperatorAuthorization) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_DelegateAuthorization) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.OperatorAuthorization.id":
+	case "verana.de.v1.DelegateAuthorization.id":
 		x.Id = value.Uint()
-	case "verana.de.v1.OperatorAuthorization.corporation_id":
+	case "verana.de.v1.DelegateAuthorization.corporation_id":
 		x.CorporationId = value.Uint()
-	case "verana.de.v1.OperatorAuthorization.operator":
-		x.Operator = value.Interface().(string)
-	case "verana.de.v1.OperatorAuthorization.msg_types":
+	case "verana.de.v1.DelegateAuthorization.delegate":
+		x.Delegate = value.Interface().(string)
+	case "verana.de.v1.DelegateAuthorization.msg_types":
 		lv := value.List()
-		clv := lv.(*_OperatorAuthorization_4_list)
+		clv := lv.(*_DelegateAuthorization_4_list)
 		x.MsgTypes = *clv.list
-	case "verana.de.v1.OperatorAuthorization.spend_limit":
+	case "verana.de.v1.DelegateAuthorization.spend_limit":
 		lv := value.List()
-		clv := lv.(*_OperatorAuthorization_5_list)
+		clv := lv.(*_DelegateAuthorization_5_list)
 		x.SpendLimit = *clv.list
-	case "verana.de.v1.OperatorAuthorization.remaining_spend":
+	case "verana.de.v1.DelegateAuthorization.remaining_spend":
 		lv := value.List()
-		clv := lv.(*_OperatorAuthorization_6_list)
+		clv := lv.(*_DelegateAuthorization_6_list)
 		x.RemainingSpend = *clv.list
-	case "verana.de.v1.OperatorAuthorization.expiration":
+	case "verana.de.v1.DelegateAuthorization.expiration":
 		x.Expiration = value.Message().Interface().(*timestamppb.Timestamp)
-	case "verana.de.v1.OperatorAuthorization.period":
+	case "verana.de.v1.DelegateAuthorization.period":
 		x.Period = value.Message().Interface().(*durationpb.Duration)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.OperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.DelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.OperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.DelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -475,91 +475,91 @@ func (x *fastReflection_OperatorAuthorization) Set(fd protoreflect.FieldDescript
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OperatorAuthorization) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_DelegateAuthorization) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.OperatorAuthorization.msg_types":
+	case "verana.de.v1.DelegateAuthorization.msg_types":
 		if x.MsgTypes == nil {
-			x.MsgTypes = []string{}
+			x.MsgTypes = []MsgType{}
 		}
-		value := &_OperatorAuthorization_4_list{list: &x.MsgTypes}
+		value := &_DelegateAuthorization_4_list{list: &x.MsgTypes}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.OperatorAuthorization.spend_limit":
+	case "verana.de.v1.DelegateAuthorization.spend_limit":
 		if x.SpendLimit == nil {
 			x.SpendLimit = []*v1beta1.Coin{}
 		}
-		value := &_OperatorAuthorization_5_list{list: &x.SpendLimit}
+		value := &_DelegateAuthorization_5_list{list: &x.SpendLimit}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.OperatorAuthorization.remaining_spend":
+	case "verana.de.v1.DelegateAuthorization.remaining_spend":
 		if x.RemainingSpend == nil {
 			x.RemainingSpend = []*v1beta1.Coin{}
 		}
-		value := &_OperatorAuthorization_6_list{list: &x.RemainingSpend}
+		value := &_DelegateAuthorization_6_list{list: &x.RemainingSpend}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.OperatorAuthorization.expiration":
+	case "verana.de.v1.DelegateAuthorization.expiration":
 		if x.Expiration == nil {
 			x.Expiration = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Expiration.ProtoReflect())
-	case "verana.de.v1.OperatorAuthorization.period":
+	case "verana.de.v1.DelegateAuthorization.period":
 		if x.Period == nil {
 			x.Period = new(durationpb.Duration)
 		}
 		return protoreflect.ValueOfMessage(x.Period.ProtoReflect())
-	case "verana.de.v1.OperatorAuthorization.id":
-		panic(fmt.Errorf("field id of message verana.de.v1.OperatorAuthorization is not mutable"))
-	case "verana.de.v1.OperatorAuthorization.corporation_id":
-		panic(fmt.Errorf("field corporation_id of message verana.de.v1.OperatorAuthorization is not mutable"))
-	case "verana.de.v1.OperatorAuthorization.operator":
-		panic(fmt.Errorf("field operator of message verana.de.v1.OperatorAuthorization is not mutable"))
+	case "verana.de.v1.DelegateAuthorization.id":
+		panic(fmt.Errorf("field id of message verana.de.v1.DelegateAuthorization is not mutable"))
+	case "verana.de.v1.DelegateAuthorization.corporation_id":
+		panic(fmt.Errorf("field corporation_id of message verana.de.v1.DelegateAuthorization is not mutable"))
+	case "verana.de.v1.DelegateAuthorization.delegate":
+		panic(fmt.Errorf("field delegate of message verana.de.v1.DelegateAuthorization is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.OperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.DelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.OperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.DelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_OperatorAuthorization) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_DelegateAuthorization) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.OperatorAuthorization.id":
+	case "verana.de.v1.DelegateAuthorization.id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "verana.de.v1.OperatorAuthorization.corporation_id":
+	case "verana.de.v1.DelegateAuthorization.corporation_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "verana.de.v1.OperatorAuthorization.operator":
+	case "verana.de.v1.DelegateAuthorization.delegate":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.OperatorAuthorization.msg_types":
-		list := []string{}
-		return protoreflect.ValueOfList(&_OperatorAuthorization_4_list{list: &list})
-	case "verana.de.v1.OperatorAuthorization.spend_limit":
+	case "verana.de.v1.DelegateAuthorization.msg_types":
+		list := []MsgType{}
+		return protoreflect.ValueOfList(&_DelegateAuthorization_4_list{list: &list})
+	case "verana.de.v1.DelegateAuthorization.spend_limit":
 		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_OperatorAuthorization_5_list{list: &list})
-	case "verana.de.v1.OperatorAuthorization.remaining_spend":
+		return protoreflect.ValueOfList(&_DelegateAuthorization_5_list{list: &list})
+	case "verana.de.v1.DelegateAuthorization.remaining_spend":
 		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_OperatorAuthorization_6_list{list: &list})
-	case "verana.de.v1.OperatorAuthorization.expiration":
+		return protoreflect.ValueOfList(&_DelegateAuthorization_6_list{list: &list})
+	case "verana.de.v1.DelegateAuthorization.expiration":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "verana.de.v1.OperatorAuthorization.period":
+	case "verana.de.v1.DelegateAuthorization.period":
 		m := new(durationpb.Duration)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.OperatorAuthorization"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.DelegateAuthorization"))
 		}
-		panic(fmt.Errorf("message verana.de.v1.OperatorAuthorization does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.de.v1.DelegateAuthorization does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_OperatorAuthorization) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_DelegateAuthorization) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.OperatorAuthorization", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.DelegateAuthorization", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -567,7 +567,7 @@ func (x *fastReflection_OperatorAuthorization) WhichOneof(d protoreflect.OneofDe
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_OperatorAuthorization) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_DelegateAuthorization) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -578,7 +578,7 @@ func (x *fastReflection_OperatorAuthorization) GetUnknown() protoreflect.RawFiel
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_OperatorAuthorization) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_DelegateAuthorization) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -590,7 +590,7 @@ func (x *fastReflection_OperatorAuthorization) SetUnknown(fields protoreflect.Ra
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_OperatorAuthorization) IsValid() bool {
+func (x *fastReflection_DelegateAuthorization) IsValid() bool {
 	return x != nil
 }
 
@@ -600,9 +600,9 @@ func (x *fastReflection_OperatorAuthorization) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_DelegateAuthorization) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*OperatorAuthorization)
+		x := input.Message.Interface().(*DelegateAuthorization)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -620,15 +620,16 @@ func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Method
 		if x.CorporationId != 0 {
 			n += 1 + runtime.Sov(uint64(x.CorporationId))
 		}
-		l = len(x.Operator)
+		l = len(x.Delegate)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if len(x.MsgTypes) > 0 {
-			for _, s := range x.MsgTypes {
-				l = len(s)
-				n += 1 + l + runtime.Sov(uint64(l))
+			l = 0
+			for _, e := range x.MsgTypes {
+				l += runtime.Sov(uint64(e))
 			}
+			n += 1 + runtime.Sov(uint64(l)) + l
 		}
 		if len(x.SpendLimit) > 0 {
 			for _, e := range x.SpendLimit {
@@ -660,7 +661,7 @@ func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Method
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*OperatorAuthorization)
+		x := input.Message.Interface().(*DelegateAuthorization)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -740,18 +741,30 @@ func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Method
 			}
 		}
 		if len(x.MsgTypes) > 0 {
-			for iNdEx := len(x.MsgTypes) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.MsgTypes[iNdEx])
-				copy(dAtA[i:], x.MsgTypes[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MsgTypes[iNdEx])))
-				i--
-				dAtA[i] = 0x22
+			var pksize2 int
+			for _, num := range x.MsgTypes {
+				pksize2 += runtime.Sov(uint64(num))
 			}
+			i -= pksize2
+			j1 := i
+			for _, num1 := range x.MsgTypes {
+				num := uint64(num1)
+				for num >= 1<<7 {
+					dAtA[j1] = uint8(uint64(num)&0x7f | 0x80)
+					num >>= 7
+					j1++
+				}
+				dAtA[j1] = uint8(num)
+				j1++
+			}
+			i = runtime.EncodeVarint(dAtA, i, uint64(pksize2))
+			i--
+			dAtA[i] = 0x22
 		}
-		if len(x.Operator) > 0 {
-			i -= len(x.Operator)
-			copy(dAtA[i:], x.Operator)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Operator)))
+		if len(x.Delegate) > 0 {
+			i -= len(x.Delegate)
+			copy(dAtA[i:], x.Delegate)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
 			i--
 			dAtA[i] = 0x1a
 		}
@@ -776,7 +789,7 @@ func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Method
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*OperatorAuthorization)
+		x := input.Message.Interface().(*DelegateAuthorization)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -808,10 +821,10 @@ func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Method
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OperatorAuthorization: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DelegateAuthorization: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: OperatorAuthorization: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DelegateAuthorization: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -854,7 +867,7 @@ func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Method
 				}
 			case 3:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -882,40 +895,77 @@ func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Method
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Operator = string(dAtA[iNdEx:postIndex])
+				x.Delegate = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MsgTypes", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				if wireType == 0 {
+					var v MsgType
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= MsgType(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
 					}
-					if iNdEx >= l {
+					x.MsgTypes = append(x.MsgTypes, v)
+				} else if wireType == 2 {
+					var packedLen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						packedLen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if packedLen < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					postIndex := iNdEx + packedLen
+					if postIndex < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					if postIndex > l {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
+					var elementCount int
+					if elementCount != 0 && len(x.MsgTypes) == 0 {
+						x.MsgTypes = make([]MsgType, 0, elementCount)
 					}
+					for iNdEx < postIndex {
+						var v MsgType
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							v |= MsgType(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						x.MsgTypes = append(x.MsgTypes, v)
+					}
+				} else {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MsgTypes", wireType)
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.MsgTypes = append(x.MsgTypes, string(dAtA[iNdEx:postIndex]))
-				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SpendLimit", wireType)
@@ -1094,7 +1144,7 @@ func (x *fastReflection_OperatorAuthorization) ProtoMethods() *protoiface.Method
 var _ protoreflect.List = (*_FeeGrant_3_list)(nil)
 
 type _FeeGrant_3_list struct {
-	list *[]string
+	list *[]MsgType
 }
 
 func (x *_FeeGrant_3_list) Len() int {
@@ -1105,18 +1155,18 @@ func (x *_FeeGrant_3_list) Len() int {
 }
 
 func (x *_FeeGrant_3_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfString((*x.list)[i])
+	return protoreflect.ValueOfEnum((protoreflect.EnumNumber)((*x.list)[i]))
 }
 
 func (x *_FeeGrant_3_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+	valueUnwrapped := value.Enum()
+	concreteValue := (MsgType)(valueUnwrapped)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_FeeGrant_3_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+	valueUnwrapped := value.Enum()
+	concreteValue := (MsgType)(valueUnwrapped)
 	*x.list = append(*x.list, concreteValue)
 }
 
@@ -1129,8 +1179,8 @@ func (x *_FeeGrant_3_list) Truncate(n int) {
 }
 
 func (x *_FeeGrant_3_list) NewElement() protoreflect.Value {
-	v := ""
-	return protoreflect.ValueOfString(v)
+	v := 0
+	return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(v))
 }
 
 func (x *_FeeGrant_3_list) IsValid() bool {
@@ -1536,7 +1586,7 @@ func (x *fastReflection_FeeGrant) Mutable(fd protoreflect.FieldDescriptor) proto
 	switch fd.FullName() {
 	case "verana.de.v1.FeeGrant.msg_types":
 		if x.MsgTypes == nil {
-			x.MsgTypes = []string{}
+			x.MsgTypes = []MsgType{}
 		}
 		value := &_FeeGrant_3_list{list: &x.MsgTypes}
 		return protoreflect.ValueOfList(value)
@@ -1584,7 +1634,7 @@ func (x *fastReflection_FeeGrant) NewField(fd protoreflect.FieldDescriptor) prot
 	case "verana.de.v1.FeeGrant.grantee":
 		return protoreflect.ValueOfString("")
 	case "verana.de.v1.FeeGrant.msg_types":
-		list := []string{}
+		list := []MsgType{}
 		return protoreflect.ValueOfList(&_FeeGrant_3_list{list: &list})
 	case "verana.de.v1.FeeGrant.spend_limit":
 		list := []*v1beta1.Coin{}
@@ -1675,10 +1725,11 @@ func (x *fastReflection_FeeGrant) ProtoMethods() *protoiface.Methods {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if len(x.MsgTypes) > 0 {
-			for _, s := range x.MsgTypes {
-				l = len(s)
-				n += 1 + l + runtime.Sov(uint64(l))
+			l = 0
+			for _, e := range x.MsgTypes {
+				l += runtime.Sov(uint64(e))
 			}
+			n += 1 + runtime.Sov(uint64(l)) + l
 		}
 		if len(x.SpendLimit) > 0 {
 			for _, e := range x.SpendLimit {
@@ -1790,13 +1841,25 @@ func (x *fastReflection_FeeGrant) ProtoMethods() *protoiface.Methods {
 			}
 		}
 		if len(x.MsgTypes) > 0 {
-			for iNdEx := len(x.MsgTypes) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.MsgTypes[iNdEx])
-				copy(dAtA[i:], x.MsgTypes[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MsgTypes[iNdEx])))
-				i--
-				dAtA[i] = 0x1a
+			var pksize2 int
+			for _, num := range x.MsgTypes {
+				pksize2 += runtime.Sov(uint64(num))
 			}
+			i -= pksize2
+			j1 := i
+			for _, num1 := range x.MsgTypes {
+				num := uint64(num1)
+				for num >= 1<<7 {
+					dAtA[j1] = uint8(uint64(num)&0x7f | 0x80)
+					num >>= 7
+					j1++
+				}
+				dAtA[j1] = uint8(num)
+				j1++
+			}
+			i = runtime.EncodeVarint(dAtA, i, uint64(pksize2))
+			i--
+			dAtA[i] = 0x1a
 		}
 		if len(x.Grantee) > 0 {
 			i -= len(x.Grantee)
@@ -1911,37 +1974,74 @@ func (x *fastReflection_FeeGrant) ProtoMethods() *protoiface.Methods {
 				x.Grantee = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MsgTypes", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				if wireType == 0 {
+					var v MsgType
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= MsgType(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
 					}
-					if iNdEx >= l {
+					x.MsgTypes = append(x.MsgTypes, v)
+				} else if wireType == 2 {
+					var packedLen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						packedLen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if packedLen < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					postIndex := iNdEx + packedLen
+					if postIndex < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					if postIndex > l {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
+					var elementCount int
+					if elementCount != 0 && len(x.MsgTypes) == 0 {
+						x.MsgTypes = make([]MsgType, 0, elementCount)
 					}
+					for iNdEx < postIndex {
+						var v MsgType
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							v |= MsgType(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						x.MsgTypes = append(x.MsgTypes, v)
+					}
+				} else {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MsgTypes", wireType)
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.MsgTypes = append(x.MsgTypes, string(dAtA[iNdEx:postIndex]))
-				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SpendLimit", wireType)
@@ -2120,7 +2220,7 @@ func (x *fastReflection_FeeGrant) ProtoMethods() *protoiface.Methods {
 var _ protoreflect.List = (*_ParticipantAuthorizationRecord_2_list)(nil)
 
 type _ParticipantAuthorizationRecord_2_list struct {
-	list *[]string
+	list *[]MsgType
 }
 
 func (x *_ParticipantAuthorizationRecord_2_list) Len() int {
@@ -2131,18 +2231,18 @@ func (x *_ParticipantAuthorizationRecord_2_list) Len() int {
 }
 
 func (x *_ParticipantAuthorizationRecord_2_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfString((*x.list)[i])
+	return protoreflect.ValueOfEnum((protoreflect.EnumNumber)((*x.list)[i]))
 }
 
 func (x *_ParticipantAuthorizationRecord_2_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+	valueUnwrapped := value.Enum()
+	concreteValue := (MsgType)(valueUnwrapped)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_ParticipantAuthorizationRecord_2_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
+	valueUnwrapped := value.Enum()
+	concreteValue := (MsgType)(valueUnwrapped)
 	*x.list = append(*x.list, concreteValue)
 }
 
@@ -2155,8 +2255,8 @@ func (x *_ParticipantAuthorizationRecord_2_list) Truncate(n int) {
 }
 
 func (x *_ParticipantAuthorizationRecord_2_list) NewElement() protoreflect.Value {
-	v := ""
-	return protoreflect.ValueOfString(v)
+	v := 0
+	return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(v))
 }
 
 func (x *_ParticipantAuthorizationRecord_2_list) IsValid() bool {
@@ -2635,7 +2735,7 @@ func (x *fastReflection_ParticipantAuthorizationRecord) Mutable(fd protoreflect.
 	switch fd.FullName() {
 	case "verana.de.v1.ParticipantAuthorizationRecord.msg_types":
 		if x.MsgTypes == nil {
-			x.MsgTypes = []string{}
+			x.MsgTypes = []MsgType{}
 		}
 		value := &_ParticipantAuthorizationRecord_2_list{list: &x.MsgTypes}
 		return protoreflect.ValueOfList(value)
@@ -2687,7 +2787,7 @@ func (x *fastReflection_ParticipantAuthorizationRecord) NewField(fd protoreflect
 	case "verana.de.v1.ParticipantAuthorizationRecord.participant_id":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "verana.de.v1.ParticipantAuthorizationRecord.msg_types":
-		list := []string{}
+		list := []MsgType{}
 		return protoreflect.ValueOfList(&_ParticipantAuthorizationRecord_2_list{list: &list})
 	case "verana.de.v1.ParticipantAuthorizationRecord.spend_limit":
 		list := []*v1beta1.Coin{}
@@ -2779,10 +2879,11 @@ func (x *fastReflection_ParticipantAuthorizationRecord) ProtoMethods() *protoifa
 			n += 1 + runtime.Sov(uint64(x.ParticipantId))
 		}
 		if len(x.MsgTypes) > 0 {
-			for _, s := range x.MsgTypes {
-				l = len(s)
-				n += 1 + l + runtime.Sov(uint64(l))
+			l = 0
+			for _, e := range x.MsgTypes {
+				l += runtime.Sov(uint64(e))
 			}
+			n += 1 + runtime.Sov(uint64(l)) + l
 		}
 		if len(x.SpendLimit) > 0 {
 			for _, e := range x.SpendLimit {
@@ -2929,13 +3030,25 @@ func (x *fastReflection_ParticipantAuthorizationRecord) ProtoMethods() *protoifa
 			}
 		}
 		if len(x.MsgTypes) > 0 {
-			for iNdEx := len(x.MsgTypes) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.MsgTypes[iNdEx])
-				copy(dAtA[i:], x.MsgTypes[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MsgTypes[iNdEx])))
-				i--
-				dAtA[i] = 0x12
+			var pksize2 int
+			for _, num := range x.MsgTypes {
+				pksize2 += runtime.Sov(uint64(num))
 			}
+			i -= pksize2
+			j1 := i
+			for _, num1 := range x.MsgTypes {
+				num := uint64(num1)
+				for num >= 1<<7 {
+					dAtA[j1] = uint8(uint64(num)&0x7f | 0x80)
+					num >>= 7
+					j1++
+				}
+				dAtA[j1] = uint8(num)
+				j1++
+			}
+			i = runtime.EncodeVarint(dAtA, i, uint64(pksize2))
+			i--
+			dAtA[i] = 0x12
 		}
 		if x.ParticipantId != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.ParticipantId))
@@ -3011,37 +3124,74 @@ func (x *fastReflection_ParticipantAuthorizationRecord) ProtoMethods() *protoifa
 					}
 				}
 			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MsgTypes", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				if wireType == 0 {
+					var v MsgType
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= MsgType(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
 					}
-					if iNdEx >= l {
+					x.MsgTypes = append(x.MsgTypes, v)
+				} else if wireType == 2 {
+					var packedLen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						packedLen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if packedLen < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					postIndex := iNdEx + packedLen
+					if postIndex < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					if postIndex > l {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
+					var elementCount int
+					if elementCount != 0 && len(x.MsgTypes) == 0 {
+						x.MsgTypes = make([]MsgType, 0, elementCount)
 					}
+					for iNdEx < postIndex {
+						var v MsgType
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							v |= MsgType(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						x.MsgTypes = append(x.MsgTypes, v)
+					}
+				} else {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MsgTypes", wireType)
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.MsgTypes = append(x.MsgTypes, string(dAtA[iNdEx:postIndex]))
-				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SpendLimit", wireType)
@@ -4421,23 +4571,22 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// OperatorAuthorization is the operator-delegation record. Per spec it is
-// keyed by its own uint64 id; (corporation_id, operator) is a unique secondary
-// index.
-type OperatorAuthorization struct {
+// DelegateAuthorization is the delegate authorization record. It is keyed by
+// its own uint64 id; (corporation_id, delegate) is a unique secondary index.
+type DelegateAuthorization struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// id is the own uint64 key of this OperatorAuthorization.
+	// id is the own uint64 key of this DelegateAuthorization.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// corporation_id is the id of the corporation granting the authorization. The
-	// (corporation_id, operator) tuple MUST be unique.
+	// (corporation_id, delegate) tuple MUST be unique.
 	CorporationId uint64 `protobuf:"varint,2,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
-	// operator is the account receiving the authorization.
-	Operator string `protobuf:"bytes,3,opt,name=operator,proto3" json:"operator,omitempty"`
-	// msg_types is the list of module message types this authorization applies to.
-	MsgTypes []string `protobuf:"bytes,4,rep,name=msg_types,json=msgTypes,proto3" json:"msg_types,omitempty"`
+	// delegate is the account receiving the authorization.
+	Delegate string `protobuf:"bytes,3,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// msg_types is the list of message types this authorization applies to.
+	MsgTypes []MsgType `protobuf:"varint,4,rep,packed,name=msg_types,json=msgTypes,proto3,enum=verana.de.v1.MsgType" json:"msg_types,omitempty"`
 	// spend_limit is the maximum amount of funds the grantee is allowed to spend.
 	SpendLimit []*v1beta1.Coin `protobuf:"bytes,5,rep,name=spend_limit,json=spendLimit,proto3" json:"spend_limit,omitempty"`
 	// remaining_spend is the runtime balance for spend_limit. Present iff
@@ -4450,8 +4599,8 @@ type OperatorAuthorization struct {
 	Period *durationpb.Duration `protobuf:"bytes,10,opt,name=period,proto3" json:"period,omitempty"`
 }
 
-func (x *OperatorAuthorization) Reset() {
-	*x = OperatorAuthorization{}
+func (x *DelegateAuthorization) Reset() {
+	*x = DelegateAuthorization{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_de_v1_types_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4459,67 +4608,67 @@ func (x *OperatorAuthorization) Reset() {
 	}
 }
 
-func (x *OperatorAuthorization) String() string {
+func (x *DelegateAuthorization) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*OperatorAuthorization) ProtoMessage() {}
+func (*DelegateAuthorization) ProtoMessage() {}
 
-// Deprecated: Use OperatorAuthorization.ProtoReflect.Descriptor instead.
-func (*OperatorAuthorization) Descriptor() ([]byte, []int) {
+// Deprecated: Use DelegateAuthorization.ProtoReflect.Descriptor instead.
+func (*DelegateAuthorization) Descriptor() ([]byte, []int) {
 	return file_verana_de_v1_types_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *OperatorAuthorization) GetId() uint64 {
+func (x *DelegateAuthorization) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *OperatorAuthorization) GetCorporationId() uint64 {
+func (x *DelegateAuthorization) GetCorporationId() uint64 {
 	if x != nil {
 		return x.CorporationId
 	}
 	return 0
 }
 
-func (x *OperatorAuthorization) GetOperator() string {
+func (x *DelegateAuthorization) GetDelegate() string {
 	if x != nil {
-		return x.Operator
+		return x.Delegate
 	}
 	return ""
 }
 
-func (x *OperatorAuthorization) GetMsgTypes() []string {
+func (x *DelegateAuthorization) GetMsgTypes() []MsgType {
 	if x != nil {
 		return x.MsgTypes
 	}
 	return nil
 }
 
-func (x *OperatorAuthorization) GetSpendLimit() []*v1beta1.Coin {
+func (x *DelegateAuthorization) GetSpendLimit() []*v1beta1.Coin {
 	if x != nil {
 		return x.SpendLimit
 	}
 	return nil
 }
 
-func (x *OperatorAuthorization) GetRemainingSpend() []*v1beta1.Coin {
+func (x *DelegateAuthorization) GetRemainingSpend() []*v1beta1.Coin {
 	if x != nil {
 		return x.RemainingSpend
 	}
 	return nil
 }
 
-func (x *OperatorAuthorization) GetExpiration() *timestamppb.Timestamp {
+func (x *DelegateAuthorization) GetExpiration() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Expiration
 	}
 	return nil
 }
 
-func (x *OperatorAuthorization) GetPeriod() *durationpb.Duration {
+func (x *DelegateAuthorization) GetPeriod() *durationpb.Duration {
 	if x != nil {
 		return x.Period
 	}
@@ -4540,7 +4689,7 @@ type FeeGrant struct {
 	Grantee string `protobuf:"bytes,2,opt,name=grantee,proto3" json:"grantee,omitempty"`
 	// msg_types is the list of VPR delegable message types for which the fee
 	// allowance applies.
-	MsgTypes []string `protobuf:"bytes,3,rep,name=msg_types,json=msgTypes,proto3" json:"msg_types,omitempty"`
+	MsgTypes []MsgType `protobuf:"varint,3,rep,packed,name=msg_types,json=msgTypes,proto3,enum=verana.de.v1.MsgType" json:"msg_types,omitempty"`
 	// spend_limit is the maximum amount of fees that can be spent using this grant.
 	SpendLimit []*v1beta1.Coin `protobuf:"bytes,4,rep,name=spend_limit,json=spendLimit,proto3" json:"spend_limit,omitempty"`
 	// remaining_spend is the runtime balance for spend_limit. Present iff
@@ -4587,7 +4736,7 @@ func (x *FeeGrant) GetGrantee() string {
 	return ""
 }
 
-func (x *FeeGrant) GetMsgTypes() []string {
+func (x *FeeGrant) GetMsgTypes() []MsgType {
 	if x != nil {
 		return x.MsgTypes
 	}
@@ -4635,7 +4784,7 @@ type ParticipantAuthorizationRecord struct {
 	ParticipantId uint64 `protobuf:"varint,1,opt,name=participant_id,json=participantId,proto3" json:"participant_id,omitempty"`
 	// msg_types is the list of delegable message types the vs_operator is
 	// authorized for on behalf of corporation. Mandatory, frozen at create.
-	MsgTypes []string `protobuf:"bytes,2,rep,name=msg_types,json=msgTypes,proto3" json:"msg_types,omitempty"`
+	MsgTypes []MsgType `protobuf:"varint,2,rep,packed,name=msg_types,json=msgTypes,proto3,enum=verana.de.v1.MsgType" json:"msg_types,omitempty"`
 	// spend_limit is the maximum amount the vs_operator is allowed to spend.
 	SpendLimit []*v1beta1.Coin `protobuf:"bytes,3,rep,name=spend_limit,json=spendLimit,proto3" json:"spend_limit,omitempty"`
 	// remaining_spend is the runtime balance for spend_limit. Present iff
@@ -4682,7 +4831,7 @@ func (x *ParticipantAuthorizationRecord) GetParticipantId() uint64 {
 	return 0
 }
 
-func (x *ParticipantAuthorizationRecord) GetMsgTypes() []string {
+func (x *ParticipantAuthorizationRecord) GetMsgTypes() []MsgType {
 	if x != nil {
 		return x.MsgTypes
 	}
@@ -4859,142 +5008,148 @@ var file_verana_de_v1_types_proto_rawDesc = []byte{
 	0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x64, 0x75, 0x72, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73,
-	0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x80, 0x04, 0x0a, 0x15, 0x4f,
-	0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x02, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f,
-	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x34, 0x0a, 0x08, 0x6f,
-	0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2,
-	0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f,
-	0x72, 0x12, 0x1b, 0x0a, 0x09, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x04,
-	0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x6c,
-	0x0a, 0x0b, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x05, 0x20,
+	0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x97, 0x04, 0x0a, 0x15, 0x44, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69,
+	0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x72, 0x70, 0x6f,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74,
+	0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x32,
+	0x0a, 0x09, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28,
+	0x0e, 0x32, 0x15, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31,
+	0x2e, 0x4d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x52, 0x08, 0x6d, 0x73, 0x67, 0x54, 0x79, 0x70,
+	0x65, 0x73, 0x12, 0x6c, 0x0a, 0x0b, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69,
+	0x74, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f,
+	0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43,
+	0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0a, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74,
+	0x12, 0x74, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x5f, 0x73, 0x70,
+	0x65, 0x6e, 0x64, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69,
+	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73,
+	0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0e, 0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e,
+	0x67, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x12, 0x40, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78,
+	0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69,
+	0x6f, 0x64, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x42, 0x04, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f,
+	0x64, 0x22, 0x87, 0x04, 0x0a, 0x08, 0x46, 0x65, 0x65, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x12, 0x34,
+	0x0a, 0x16, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14,
+	0x67, 0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52,
+	0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x12, 0x32, 0x0a, 0x09, 0x6d, 0x73, 0x67, 0x5f,
+	0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x15, 0x2e, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x79,
+	0x70, 0x65, 0x52, 0x08, 0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x6c, 0x0a, 0x0b,
+	0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x04, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e,
+	0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde,
+	0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73,
+	0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0a,
+	0x73, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x74, 0x0a, 0x0f, 0x72, 0x65,
+	0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x18, 0x05, 0x20,
 	0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
 	0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30,
 	0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
 	0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
 	0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73,
-	0x52, 0x0a, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x74, 0x0a, 0x0f,
-	0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x18,
-	0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62,
-	0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e,
-	0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69,
-	0x6e, 0x73, 0x52, 0x0e, 0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x70, 0x65,
-	0x6e, 0x64, 0x12, 0x40, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
-	0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x0a,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42,
-	0x04, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x22, 0xf0, 0x03,
-	0x0a, 0x08, 0x46, 0x65, 0x65, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x12, 0x34, 0x0a, 0x16, 0x67, 0x72,
-	0x61, 0x6e, 0x74, 0x6f, 0x72, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x67, 0x72, 0x61, 0x6e,
-	0x74, 0x6f, 0x72, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
-	0x12, 0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x67, 0x72, 0x61,
-	0x6e, 0x74, 0x65, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65,
-	0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65,
-	0x73, 0x12, 0x6c, 0x0a, 0x0b, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74,
-	0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69,
-	0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75,
-	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f,
-	0x69, 0x6e, 0x73, 0x52, 0x0a, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12,
-	0x74, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x5f, 0x73, 0x70, 0x65,
-	0x6e, 0x64, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43,
-	0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e,
-	0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0e, 0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67,
-	0x53, 0x70, 0x65, 0x6e, 0x64, 0x12, 0x40, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70,
-	0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f,
-	0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x42, 0x04, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64,
-	0x22, 0xe3, 0x04, 0x0a, 0x1e, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74,
-	0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63,
-	0x6f, 0x72, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61,
-	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x70, 0x61, 0x72,
-	0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x6d, 0x73,
-	0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x6d,
-	0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x6c, 0x0a, 0x0b, 0x73, 0x70, 0x65, 0x6e, 0x64,
-	0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f,
-	0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79,
-	0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0a, 0x73, 0x70, 0x65, 0x6e, 0x64,
-	0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x74, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69,
-	0x6e, 0x67, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19,
+	0x52, 0x0e, 0x72, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x70, 0x65, 0x6e, 0x64,
+	0x12, 0x40, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x06,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x07, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0x98,
+	0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x22, 0xfa, 0x04, 0x0a, 0x1e,
+	0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f,
+	0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x25,
+	0x0a, 0x0e, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70,
+	0x61, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x09, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70,
+	0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x15, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x52,
+	0x08, 0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x6c, 0x0a, 0x0b, 0x73, 0x70, 0x65,
+	0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19,
 	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62,
 	0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa,
 	0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f,
 	0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f,
-	0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0e, 0x72, 0x65, 0x6d,
-	0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x12, 0x73, 0x0a, 0x0f, 0x66,
-	0x65, 0x65, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x05,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
-	0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42,
-	0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e,
-	0x73, 0x52, 0x0d, 0x66, 0x65, 0x65, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74,
-	0x12, 0x23, 0x0a, 0x0d, 0x77, 0x69, 0x74, 0x68, 0x5f, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e,
-	0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x77, 0x69, 0x74, 0x68, 0x46, 0x65, 0x65,
-	0x67, 0x72, 0x61, 0x6e, 0x74, 0x12, 0x40, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70,
-	0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f,
-	0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x42, 0x04, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64,
-	0x4a, 0x04, 0x08, 0x06, 0x10, 0x07, 0x22, 0x81, 0x01, 0x0a, 0x13, 0x57, 0x69, 0x6e, 0x64, 0x6f,
-	0x77, 0x45, 0x6e, 0x64, 0x51, 0x75, 0x65, 0x75, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x43,
-	0x0a, 0x0a, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x5f, 0x65, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08,
-	0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77,
-	0x45, 0x6e, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61,
-	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x70, 0x61, 0x72,
-	0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x22, 0xd9, 0x01, 0x0a, 0x17, 0x56,
-	0x53, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
-	0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d,
-	0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x39, 0x0a,
-	0x0b, 0x76, 0x73, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0a, 0x76, 0x73,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4c, 0x0a, 0x07, 0x72, 0x65, 0x63, 0x6f,
-	0x72, 0x64, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x76, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69,
-	0x70, 0x61, 0x6e, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x07, 0x72,
-	0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70,
-	0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75,
-	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62,
-	0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70,
-	0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x64,
-	0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61,
-	0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x44, 0x65, 0x3a,
-	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0a, 0x73, 0x70, 0x65,
+	0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x74, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x61, 0x69,
+	0x6e, 0x69, 0x6e, 0x67, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f,
+	0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64,
+	0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0e, 0x72,
+	0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x12, 0x73, 0x0a,
+	0x0f, 0x66, 0x65, 0x65, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74,
+	0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69,
+	0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f,
+	0x69, 0x6e, 0x73, 0x52, 0x0d, 0x66, 0x65, 0x65, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d,
+	0x69, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x77, 0x69, 0x74, 0x68, 0x5f, 0x66, 0x65, 0x65, 0x67, 0x72,
+	0x61, 0x6e, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x77, 0x69, 0x74, 0x68, 0x46,
+	0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x12, 0x40, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65,
+	0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x65, 0x72,
+	0x69, 0x6f, 0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69,
+	0x6f, 0x64, 0x4a, 0x04, 0x08, 0x06, 0x10, 0x07, 0x22, 0x81, 0x01, 0x0a, 0x13, 0x57, 0x69, 0x6e,
+	0x64, 0x6f, 0x77, 0x45, 0x6e, 0x64, 0x51, 0x75, 0x65, 0x75, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79,
+	0x12, 0x43, 0x0a, 0x0a, 0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x5f, 0x65, 0x6e, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x77, 0x69, 0x6e, 0x64,
+	0x6f, 0x77, 0x45, 0x6e, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x70, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69,
+	0x70, 0x61, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x70,
+	0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x22, 0xd9, 0x01, 0x0a,
+	0x17, 0x56, 0x53, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f,
+	0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x72, 0x70,
+	0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0d, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12,
+	0x39, 0x0a, 0x0b, 0x76, 0x73, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0a,
+	0x76, 0x73, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4c, 0x0a, 0x07, 0x72, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x74, 0x69,
+	0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
+	0x07, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d,
+	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54,
+	0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c,
+	0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f,
+	0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31,
+	0x3b, 0x64, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72,
+	0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x44,
+	0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -5011,36 +5166,40 @@ func file_verana_de_v1_types_proto_rawDescGZIP() []byte {
 
 var file_verana_de_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_verana_de_v1_types_proto_goTypes = []interface{}{
-	(*OperatorAuthorization)(nil),          // 0: verana.de.v1.OperatorAuthorization
+	(*DelegateAuthorization)(nil),          // 0: verana.de.v1.DelegateAuthorization
 	(*FeeGrant)(nil),                       // 1: verana.de.v1.FeeGrant
 	(*ParticipantAuthorizationRecord)(nil), // 2: verana.de.v1.ParticipantAuthorizationRecord
 	(*WindowEndQueueEntry)(nil),            // 3: verana.de.v1.WindowEndQueueEntry
 	(*VSOperatorAuthorization)(nil),        // 4: verana.de.v1.VSOperatorAuthorization
-	(*v1beta1.Coin)(nil),                   // 5: cosmos.base.v1beta1.Coin
-	(*timestamppb.Timestamp)(nil),          // 6: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),            // 7: google.protobuf.Duration
+	(MsgType)(0),                           // 5: verana.de.v1.MsgType
+	(*v1beta1.Coin)(nil),                   // 6: cosmos.base.v1beta1.Coin
+	(*timestamppb.Timestamp)(nil),          // 7: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),            // 8: google.protobuf.Duration
 }
 var file_verana_de_v1_types_proto_depIdxs = []int32{
-	5,  // 0: verana.de.v1.OperatorAuthorization.spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	5,  // 1: verana.de.v1.OperatorAuthorization.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
-	6,  // 2: verana.de.v1.OperatorAuthorization.expiration:type_name -> google.protobuf.Timestamp
-	7,  // 3: verana.de.v1.OperatorAuthorization.period:type_name -> google.protobuf.Duration
-	5,  // 4: verana.de.v1.FeeGrant.spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	5,  // 5: verana.de.v1.FeeGrant.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
-	6,  // 6: verana.de.v1.FeeGrant.expiration:type_name -> google.protobuf.Timestamp
-	7,  // 7: verana.de.v1.FeeGrant.period:type_name -> google.protobuf.Duration
-	5,  // 8: verana.de.v1.ParticipantAuthorizationRecord.spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	5,  // 9: verana.de.v1.ParticipantAuthorizationRecord.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
-	5,  // 10: verana.de.v1.ParticipantAuthorizationRecord.fee_spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	6,  // 11: verana.de.v1.ParticipantAuthorizationRecord.expiration:type_name -> google.protobuf.Timestamp
-	7,  // 12: verana.de.v1.ParticipantAuthorizationRecord.period:type_name -> google.protobuf.Duration
-	6,  // 13: verana.de.v1.WindowEndQueueEntry.window_end:type_name -> google.protobuf.Timestamp
-	2,  // 14: verana.de.v1.VSOperatorAuthorization.records:type_name -> verana.de.v1.ParticipantAuthorizationRecord
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	5,  // 0: verana.de.v1.DelegateAuthorization.msg_types:type_name -> verana.de.v1.MsgType
+	6,  // 1: verana.de.v1.DelegateAuthorization.spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	6,  // 2: verana.de.v1.DelegateAuthorization.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
+	7,  // 3: verana.de.v1.DelegateAuthorization.expiration:type_name -> google.protobuf.Timestamp
+	8,  // 4: verana.de.v1.DelegateAuthorization.period:type_name -> google.protobuf.Duration
+	5,  // 5: verana.de.v1.FeeGrant.msg_types:type_name -> verana.de.v1.MsgType
+	6,  // 6: verana.de.v1.FeeGrant.spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	6,  // 7: verana.de.v1.FeeGrant.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
+	7,  // 8: verana.de.v1.FeeGrant.expiration:type_name -> google.protobuf.Timestamp
+	8,  // 9: verana.de.v1.FeeGrant.period:type_name -> google.protobuf.Duration
+	5,  // 10: verana.de.v1.ParticipantAuthorizationRecord.msg_types:type_name -> verana.de.v1.MsgType
+	6,  // 11: verana.de.v1.ParticipantAuthorizationRecord.spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	6,  // 12: verana.de.v1.ParticipantAuthorizationRecord.remaining_spend:type_name -> cosmos.base.v1beta1.Coin
+	6,  // 13: verana.de.v1.ParticipantAuthorizationRecord.fee_spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	7,  // 14: verana.de.v1.ParticipantAuthorizationRecord.expiration:type_name -> google.protobuf.Timestamp
+	8,  // 15: verana.de.v1.ParticipantAuthorizationRecord.period:type_name -> google.protobuf.Duration
+	7,  // 16: verana.de.v1.WindowEndQueueEntry.window_end:type_name -> google.protobuf.Timestamp
+	2,  // 17: verana.de.v1.VSOperatorAuthorization.records:type_name -> verana.de.v1.ParticipantAuthorizationRecord
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_verana_de_v1_types_proto_init() }
@@ -5048,9 +5207,10 @@ func file_verana_de_v1_types_proto_init() {
 	if File_verana_de_v1_types_proto != nil {
 		return
 	}
+	file_verana_de_v1_msg_type_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_verana_de_v1_types_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*OperatorAuthorization); i {
+			switch v := v.(*DelegateAuthorization); i {
 			case 0:
 				return &v.state
 			case 1:

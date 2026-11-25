@@ -3,13 +3,15 @@ package types
 import (
 	"context"
 	"time"
+
+	detypes "github.com/verana-labs/verana-node/x/de/types"
 )
 
 // DelegationKeeper is the minimum surface MOD-GF needs from x/de for AUTHZ-CHECK-1.
-// Signature matches x/de/keeper.Keeper.CheckOperatorAuthorization exactly so the
+// Signature matches x/de/keeper.Keeper.CheckDelegateAuthorization exactly so the
 // DE keeper concrete type satisfies this interface and depinject can auto-wire it.
 type DelegationKeeper interface {
-	CheckOperatorAuthorization(ctx context.Context, corporation string, operator string, msgTypeURL string, now time.Time) error
+	CheckDelegateAuthorization(ctx context.Context, corporationID uint64, delegate string, msgType detypes.MsgType, now time.Time) error
 }
 
 // EcosystemView is the read shape MOD-GF needs to validate ecosystem subjects.
@@ -43,18 +45,16 @@ type CorporationView struct {
 }
 
 // CorporationKeeper is the minimum surface MOD-GF needs for:
-//   - AUTHZ-CHECK-5 resolution: ResolveByPolicyAddress takes the signing account
-//     (= policy_address) and returns the registered Corporation (its id, language,
-//     active_version). MUST be called at the entry of every delegable MOD-GF Msg.
+//   - AUTHZ-CHECK-5 resolution: ResolveCorporationByPolicyAddress takes the
+//     signing account (= policy_address), returns the registered Corporation
+//     (its id, language, active_version) after GF-CHECK-1, and MUST be called at
+//     the entry of every delegable MOD-GF Msg.
 //   - Subject lookups by id: GetByID returns a Corporation by its uint64 id (used
 //     by the query layer for the active_only filter).
 //   - Active version mutation: SetActiveVersion bumps `co.active_version` and
 //     `co.modified` per MOD-GF-MSG-2-3.
-//
-// Until issue #303 (MOD-CO) lands, a stub keeper returns (zero, false) for all
-// lookups so all corporation-targeted MOD-GF calls abort with ErrSubjectNotFound.
 type CorporationKeeper interface {
-	ResolveByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, bool)
+	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 	GetByID(ctx context.Context, corporationID uint64) (CorporationView, bool)
 	SetActiveVersion(ctx context.Context, corporationID uint64, newVersion uint32) error
 }

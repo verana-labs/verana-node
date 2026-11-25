@@ -15,7 +15,7 @@ import (
 // RunXrRevokeExchangeRateAuthzJourney implements Journey 605: XR Revoke Exchange Rate Authorization (governance)
 // Revokes the ExchangeRateAuthorization granted in Journey 604 via council proposal [MOD-XR-MSG-5],
 // then verifies it is gone from GetExchangeRate.authorizations [MOD-XR-QRY-1].
-// Depends on Journey 601 (exchange rate ID), Journey 301 (operator), and Journey 604 (grant).
+// Depends on Journey 601 (exchange rate ID), Journey 301 (feeder), and Journey 604 (grant).
 func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclient.Client) error {
 	fmt.Println("Starting Journey 605: XR Revoke Exchange Rate Authorization via Council")
 
@@ -34,10 +34,10 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 	if err != nil {
 		return fmt.Errorf("step 1 failed: could not parse exchange rate ID: %w", err)
 	}
-	operatorAddr := setup301.OperatorAddr
+	feederAddr := setup301.DelegateAddr
 
 	fmt.Printf("  Exchange Rate ID: %d\n", exchangeRateID)
-	fmt.Printf("  Operator:         %s\n", operatorAddr)
+	fmt.Printf("  Feeder:         %s\n", feederAddr)
 	fmt.Println("✅ Step 1: Loaded journey results")
 
 	// =========================================================================
@@ -48,13 +48,13 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 	revokeMsg := &xrtypes.MsgRevokeExchangeRateAuthorization{
 		Authority: council,
 		XrId:      exchangeRateID,
-		Feeder:    operatorAddr,
+		Feeder:    feederAddr,
 	}
 
 	proposalID, err := lib.SubmitCouncilProposal(
 		client, ctx, cooluser,
 		"Revoke Exchange Rate Authorization",
-		fmt.Sprintf("Revoke operator %s authorization on exchange rate %d", operatorAddr, exchangeRateID),
+		fmt.Sprintf("Revoke feeder %s authorization on exchange rate %d", feederAddr, exchangeRateID),
 		revokeMsg,
 	)
 	if err != nil {
@@ -86,12 +86,12 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 	}
 
 	for _, a := range getResp.Authorizations {
-		if a.Feeder == operatorAddr {
-			return fmt.Errorf("step 4 failed: authorization for operator %s still present on exchange rate %d", operatorAddr, exchangeRateID)
+		if a.Feeder == feederAddr {
+			return fmt.Errorf("step 4 failed: authorization for feeder %s still present on exchange rate %d", feederAddr, exchangeRateID)
 		}
 	}
 
-	fmt.Printf("  Authorizations: %d (operator %s removed)\n", len(getResp.Authorizations), operatorAddr)
+	fmt.Printf("  Authorizations: %d (feeder %s removed)\n", len(getResp.Authorizations), feederAddr)
 	fmt.Println("✅ Step 4: Exchange rate authorization revoked and verified")
 
 	fmt.Println("\n========================================")

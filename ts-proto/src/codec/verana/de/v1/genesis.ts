@@ -6,21 +6,21 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
-import { FeeGrant, OperatorAuthorization, VSOperatorAuthorization, WindowEndQueueEntry } from "./types";
+import { DelegateAuthorization, FeeGrant, VSOperatorAuthorization, WindowEndQueueEntry } from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
 
 /** GenesisState defines the de module's genesis state. */
 export interface GenesisState {
-  /** operator_authorizations is a list of all OperatorAuthorization objects */
-  operatorAuthorizations: OperatorAuthorization[];
+  /** delegate_authorizations is a list of all DelegateAuthorization objects */
+  delegateAuthorizations: DelegateAuthorization[];
   /** fee_grants is a list of all FeeGrant objects */
   feeGrants: FeeGrant[];
   /** vs_operator_authorizations is a list of all VSOperatorAuthorization objects */
   vsOperatorAuthorizations: VSOperatorAuthorization[];
   /** Id sequences, exported so ids are never re-issued after a delete. */
-  operatorAuthorizationSeq: number;
+  delegateAuthorizationSeq: number;
   vsoaSeq: number;
   /** window_end_queue is the pending window-end queue of MOD-DE-MSG-5-5. */
   windowEndQueue: WindowEndQueueEntry[];
@@ -28,10 +28,10 @@ export interface GenesisState {
 
 function createBaseGenesisState(): GenesisState {
   return {
-    operatorAuthorizations: [],
+    delegateAuthorizations: [],
     feeGrants: [],
     vsOperatorAuthorizations: [],
-    operatorAuthorizationSeq: 0,
+    delegateAuthorizationSeq: 0,
     vsoaSeq: 0,
     windowEndQueue: [],
   };
@@ -39,8 +39,8 @@ function createBaseGenesisState(): GenesisState {
 
 export const GenesisState = {
   encode(message: GenesisState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.operatorAuthorizations) {
-      OperatorAuthorization.encode(v!, writer.uint32(18).fork()).ldelim();
+    for (const v of message.delegateAuthorizations) {
+      DelegateAuthorization.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     for (const v of message.feeGrants) {
       FeeGrant.encode(v!, writer.uint32(26).fork()).ldelim();
@@ -48,8 +48,8 @@ export const GenesisState = {
     for (const v of message.vsOperatorAuthorizations) {
       VSOperatorAuthorization.encode(v!, writer.uint32(34).fork()).ldelim();
     }
-    if (message.operatorAuthorizationSeq !== 0) {
-      writer.uint32(48).uint64(message.operatorAuthorizationSeq);
+    if (message.delegateAuthorizationSeq !== 0) {
+      writer.uint32(48).uint64(message.delegateAuthorizationSeq);
     }
     if (message.vsoaSeq !== 0) {
       writer.uint32(56).uint64(message.vsoaSeq);
@@ -72,7 +72,7 @@ export const GenesisState = {
             break;
           }
 
-          message.operatorAuthorizations.push(OperatorAuthorization.decode(reader, reader.uint32()));
+          message.delegateAuthorizations.push(DelegateAuthorization.decode(reader, reader.uint32()));
           continue;
         case 3:
           if (tag !== 26) {
@@ -93,7 +93,7 @@ export const GenesisState = {
             break;
           }
 
-          message.operatorAuthorizationSeq = longToNumber(reader.uint64() as Long);
+          message.delegateAuthorizationSeq = longToNumber(reader.uint64() as Long);
           continue;
         case 7:
           if (tag !== 56) {
@@ -120,8 +120,8 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     return {
-      operatorAuthorizations: globalThis.Array.isArray(object?.operatorAuthorizations)
-        ? object.operatorAuthorizations.map((e: any) => OperatorAuthorization.fromJSON(e))
+      delegateAuthorizations: globalThis.Array.isArray(object?.delegateAuthorizations)
+        ? object.delegateAuthorizations.map((e: any) => DelegateAuthorization.fromJSON(e))
         : [],
       feeGrants: globalThis.Array.isArray(object?.feeGrants)
         ? object.feeGrants.map((e: any) => FeeGrant.fromJSON(e))
@@ -129,8 +129,8 @@ export const GenesisState = {
       vsOperatorAuthorizations: globalThis.Array.isArray(object?.vsOperatorAuthorizations)
         ? object.vsOperatorAuthorizations.map((e: any) => VSOperatorAuthorization.fromJSON(e))
         : [],
-      operatorAuthorizationSeq: isSet(object.operatorAuthorizationSeq)
-        ? globalThis.Number(object.operatorAuthorizationSeq)
+      delegateAuthorizationSeq: isSet(object.delegateAuthorizationSeq)
+        ? globalThis.Number(object.delegateAuthorizationSeq)
         : 0,
       vsoaSeq: isSet(object.vsoaSeq) ? globalThis.Number(object.vsoaSeq) : 0,
       windowEndQueue: globalThis.Array.isArray(object?.windowEndQueue)
@@ -141,8 +141,8 @@ export const GenesisState = {
 
   toJSON(message: GenesisState): unknown {
     const obj: any = {};
-    if (message.operatorAuthorizations?.length) {
-      obj.operatorAuthorizations = message.operatorAuthorizations.map((e) => OperatorAuthorization.toJSON(e));
+    if (message.delegateAuthorizations?.length) {
+      obj.delegateAuthorizations = message.delegateAuthorizations.map((e) => DelegateAuthorization.toJSON(e));
     }
     if (message.feeGrants?.length) {
       obj.feeGrants = message.feeGrants.map((e) => FeeGrant.toJSON(e));
@@ -150,8 +150,8 @@ export const GenesisState = {
     if (message.vsOperatorAuthorizations?.length) {
       obj.vsOperatorAuthorizations = message.vsOperatorAuthorizations.map((e) => VSOperatorAuthorization.toJSON(e));
     }
-    if (message.operatorAuthorizationSeq !== 0) {
-      obj.operatorAuthorizationSeq = Math.round(message.operatorAuthorizationSeq);
+    if (message.delegateAuthorizationSeq !== 0) {
+      obj.delegateAuthorizationSeq = Math.round(message.delegateAuthorizationSeq);
     }
     if (message.vsoaSeq !== 0) {
       obj.vsoaSeq = Math.round(message.vsoaSeq);
@@ -167,12 +167,12 @@ export const GenesisState = {
   },
   fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(object: I): GenesisState {
     const message = createBaseGenesisState();
-    message.operatorAuthorizations = object.operatorAuthorizations?.map((e) => OperatorAuthorization.fromPartial(e)) ||
+    message.delegateAuthorizations = object.delegateAuthorizations?.map((e) => DelegateAuthorization.fromPartial(e)) ||
       [];
     message.feeGrants = object.feeGrants?.map((e) => FeeGrant.fromPartial(e)) || [];
     message.vsOperatorAuthorizations =
       object.vsOperatorAuthorizations?.map((e) => VSOperatorAuthorization.fromPartial(e)) || [];
-    message.operatorAuthorizationSeq = object.operatorAuthorizationSeq ?? 0;
+    message.delegateAuthorizationSeq = object.delegateAuthorizationSeq ?? 0;
     message.vsoaSeq = object.vsoaSeq ?? 0;
     message.windowEndQueue = object.windowEndQueue?.map((e) => WindowEndQueueEntry.fromPartial(e)) || [];
     return message;

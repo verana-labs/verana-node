@@ -15,7 +15,7 @@ import (
 
 func TestCheckVSOA_RecordNotFound(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
-	err := f.keeper.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, acc("vsop________________"), 10, mtCSPS)
+	err := f.keeper.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, acc("vsop________________"), 10, mtIssuance)
 	require.ErrorIs(t, err, types.ErrVSOperatorAuthzNotFound)
 }
 
@@ -25,21 +25,21 @@ func TestCheckVSOA_ParticipantNotActive(t *testing.T) {
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance},
 	}))
 
 	f.participants.views[10] = types.ParticipantView{} // pending: never validated
-	require.ErrorIs(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtCSPS), types.ErrParticipantNotActive)
+	require.ErrorIs(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtIssuance), types.ErrParticipantNotActive)
 
 	f.participants.views[10] = types.ParticipantView{Future: true}
-	require.ErrorIs(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtCSPS), types.ErrParticipantNotActive)
+	require.ErrorIs(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtIssuance), types.ErrParticipantNotActive)
 
 	delete(f.participants.views, 10)
 	f.participants.missing[10] = true
-	require.ErrorIs(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtCSPS), types.ErrParticipantNotActive)
+	require.ErrorIs(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtIssuance), types.ErrParticipantNotActive)
 
 	delete(f.participants.missing, 10)
-	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtCSPS))
+	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtIssuance))
 }
 
 // A pending record with a period is not renewed into life: step 1 aborts first.
@@ -50,12 +50,12 @@ func TestCheckVSOA_PendingRecordWithPeriodStaysDisabled(t *testing.T) {
 	period := time.Hour
 	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 200))
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS}, SpendLimit: spend, Period: &period,
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance}, SpendLimit: spend, Period: &period,
 	}))
 	f.participants.views[10] = types.ParticipantView{}
 
 	later := ctx.WithBlockTime(ctx.BlockTime().Add(2 * time.Hour))
-	require.ErrorIs(t, k.CheckVSOperatorAuthorizationOnParticipant(later, 1, vsOp, 10, mtCSPS), types.ErrParticipantNotActive)
+	require.ErrorIs(t, k.CheckVSOperatorAuthorizationOnParticipant(later, 1, vsOp, 10, mtIssuance), types.ErrParticipantNotActive)
 
 	vsoaID, _ := k.VSOAByParticipant.Get(ctx, 10)
 	vsoa, _ := k.VSOperatorAuthorizations.Get(ctx, vsoaID)
@@ -67,10 +67,10 @@ func TestCheckVSOA_WrongCorporation(t *testing.T) {
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance},
 	}))
 
-	err := k.CheckVSOperatorAuthorizationOnParticipant(ctx, 999, vsOp, 10, mtCSPS)
+	err := k.CheckVSOperatorAuthorizationOnParticipant(ctx, 999, vsOp, 10, mtIssuance)
 	require.ErrorIs(t, err, types.ErrVSOperatorAuthzNotFound)
 }
 
@@ -78,10 +78,10 @@ func TestCheckVSOA_WrongOperator(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	k := f.keeper
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, acc("vsop________________"), types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance},
 	}))
 
-	err := k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, acc("vsop2_______________"), 10, mtCSPS)
+	err := k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, acc("vsop2_______________"), 10, mtIssuance)
 	require.ErrorIs(t, err, types.ErrVSOperatorAuthzNotFound)
 }
 
@@ -90,10 +90,12 @@ func TestCheckVSOA_MsgTypeNotAuthorized(t *testing.T) {
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance},
 	}))
 
 	err := k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtEcosystem)
+	require.ErrorIs(t, err, types.ErrAuthzMsgTypeNotFound)
+	err = k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION)
 	require.ErrorIs(t, err, types.ErrAuthzMsgTypeNotFound)
 }
 
@@ -102,10 +104,10 @@ func TestCheckVSOA_Success(t *testing.T) {
 	k := f.keeper
 	vsOp := acc("vsop________________")
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, 1, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance},
 	}))
 
-	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtCSPS))
+	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, 1, vsOp, 10, mtIssuance))
 }
 
 // Period with a cycle not yet started: no reset.
@@ -118,13 +120,13 @@ func TestCheckVSOA_NilExpirationWithPeriod(t *testing.T) {
 	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 200))
 
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance},
 		SpendLimit: spend, Period: &period,
 	}))
 
 	require.NoError(t, k.ConsumeRecordSpend(ctx, corpID, vsOp, 10, sdk.NewCoins(sdk.NewInt64Coin("uvna", 50))))
 
-	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, corpID, vsOp, 10, mtCSPS))
+	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, corpID, vsOp, 10, mtIssuance))
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, 10)
 	require.NoError(t, err)
@@ -146,14 +148,14 @@ func TestCheckVSOA_PeriodReset(t *testing.T) {
 	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 200))
 
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance},
 		SpendLimit: spend, Period: &period, Expiration: &past,
 	}))
 
 	// Deplete so the reset is observable.
 	require.NoError(t, k.ConsumeRecordSpend(ctx, corpID, vsOp, 10, sdk.NewCoins(sdk.NewInt64Coin("uvna", 50))))
 
-	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, corpID, vsOp, 10, mtCSPS))
+	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, corpID, vsOp, 10, mtIssuance))
 
 	vsoaID, err := k.VSOAByParticipant.Get(ctx, 10)
 	require.NoError(t, err)
@@ -174,12 +176,12 @@ func TestCheckVSOA_CycleNotDue(t *testing.T) {
 	spend := sdk.NewCoins(sdk.NewInt64Coin("uvna", 200))
 
 	require.NoError(t, k.GrantVSOperatorAuthorization(ctx, corpID, vsOp, types.ParticipantAuthorizationRecord{
-		ParticipantId: 10, MsgTypes: []string{mtCSPS},
+		ParticipantId: 10, MsgTypes: []types.MsgType{mtIssuance},
 		SpendLimit: spend, Period: &period, Expiration: &future,
 	}))
 	require.NoError(t, k.ConsumeRecordSpend(ctx, corpID, vsOp, 10, sdk.NewCoins(sdk.NewInt64Coin("uvna", 50))))
 
-	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, corpID, vsOp, 10, mtCSPS))
+	require.NoError(t, k.CheckVSOperatorAuthorizationOnParticipant(ctx, corpID, vsOp, 10, mtIssuance))
 
 	vsoaID, _ := k.VSOAByParticipant.Get(ctx, 10)
 	vsoa, _ := k.VSOperatorAuthorizations.Get(ctx, vsoaID)

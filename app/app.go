@@ -294,6 +294,8 @@ func New(
 	app.DeKeeper.SetFeegrantKeeper(newDeFeegrantAdapter(app.FeeGrantKeeper))
 	// Wire the MOD-PP participant view into MOD-DE (AUTHZ-CHECK-3 step 1, MOD-DE-MSG-5-5).
 	app.DeKeeper.SetParticipantKeeper(ppkeeper.NewPpAsDeParticipantKeeper(app.ParticipantKeeper))
+	// Wire MOD-GF into MOD-DE for GF-CHECK-2 (AUTHZ-CHECK-1 step 4).
+	app.DeKeeper.SetGovernanceFrameworkKeeper(app.GfKeeper)
 	// Wire MOD-VS into MOD-DE (vs_account_fee_period, MOD-DE-MSG-5-5).
 	app.DeKeeper.SetVerifiableServiceKeeper(app.VsKeeper)
 	// MOD-XR reads main_fiat_currency from MOD-TD.
@@ -308,8 +310,8 @@ func New(
 	// build app
 	app.App = appBuilder.Build(db, baseAppOptions...)
 
-	// MOD-PP AUTHZ-CHECK-4 reads the fee granter the ante handler stores per tx.
-	app.SetAnteHandler(ppkeeper.NewFeeGranterAnteHandler(app.AnteHandler()))
+	// AUTHZ-CHECK-4 reads the fee granter the ante handler stores per tx.
+	app.SetAnteHandler(demodulekeeper.NewFeeGranterAnteHandler(app.AnteHandler()))
 
 	// register legacy modules
 	if err := app.registerIBCModules(appOpts); err != nil {
