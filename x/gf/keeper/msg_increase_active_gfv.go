@@ -20,11 +20,11 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 		return nil, err
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if msg.Authority != "" {
+	if msg.Network {
 		return ms.increaseActiveNetworkVersion(ctx, msg)
 	}
 
-	coView, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION)
+	coView, group, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION)
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +85,13 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	ev.Uint(types.AttributeKeyGFVersionID, gfv.Id).
 		Uint(types.AttributeKeyVersion, uint64(nextVersion)).
 		Time(types.AttributeKeyActiveSince, now).
-		Time(types.AttributeKeyAcceptanceDeadline, deadline).
-		Emit(ctx)
+		Time(types.AttributeKeyAcceptanceDeadline, deadline)
+	if group {
+		if err := ev.Msg(ms.cdc, msg); err != nil {
+			return nil, err
+		}
+	}
+	ev.Emit(ctx)
 
 	return &types.MsgIncreaseActiveGovernanceFrameworkVersionResponse{}, nil
 }
@@ -94,7 +99,7 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 // increaseActiveNetworkVersion activates the draft of the network governance
 // framework and opens its acceptance grace period.
 func (ms msgServer) increaseActiveNetworkVersion(ctx sdk.Context, msg *types.MsgIncreaseActiveGovernanceFrameworkVersion) (*types.MsgIncreaseActiveGovernanceFrameworkVersionResponse, error) {
-	if err := ms.checkAuthority(msg.Authority); err != nil {
+	if err := ms.checkNetworkPath(msg.Signer); err != nil {
 		return nil, err
 	}
 	gfv, ng, err := ms.lastNetworkVersion(ctx)

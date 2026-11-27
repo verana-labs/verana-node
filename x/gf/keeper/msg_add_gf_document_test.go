@@ -107,6 +107,11 @@ func (m *mockCorporation) GetCorporationByPolicyAddress(_ context.Context, _ str
 	}
 	return m.view, nil
 }
+
+func (m *mockCorporation) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
 func (m *mockCorporation) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool) {
 	return m.view, m.found
 }
@@ -125,7 +130,7 @@ func (m *mockCorporation) SetAcceptedNgfVersion(_ context.Context, _ uint64, v u
 func validMsg(corp, op string, ecoID uint64, version uint32) *types.MsgAddGovernanceFrameworkDocument {
 	return &types.MsgAddGovernanceFrameworkDocument{
 		Corporation:  corp,
-		Delegate:     op,
+		Signer:       op,
 		EcosystemId:  ecoID,
 		DocLanguage:  "en",
 		DocUrl:       testURL,
@@ -185,6 +190,20 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.Error(t, err)
+	})
+
+	t.Run("MOD-GF-MSG-1-2-1: group-proposal path skips AUTHZ-CHECK-1 and carries the message", func(t *testing.T) {
+		corp := &mockCorporation{view: types.CorporationView{Id: 1, PolicyAddress: testCorp, Language: "en"}, found: true}
+		k, ctx := keepertest.GfKeeperWithDelegation(t,
+			mockDelegation{err: cerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorized")},
+			&mockEcosystem{}, corp,
+		)
+		_, err := keeper.NewMsgServerImpl(k).AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testCorp, 0, 1))
+		require.NoError(t, err)
+
+		attrs := eventAttrs(ctx, types.EventTypeAddGovernanceFrameworkDocument)
+		require.Equal(t, "1", attrs["corporation_id"])
+		require.Contains(t, attrs["msg"], `"signer":"`+testCorp+`"`)
 	})
 
 	t.Run("MOD-GF-MSG-1-2-1: ecosystem not controlled by signer aborts", func(t *testing.T) {

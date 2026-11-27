@@ -60,7 +60,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "AcceptGovernanceFrameworkVersion",
 					Use:       "accept-gf-version [corporation] [version]",
 					Short:     "[MOD-GF-MSG-3] Accept the version in force of the network governance framework (--network) or of an ecosystem's (--ecosystem-id)",
-					Long:      "The signer (--from) is the delegate: an authorized delegate, or the corporation's policy_address on the group-proposal path.",
+					Long:      "The signer (--from) is an authorized delegate, or the corporation's policy_address on the group-proposal path.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "corporation"},
 						{ProtoField: "version"},

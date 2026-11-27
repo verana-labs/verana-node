@@ -23,19 +23,19 @@ func TestMsgUpdateParams(t *testing.T) {
 		expErrMsg string
 	}{
 		{
-			name: "invalid authority",
+			name: "invalid signer",
 			input: &types.MsgUpdateParams{
-				Authority: "invalid",
-				Params:    params,
+				Signer: "invalid",
+				Params: params,
 			},
 			expErr:    true,
-			expErrMsg: "invalid authority",
+			expErrMsg: "invalid signer",
 		},
 		{
 			name: "accreditation_max_entries_per_participation below 2",
 			input: &types.MsgUpdateParams{
-				Authority: k.GetAuthority(),
-				Params:    types.NewParams(1),
+				Signer: k.GetAuthority(),
+				Params: types.NewParams(1),
 			},
 			expErr:    true,
 			expErrMsg: "accreditation_max_entries_per_participation",
@@ -43,8 +43,8 @@ func TestMsgUpdateParams(t *testing.T) {
 		{
 			name: "accreditation_max_entries_per_participation above 64",
 			input: &types.MsgUpdateParams{
-				Authority: k.GetAuthority(),
-				Params:    types.NewParams(65),
+				Signer: k.GetAuthority(),
+				Params: types.NewParams(65),
 			},
 			expErr:    true,
 			expErrMsg: "accreditation_max_entries_per_participation",
@@ -52,16 +52,16 @@ func TestMsgUpdateParams(t *testing.T) {
 		{
 			name: "lower value",
 			input: &types.MsgUpdateParams{
-				Authority: k.GetAuthority(),
-				Params:    types.NewParams(2),
+				Signer: k.GetAuthority(),
+				Params: types.NewParams(2),
 			},
 			expErr: false,
 		},
 		{
 			name: "all good",
 			input: &types.MsgUpdateParams{
-				Authority: k.GetAuthority(),
-				Params:    params,
+				Signer: k.GetAuthority(),
+				Params: params,
 			},
 			expErr: false,
 		},
@@ -86,7 +86,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 	k, ms, _, _, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
-	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: types.NewParams(16)})
+	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: types.NewParams(16)})
 	require.NoError(t, err)
 
 	attrs := map[string]string{}
@@ -98,7 +98,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 		}
 	}
 	require.Equal(t, map[string]string{
-		types.AttributeKeyAuthority:                   k.GetAuthority(),
+		types.AttributeKeySigner:                      k.GetAuthority(),
 		"accreditation_max_entries_per_participation": "16",
 	}, attrs)
 }

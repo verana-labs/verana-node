@@ -16,7 +16,7 @@ import (
 func createTestExchangeRate(t *testing.T, f *fixture, ms types.MsgServer, authorityStr string) uint64 {
 	t.Helper()
 	resp, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -44,9 +44,9 @@ func TestSetExchangeRateState_HappyPath_Enable(t *testing.T) {
 
 	// [MOD-XR-MSG-3-3] set state to the supplied value (enable).
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
-		Authority: authorityStr,
-		Id:        id,
-		State:     true,
+		Signer: authorityStr,
+		Id:     id,
+		State:  true,
 	})
 	require.NoError(t, err)
 
@@ -56,9 +56,9 @@ func TestSetExchangeRateState_HappyPath_Enable(t *testing.T) {
 
 	// Re-submitting the same target value is idempotent (not a toggle).
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
-		Authority: authorityStr,
-		Id:        id,
-		State:     true,
+		Signer: authorityStr,
+		Id:     id,
+		State:  true,
 	})
 	require.NoError(t, err)
 
@@ -78,16 +78,16 @@ func TestSetExchangeRateState_HappyPath_Disable(t *testing.T) {
 
 	// Enable, then explicitly disable; state tracks the supplied value.
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
-		Authority: authorityStr,
-		Id:        id,
-		State:     true,
+		Signer: authorityStr,
+		Id:     id,
+		State:  true,
 	})
 	require.NoError(t, err)
 
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
-		Authority: authorityStr,
-		Id:        id,
-		State:     false,
+		Signer: authorityStr,
+		Id:     id,
+		State:  false,
 	})
 	require.NoError(t, err)
 
@@ -107,9 +107,9 @@ func TestSetExchangeRateState_InvalidAuthority(t *testing.T) {
 
 	nonGovAddr := sdk.AccAddress([]byte("not_gov_authority___")).String()
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
-		Authority: nonGovAddr,
-		Id:        id,
-		State:     true,
+		Signer: nonGovAddr,
+		Id:     id,
+		State:  true,
 	})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "expected council account as only signer")
@@ -123,9 +123,9 @@ func TestSetExchangeRateState_NotFound(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
-		Authority: authorityStr,
-		Id:        999,
-		State:     true,
+		Signer: authorityStr,
+		Id:     999,
+		State:  true,
 	})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "exchange rate not found")

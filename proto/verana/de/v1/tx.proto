@@ -26,18 +26,17 @@ service Msg {
 // [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
 // to a grantee on behalf of a corporation.
 //
-// The signer is `delegate`. On the group-proposal path the corporation's
-// policy account executes the message and `delegate` equals `corporation`;
-// only AUTHZ-CHECK-5 then applies.
+// On the group-proposal path the corporation's policy account executes the
+// message and `signer` equals `corporation`; only AUTHZ-CHECK-5 then applies.
 message MsgGrantDelegateAuthorization {
-  option (cosmos.msg.v1.signer) = "delegate";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/de/MsgGrantDelegateAuthz";
 
   // corporation is the policy_address of the corporation granting the authorization.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // delegate is the signer: an authorized delegate, or the corporation's
-  // policy_address itself on the group-proposal path.
-  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is a delegate authorized by corporation, or corporation itself
+  // on the group-proposal path.
+  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // grantee is the account that receives the authorization from corporation.
   string grantee = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // msg_types is the list of VPR delegable message types for which
@@ -83,14 +82,14 @@ message MsgGrantDelegateAuthorizationResponse {}
 // authorization for a grantee on behalf of a corporation. Same signer
 // semantics as MsgGrantDelegateAuthorization (see above).
 message MsgRevokeDelegateAuthorization {
-  option (cosmos.msg.v1.signer) = "delegate";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/de/MsgRevokeDelegateAuthz";
 
   // corporation is the policy_address of the corporation revoking the authorization.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // delegate is the signer: an authorized delegate, or the corporation's
-  // policy_address itself on the group-proposal path.
-  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is a delegate authorized by corporation, or corporation itself
+  // on the group-proposal path.
+  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // grantee is the account whose authorization is being revoked.
   string grantee = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }

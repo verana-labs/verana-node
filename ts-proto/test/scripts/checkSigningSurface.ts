@@ -48,7 +48,7 @@ for (const key of requiredMappings) {
 const deConverter = amino.register[veranaTypeUrls.MsgGrantDelegateAuthorization];
 const deMsg = MsgGrantDelegateAuthorization.fromPartial({
   corporation: "verana1authority0000000000000000000000000000000",
-  delegate: "verana1delegate0000000000000000000000000000000",
+  signer: "verana1delegate0000000000000000000000000000000",
   grantee: "verana1grantee00000000000000000000000000000000",
   msgTypes: [MsgType.MSG_TYPE_CREATE_ECOSYSTEM, MsgType.MSG_TYPE_SELF_CREATE_ACCREDITATION],
   expiration: new Date("2026-04-01T12:00:00.123Z"),
@@ -99,38 +99,38 @@ const gfCases: Array<[string, string, unknown, Record<string, unknown>]> = [
   [
     veranaTypeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
     "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion",
-    MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({ authority: "auth", acceptanceGrace: thirtyDays }),
-    { acceptance_grace: "2592000000000000", authority: "auth" },
+    MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({ signer: "council", network: true, acceptanceGrace: thirtyDays }),
+    { acceptance_grace: "2592000000000000", network: true, signer: "council" },
   ],
   [
     veranaTypeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
     "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion",
-    MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({ corporation: "corp", delegate: "del", ecosystemId: 7, acceptanceGrace: thirtyDays }),
-    { acceptance_grace: "2592000000000000", corporation: "corp", delegate: "del", ecosystem_id: "7" },
+    MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({ corporation: "corp", signer: "del", ecosystemId: 7, acceptanceGrace: thirtyDays }),
+    { acceptance_grace: "2592000000000000", corporation: "corp", ecosystem_id: "7", signer: "del" },
   ],
   [
     veranaTypeUrls.MsgAddGovernanceFrameworkDocument,
     "verana/x/gf/MsgAddGovernanceFrameworkDocument",
-    MsgAddGovernanceFrameworkDocument.fromPartial({ authority: "auth", docLanguage: "en", version: 2 }),
-    { authority: "auth", doc_language: "en", version: 2 },
+    MsgAddGovernanceFrameworkDocument.fromPartial({ signer: "council", network: true, docLanguage: "en", version: 2 }),
+    { doc_language: "en", network: true, signer: "council", version: 2 },
   ],
   [
     veranaTypeUrls.MsgAcceptGovernanceFrameworkVersion,
     "verana/x/gf/MsgAcceptGFVersion",
-    MsgAcceptGovernanceFrameworkVersion.fromPartial({ corporation: "corp", delegate: "del", network: true, version: 1 }),
-    { corporation: "corp", delegate: "del", network: true, version: 1 },
+    MsgAcceptGovernanceFrameworkVersion.fromPartial({ corporation: "corp", signer: "del", network: true, version: 1 }),
+    { corporation: "corp", network: true, signer: "del", version: 1 },
   ],
   [
     veranaTypeUrls.MsgAcceptGovernanceFrameworkVersion,
     "verana/x/gf/MsgAcceptGFVersion",
-    MsgAcceptGovernanceFrameworkVersion.fromPartial({ corporation: "corp", delegate: "del", ecosystemId: 7, version: 3 }),
-    { corporation: "corp", delegate: "del", ecosystem_id: "7", version: 3 },
+    MsgAcceptGovernanceFrameworkVersion.fromPartial({ corporation: "corp", signer: "del", ecosystemId: 7, version: 3 }),
+    { corporation: "corp", ecosystem_id: "7", signer: "del", version: 3 },
   ],
   [
     veranaTypeUrls.MsgAcceptCorporationGovernanceFramework,
     "verana/x/gf/MsgAcceptCorporationGF",
-    MsgAcceptCorporationGovernanceFramework.fromPartial({ delegate: "del", corporationId: 1, version: 2 }),
-    { corporation_id: "1", delegate: "del", version: 2 },
+    MsgAcceptCorporationGovernanceFramework.fromPartial({ signer: "del", corporationId: 1, version: 2 }),
+    { corporation_id: "1", signer: "del", version: 2 },
   ],
 ];
 for (const [typeUrl, aminoType, msg, want] of gfCases) {
@@ -142,7 +142,7 @@ for (const [typeUrl, aminoType, msg, want] of gfCases) {
 const diConverter = amino.register[veranaTypeUrls.MsgStoreDigest];
 const diMsg = MsgStoreDigest.fromPartial({
   corporation: "verana1corp0000000000000000000000000000000000",
-  delegate: "verana1delegate0000000000000000000000000000000",
+  signer: "verana1delegate0000000000000000000000000000000",
   digest: "sha256-abc123",
 });
 const diRoundTrip = diConverter.fromAmino(diConverter.toAmino(diMsg));
@@ -150,7 +150,7 @@ assert.equal(diRoundTrip.digest, "sha256-abc123");
 
 const xrCreateConverter = amino.register[veranaTypeUrls.MsgCreateExchangeRate];
 const xrCreateMsg = MsgCreateExchangeRate.fromPartial({
-  authority: "verana1authority0000000000000000000000000000000",
+  signer: "verana1authority0000000000000000000000000000000",
   baseAssetType: 1,
   baseAsset: "EUR",
   quoteAssetType: 1,
@@ -166,7 +166,7 @@ assert.equal(xrCreateRoundTrip.validityDuration?.nanos, 9);
 
 const xrUpdateConverter = amino.register[veranaTypeUrls.MsgUpdateExchangeRate];
 const xrUpdateMsg = MsgUpdateExchangeRate.fromPartial({
-  feeder: "verana1feeder000000000000000000000000000000000",
+  signer: "verana1feeder000000000000000000000000000000000",
   id: 12,
   rate: "1.0800",
 });
@@ -176,7 +176,7 @@ assert.equal(xrUpdateRoundTrip.rate, "1.0800");
 
 const xrSetStateConverter = amino.register[veranaTypeUrls.MsgSetExchangeRateState];
 const xrSetStateMsg = MsgSetExchangeRateState.fromPartial({
-  authority: "verana1authority0000000000000000000000000000000",
+  signer: "verana1authority0000000000000000000000000000000",
   id: 12,
   state: false,
 });
@@ -186,7 +186,7 @@ assert.equal(xrSetStateRoundTrip.state, false);
 
 const xrGrantConverter = amino.register[veranaTypeUrls.MsgGrantExchangeRateAuthorization];
 const xrGrantMsg = MsgGrantExchangeRateAuthorization.fromPartial({
-  authority: "verana1authority0000000000000000000000000000000",
+  signer: "verana1authority0000000000000000000000000000000",
   xrId: 12,
   feeder: "verana1feeder000000000000000000000000000000000",
   expiration: new Date("2026-09-01T08:30:00.456Z"),
@@ -202,7 +202,7 @@ assert.equal(xrGrantRoundTrip.maxDeviationBps, 250);
 
 const xrRevokeConverter = amino.register[veranaTypeUrls.MsgRevokeExchangeRateAuthorization];
 const xrRevokeMsg = MsgRevokeExchangeRateAuthorization.fromPartial({
-  authority: "verana1authority0000000000000000000000000000000",
+  signer: "verana1authority0000000000000000000000000000000",
   xrId: 12,
   feeder: "verana1feeder000000000000000000000000000000000",
 });
@@ -213,7 +213,7 @@ assert.equal(xrRevokeRoundTrip.feeder, "verana1feeder000000000000000000000000000
 const permConverter = amino.register[veranaTypeUrls.MsgSelfCreateParticipant];
 const permMsg = MsgSelfCreateParticipant.fromPartial({
   corporation: "verana1authority0000000000000000000000000000000",
-  delegate: "verana1delegate0000000000000000000000000000000",
+  signer: "verana1delegate0000000000000000000000000000000",
   role: ParticipantRole.VERIFIER,
   validatorParticipantId: 17,
   did: "did:verana:test:perm",
@@ -234,7 +234,7 @@ assert.equal(permRoundTrip.vsOperatorAuthzPeriod?.nanos, 11);
 const startVpConverter = amino.register[veranaTypeUrls.MsgStartParticipantOP];
 const startVpMsg = MsgStartParticipantOP.fromPartial({
   corporation: "verana1authority0000000000000000000000000000000",
-  delegate: "verana1delegate0000000000000000000000000000000",
+  signer: "verana1delegate0000000000000000000000000000000",
   role: ParticipantRole.VALIDATOR,
   validatorParticipantId: 21,
   did: "did:verana:test:vp",

@@ -30,7 +30,7 @@ const (
 //
 // Query defines the Query service.
 type QueryClient interface {
-	// Params returns the total set of module parameters.
+	// [MOD-GF-QRY-3] List Module Parameters.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// [MOD-GF-QRY-1] Get Governance Framework Version
 	GetGovernanceFrameworkVersion(ctx context.Context, in *QueryGetGovernanceFrameworkVersionRequest, opts ...grpc.CallOption) (*QueryGetGovernanceFrameworkVersionResponse, error)
@@ -82,7 +82,7 @@ func (c *queryClient) GetEcosystemAcceptance(ctx context.Context, in *QueryGetEc
 //
 // Query defines the Query service.
 type QueryServer interface {
-	// Params returns the total set of module parameters.
+	// [MOD-GF-QRY-3] List Module Parameters.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// [MOD-GF-QRY-1] Get Governance Framework Version
 	GetGovernanceFrameworkVersion(context.Context, *QueryGetGovernanceFrameworkVersionRequest) (*QueryGetGovernanceFrameworkVersionResponse, error)

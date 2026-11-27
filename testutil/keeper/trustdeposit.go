@@ -62,6 +62,11 @@ func (m *MockTDCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.
 	return m.GetCorporationByPolicyAddress(ctx, addr)
 }
 
+func (m *MockTDCorporationKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
+
 func (m *MockTDCorporationKeeper) GetCorporationByPolicyAddress(_ context.Context, addr string) (types.CorporationView, error) {
 	if m.Unregistered[addr] {
 		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered

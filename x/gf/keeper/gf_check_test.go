@@ -44,12 +44,12 @@ func networkKeeper(t *testing.T, del types.DelegationKeeper, eco *mockEcosystem,
 func addNetworkVersion(t *testing.T, k keeper.Keeper, ctx sdk.Context, version uint32, grace time.Duration) {
 	t.Helper()
 	ms := keeper.NewMsgServerImpl(k)
-	doc := validMsg("", "", 0, version)
-	doc.Authority = k.GetAuthority()
+	doc := validMsg("", k.GetAuthority(), 0, version)
+	doc.Network = true
 	_, err := ms.AddGovernanceFrameworkDocument(ctx, doc)
 	require.NoError(t, err)
 	if grace > 0 {
-		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: k.GetAuthority(), AcceptanceGrace: grace})
+		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: k.GetAuthority(), Network: true, AcceptanceGrace: grace})
 		require.NoError(t, err)
 	}
 }
@@ -144,7 +144,7 @@ func TestCheckEcosystemGFAcceptance(t *testing.T) {
 		corp := &mockCorporation{view: types.CorporationView{Id: 1, PolicyAddress: testCorp}, found: true}
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, e, corp)
 		_, err := keeper.NewMsgServerImpl(k).AcceptGovernanceFrameworkVersion(ctx, &types.MsgAcceptGovernanceFrameworkVersion{
-			Corporation: testCorp, Delegate: testDelegate, EcosystemId: 7, Version: version,
+			Corporation: testCorp, Signer: testDelegate, EcosystemId: 7, Version: version,
 		})
 		require.NoError(t, err)
 		e.view.ActiveVersion = 2

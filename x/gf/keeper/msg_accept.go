@@ -22,19 +22,20 @@ func (ms msgServer) AcceptGovernanceFrameworkVersion(goCtx context.Context, msg 
 	// GF-CHECK-1 is skipped when the network framework is accepted.
 	var (
 		coView types.CorporationView
+		group  bool
 		err    error
 	)
 	if msg.Network {
 		coView, err = ms.corporationKeeper().GetCorporationByPolicyAddress(ctx, msg.Corporation)
+		group = msg.Signer == msg.Corporation
 	} else {
-		coView, err = ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+		coView, group, err = ms.corporationKeeper().ResolveSigner(ctx, msg.Corporation, msg.Signer)
 	}
 	if err != nil {
 		return nil, err
 	}
-	groupPath := msg.Delegate == msg.Corporation
-	if !groupPath {
-		if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, coView.Id, msg.Delegate, detypes.MsgType_MSG_TYPE_ACCEPT_GOVERNANCE_FRAMEWORK_VERSION, now); err != nil {
+	if !group {
+		if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, coView.Id, msg.Signer, detypes.MsgType_MSG_TYPE_ACCEPT_GOVERNANCE_FRAMEWORK_VERSION, now); err != nil {
 			return nil, err
 		}
 	}
@@ -75,7 +76,7 @@ func (ms msgServer) AcceptGovernanceFrameworkVersion(goCtx context.Context, msg 
 		ev.Uint(events.AttrEcosystemID, e.Id)
 	}
 	ev.Uint(types.AttributeKeyVersion, uint64(msg.Version)).Time(events.AttrNow, now)
-	if groupPath {
+	if group {
 		if err := ev.Msg(ms.cdc, msg); err != nil {
 			return nil, err
 		}
@@ -100,13 +101,13 @@ func (ms msgServer) AcceptCorporationGovernanceFramework(goCtx context.Context, 
 	if msg.Version != co.ActiveVersion {
 		return nil, cerrors.Wrapf(types.ErrInvalidVersion, "version must be %d, the active version of corporation %d", co.ActiveVersion, co.Id)
 	}
-	if err := ms.delegationKeeper.SetDelegateAcceptedCGFVersion(ctx, co.Id, msg.Delegate, msg.Version); err != nil {
+	if err := ms.delegationKeeper.SetDelegateAcceptedCGFVersion(ctx, co.Id, msg.Signer, msg.Version); err != nil {
 		return nil, err
 	}
 
 	events.New(types.ModuleName, types.EventTypeAcceptCorporationGovernanceFramework).
 		Uint(events.AttrCorporationID, co.Id).
-		Str(types.AttributeKeyDelegate, msg.Delegate).
+		Str(types.AttributeKeySigner, msg.Signer).
 		Uint(types.AttributeKeyVersion, uint64(msg.Version)).
 		Time(events.AttrNow, ctx.BlockTime()).
 		Emit(ctx)

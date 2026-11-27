@@ -11,7 +11,7 @@ const (
 	AttributeKeyGFDocID            = "gfd_id"
 	AttributeKeyVersion            = "version"
 	AttributeKeyNetwork            = "network"
-	AttributeKeyDelegate           = "delegate"
+	AttributeKeySigner             = "signer"
 	AttributeKeyActiveSince        = "active_since"
 	AttributeKeyAcceptanceDeadline = "acceptance_deadline"
 )

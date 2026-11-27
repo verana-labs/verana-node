@@ -27,14 +27,14 @@ func ValidateDigestString(digest string) error {
 
 // ValidateBasic performs stateless validation on MsgStoreDigest.
 func (msg *MsgStoreDigest) ValidateBasic() error {
-	// authority (corporation) is mandatory
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
-		return fmt.Errorf("invalid authority address: %w", err)
+	// corporation is mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Corporation); err != nil {
+		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// delegate is mandatory
-	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
-		return fmt.Errorf("invalid delegate address: %w", err)
+	// signer is mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
+		return fmt.Errorf("invalid signer address: %w", err)
 	}
 
 	return ValidateDigestString(msg.Digest)

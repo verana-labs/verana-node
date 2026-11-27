@@ -671,7 +671,7 @@ export async function acceptCorporationGovernanceFramework(
   }
   const msg = {
     typeUrl: typeUrls.MsgAcceptCorporationGovernanceFramework,
-    value: MsgAcceptCorporationGovernanceFramework.fromPartial({ delegate: account.address, corporationId, version }),
+    value: MsgAcceptCorporationGovernanceFramework.fromPartial({ signer: account.address, corporationId, version }),
   };
   const client = await createSigningClient(wallet);
   try {

@@ -12,8 +12,8 @@ export const protobufPackage = "verana.ds.v1";
 
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParams {
-  /** authority is the council account. */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /** NOTE: All parameters must be supplied. */
   params: Params | undefined;
 }
@@ -26,13 +26,13 @@ export interface MsgUpdateParamsResponse {
 }
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
+  return { signer: "", params: undefined };
 }
 
 export const MsgUpdateParams = {
   encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -52,7 +52,7 @@ export const MsgUpdateParams = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -72,15 +72,15 @@ export const MsgUpdateParams = {
 
   fromJSON(object: any): MsgUpdateParams {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
     };
   },
 
   toJSON(message: MsgUpdateParams): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
@@ -93,7 +93,7 @@ export const MsgUpdateParams = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;

@@ -65,7 +65,7 @@ func TestSlashTrustDeposit_ClipsRefundedToPostSlashDeposit(t *testing.T) {
 
 	// Slash 300 -> post-slash deposit = 700, which is < refunded (900).
 	_, err := ms.SlashTrustDeposit(ctx, &types.MsgSlashTrustDeposit{
-		Authority:     govAuthority(),
+		Signer:        govAuthority(),
 		CorporationId: corpID,
 		Deposit:       math.NewInt(300),
 		Reason:        "invariant_test",
@@ -95,7 +95,7 @@ func TestRepay_ReslashKeepsCumulativeGuard(t *testing.T) {
 	}))
 
 	_, err := ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
-		Corporation: acct, Delegate: acct, Deposit: 100,
+		Corporation: acct, Signer: acct, Deposit: 100,
 	})
 	require.NoError(t, err)
 	td, err := k.TrustDeposit.Get(ctx, corpID)
@@ -104,7 +104,7 @@ func TestRepay_ReslashKeepsCumulativeGuard(t *testing.T) {
 	require.Equal(t, uint64(100), td.RepaidDeposit)
 
 	_, err = ms.SlashTrustDeposit(ctx, &types.MsgSlashTrustDeposit{
-		Authority: govAuthority(), CorporationId: corpID, Deposit: math.NewInt(50), Reason: "reslash",
+		Signer: govAuthority(), CorporationId: corpID, Deposit: math.NewInt(50), Reason: "reslash",
 	})
 	require.NoError(t, err)
 	td, err = k.TrustDeposit.Get(ctx, corpID)

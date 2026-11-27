@@ -95,7 +95,7 @@
     },
     "/gf/v1/params": {
       "get": {
-        "summary": "Params returns the total set of module parameters.",
+        "summary": "[MOD-GF-QRY-3] List Module Parameters.",
         "operationId": "Query_Params",
         "responses": {
           "200": {
@@ -262,6 +262,28 @@
       "properties": {
         "params": {
           "$ref": "#/definitions/verana.gf.v1.Params"
+        },
+        "council_account": {
+          "type": "string",
+          "description": "council_account is the council's group policy account."
+        },
+        "network_governance_framework_versions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uint64"
+          },
+          "description": "network_governance_framework_versions lists the network framework versions\nin version order."
+        },
+        "ngf_acceptance_deadline": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ngf_acceptance_deadline ends the grace period of the last activation."
+        },
+        "ngf_version": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ngf_version is the version of the network framework in force."
         }
       }
     }

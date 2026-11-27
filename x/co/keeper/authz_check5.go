@@ -27,6 +27,17 @@ func (k Keeper) ResolveCorporationByPolicyAddress(ctx context.Context, policyAdd
 	return co, nil
 }
 
+// ResolveSigner runs AUTHZ-CHECK-5 for the corporation of a message signed by
+// signer, and reports the group-proposal path: signer equal to corporation, on
+// which no delegate authorization, spend limit or fee grant applies.
+func (k Keeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.Corporation, bool, error) {
+	co, err := k.ResolveCorporationByPolicyAddress(ctx, corporation)
+	if err != nil {
+		return types.Corporation{}, false, err
+	}
+	return co, signer == corporation, nil
+}
+
 // GetCorporationByPolicyAddress returns the corporation bound to policyAddress
 // without GF-CHECK-1, for lookups of an account that is not the message's
 // corporation.

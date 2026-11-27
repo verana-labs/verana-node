@@ -20,7 +20,7 @@ import {
 export const MsgCreateExchangeRateAminoConverter: AminoConverter = {
   aminoType: "verana/x/xr/MsgCreateExchangeRate",
   toAmino: (m: MsgCreateExchangeRate) => clean({
-    authority: m.authority || undefined,
+    signer: m.signer || undefined,
     base_asset_type: m.baseAssetType ?? 0,
     base_asset: m.baseAsset || undefined,
     quote_asset_type: m.quoteAssetType ?? 0,
@@ -32,7 +32,7 @@ export const MsgCreateExchangeRateAminoConverter: AminoConverter = {
   }),
   fromAmino: (a: any): MsgCreateExchangeRate =>
     MsgCreateExchangeRate.fromPartial({
-      authority: a.authority ?? "",
+      signer: a.signer ?? "",
       baseAssetType: a.base_asset_type ?? 0,
       baseAsset: a.base_asset ?? "",
       quoteAssetType: a.quote_asset_type ?? 0,
@@ -47,13 +47,13 @@ export const MsgCreateExchangeRateAminoConverter: AminoConverter = {
 export const MsgUpdateExchangeRateAminoConverter: AminoConverter = {
   aminoType: "verana/x/xr/MsgUpdateExchangeRate",
   toAmino: (m: MsgUpdateExchangeRate) => clean({
-    feeder: m.feeder || undefined,
+    signer: m.signer || undefined,
     id: u64ToStr(m.id),
     rate: m.rate || undefined,
   }),
   fromAmino: (a: any): MsgUpdateExchangeRate =>
     MsgUpdateExchangeRate.fromPartial({
-      feeder: a.feeder ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       rate: a.rate ?? "",
     }),
@@ -62,13 +62,13 @@ export const MsgUpdateExchangeRateAminoConverter: AminoConverter = {
 export const MsgSetExchangeRateStateAminoConverter: AminoConverter = {
   aminoType: "verana/x/xr/MsgSetExchangeRateState",
   toAmino: (m: MsgSetExchangeRateState) => clean({
-    authority: m.authority || undefined,
+    signer: m.signer || undefined,
     id: u64ToStr(m.id),
     state: m.state ? true : undefined,
   }),
   fromAmino: (a: any): MsgSetExchangeRateState =>
     MsgSetExchangeRateState.fromPartial({
-      authority: a.authority ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       state: a.state ?? false,
     }),
@@ -77,7 +77,7 @@ export const MsgSetExchangeRateStateAminoConverter: AminoConverter = {
 export const MsgGrantExchangeRateAuthorizationAminoConverter: AminoConverter = {
   aminoType: "verana/x/xr/MsgGrantXrAuthz",
   toAmino: (m: MsgGrantExchangeRateAuthorization) => clean({
-    authority: m.authority || undefined,
+    signer: m.signer || undefined,
     xr_id: u64ToStr(m.xrId),
     feeder: m.feeder || undefined,
     expiration: dateToIsoAmino(m.expiration),
@@ -86,7 +86,7 @@ export const MsgGrantExchangeRateAuthorizationAminoConverter: AminoConverter = {
   }),
   fromAmino: (a: any): MsgGrantExchangeRateAuthorization =>
     MsgGrantExchangeRateAuthorization.fromPartial({
-      authority: a.authority ?? "",
+      signer: a.signer ?? "",
       xrId: strToU64(a.xr_id) != null ? Number(strToU64(a.xr_id)!.toString()) : 0,
       feeder: a.feeder ?? "",
       expiration: isoToDate(a.expiration),
@@ -98,13 +98,13 @@ export const MsgGrantExchangeRateAuthorizationAminoConverter: AminoConverter = {
 export const MsgRevokeExchangeRateAuthorizationAminoConverter: AminoConverter = {
   aminoType: "verana/x/xr/MsgRevokeXrAuthz",
   toAmino: (m: MsgRevokeExchangeRateAuthorization) => clean({
-    authority: m.authority || undefined,
+    signer: m.signer || undefined,
     xr_id: u64ToStr(m.xrId),
     feeder: m.feeder || undefined,
   }),
   fromAmino: (a: any): MsgRevokeExchangeRateAuthorization =>
     MsgRevokeExchangeRateAuthorization.fromPartial({
-      authority: a.authority ?? "",
+      signer: a.signer ?? "",
       xrId: strToU64(a.xr_id) != null ? Number(strToU64(a.xr_id)!.toString()) : 0,
       feeder: a.feeder ?? "",
     }),

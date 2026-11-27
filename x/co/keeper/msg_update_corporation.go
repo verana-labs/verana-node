@@ -14,21 +14,23 @@ import (
 // UpdateCorporation implements MOD-CO-MSG-2.
 //
 // Rotates the DID of an existing Corporation. The corporation field on the msg
-// is the policy_address (= AUTHZ-CHECK-5 subject); the delegate must hold a
-// delegation from that Corporation for THIS msg type. Language is immutable.
+// is the policy_address (= AUTHZ-CHECK-5 subject); a delegate signer must hold
+// a delegation from that Corporation for THIS msg type. Language is immutable.
 func (ms msgServer) UpdateCorporation(goCtx context.Context, msg *types.MsgUpdateCorporation) (*types.MsgUpdateCorporationResponse, error) {
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the delegate.
-	co, err := ms.ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+	// AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 off the group path.
+	co, group, err := ms.ResolveSigner(ctx, msg.Corporation, msg.Signer)
 	if err != nil {
 		return nil, err
 	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_CORPORATION, ctx.BlockTime()); err != nil {
-		return nil, err
+	if !group {
+		if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, msg.Signer, detypes.MsgType_MSG_TYPE_UPDATE_CORPORATION, ctx.BlockTime()); err != nil {
+			return nil, err
+		}
 	}
 
 	if msg.Did == co.Did {

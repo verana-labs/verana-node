@@ -71,7 +71,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "[MOD-GF-MSG-3] Records the acceptance by a corporation of the version in force\nof the network governance framework, or of an ecosystem's. On the\ngroup-proposal path the policy account signs and delegate equals corporation.",
+            "description": "[MOD-GF-MSG-3] Records the acceptance by a corporation of the version in force\nof the network governance framework, or of an ecosystem's.",
             "in": "body",
             "required": true,
             "schema": {
@@ -219,9 +219,9 @@
     "verana.gf.v1.MsgAcceptCorporationGovernanceFramework": {
       "type": "object",
       "properties": {
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the signer, the account that holds the authorization."
+          "description": "signer is the delegate, the account that holds the authorization."
         },
         "corporation_id": {
           "type": "string",
@@ -246,9 +246,9 @@
           "type": "string",
           "description": "corporation is the policy_address of the accepting corporation."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the signer: an authorized delegate, or the corporation's\npolicy_address on the group-proposal path."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "ecosystem_id": {
           "type": "string",
@@ -265,7 +265,7 @@
           "description": "version is the version accepted, the version in force."
         }
       },
-      "description": "[MOD-GF-MSG-3] Records the acceptance by a corporation of the version in force\nof the network governance framework, or of an ecosystem's. On the\ngroup-proposal path the policy account signs and delegate equals corporation."
+      "description": "[MOD-GF-MSG-3] Records the acceptance by a corporation of the version in force\nof the network governance framework, or of an ecosystem's."
     },
     "verana.gf.v1.MsgAcceptGovernanceFrameworkVersionResponse": {
       "type": "object"
@@ -275,11 +275,11 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "corporation is the signing corporation (group_policy_address)."
+          "description": "corporation is the policy_address of the corporation; absent on the\nnetwork path."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, corporation itself on the\ngroup-proposal path, or the council account on the network path."
         },
         "ecosystem_id": {
           "type": "string",
@@ -303,9 +303,9 @@
           "format": "int64",
           "description": "version is the target governance framework version."
         },
-        "authority": {
-          "type": "string",
-          "description": "authority is the council account, set on the network path only."
+        "network": {
+          "type": "boolean",
+          "description": "network targets the network governance framework."
         }
       },
       "description": "[MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft\nversion owned by an Ecosystem, a Corporation or the network."
@@ -318,20 +318,20 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "corporation is the signing corporation (group_policy_address)."
+          "description": "corporation is the policy_address of the corporation; absent on the\nnetwork path."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, corporation itself on the\ngroup-proposal path, or the council account on the network path."
         },
         "ecosystem_id": {
           "type": "string",
           "format": "uint64",
           "description": "ecosystem_id is optional. If set, target is the Ecosystem; otherwise the\nsigning Corporation's own CGF."
         },
-        "authority": {
-          "type": "string",
-          "description": "authority is the council account, set on the network path only."
+        "network": {
+          "type": "boolean",
+          "description": "network targets the network governance framework."
         },
         "acceptance_grace": {
           "type": "string",
@@ -346,9 +346,9 @@
     "verana.gf.v1.MsgUpdateParams": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov)."
+          "description": "signer is the council account."
         },
         "params": {
           "$ref": "#/definitions/verana.gf.v1.Params",

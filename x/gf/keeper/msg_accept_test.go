@@ -16,7 +16,7 @@ import (
 )
 
 func acceptMsg(delegate string, ecosystemID uint64, network bool, version uint32) *types.MsgAcceptGovernanceFrameworkVersion {
-	return &types.MsgAcceptGovernanceFrameworkVersion{Corporation: testCorp, Delegate: delegate, EcosystemId: ecosystemID, Network: network, Version: version}
+	return &types.MsgAcceptGovernanceFrameworkVersion{Corporation: testCorp, Signer: delegate, EcosystemId: ecosystemID, Network: network, Version: version}
 }
 
 func TestMsgAcceptGovernanceFrameworkVersionValidateBasic(t *testing.T) {
@@ -167,15 +167,15 @@ func TestAcceptEcosystemGovernanceFramework(t *testing.T) {
 // [MOD-GF-MSG-4]
 func TestAcceptCorporationGovernanceFramework(t *testing.T) {
 	msg := func(version uint32) *types.MsgAcceptCorporationGovernanceFramework {
-		return &types.MsgAcceptCorporationGovernanceFramework{Delegate: testDelegate, CorporationId: 1, Version: version}
+		return &types.MsgAcceptCorporationGovernanceFramework{Signer: testDelegate, CorporationId: 1, Version: version}
 	}
 	corp := &mockCorporation{view: types.CorporationView{Id: 1, ActiveVersion: 2}, found: true}
 
 	t.Run("validate basic", func(t *testing.T) {
 		require.NoError(t, msg(1).ValidateBasic())
 		require.ErrorIs(t, msg(0).ValidateBasic(), types.ErrInvalidVersion)
-		require.ErrorIs(t, (&types.MsgAcceptCorporationGovernanceFramework{Delegate: testDelegate, Version: 1}).ValidateBasic(), types.ErrInvalidSubject)
-		require.Error(t, (&types.MsgAcceptCorporationGovernanceFramework{Delegate: "bad", CorporationId: 1, Version: 1}).ValidateBasic())
+		require.ErrorIs(t, (&types.MsgAcceptCorporationGovernanceFramework{Signer: testDelegate, Version: 1}).ValidateBasic(), types.ErrInvalidSubject)
+		require.Error(t, (&types.MsgAcceptCorporationGovernanceFramework{Signer: "bad", CorporationId: 1, Version: 1}).ValidateBasic())
 	})
 
 	t.Run("records the delegate's acceptance", func(t *testing.T) {
@@ -189,11 +189,11 @@ func TestAcceptCorporationGovernanceFramework(t *testing.T) {
 		require.Zero(t, del.calls, "outside AUTHZ-CHECK")
 
 		require.Equal(t, map[string]string{
-			"module":                   types.ModuleName,
-			"corporation_id":           "1",
-			types.AttributeKeyDelegate: testDelegate,
-			types.AttributeKeyVersion:  "2",
-			"now":                      genesisTime.Format(time.RFC3339),
+			"module":                  types.ModuleName,
+			"corporation_id":          "1",
+			types.AttributeKeySigner:  testDelegate,
+			types.AttributeKeyVersion: "2",
+			"now":                     genesisTime.Format(time.RFC3339),
 		}, eventAttrs(ctx, types.EventTypeAcceptCorporationGovernanceFramework))
 	})
 

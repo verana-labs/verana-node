@@ -63,7 +63,7 @@ async function main() {
     typeUrl: typeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
     value: MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       ecosystemId: activeEC.ecosystemId,
       // gf_acceptance_grace_min defaults to 30 days.
       acceptanceGrace: { seconds: 30 * 24 * 3600, nanos: 0 },

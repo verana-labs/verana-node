@@ -23,19 +23,19 @@ func TestMsgUpdateParams(t *testing.T) {
 		expErrMsg string
 	}{
 		{
-			name: "invalid authority",
+			name: "invalid signer",
 			input: &types.MsgUpdateParams{
-				Authority: "invalid",
-				Params:    params,
+				Signer: "invalid",
+				Params: params,
 			},
 			expErr:    true,
-			expErrMsg: "invalid authority",
+			expErrMsg: "invalid signer",
 		},
 		{
 			name: "zero values",
 			input: &types.MsgUpdateParams{
-				Authority: k.GetAuthority(),
-				Params:    types.Params{},
+				Signer: k.GetAuthority(),
+				Params: types.Params{},
 			},
 			expErr:    true,
 			expErrMsg: "must be positive",
@@ -43,8 +43,8 @@ func TestMsgUpdateParams(t *testing.T) {
 		{
 			name: "all good",
 			input: &types.MsgUpdateParams{
-				Authority: k.GetAuthority(),
-				Params:    params,
+				Signer: k.GetAuthority(),
+				Params: params,
 			},
 			expErr: false,
 		},
@@ -70,7 +70,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 	params := types.DefaultParams()
 	params.CredentialSchemaPresentationValidityPeriodMaxDays = 30
 
-	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: params})
+	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: params})
 	require.NoError(t, err)
 	require.Equal(t, params, k.GetParams(wctx))
 
@@ -82,7 +82,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 			}
 		}
 	}
-	require.Equal(t, k.GetAuthority(), attrs[types.AttributeKeyAuthority])
+	require.Equal(t, k.GetAuthority(), attrs[types.AttributeKeySigner])
 	require.Equal(t, "30", attrs["credential_schema_presentation_validity_period_max_days"])
 	require.Equal(t, "8192", attrs["credential_schema_schema_max_size"])
 	require.Len(t, attrs, 8)

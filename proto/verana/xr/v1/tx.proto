@@ -67,11 +67,11 @@ service Msg {
 
 // MsgCreateExchangeRate is the Msg/CreateExchangeRate request type.
 message MsgCreateExchangeRate {
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/xr/MsgCreateExchangeRate";
 
-  // authority is the address that controls the module (defaults to x/gov unless overwritten).
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is the council account.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   verana.cs.v1.PricingAssetType base_asset_type = 2;
   string base_asset = 3;
@@ -90,11 +90,11 @@ message MsgCreateExchangeRateResponse {
 
 // MsgUpdateExchangeRate is the Msg/UpdateExchangeRate request type. [MOD-XR-MSG-2]
 message MsgUpdateExchangeRate {
-  option (cosmos.msg.v1.signer) = "feeder";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/xr/MsgUpdateExchangeRate";
 
-  // feeder is the authorized feeder executing this message.
-  string feeder = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is a feeder of the exchange rate.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   // id is the exchange rate entry to update.
   uint64 id = 2;
@@ -108,11 +108,11 @@ message MsgUpdateExchangeRateResponse {}
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
 message MsgUpdateParams {
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/xr/MsgUpdateParams";
 
-  // authority is the address that controls the module (defaults to x/gov unless overwritten).
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is the council account.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   // params defines the module parameters to update.
   //
@@ -125,11 +125,11 @@ message MsgUpdateParams {
 
 // MsgSetExchangeRateState is the Msg/SetExchangeRateState request type.
 message MsgSetExchangeRateState {
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/xr/MsgSetExchangeRateState";
 
-  // authority is the address that controls the module (defaults to x/gov unless overwritten).
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is the council account.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   // id is the exchange rate entry to toggle.
   uint64 id = 2;
@@ -143,11 +143,11 @@ message MsgSetExchangeRateStateResponse {}
 
 // MsgGrantExchangeRateAuthorization is the Msg/GrantExchangeRateAuthorization request type. [MOD-XR-MSG-4]
 message MsgGrantExchangeRateAuthorization {
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/xr/MsgGrantXrAuthz";
 
-  // authority is the gov module account.
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is the council account.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   // xr_id is the exchange rate the feeder is authorized to update.
   uint64 xr_id = 2;
@@ -170,11 +170,11 @@ message MsgGrantExchangeRateAuthorizationResponse {}
 
 // MsgRevokeExchangeRateAuthorization is the Msg/RevokeExchangeRateAuthorization request type. [MOD-XR-MSG-5]
 message MsgRevokeExchangeRateAuthorization {
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/xr/MsgRevokeXrAuthz";
 
-  // authority is the gov module account.
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is the council account.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   // xr_id is the exchange rate the authorization is for.
   uint64 xr_id = 2;

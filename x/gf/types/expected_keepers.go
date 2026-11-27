@@ -52,7 +52,8 @@ type CorporationView struct {
 //   - AUTHZ-CHECK-5 resolution: ResolveCorporationByPolicyAddress takes the
 //     signing account (= policy_address), returns the registered Corporation
 //     (its id, language, active_version) after GF-CHECK-1, and MUST be called at
-//     the entry of every delegable MOD-GF Msg.
+//     the entry of every delegable MOD-GF Msg. ResolveSigner does the same for
+//     the message's corporation and reports the group-proposal path.
 //   - Subject lookups by id: GetByID returns a Corporation by its uint64 id (used
 //     by the query layer for the active_only filter).
 //   - GetCorporationByPolicyAddress is AUTHZ-CHECK-5 without GF-CHECK-1, for
@@ -63,6 +64,7 @@ type CorporationView struct {
 //     governance framework (MOD-GF-MSG-3-3).
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+	ResolveSigner(ctx context.Context, corporation, signer string) (CorporationView, bool, error)
 	GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 	GetByID(ctx context.Context, corporationID uint64) (CorporationView, bool)
 	SetActiveVersion(ctx context.Context, corporationID uint64, newVersion uint32, acceptanceDeadline time.Time) error

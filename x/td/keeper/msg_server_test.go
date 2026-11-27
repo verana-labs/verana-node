@@ -32,7 +32,7 @@ func TestMsgServer(t *testing.T) {
 func TestMsgReclaimTrustDepositYield(t *testing.T) {
 	_, ms, ctx, _ := setupMsgServer(t)
 	addr := sdk.AccAddress([]byte("test_address")).String()
-	_, err := ms.ReclaimTrustDepositYield(ctx, &types.MsgReclaimTrustDepositYield{Corporation: addr, Delegate: addr})
+	_, err := ms.ReclaimTrustDepositYield(ctx, &types.MsgReclaimTrustDepositYield{Corporation: addr, Signer: addr})
 	require.ErrorIs(t, err, types.ErrMsgVoid)
 }
 
@@ -292,17 +292,17 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 		{
 			name: "Invalid authority",
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     "verana1invalidauthority",
+				Signer:        "verana1invalidauthority",
 				CorporationId: corpID,
 				Deposit:       math.NewInt(100),
 			},
 			expErr:    true,
-			expErrMsg: "invalid authority",
+			expErrMsg: "invalid signer",
 		},
 		{
 			name: "Zero amount",
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(0),
 			},
@@ -312,7 +312,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 		{
 			name: "Negative amount",
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(-100),
 			},
@@ -322,7 +322,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 		{
 			name: "Trust deposit not found",
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: 999, // no trust deposit for this id
 				Deposit:       math.NewInt(100),
 			},
@@ -343,7 +343,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 				require.NoError(t, err)
 			},
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(200),
 			},
@@ -364,7 +364,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 				require.NoError(t, err)
 			},
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(300),
 			},
@@ -397,7 +397,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 				require.NoError(t, err)
 			},
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(100),
 			},
@@ -424,7 +424,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 				require.NoError(t, err)
 			},
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(500),
 			},
@@ -483,7 +483,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			name: "Trust deposit not found",
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: sdk.AccAddress([]byte("nonexistent_addr__")).String(),
-				Delegate:    testAccString,
+				Signer:      testAccString,
 				Deposit:     100,
 			},
 			expErr:    true,
@@ -506,7 +506,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			},
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: testAccString,
-				Delegate:    testAccString,
+				Signer:      testAccString,
 				Deposit:     200, // outstanding is 300
 			},
 			expErr:    true,
@@ -530,7 +530,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			},
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: testAccString,
-				Delegate:    testAccString,
+				Signer:      testAccString,
 				Deposit:     300,
 			},
 			expErr: false,
@@ -566,7 +566,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			},
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: testAccString,
-				Delegate:    testAccString,
+				Signer:      testAccString,
 				Deposit:     300, // clears the remaining outstanding slash
 			},
 			expErr: false,
@@ -595,7 +595,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			},
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: testAccString,
-				Delegate:    sdk.AccAddress([]byte("different_delegate")).String(),
+				Signer:      sdk.AccAddress([]byte("different_delegate")).String(),
 				Deposit:     100,
 			},
 			expErr: false,
@@ -651,7 +651,7 @@ func TestMsgRepaySlashedTrustDepositAuthz(t *testing.T) {
 		dk.ErrToReturn = fmt.Errorf("mock: delegate not authorized")
 		_, err = ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
 			Corporation: testAccString,
-			Delegate:    delegateAddr,
+			Signer:      delegateAddr,
 			Deposit:     300,
 		})
 		require.Error(t, err)
@@ -674,7 +674,7 @@ func TestMsgRepaySlashedTrustDepositAuthz(t *testing.T) {
 		dk.ErrToReturn = nil
 		_, err = ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
 			Corporation: testAccString,
-			Delegate:    delegateAddr,
+			Signer:      delegateAddr,
 			Deposit:     300,
 		})
 		require.NoError(t, err)

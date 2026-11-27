@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import { Timestamp } from "../../../google/protobuf/timestamp";
 import { Params } from "./params";
 import { EcosystemAcceptance, GovernanceFrameworkVersionWithDocs } from "./types";
 import Long = require("long");
@@ -16,7 +17,22 @@ export interface QueryParamsRequest {
 }
 
 export interface QueryParamsResponse {
-  params: Params | undefined;
+  params:
+    | Params
+    | undefined;
+  /** council_account is the council's group policy account. */
+  councilAccount: string;
+  /**
+   * network_governance_framework_versions lists the network framework versions
+   * in version order.
+   */
+  networkGovernanceFrameworkVersions: number[];
+  /** ngf_acceptance_deadline ends the grace period of the last activation. */
+  ngfAcceptanceDeadline:
+    | Date
+    | undefined;
+  /** ngf_version is the version of the network framework in force. */
+  ngfVersion: number;
 }
 
 export interface QueryGetGovernanceFrameworkVersionRequest {
@@ -81,13 +97,33 @@ export const QueryParamsRequest = {
 };
 
 function createBaseQueryParamsResponse(): QueryParamsResponse {
-  return { params: undefined };
+  return {
+    params: undefined,
+    councilAccount: "",
+    networkGovernanceFrameworkVersions: [],
+    ngfAcceptanceDeadline: undefined,
+    ngfVersion: 0,
+  };
 }
 
 export const QueryParamsResponse = {
   encode(message: QueryParamsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.councilAccount !== "") {
+      writer.uint32(18).string(message.councilAccount);
+    }
+    writer.uint32(26).fork();
+    for (const v of message.networkGovernanceFrameworkVersions) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
+    if (message.ngfAcceptanceDeadline !== undefined) {
+      Timestamp.encode(toTimestamp(message.ngfAcceptanceDeadline), writer.uint32(34).fork()).ldelim();
+    }
+    if (message.ngfVersion !== 0) {
+      writer.uint32(40).uint32(message.ngfVersion);
     }
     return writer;
   },
@@ -106,6 +142,44 @@ export const QueryParamsResponse = {
 
           message.params = Params.decode(reader, reader.uint32());
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.councilAccount = reader.string();
+          continue;
+        case 3:
+          if (tag === 24) {
+            message.networkGovernanceFrameworkVersions.push(longToNumber(reader.uint64() as Long));
+
+            continue;
+          }
+
+          if (tag === 26) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.networkGovernanceFrameworkVersions.push(longToNumber(reader.uint64() as Long));
+            }
+
+            continue;
+          }
+
+          break;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.ngfAcceptanceDeadline = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.ngfVersion = reader.uint32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -116,13 +190,35 @@ export const QueryParamsResponse = {
   },
 
   fromJSON(object: any): QueryParamsResponse {
-    return { params: isSet(object.params) ? Params.fromJSON(object.params) : undefined };
+    return {
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+      councilAccount: isSet(object.councilAccount) ? globalThis.String(object.councilAccount) : "",
+      networkGovernanceFrameworkVersions: globalThis.Array.isArray(object?.networkGovernanceFrameworkVersions)
+        ? object.networkGovernanceFrameworkVersions.map((e: any) => globalThis.Number(e))
+        : [],
+      ngfAcceptanceDeadline: isSet(object.ngfAcceptanceDeadline)
+        ? fromJsonTimestamp(object.ngfAcceptanceDeadline)
+        : undefined,
+      ngfVersion: isSet(object.ngfVersion) ? globalThis.Number(object.ngfVersion) : 0,
+    };
   },
 
   toJSON(message: QueryParamsResponse): unknown {
     const obj: any = {};
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
+    }
+    if (message.councilAccount !== "") {
+      obj.councilAccount = message.councilAccount;
+    }
+    if (message.networkGovernanceFrameworkVersions?.length) {
+      obj.networkGovernanceFrameworkVersions = message.networkGovernanceFrameworkVersions.map((e) => Math.round(e));
+    }
+    if (message.ngfAcceptanceDeadline !== undefined) {
+      obj.ngfAcceptanceDeadline = message.ngfAcceptanceDeadline.toISOString();
+    }
+    if (message.ngfVersion !== 0) {
+      obj.ngfVersion = Math.round(message.ngfVersion);
     }
     return obj;
   },
@@ -135,6 +231,10 @@ export const QueryParamsResponse = {
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
+    message.councilAccount = object.councilAccount ?? "";
+    message.networkGovernanceFrameworkVersions = object.networkGovernanceFrameworkVersions?.map((e) => e) || [];
+    message.ngfAcceptanceDeadline = object.ngfAcceptanceDeadline ?? undefined;
+    message.ngfVersion = object.ngfVersion ?? 0;
     return message;
   },
 };
@@ -423,7 +523,7 @@ export const QueryGetEcosystemAcceptanceResponse = {
 
 /** Query defines the Query service. */
 export interface Query {
-  /** Params returns the total set of module parameters. */
+  /** [MOD-GF-QRY-3] List Module Parameters. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /** [MOD-GF-QRY-1] Get Governance Framework Version */
   GetGovernanceFrameworkVersion(
@@ -480,6 +580,28 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = Math.trunc(date.getTime() / 1_000);
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (t.seconds || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof globalThis.Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new globalThis.Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function longToNumber(long: Long): number {
   if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {

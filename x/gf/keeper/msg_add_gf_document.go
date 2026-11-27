@@ -32,17 +32,18 @@ type resolvedSubject struct {
 	activeVersion uint32
 }
 
-// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
-// delegate, and returns the resolved corporation.
-func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (types.CorporationView, error) {
-	coView, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, corporation)
-	if err != nil {
-		return types.CorporationView{}, err
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for a
+// delegate signer, and returns the resolved corporation and whether the
+// signer is on the group-proposal path.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, signer string, msgType detypes.MsgType) (types.CorporationView, bool, error) {
+	coView, group, err := ms.corporationKeeper().ResolveSigner(ctx, corporation, signer)
+	if err != nil || group {
+		return coView, group, err
 	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, coView.Id, delegate, msgType, ctx.BlockTime()); err != nil {
-		return types.CorporationView{}, err
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, coView.Id, signer, msgType, ctx.BlockTime()); err != nil {
+		return types.CorporationView{}, false, err
 	}
-	return coView, nil
+	return coView, false, nil
 }
 
 // resolveSubject implements the spec's "Define subject as ..." block for
@@ -147,11 +148,12 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 		exists bool
 		ng     types.NetworkGovernance
 		coView types.CorporationView
+		group  bool
 		sub    resolvedSubject
 		err    error
 	)
-	if msg.Authority != "" {
-		if err := ms.checkAuthority(msg.Authority); err != nil {
+	if msg.Network {
+		if err := ms.checkNetworkPath(msg.Signer); err != nil {
 			return nil, err
 		}
 		sub.kind = subjectNetwork
@@ -160,7 +162,7 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 			return nil, err
 		}
 	} else {
-		coView, err = ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT)
+		coView, group, err = ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT)
 		if err != nil {
 			return nil, err
 		}
@@ -259,12 +261,13 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 	ev := events.New(types.ModuleName, types.EventTypeAddGovernanceFrameworkDocument).
 		Uint(types.AttributeKeyGFVersionID, gfv.Id).
 		Uint(types.AttributeKeyGFDocID, gfd.Id)
-	if sub.kind == subjectNetwork {
+	if sub.kind != subjectNetwork {
+		ev.Uint(events.AttrCorporationID, coView.Id)
+	}
+	if sub.kind == subjectNetwork || group {
 		if err := ev.Msg(ms.cdc, msg); err != nil {
 			return nil, err
 		}
-	} else {
-		ev.Uint(events.AttrCorporationID, coView.Id)
 	}
 	ev.Emit(ctx)
 

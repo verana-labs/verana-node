@@ -17,10 +17,10 @@ func NewMsgServerImpl(k Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-// checkAuthority checks the council signer of the network path.
-func (ms msgServer) checkAuthority(authority string) error {
-	if authority != ms.GetAuthority() {
-		return errors.Wrapf(sdkerrors.ErrUnauthorized, "expected %s got %s", ms.GetAuthority(), authority)
+// checkNetworkPath checks the council signer of the network path.
+func (ms msgServer) checkNetworkPath(signer string) error {
+	if signer != ms.GetAuthority() {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "expected %s got %s", ms.GetAuthority(), signer)
 	}
 	return nil
 }

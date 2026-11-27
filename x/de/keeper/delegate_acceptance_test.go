@@ -14,7 +14,7 @@ func TestSetDelegateAcceptedCGFVersion(t *testing.T) {
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
@@ -32,7 +32,7 @@ func TestRegrantKeepsAcceptedCGFVersion(t *testing.T) {
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
 	grant := &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	}
 	_, err := ms.GrantDelegateAuthorization(ctx, grant)
 	require.NoError(t, err)

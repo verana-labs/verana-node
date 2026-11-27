@@ -149,7 +149,7 @@ func (e *feeGranterEnv) finalize(t *testing.T, txs ...[]byte) []*abci.ExecTxResu
 }
 
 func (e *feeGranterEnv) trigger(pid uint64) *pptypes.MsgTriggerResolver {
-	return &pptypes.MsgTriggerResolver{Corporation: e.corp.String(), Delegate: e.opAddr().String(), Id: pid}
+	return &pptypes.MsgTriggerResolver{Corporation: e.corp.String(), Signer: e.opAddr().String(), Id: pid}
 }
 
 // signedTx signs msgs with signer, paying 1000uvna through granter when set.

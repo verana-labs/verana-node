@@ -25,7 +25,7 @@ func TestAuthzCheck5_TrustDeposit(t *testing.T) {
 		delete(coKeeper.Unregistered, corp)
 		_, err := ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
 			Corporation: corp,
-			Delegate:    delegate,
+			Signer:      delegate,
 		})
 		// Fails later (no trust deposit exists), but NOT with the registration error.
 		require.Error(t, err)
@@ -36,7 +36,7 @@ func TestAuthzCheck5_TrustDeposit(t *testing.T) {
 		coKeeper.Unregistered[corp] = true
 		_, err := ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
 			Corporation: corp,
-			Delegate:    delegate,
+			Signer:      delegate,
 		})
 		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
 	})
@@ -49,7 +49,7 @@ func TestAuthzCheck5_TrustDepositOrder(t *testing.T) {
 	k, ctx, del, coKeeper := keepertest.TrustdepositKeeperWithCorp(t)
 	ms := keeper.NewMsgServerImpl(k)
 	repay := func() error {
-		_, err := ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{Corporation: corp, Delegate: delegate, Deposit: 1})
+		_, err := ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{Corporation: corp, Signer: delegate, Deposit: 1})
 		return err
 	}
 
@@ -60,6 +60,14 @@ func TestAuthzCheck5_TrustDepositOrder(t *testing.T) {
 	delete(coKeeper.Unregistered, corp)
 	_ = repay()
 	require.Equal(t, []uint64{coKeeper.IDFor(corp)}, del.DelegateAuthCorpIDs)
+}
+
+// On the group-proposal path the corporation repays alone: no AUTHZ-CHECK-1.
+func TestRepaySlashedTrustDeposit_GroupPath(t *testing.T) {
+	corp := sdk.AccAddress([]byte("td_corporation______")).String()
+	k, ctx, del, _ := keepertest.TrustdepositKeeperWithCorp(t)
+	_, _ = keeper.NewMsgServerImpl(k).RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{Corporation: corp, Signer: corp, Deposit: 1})
+	require.Empty(t, del.DelegateAuthCorpIDs)
 }
 
 // Trust deposit adjustments resolve accounts that are not the message's

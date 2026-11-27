@@ -8,29 +8,29 @@ import { strToU64, u64ToStrIfNonZero } from "./util/helpers";
 
 export const MsgReclaimTrustDepositYieldAminoConverter: AminoConverter = {
   aminoType: "verana/x/td/MsgReclaimTrustDepositYield",
-  // [MOD-TD-MSG-2-1] Spec v4 draft 13: parameters are corporation + delegate only.
-  toAmino: ({ corporation, delegate }: MsgReclaimTrustDepositYield) => ({
+  // [MOD-TD-MSG-2-1] Spec v4 draft 13: parameters are corporation + signer only.
+  toAmino: ({ corporation, signer }: MsgReclaimTrustDepositYield) => ({
     corporation,
-    delegate,
+    signer,
   }),
   fromAmino: (value: any) =>
     MsgReclaimTrustDepositYield.fromPartial({
       corporation: value.corporation,
-      delegate: value.delegate,
+      signer: value.signer,
     }),
 };
 
 export const MsgRepaySlashedTrustDepositAminoConverter: AminoConverter = {
   aminoType: "verana/x/td/MsgRepaySlashedTrustDeposit",
-  toAmino: ({ corporation, delegate, deposit }: MsgRepaySlashedTrustDeposit) => ({
+  toAmino: ({ corporation, signer, deposit }: MsgRepaySlashedTrustDeposit) => ({
     corporation,
-    delegate,
+    signer,
     deposit: deposit != null ? deposit.toString() : undefined,
   }),
   fromAmino: (value: any) =>
     MsgRepaySlashedTrustDeposit.fromPartial({
       corporation: value.corporation,
-      delegate: value.delegate,
+      signer: value.signer,
       deposit: value.deposit != null ? Number(value.deposit) : 0,
     }),
 };
@@ -38,15 +38,15 @@ export const MsgRepaySlashedTrustDepositAminoConverter: AminoConverter = {
 export const MsgSlashTrustDepositAminoConverter: AminoConverter = {
   aminoType: "verana/x/td/MsgSlashTrustDeposit",
   // [MOD-TD-MSG-5] v4-rc3: target corporation_id (uint64); reason mandatory.
-  toAmino: ({ authority, corporationId, deposit, reason }: MsgSlashTrustDeposit) => ({
-    authority,
+  toAmino: ({ signer, corporationId, deposit, reason }: MsgSlashTrustDeposit) => ({
+    signer,
     corporation_id: u64ToStrIfNonZero(corporationId),
     deposit,
     reason,
   }),
   fromAmino: (value: any) =>
     MsgSlashTrustDeposit.fromPartial({
-      authority: value.authority,
+      signer: value.signer,
       corporationId: strToU64(value.corporation_id) != null ? Number(strToU64(value.corporation_id)!.toString()) : 0,
       deposit: value.deposit,
       reason: value.reason,

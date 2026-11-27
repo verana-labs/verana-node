@@ -11,9 +11,9 @@ import (
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
-func networkDoc(authority, lang string, version uint32) *types.MsgAddGovernanceFrameworkDocument {
-	m := validMsg("", "", 0, version)
-	m.Authority = authority
+func networkDoc(signer, lang string, version uint32) *types.MsgAddGovernanceFrameworkDocument {
+	m := validMsg("", signer, 0, version)
+	m.Network = true
 	m.DocLanguage = lang
 	return m
 }
@@ -46,7 +46,7 @@ func TestAddGovernanceFrameworkDocumentNetwork(t *testing.T) {
 		attrs := eventAttrs(ctx, types.EventTypeAddGovernanceFrameworkDocument)
 		require.Equal(t, "2", attrs[types.AttributeKeyGFVersionID])
 		require.Equal(t, "2", attrs[types.AttributeKeyGFDocID])
-		require.Contains(t, attrs["msg"], `"authority":"`+k.GetAuthority()+`"`)
+		require.Contains(t, attrs["msg"], `"signer":"`+k.GetAuthority()+`"`)
 	})
 
 	t.Run("documents go to the draft until it is active", func(t *testing.T) {
@@ -71,8 +71,8 @@ func TestAddGovernanceFrameworkDocumentNetwork(t *testing.T) {
 // [MOD-GF-MSG-2] network path.
 func TestIncreaseActiveGovernanceFrameworkVersionNetwork(t *testing.T) {
 	grace := types.DefaultGfAcceptanceGraceMin
-	activate := func(authority string, grace time.Duration) *types.MsgIncreaseActiveGovernanceFrameworkVersion {
-		return &types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: authority, AcceptanceGrace: grace}
+	activate := func(signer string, grace time.Duration) *types.MsgIncreaseActiveGovernanceFrameworkVersion {
+		return &types.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: signer, Network: true, AcceptanceGrace: grace}
 	}
 
 	t.Run("only the council account signs it", func(t *testing.T) {
@@ -135,7 +135,7 @@ func TestIncreaseActiveNetworkVersionNeedsDocument(t *testing.T) {
 	require.NoError(t, k.NetworkGovernance.Set(ctx, ng))
 
 	_, err = keeper.NewMsgServerImpl(k).IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
-		Authority: k.GetAuthority(), AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
+		Signer: k.GetAuthority(), Network: true, AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
 	})
 	require.ErrorIs(t, err, types.ErrMissingDefaultLang)
 }

@@ -15,60 +15,60 @@ export const MsgAddGovernanceFrameworkDocumentAminoConverter: AminoConverter = {
   aminoType: "verana/x/gf/MsgAddGovernanceFrameworkDocument",
   toAmino: ({
     corporation,
-    delegate,
+    signer,
     ecosystemId,
     docLanguage,
     docUrl,
     docDigestSri,
     version,
-    authority,
+    network,
   }: MsgAddGovernanceFrameworkDocument) => clean({
     corporation: corporation || undefined,
-    delegate: delegate || undefined,
+    signer: signer || undefined,
     ecosystem_id: u64ToStrIfNonZero(ecosystemId as any),
     doc_language: docLanguage || undefined,
     doc_url: docUrl || undefined,
     doc_digest_sri: docDigestSri || undefined,
     version: version || undefined,
-    authority: authority || undefined,
+    network: network || undefined,
   }),
   fromAmino: (value: any) =>
     MsgAddGovernanceFrameworkDocument.fromPartial({
       corporation: value.corporation ?? "",
-      delegate: value.delegate ?? "",
+      signer: value.signer ?? "",
       ecosystemId: value.ecosystem_id != null ? Number(value.ecosystem_id) : 0,
       docLanguage: value.doc_language ?? "",
       docUrl: value.doc_url ?? "",
       docDigestSri: value.doc_digest_sri ?? "",
       version: value.version ?? 0,
-      authority: value.authority ?? "",
+      network: value.network ?? false,
     }),
 };
 
 export const MsgIncreaseActiveGovernanceFrameworkVersionAminoConverter: AminoConverter = {
   aminoType: "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion",
-  toAmino: ({ corporation, delegate, ecosystemId, authority, acceptanceGrace }: MsgIncreaseActiveGovernanceFrameworkVersion) => clean({
+  toAmino: ({ corporation, signer, ecosystemId, network, acceptanceGrace }: MsgIncreaseActiveGovernanceFrameworkVersion) => clean({
     corporation: corporation || undefined,
-    delegate: delegate || undefined,
+    signer: signer || undefined,
     ecosystem_id: u64ToStrIfNonZero(ecosystemId as any),
-    authority: authority || undefined,
+    network: network || undefined,
     acceptance_grace: durationToAmino(acceptanceGrace),
   }),
   fromAmino: (value: any) =>
     MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({
       corporation: value.corporation ?? "",
-      delegate: value.delegate ?? "",
+      signer: value.signer ?? "",
       ecosystemId: value.ecosystem_id != null ? Number(value.ecosystem_id) : 0,
-      authority: value.authority ?? "",
+      network: value.network ?? false,
       acceptanceGrace: aminoToDuration(value.acceptance_grace),
     }),
 };
 
 export const MsgAcceptGovernanceFrameworkVersionAminoConverter: AminoConverter = {
   aminoType: "verana/x/gf/MsgAcceptGFVersion",
-  toAmino: ({ corporation, delegate, ecosystemId, network, version }: MsgAcceptGovernanceFrameworkVersion) => clean({
+  toAmino: ({ corporation, signer, ecosystemId, network, version }: MsgAcceptGovernanceFrameworkVersion) => clean({
     corporation: corporation || undefined,
-    delegate: delegate || undefined,
+    signer: signer || undefined,
     ecosystem_id: u64ToStrIfNonZero(ecosystemId as any),
     network: network || undefined,
     version: version || undefined,
@@ -76,7 +76,7 @@ export const MsgAcceptGovernanceFrameworkVersionAminoConverter: AminoConverter =
   fromAmino: (value: any) =>
     MsgAcceptGovernanceFrameworkVersion.fromPartial({
       corporation: value.corporation ?? "",
-      delegate: value.delegate ?? "",
+      signer: value.signer ?? "",
       ecosystemId: value.ecosystem_id != null ? Number(value.ecosystem_id) : 0,
       network: value.network ?? false,
       version: value.version ?? 0,
@@ -85,14 +85,14 @@ export const MsgAcceptGovernanceFrameworkVersionAminoConverter: AminoConverter =
 
 export const MsgAcceptCorporationGovernanceFrameworkAminoConverter: AminoConverter = {
   aminoType: "verana/x/gf/MsgAcceptCorporationGF",
-  toAmino: ({ delegate, corporationId, version }: MsgAcceptCorporationGovernanceFramework) => clean({
-    delegate: delegate || undefined,
+  toAmino: ({ signer, corporationId, version }: MsgAcceptCorporationGovernanceFramework) => clean({
+    signer: signer || undefined,
     corporation_id: u64ToStrIfNonZero(corporationId as any),
     version: version || undefined,
   }),
   fromAmino: (value: any) =>
     MsgAcceptCorporationGovernanceFramework.fromPartial({
-      delegate: value.delegate ?? "",
+      signer: value.signer ?? "",
       corporationId: value.corporation_id != null ? Number(value.corporation_id) : 0,
       version: value.version ?? 0,
     }),

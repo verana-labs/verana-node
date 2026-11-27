@@ -393,7 +393,7 @@ func RenewPermissionVP(client cosmosclient.Client, ctx context.Context, account 
 	// Set authority and delegate to the account address
 	msgToSend := permtypes.MsgRenewParticipantOP{
 		Corporation: accountAddr,
-		Delegate:    accountAddr,
+		Signer:      accountAddr,
 		Id:          msg.Id,
 	}
 
@@ -481,7 +481,7 @@ func ReclaimTrustDepositYieldWithResponse(client cosmosclient.Client, ctx contex
 
 	msg := tdtypes.MsgReclaimTrustDepositYield{
 		Corporation: creatorAddr,
-		Delegate:    creatorAddr,
+		Signer:      creatorAddr,
 	}
 
 	txResp, err := client.BroadcastTx(ctx, creator, &msg)
@@ -533,7 +533,7 @@ func RepaySlashedTrustDeposit(client cosmosclient.Client, ctx context.Context, d
 
 	msg := tdtypes.MsgRepaySlashedTrustDeposit{
 		Corporation: authorityAddr,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Deposit:     amount,
 	}
 
@@ -562,7 +562,7 @@ func ReclaimTrustDepositYieldWithAuthority(client cosmosclient.Client, ctx conte
 
 	msg := tdtypes.MsgReclaimTrustDepositYield{
 		Corporation: authorityAddr,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 	}
 
 	txResp, err := client.BroadcastTx(ctx, delegateAccount, &msg)
@@ -731,7 +731,7 @@ func AddGovernanceFrameworkDocument(
 	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := gftypes.MsgAddGovernanceFrameworkDocument{
 		Corporation:  creatorAddr,
-		Delegate:     creatorAddr,
+		Signer:       creatorAddr,
 		EcosystemId:  msg.EcosystemId,
 		DocLanguage:  msg.DocLanguage,
 		DocUrl:       msg.DocUrl,
@@ -773,7 +773,7 @@ func IncreaseActiveGovernanceFrameworkVersion(
 	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{
 		Corporation:     creatorAddr,
-		Delegate:        creatorAddr,
+		Signer:          creatorAddr,
 		EcosystemId:     msg.EcosystemId,
 		AcceptanceGrace: gftypes.DefaultGfAcceptanceGraceMin,
 	}
@@ -843,7 +843,7 @@ func RevokePermission(client cosmosclient.Client, ctx context.Context, delegate 
 
 	msg := permtypes.MsgRevokeParticipant{
 		Corporation: authority,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          id,
 	}
 
@@ -874,7 +874,7 @@ func AdjustPermission(client cosmosclient.Client, ctx context.Context, delegate 
 
 	msg := permtypes.MsgSetParticipantEffectiveUntil{
 		Corporation:    authority,
-		Delegate:       delegateAddr,
+		Signer:         delegateAddr,
 		Id:             id,
 		EffectiveUntil: effectiveUntil,
 	}
@@ -917,7 +917,7 @@ func UpdateCredentialSchema(
 	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := cschema.MsgUpdateCredentialSchema{
 		Corporation: creatorAddr,
-		Delegate:    creatorAddr,
+		Signer:      creatorAddr,
 		Id:          schemaID,
 		// Always set OptionalUInt32 fields (mandatory in new version)
 		IssuerGrantorValidationValidityPeriod: &cschema.OptionalUInt32{
@@ -966,7 +966,7 @@ func ArchiveCredentialSchema(client cosmosclient.Client, ctx context.Context, cr
 	// For v4 spec, authority and delegate are both the creator's address
 	msgWithCreator := cschema.MsgArchiveCredentialSchema{
 		Corporation: creatorAddr,
-		Delegate:    creatorAddr,
+		Signer:      creatorAddr,
 		Id:          msg.Id,
 		Archive:     msg.Archive,
 	}
@@ -1001,7 +1001,7 @@ func CancelPermissionVPLastRequest(client cosmosclient.Client, ctx context.Conte
 	// Create complete message with authority/delegate addresses
 	msgComplete := permtypes.MsgCancelParticipantOPLastRequest{
 		Corporation: applicantAddr,
-		Delegate:    applicantAddr,
+		Signer:      applicantAddr,
 		Id:          msg.Id,
 	}
 
@@ -1033,7 +1033,7 @@ func SlashPermissionTrustDeposit(client cosmosclient.Client, ctx context.Context
 
 	msg := &permtypes.MsgSlashParticipantTrustDeposit{
 		Corporation: authority,
-		Delegate:    actorAddr,
+		Signer:      actorAddr,
 		Id:          id,
 		Amount:      amount,
 		Reason:      reason,
@@ -1064,7 +1064,7 @@ func RepayPermissionSlashedTrustDeposit(client cosmosclient.Client, ctx context.
 
 	msg := &permtypes.MsgRepayParticipantSlashedTrustDeposit{
 		Corporation: authority,
-		Delegate:    actorAddr,
+		Signer:      actorAddr,
 		Id:          id,
 	}
 
@@ -1089,7 +1089,7 @@ func CreatePermission(client cosmosclient.Client, ctx context.Context, actor cos
 
 	fullMsg := &permtypes.MsgSelfCreateParticipant{
 		Corporation:                  authority,
-		Delegate:                     actorAddr,
+		Signer:                       actorAddr,
 		Role:                         msg.Role,
 		ValidatorParticipantId:       msg.ValidatorParticipantId,
 		Did:                          msg.Did,
@@ -1137,7 +1137,7 @@ func CreatePermissionSession(
 	// Create the session creation message
 	msg := &permtypes.MsgCreateOrUpdateParticipantSession{
 		Corporation:              authorityAddr,
-		VsAccount:                delegateAddr,
+		Signer:                   delegateAddr,
 		Id:                       sessionID,
 		IssuerParticipantId:      issuerPermID,
 		VerifierParticipantId:    verifierPermID,
@@ -1604,7 +1604,7 @@ func CreateRootPermissionWithError(client cosmosclient.Client, ctx context.Conte
 	// [MOD-PP-MSG-7-1] spec v4 draft 13 mandates permission_type and vs_operator.
 	fullMsg := &permtypes.MsgCreateRootParticipant{
 		Corporation:      creatorAddr,
-		Delegate:         creatorAddr,
+		Signer:           creatorAddr,
 		SchemaId:         msg.SchemaId,
 		Did:              msg.Did,
 		EffectiveFrom:    msg.EffectiveFrom,
@@ -1642,7 +1642,7 @@ func CreateRootPermissionAndGetID(client cosmosclient.Client, ctx context.Contex
 	// [MOD-PP-MSG-7-1] spec v4 draft 13 mandates permission_type and vs_operator.
 	fullMsg := &permtypes.MsgCreateRootParticipant{
 		Corporation:      creatorAddr,
-		Delegate:         creatorAddr,
+		Signer:           creatorAddr,
 		SchemaId:         msg.SchemaId,
 		Did:              msg.Did,
 		EffectiveFrom:    msg.EffectiveFrom,
@@ -1704,7 +1704,7 @@ func StartPermissionVPWithError(client cosmosclient.Client, ctx context.Context,
 	// Create the message
 	fullMsg := &permtypes.MsgStartParticipantOP{
 		Corporation:            msg.Corporation,
-		Delegate:               creatorAddr,
+		Signer:                 creatorAddr,
 		Role:                   msg.Role,
 		Did:                    msg.Did,
 		ValidatorParticipantId: msg.ValidatorParticipantId,
@@ -1742,7 +1742,7 @@ func RevokePermissionWithError(client cosmosclient.Client, ctx context.Context,
 
 	fullMsg := &permtypes.MsgRevokeParticipant{
 		Corporation: authority,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          id,
 	}
 
@@ -1784,7 +1784,7 @@ func CreateInactiveValidatorPermission(client cosmosclient.Client, ctx context.C
 	// [MOD-PP-MSG-7-1] spec v4 draft 13 mandates permission_type and vs_operator.
 	msg := &permtypes.MsgCreateRootParticipant{
 		Corporation:    creatorAddr,
-		Delegate:       creatorAddr,
+		Signer:         creatorAddr,
 		SchemaId:       schemaID,
 		Did:            did,
 		EffectiveFrom:  &futureTime, // Future = not yet active
@@ -2212,7 +2212,7 @@ func GrantDelegateAuthorizationWithSpendViaGroup(
 ) error {
 	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
 		Corporation:           policyAddr,
-		Delegate:              policyAddr, // group-proposal path: delegate == corporation policy_address
+		Signer:                policyAddr, // group-proposal path: signer == corporation policy_address
 		Grantee:               granteeAddr,
 		MsgTypes:              msgTypes,
 		AuthzSpendLimit:       authzSpendLimit,
@@ -2235,7 +2235,7 @@ func GrantDelegateAuthorizationWithFeegrantViaGroup(
 ) error {
 	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
 		Corporation:              policyAddr,
-		Delegate:                 policyAddr, // group-proposal path: delegate == corporation policy_address
+		Signer:                   policyAddr, // group-proposal path: signer == corporation policy_address
 		Grantee:                  granteeAddr,
 		MsgTypes:                 msgTypes,
 		WithFeegrant:             true,
@@ -2309,7 +2309,7 @@ func AcceptCorporationGovernanceFramework(client cosmosclient.Client, ctx contex
 		return nil
 	}
 	txResp, err := client.BroadcastTx(ctx, delegate, &gftypes.MsgAcceptCorporationGovernanceFramework{
-		Delegate:      delegateAddr,
+		Signer:        delegateAddr,
 		CorporationId: corpID,
 		Version:       co.Corporation.ActiveVersion,
 	})
@@ -2324,8 +2324,8 @@ func AcceptCorporationGovernanceFramework(client cosmosclient.Client, ctx contex
 }
 
 // GrantSelfDelegation grants a delegate self-delegation so they can execute messages
-// with corporation=delegate (same address). MsgGrantDelegateAuthorization has signer="delegate";
-// delegate == corporation bypasses AUTHZ-CHECK-1 (corporation acting alone).
+// with corporation=signer (same address): signer == corporation bypasses
+// AUTHZ-CHECK-1 (corporation acting alone).
 func GrantSelfDelegation(
 	client cosmosclient.Client,
 	ctx context.Context,
@@ -2339,7 +2339,7 @@ func GrantSelfDelegation(
 
 	msg := &detypes.MsgGrantDelegateAuthorization{
 		Corporation: addr,
-		Delegate:    addr,
+		Signer:      addr,
 		Grantee:     addr,
 		MsgTypes:    msgTypes,
 	}
@@ -2376,7 +2376,7 @@ func CreateEcosystemWithAuthority(
 
 	msg := &ectypes.MsgCreateEcosystem{
 		Corporation:  authority,
-		Delegate:     delegateAddr,
+		Signer:       delegateAddr,
 		Did:          did,
 		Language:     language,
 		DocUrl:       docURL,
@@ -2437,7 +2437,7 @@ func AddGFDWithAuthority(
 
 	msg := &gftypes.MsgAddGovernanceFrameworkDocument{
 		Corporation:  authority,
-		Delegate:     delegateAddr,
+		Signer:       delegateAddr,
 		EcosystemId:  ecosystemID,
 		DocLanguage:  docLanguage,
 		DocUrl:       docURL,
@@ -2476,7 +2476,7 @@ func IncreaseActiveGFVersionWithAuthority(
 
 	msg := &gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{
 		Corporation:     authority,
-		Delegate:        delegateAddr,
+		Signer:          delegateAddr,
 		EcosystemId:     ecosystemID,
 		AcceptanceGrace: gftypes.DefaultGfAcceptanceGraceMin,
 	}
@@ -2513,7 +2513,7 @@ func UpdateEcosystemWithAuthority(
 
 	msg := &ectypes.MsgUpdateEcosystem{
 		Corporation: authority,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          ecosystemID,
 		Did:         did,
 	}
@@ -2550,7 +2550,7 @@ func ArchiveEcosystemWithAuthority(
 
 	msg := &ectypes.MsgArchiveEcosystem{
 		Corporation: authority,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          ecosystemID,
 		Archive:     archive,
 	}
@@ -2586,7 +2586,7 @@ func UpdateCorporationWithAuthority(
 
 	msg := &cotypes.MsgUpdateCorporation{
 		Corporation: authority,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Did:         newDID,
 	}
 
@@ -2624,7 +2624,7 @@ func CreateCredentialSchemaWithAuthority(
 
 	msg := &cschema.MsgCreateCredentialSchema{
 		Corporation:                             authority,
-		Delegate:                                delegateAddr,
+		Signer:                                  delegateAddr,
 		EcosystemId:                             ecosystemID,
 		JsonSchema:                              schemaData,
 		IssuerOnboardingMode:                    uint32(issuerMode),
@@ -2695,7 +2695,7 @@ func UpdateCredentialSchemaWithAuthority(
 
 	msg := &cschema.MsgUpdateCredentialSchema{
 		Corporation:                             authority,
-		Delegate:                                delegateAddr,
+		Signer:                                  delegateAddr,
 		Id:                                      csID,
 		IssuerGrantorValidationValidityPeriod:   &cschema.OptionalUInt32{Value: issuerGrantorValidityPeriod},
 		VerifierGrantorValidationValidityPeriod: &cschema.OptionalUInt32{Value: verifierGrantorValidityPeriod},
@@ -2736,7 +2736,7 @@ func ArchiveCredentialSchemaWithAuthority(
 
 	msg := &cschema.MsgArchiveCredentialSchema{
 		Corporation: authority,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          csID,
 		Archive:     archive,
 	}
@@ -2774,7 +2774,7 @@ func StartPermissionVPWithAuthority(
 
 	msg := &permtypes.MsgStartParticipantOP{
 		Corporation:            authority,
-		Delegate:               delegateAddr,
+		Signer:                 delegateAddr,
 		Role:                   permType,
 		ValidatorParticipantId: validatorPermId,
 		Did:                    did,
@@ -2830,7 +2830,7 @@ func RenewPermissionVPWithAuthority(
 
 	msg := &permtypes.MsgRenewParticipantOP{
 		Corporation: authority,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          permID,
 	}
 
@@ -2871,7 +2871,7 @@ func CreateRootPermissionWithAuthority(
 	// [MOD-PP-MSG-7-3] spec v4 draft 13: handler hardcodes perm.type = ECOSYSTEM.
 	msg := &permtypes.MsgCreateRootParticipant{
 		Corporation:      authority,
-		Delegate:         delegateAddr,
+		Signer:           delegateAddr,
 		SchemaId:         schemaID,
 		Did:              did,
 		EffectiveFrom:    effectiveFrom,
@@ -2936,7 +2936,7 @@ func CancelPermissionVPLastRequestWithAuthority(
 
 	msg := &permtypes.MsgCancelParticipantOPLastRequest{
 		Corporation: authority,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          permID,
 	}
 

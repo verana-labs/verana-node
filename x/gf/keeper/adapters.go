@@ -23,6 +23,10 @@ func (StubCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context
 	return gftypes.CorporationView{}, errors.New("corporation keeper not wired: cannot resolve " + policyAddress)
 }
 
+func (StubCorporationKeeper) ResolveSigner(_ context.Context, corporation, _ string) (gftypes.CorporationView, bool, error) {
+	return gftypes.CorporationView{}, false, errors.New("corporation keeper not wired: cannot resolve " + corporation)
+}
+
 func (StubCorporationKeeper) GetCorporationByPolicyAddress(_ context.Context, policyAddress string) (gftypes.CorporationView, error) {
 	return gftypes.CorporationView{}, errors.New("corporation keeper not wired: cannot resolve " + policyAddress)
 }

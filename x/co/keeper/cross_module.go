@@ -32,6 +32,15 @@ func (a CoAsGFCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.C
 	return gfCorporationView(&co), nil
 }
 
+// ResolveSigner backs the MOD-GF group-proposal path.
+func (a CoAsGFCorporationKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (gftypes.CorporationView, bool, error) {
+	co, group, err := a.k.ResolveSigner(ctx, corporation, signer)
+	if err != nil {
+		return gftypes.CorporationView{}, false, err
+	}
+	return gfCorporationView(&co), group, nil
+}
+
 // GetCorporationByPolicyAddress backs AUTHZ-CHECK-5 without GF-CHECK-1.
 func (a CoAsGFCorporationKeeper) GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (gftypes.CorporationView, error) {
 	co, err := a.k.GetCorporationByPolicyAddress(ctx, policyAddress)
@@ -81,6 +90,15 @@ func (a CoAsDeCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.C
 		return detypes.CorporationView{}, err
 	}
 	return detypes.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, nil
+}
+
+// ResolveSigner backs the MOD-DE group-proposal path.
+func (a CoAsDeCorporationKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (detypes.CorporationView, bool, error) {
+	co, group, err := a.k.ResolveSigner(ctx, corporation, signer)
+	if err != nil {
+		return detypes.CorporationView{}, false, err
+	}
+	return detypes.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, group, nil
 }
 
 // ResolveCorporationByID resolves a corporation_id to its policy_address, used by
