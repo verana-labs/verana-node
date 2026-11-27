@@ -108,11 +108,11 @@ message MsgRevokeDelegateAuthorizationResponse {}
 // pays for another corporation. Executed by the sponsor's policy account
 // through a group proposal.
 message MsgGrantSponsorship {
-  option (cosmos.msg.v1.signer) = "corporation";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/de/MsgGrantSponsorship";
 
-  // corporation is the policy_address of the sponsor corporation.
-  string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is the policy_address of the sponsor corporation.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // sponsored_corporation_id is the id of the corporation to sponsor.
   uint64 sponsored_corporation_id = 2;
   // msg_types are the covered paying message types; empty means all of them.
@@ -148,17 +148,17 @@ message MsgGrantSponsorship {
 message MsgGrantSponsorshipResponse {}
 
 // [MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the
-// sponsor corporation. On the group-proposal path `delegate` equals
+// sponsor corporation. On the group-proposal path `signer` equals
 // `corporation`.
 message MsgRevokeSponsorship {
-  option (cosmos.msg.v1.signer) = "delegate";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/de/MsgRevokeSponsorship";
 
   // corporation is the policy_address of the sponsor corporation.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // delegate is the signer: an authorized delegate, or the corporation's
-  // policy_address itself on the group-proposal path.
-  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is a delegate authorized by corporation, or corporation itself
+  // on the group-proposal path.
+  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // sponsored_corporation_id is the id of the sponsored corporation.
   uint64 sponsored_corporation_id = 3;
 }

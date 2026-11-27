@@ -100,8 +100,8 @@ export interface MsgRevokeDelegateAuthorizationResponse {
  * through a group proposal.
  */
 export interface MsgGrantSponsorship {
-  /** corporation is the policy_address of the sponsor corporation. */
-  corporation: string;
+  /** signer is the policy_address of the sponsor corporation. */
+  signer: string;
   /** sponsored_corporation_id is the id of the corporation to sponsor. */
   sponsoredCorporationId: number;
   /** msg_types are the covered paying message types; empty means all of them. */
@@ -137,17 +137,17 @@ export interface MsgGrantSponsorshipResponse {
 
 /**
  * [MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the
- * sponsor corporation. On the group-proposal path `delegate` equals
+ * sponsor corporation. On the group-proposal path `signer` equals
  * `corporation`.
  */
 export interface MsgRevokeSponsorship {
   /** corporation is the policy_address of the sponsor corporation. */
   corporation: string;
   /**
-   * delegate is the signer: an authorized delegate, or the corporation's
-   * policy_address itself on the group-proposal path.
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
    */
-  delegate: string;
+  signer: string;
   /** sponsored_corporation_id is the id of the sponsored corporation. */
   sponsoredCorporationId: number;
 }
@@ -576,7 +576,7 @@ export const MsgRevokeDelegateAuthorizationResponse = {
 
 function createBaseMsgGrantSponsorship(): MsgGrantSponsorship {
   return {
-    corporation: "",
+    signer: "",
     sponsoredCorporationId: 0,
     msgTypes: [],
     spendLimit: [],
@@ -589,8 +589,8 @@ function createBaseMsgGrantSponsorship(): MsgGrantSponsorship {
 
 export const MsgGrantSponsorship = {
   encode(message: MsgGrantSponsorship, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.corporation !== "") {
-      writer.uint32(10).string(message.corporation);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.sponsoredCorporationId !== 0) {
       writer.uint32(16).uint64(message.sponsoredCorporationId);
@@ -630,7 +630,7 @@ export const MsgGrantSponsorship = {
             break;
           }
 
-          message.corporation = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 16) {
@@ -702,7 +702,7 @@ export const MsgGrantSponsorship = {
 
   fromJSON(object: any): MsgGrantSponsorship {
     return {
-      corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       sponsoredCorporationId: isSet(object.sponsoredCorporationId)
         ? globalThis.Number(object.sponsoredCorporationId)
         : 0,
@@ -721,8 +721,8 @@ export const MsgGrantSponsorship = {
 
   toJSON(message: MsgGrantSponsorship): unknown {
     const obj: any = {};
-    if (message.corporation !== "") {
-      obj.corporation = message.corporation;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.sponsoredCorporationId !== 0) {
       obj.sponsoredCorporationId = Math.round(message.sponsoredCorporationId);
@@ -753,7 +753,7 @@ export const MsgGrantSponsorship = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgGrantSponsorship>, I>>(object: I): MsgGrantSponsorship {
     const message = createBaseMsgGrantSponsorship();
-    message.corporation = object.corporation ?? "";
+    message.signer = object.signer ?? "";
     message.sponsoredCorporationId = object.sponsoredCorporationId ?? 0;
     message.msgTypes = object.msgTypes?.map((e) => e) || [];
     message.spendLimit = object.spendLimit?.map((e) => Coin.fromPartial(e)) || [];
@@ -811,7 +811,7 @@ export const MsgGrantSponsorshipResponse = {
 };
 
 function createBaseMsgRevokeSponsorship(): MsgRevokeSponsorship {
-  return { corporation: "", delegate: "", sponsoredCorporationId: 0 };
+  return { corporation: "", signer: "", sponsoredCorporationId: 0 };
 }
 
 export const MsgRevokeSponsorship = {
@@ -819,8 +819,8 @@ export const MsgRevokeSponsorship = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.sponsoredCorporationId !== 0) {
       writer.uint32(24).uint64(message.sponsoredCorporationId);
@@ -847,7 +847,7 @@ export const MsgRevokeSponsorship = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -868,7 +868,7 @@ export const MsgRevokeSponsorship = {
   fromJSON(object: any): MsgRevokeSponsorship {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       sponsoredCorporationId: isSet(object.sponsoredCorporationId)
         ? globalThis.Number(object.sponsoredCorporationId)
         : 0,
@@ -880,8 +880,8 @@ export const MsgRevokeSponsorship = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.sponsoredCorporationId !== 0) {
       obj.sponsoredCorporationId = Math.round(message.sponsoredCorporationId);
@@ -895,7 +895,7 @@ export const MsgRevokeSponsorship = {
   fromPartial<I extends Exact<DeepPartial<MsgRevokeSponsorship>, I>>(object: I): MsgRevokeSponsorship {
     const message = createBaseMsgRevokeSponsorship();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.sponsoredCorporationId = object.sponsoredCorporationId ?? 0;
     return message;
   },

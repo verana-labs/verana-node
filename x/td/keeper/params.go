@@ -23,6 +23,16 @@ func (k Keeper) GetParams(ctx context.Context) (params types.Params) {
 	return params
 }
 
+// MaxGasMsgTypeURLs returns the message types listed in max_gas_per_msg_type.
+func (k Keeper) MaxGasMsgTypeURLs(ctx context.Context) ([]string, error) {
+	entries := k.GetParams(ctx).MaxGasPerMsgType
+	urls := make([]string, len(entries))
+	for i, e := range entries {
+		urls[i] = e.MsgTypeUrl
+	}
+	return urls, nil
+}
+
 // SetParams set the params
 func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))

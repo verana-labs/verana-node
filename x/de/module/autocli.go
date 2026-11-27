@@ -101,7 +101,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						{ProtoField: "sponsored_corporation_id"},
 					},
 					FlagOptions: map[string]*autocliv1.FlagOptions{
-						"corporation":     {Name: "corporation", Usage: "policy_address of the sponsor corporation"},
 						"msg_types":       {Name: "msg-types", Usage: "covered paying MsgType values, one per flag; all of them when absent"},
 						"spend_limit":     {Name: "spend-limit", Usage: "maximum operation funds paid per cycle (e.g. 1000uvna)"},
 						"period":          {Name: "period", Usage: "cycle length for spend-limit"},
@@ -114,7 +113,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "RevokeSponsorship",
 					Use:       "revoke-sponsorship [sponsored-corporation-id]",
 					Short:     "Revoke a sponsorship",
-					Long:      "[MOD-DE-MSG-11] Revoke a sponsorship and clear the sponsored corporation's election of this sponsor. The signer (--from) is the delegate: the sponsor's policy_address on the group-proposal path, or an authorized delegate.",
+					Long:      "[MOD-DE-MSG-11] Revoke a sponsorship and clear the sponsored corporation's election of this sponsor. The signer (--from) is an authorized delegate, or the sponsor's policy_address on the group-proposal path.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "sponsored_corporation_id"},
 					},

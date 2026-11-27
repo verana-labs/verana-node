@@ -139,7 +139,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "[MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the\nsponsor corporation. On the group-proposal path `delegate` equals\n`corporation`.",
+            "description": "[MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the\nsponsor corporation. On the group-proposal path `signer` equals\n`corporation`.",
             "in": "body",
             "required": true,
             "schema": {
@@ -259,9 +259,9 @@
     "verana.de.v1.MsgGrantSponsorship": {
       "type": "object",
       "properties": {
-        "corporation": {
+        "signer": {
           "type": "string",
-          "description": "corporation is the policy_address of the sponsor corporation."
+          "description": "signer is the policy_address of the sponsor corporation."
         },
         "sponsored_corporation_id": {
           "type": "string",
@@ -340,9 +340,9 @@
           "type": "string",
           "description": "corporation is the policy_address of the sponsor corporation."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the signer: an authorized delegate, or the corporation's\npolicy_address itself on the group-proposal path."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "sponsored_corporation_id": {
           "type": "string",
@@ -350,7 +350,7 @@
           "description": "sponsored_corporation_id is the id of the sponsored corporation."
         }
       },
-      "description": "[MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the\nsponsor corporation. On the group-proposal path `delegate` equals\n`corporation`."
+      "description": "[MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the\nsponsor corporation. On the group-proposal path `signer` equals\n`corporation`."
     },
     "verana.de.v1.MsgRevokeSponsorshipResponse": {
       "type": "object",

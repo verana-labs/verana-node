@@ -10,7 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
+	dekeeper "github.com/verana-labs/verana-node/x/de/keeper"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
+	tdtypes "github.com/verana-labs/verana-node/x/td/types"
 )
 
 // The sponsored-fees rule through the real ante chain: exec signs with the
@@ -73,4 +75,32 @@ func TestSponsoredFees(t *testing.T) {
 			require.Equal(t, allowanceBefore, allowanceAfter)
 		})
 	}
+}
+
+// A covers_fees sponsorship allowance covers the message types of max_gas_per_msg_type.
+func TestGrantSponsorship_AllowanceFilter(t *testing.T) {
+	e := newFeeGranterEnv(t)
+	a := e.app
+	ctx := e.nextBlockCtx()
+	sponsor := sdk.AccAddress([]byte("sponsor_policy______"))
+	sp := cotypes.Corporation{Id: 9, PolicyAddress: sponsor.String(), Did: "did:example:sponsor"}
+	require.NoError(t, a.CoKeeper.Corporation.Set(ctx, sp.Id, sp))
+	require.NoError(t, a.CoKeeper.CorporationByPolicyAddr.Set(ctx, sp.PolicyAddress, sp.Id))
+	params := a.TrustdepositKeeper.GetParams(ctx)
+	params.MaxGasPerMsgType = []tdtypes.MaxGasEntry{
+		{MsgTypeUrl: "/verana.ec.v1.MsgCreateEcosystem", MaxGas: 300000},
+		{MsgTypeUrl: "/cosmos.group.v1.MsgVote", MaxGas: 100000},
+	}
+	require.NoError(t, a.TrustdepositKeeper.SetParams(ctx, params))
+
+	_, err := dekeeper.NewMsgServerImpl(a.DeKeeper).GrantSponsorship(ctx, &detypes.MsgGrantSponsorship{
+		Signer: sponsor.String(), SponsoredCorporationId: 4, CoversFees: true,
+	})
+	require.NoError(t, err)
+
+	got, err := a.FeeGrantKeeper.GetAllowance(ctx, sponsor, e.corp)
+	require.NoError(t, err)
+	allowed, ok := got.(*feegrant.AllowedMsgAllowance)
+	require.True(t, ok)
+	require.Equal(t, []string{"/verana.ec.v1.MsgCreateEcosystem", "/cosmos.group.v1.MsgVote"}, allowed.AllowedMessages)
 }

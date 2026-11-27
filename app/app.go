@@ -298,6 +298,8 @@ func New(
 	app.DeKeeper.SetGovernanceFrameworkKeeper(app.GfKeeper)
 	// Wire MOD-VS into MOD-DE (vs_account_fee_period, MOD-DE-MSG-5-5).
 	app.DeKeeper.SetVerifiableServiceKeeper(app.VsKeeper)
+	// Wire MOD-TD into MOD-DE (max_gas_per_msg_type, the sponsorship fee allowance filter).
+	app.DeKeeper.SetNetworkFeeKeeper(app.TrustdepositKeeper)
 
 	// add to default baseapp options
 	// enable optimistic execution
