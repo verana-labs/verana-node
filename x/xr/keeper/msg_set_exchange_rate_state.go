@@ -1,60 +1,39 @@
 package keeper
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/verana-labs/verana-node/util/events"
 	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
+// SetExchangeRateState implements [MOD-XR-MSG-3] Set Exchange Rate State.
 func (ms msgServer) SetExchangeRateState(ctx context.Context, msg *types.MsgSetExchangeRateState) (*types.MsgSetExchangeRateStateResponse, error) {
-	// Validate basic fields
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-
-	// Governance authority check
-	authority, err := ms.addressCodec.StringToBytes(msg.Signer)
-	if err != nil {
-		return nil, errorsmod.Wrap(err, "invalid authority address")
+	if err := ms.checkAuthority(msg.Signer); err != nil {
+		return nil, err
 	}
 
-	if !bytes.Equal(ms.GetAuthority(), authority) {
-		expectedAuthorityStr, _ := ms.addressCodec.BytesToString(ms.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid signer; expected %s, got %s", expectedAuthorityStr, msg.Signer)
-	}
-
-	// Load ExchangeRate by id (must exist)
 	xr, err := ms.ExchangeRates.Get(ctx, msg.Id)
 	if err != nil {
 		return nil, errorsmod.Wrapf(types.ErrExchangeRateNotFound, "exchange rate with id %d not found", msg.Id)
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	blockTime := sdkCtx.BlockTime()
-
-	// [MOD-XR-MSG-3-3] set state to the caller-supplied value.
 	xr.State = msg.State
-	xr.Updated = blockTime
-
-	// Save
 	if err := ms.ExchangeRates.Set(ctx, msg.Id, xr); err != nil {
 		return nil, errorsmod.Wrap(err, "failed to store exchange rate")
 	}
 
-	// Emit event
-	sdkCtx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeSetExchangeRateState,
-			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.Id)),
-			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyState, fmt.Sprintf("%t", xr.State)),
-		),
-	)
+	ev := events.New(types.ModuleName, types.EventTypeSetExchangeRateState).Uint(types.AttributeKeyXrID, msg.Id)
+	if err := ev.Msg(ms.cdc, msg); err != nil {
+		return nil, err
+	}
+	ev.Emit(sdk.UnwrapSDKContext(ctx))
 
 	return &types.MsgSetExchangeRateStateResponse{}, nil
 }

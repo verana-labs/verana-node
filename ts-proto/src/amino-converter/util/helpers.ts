@@ -8,16 +8,16 @@ export const clean = <T extends Record<string, any>>(o: T): T => {
 };
 
 export const u64ToStr = (v?: Long | string | number | null) =>
-  v != null ? Long.fromValue(v).toString() : undefined;
+  v != null ? Long.fromValue(v, true).toString() : undefined;
 
 export const u64ToStrIfNonZero = (v?: Long | string | number | null) => {
   if (v == null) return undefined;
-  const value = Long.fromValue(v);
+  const value = Long.fromValue(v, true);
   return value.isZero() ? undefined : value.toString();
 };
 
 export const strToU64 = (s?: string | null) =>
-  s != null ? Long.fromString(s) : undefined;
+  s != null ? Long.fromString(s, true) : undefined;
 
 export const u32ToAmino = (n?: number | null) =>
   n == null ? undefined : (((n >>> 0) === 0) ? undefined : (n >>> 0));

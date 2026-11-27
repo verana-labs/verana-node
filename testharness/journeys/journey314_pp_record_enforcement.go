@@ -55,9 +55,9 @@ func RunPermissionRecordEnforcementJourney(ctx context.Context, client cosmoscli
 	fmt.Printf("  VS operator: %s\n", vsOperatorAddr)
 
 	const (
-		// issuance_fees on each root, in trust units. trust_unit_price ~1e6 uvna,
-		// so each CSPS commits a non-zero trust_fees the record spend_limit is
-		// debited by.
+		// issuance_fees on each root, in USD cents. At the genesis rate of 1e6 uvna
+		// per cent each CSPS commits non-zero trust deposits the record
+		// spend_limit is debited by.
 		rootIssuanceFees = uint64(1)
 		bigSpendLimit    = int64(1_000_000_000) // 1000 VNA, never blocks
 		feeSpendLimit    = int64(3_000_000)     // CHECK-4 cap, drained by CLI fees

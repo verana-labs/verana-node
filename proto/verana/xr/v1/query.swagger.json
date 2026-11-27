@@ -95,103 +95,12 @@
             "default": "STATE_FILTER_UNSPECIFIED"
           },
           {
-            "name": "expire_ts",
+            "name": "expires",
+            "description": "expires, if set, keeps only an entry whose expires is strictly later.",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "date-time"
-          }
-        ],
-        "tags": [
-          "Query"
-        ]
-      }
-    },
-    "/xr/v1/list": {
-      "get": {
-        "summary": "ListExchangeRates queries exchange rates with optional filters.",
-        "operationId": "Query_ListExchangeRates",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.xr.v1.QueryListExchangeRatesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "base_asset_type",
-            "description": " - PRICING_ASSET_TYPE_UNSPECIFIED: Default to prevent accidental omission\n - TU: Trust Unit (non-transferable token for fee definitions)\n - COIN: Native blockchain token or IBC asset\n - FIAT: Fiat currency (off-chain settlement)",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "PRICING_ASSET_TYPE_UNSPECIFIED",
-              "TU",
-              "COIN",
-              "FIAT"
-            ],
-            "default": "PRICING_ASSET_TYPE_UNSPECIFIED"
-          },
-          {
-            "name": "base_asset",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "quote_asset_type",
-            "description": " - PRICING_ASSET_TYPE_UNSPECIFIED: Default to prevent accidental omission\n - TU: Trust Unit (non-transferable token for fee definitions)\n - COIN: Native blockchain token or IBC asset\n - FIAT: Fiat currency (off-chain settlement)",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "PRICING_ASSET_TYPE_UNSPECIFIED",
-              "TU",
-              "COIN",
-              "FIAT"
-            ],
-            "default": "PRICING_ASSET_TYPE_UNSPECIFIED"
-          },
-          {
-            "name": "quote_asset",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "state",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "STATE_FILTER_UNSPECIFIED",
-              "STATE_FILTER_ACTIVE",
-              "STATE_FILTER_INACTIVE"
-            ],
-            "default": "STATE_FILTER_UNSPECIFIED"
-          },
-          {
-            "name": "expire",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "date-time"
-          },
-          {
-            "name": "response_max_size",
-            "description": "response_max_size caps the number of returned entries (default 64, max 1024). [MOD-XR-QRY-2]",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
           }
         ],
         "tags": [
@@ -355,7 +264,8 @@
           "type": "string"
         },
         "rate": {
-          "type": "string"
+          "type": "string",
+          "format": "uint64"
         },
         "rate_scale": {
           "type": "integer",
@@ -376,7 +286,7 @@
           "format": "date-time"
         }
       },
-      "description": "ExchangeRate defines the storage type for an exchange rate entry."
+      "description": "ExchangeRate is an exchange rate entry."
     },
     "verana.xr.v1.ExchangeRateAuthorization": {
       "type": "object",
@@ -400,7 +310,7 @@
           "format": "int64"
         }
       },
-      "description": "ExchangeRateAuthorization designates which feeder account is authorized to\npush fresh values for a given ExchangeRate, with optional anti-spam\n(min_interval) and circuit-breaker (max_deviation_bps) bounds. Keyed by\n(xr_id, feeder). Zero min_interval / max_deviation_bps means \"unset\"."
+      "description": "ExchangeRateAuthorization designates a feeder; a zero min_interval or max_deviation_bps is unset."
     },
     "verana.xr.v1.Params": {
       "type": "object",
@@ -423,7 +333,7 @@
             "type": "object",
             "$ref": "#/definitions/verana.xr.v1.ExchangeRateAuthorization"
           },
-          "title": "authorizations lists the feeders authorized to update this exchange rate. [MOD-XR-QRY-1]"
+          "description": "authorizations lists the feeders authorized to update this exchange rate."
         }
       },
       "description": "QueryGetExchangeRateResponse is the response type for Query/GetExchangeRate."
@@ -436,19 +346,6 @@
         }
       },
       "description": "QueryGetPriceResponse is the response type for Query/GetPrice."
-    },
-    "verana.xr.v1.QueryListExchangeRatesResponse": {
-      "type": "object",
-      "properties": {
-        "exchange_rates": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/verana.xr.v1.ExchangeRate"
-          }
-        }
-      },
-      "description": "QueryListExchangeRatesResponse is the response type for Query/ListExchangeRates."
     },
     "verana.xr.v1.QueryParamsResponse": {
       "type": "object",
@@ -468,7 +365,7 @@
         "STATE_FILTER_INACTIVE"
       ],
       "default": "STATE_FILTER_UNSPECIFIED",
-      "description": "StateFilter is used for optional bool filtering: 0=unset, 1=active, 2=inactive."
+      "description": "StateFilter is an optional state: 0=unset, 1=enabled, 2=disabled."
     }
   }
 }

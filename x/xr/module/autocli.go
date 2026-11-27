@@ -26,11 +26,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					},
 				},
 				{
-					RpcMethod: "ListExchangeRates",
-					Use:       "list-exchange-rates",
-					Short:     "List exchange rates with optional filters",
-				},
-				{
 					RpcMethod: "GetPrice",
 					Use:       "get-price [base_asset_type] [base_asset] [quote_asset_type] [quote_asset] [amount]",
 					Short:     "Compute converted price using an exchange rate",
@@ -60,7 +55,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				{
 					RpcMethod: "UpdateExchangeRate",
 					Use:       "update-exchange-rate [id] [rate]",
-					Short:     "Update an existing exchange rate (signed by the authorized feeder)",
+					Short:     "Update an existing exchange rate (signed by an authorized feeder)",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "id"},
 						{ProtoField: "rate"},

@@ -3,7 +3,6 @@ package types
 import (
 	"fmt"
 
-	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -27,7 +26,8 @@ func (gs GenesisState) Validate() error {
 	rateIDs := make(map[uint64]struct{}, len(gs.ExchangeRates))
 	pairs := make(map[string]struct{}, len(gs.ExchangeRates))
 	var maxID uint64
-	for _, xr := range gs.ExchangeRates {
+	for i := range gs.ExchangeRates {
+		xr := &gs.ExchangeRates[i]
 		if xr.Id == 0 {
 			return fmt.Errorf("exchange rate has zero id")
 		}
@@ -35,44 +35,40 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicate exchange rate id %d", xr.Id)
 		}
 		rateIDs[xr.Id] = struct{}{}
-		// [MOD-XR-MSG-1-2-1] rate is a base-10 unsigned integer string, not a decimal.
-		if rate, ok := math.NewIntFromString(xr.Rate); !ok || !rate.IsPositive() {
-			return fmt.Errorf("exchange rate %d has invalid rate %q (must be a positive integer)", xr.Id, xr.Rate)
+		if err := validatePair(xr.BaseAssetType, xr.BaseAsset, xr.QuoteAssetType, xr.QuoteAsset); err != nil {
+			return fmt.Errorf("exchange rate %d: %w", xr.Id, err)
 		}
-		if xr.RateScale > 18 {
-			return fmt.Errorf("exchange rate %d has rate_scale %d > 18", xr.Id, xr.RateScale)
+		if err := validateRate(xr.Rate, xr.RateScale, xr.ValidityDuration); err != nil {
+			return fmt.Errorf("exchange rate %d: %w", xr.Id, err)
 		}
 		pairKey := fmt.Sprintf("%d|%s|%d|%s", xr.BaseAssetType, xr.BaseAsset, xr.QuoteAssetType, xr.QuoteAsset)
 		if _, dup := pairs[pairKey]; dup {
 			return fmt.Errorf("duplicate exchange rate pair %s", pairKey)
 		}
 		pairs[pairKey] = struct{}{}
-		if xr.Id > maxID {
-			maxID = xr.Id
-		}
+		maxID = max(maxID, xr.Id)
 	}
 	if gs.NextExchangeRateId < maxID {
 		return fmt.Errorf("next_exchange_rate_id %d is less than the highest exchange rate id %d", gs.NextExchangeRateId, maxID)
 	}
 
 	seen := make(map[string]struct{}, len(gs.ExchangeRateAuthorizations))
-	for _, a := range gs.ExchangeRateAuthorizations {
-		if a.XrId == 0 {
-			return fmt.Errorf("exchange rate authorization has zero xr_id")
-		}
+	for i := range gs.ExchangeRateAuthorizations {
+		a := &gs.ExchangeRateAuthorizations[i]
 		if _, ok := rateIDs[a.XrId]; !ok {
 			return fmt.Errorf("exchange rate authorization references unknown xr_id %d", a.XrId)
 		}
-		if _, err := sdk.AccAddressFromBech32(a.Feeder); err != nil {
+		feeder, err := sdk.AccAddressFromBech32(a.Feeder)
+		if err != nil {
 			return fmt.Errorf("exchange rate authorization for xr_id %d has invalid feeder: %w", a.XrId, err)
 		}
 		if a.Expiration.IsZero() {
 			return fmt.Errorf("exchange rate authorization (xr_id %d, feeder %s) has no expiration", a.XrId, a.Feeder)
 		}
-		if a.MaxDeviationBps > 10000 {
-			return fmt.Errorf("exchange rate authorization (xr_id %d, feeder %s) max_deviation_bps %d exceeds 10000", a.XrId, a.Feeder, a.MaxDeviationBps)
+		if err := validateBounds(a.MinInterval, a.MaxDeviationBps); err != nil {
+			return fmt.Errorf("exchange rate authorization (xr_id %d, feeder %s): %w", a.XrId, a.Feeder, err)
 		}
-		key := fmt.Sprintf("%d/%s", a.XrId, a.Feeder)
+		key := fmt.Sprintf("%d/%s", a.XrId, feeder)
 		if _, dup := seen[key]; dup {
 			return fmt.Errorf("duplicate exchange rate authorization for (xr_id %d, feeder %s)", a.XrId, a.Feeder)
 		}

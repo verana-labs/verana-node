@@ -12,14 +12,14 @@ import "verana/cs/v1/types.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/xr/types";
 
-// ExchangeRate defines the storage type for an exchange rate entry.
+// ExchangeRate is an exchange rate entry.
 message ExchangeRate {
   uint64 id = 1;
   verana.cs.v1.PricingAssetType base_asset_type = 2;
   string base_asset = 3;
   verana.cs.v1.PricingAssetType quote_asset_type = 4;
   string quote_asset = 5;
-  string rate = 6;
+  uint64 rate = 6;
   uint32 rate_scale = 7;
   google.protobuf.Duration validity_duration = 8 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
   google.protobuf.Timestamp expires = 9 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
@@ -27,10 +27,7 @@ message ExchangeRate {
   google.protobuf.Timestamp updated = 11 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
 }
 
-// ExchangeRateAuthorization designates which feeder account is authorized to
-// push fresh values for a given ExchangeRate, with optional anti-spam
-// (min_interval) and circuit-breaker (max_deviation_bps) bounds. Keyed by
-// (xr_id, feeder). Zero min_interval / max_deviation_bps means "unset".
+// ExchangeRateAuthorization designates a feeder; a zero min_interval or max_deviation_bps is unset.
 message ExchangeRateAuthorization {
   uint64 xr_id = 1;
   string feeder = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -56,11 +53,11 @@ service Msg {
   // SetExchangeRateState defines a governance operation for enabling or disabling an exchange rate.
   rpc SetExchangeRateState(MsgSetExchangeRateState) returns (MsgSetExchangeRateStateResponse);
 
-  // GrantExchangeRateAuthorization defines a governance operation authorizing an
+  // GrantExchangeRateAuthorization defines a governance operation authorizing a
   // feeder to update a given exchange rate. [MOD-XR-MSG-4]
   rpc GrantExchangeRateAuthorization(MsgGrantExchangeRateAuthorization) returns (MsgGrantExchangeRateAuthorizationResponse);
 
-  // RevokeExchangeRateAuthorization defines a governance operation revoking an
+  // RevokeExchangeRateAuthorization defines a governance operation revoking a
   // feeder's authorization for a given exchange rate. [MOD-XR-MSG-5]
   rpc RevokeExchangeRateAuthorization(MsgRevokeExchangeRateAuthorization) returns (MsgRevokeExchangeRateAuthorizationResponse);
 }
@@ -77,10 +74,9 @@ message MsgCreateExchangeRate {
   string base_asset = 3;
   verana.cs.v1.PricingAssetType quote_asset_type = 4;
   string quote_asset = 5;
-  string rate = 6;
+  uint64 rate = 6;
   uint32 rate_scale = 7;
   google.protobuf.Duration validity_duration = 8 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
-  bool state = 9;
 }
 
 // MsgCreateExchangeRateResponse defines the response for MsgCreateExchangeRate.
@@ -100,7 +96,7 @@ message MsgUpdateExchangeRate {
   uint64 id = 2;
 
   // rate is the new exchange rate value.
-  string rate = 3;
+  uint64 rate = 3;
 }
 
 // MsgUpdateExchangeRateResponse defines the response for MsgUpdateExchangeRate.
@@ -161,7 +157,7 @@ message MsgGrantExchangeRateAuthorization {
   // min_interval is the minimum time between successful updates (optional anti-spam).
   google.protobuf.Duration min_interval = 5 [(gogoproto.stdduration) = true, (gogoproto.nullable) = true];
 
-  // max_deviation_bps is the max allowed rate change in basis points, (0, 10000] (optional circuit breaker).
+  // max_deviation_bps is the max rate change in basis points, (0, 10000]; mandatory on the genesis exchange rate.
   uint32 max_deviation_bps = 6;
 }
 

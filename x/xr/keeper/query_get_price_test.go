@@ -1,53 +1,41 @@
 package keeper_test
 
 import (
+	"strings"
 	"testing"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	cstypes "github.com/verana-labs/verana-node/x/cs/types"
 	"github.com/verana-labs/verana-node/x/xr/keeper"
 	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
-func seedPriceExchangeRate(t *testing.T, f *fixture, rate string, rateScale uint32, state bool, expired bool) {
-	t.Helper()
-	ms := keeper.NewMsgServerImpl(f.keeper)
-	authorityStr, err := f.addressCodec.BytesToString(f.keeper.GetAuthority())
-	require.NoError(t, err)
-
-	resp, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Signer:           authorityStr,
-		BaseAssetType:    cstypes.PricingAssetType_COIN,
-		BaseAsset:        "uverana",
-		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
-		QuoteAsset:       "USD",
-		Rate:             rate,
-		RateScale:        rateScale,
-		ValidityDuration: 10 * time.Minute,
-	})
-	require.NoError(t, err)
-
-	xr, err := f.keeper.ExchangeRates.Get(f.ctx, resp.Id)
-	require.NoError(t, err)
-
-	xr.State = state
-	if expired {
-		// Set expires to the past
-		sdkCtx := sdk.UnwrapSDKContext(f.ctx)
-		xr.Expires = sdkCtx.BlockTime().Add(-1 * time.Minute)
+func priceReq(amount string) *types.QueryGetPriceRequest {
+	return &types.QueryGetPriceRequest{
+		BaseAssetType:  cstypes.PricingAssetType_COIN,
+		BaseAsset:      "uverana",
+		QuoteAssetType: cstypes.PricingAssetType_FIAT,
+		QuoteAsset:     "USD",
+		Amount:         amount,
 	}
-	err = f.keeper.ExchangeRates.Set(f.ctx, xr.Id, xr)
-	require.NoError(t, err)
+}
+
+// seedPrice creates uverana priced in USD at 500 / 10^2.
+func seedPrice(t *testing.T, f *fixture, state bool) {
+	t.Helper()
+	msg := createMsg(t, f)
+	msg.Rate = 500
+	createRate(t, f, msg, state)
 }
 
 func TestGetPrice_SameAsset(t *testing.T) {
 	f := initFixture(t)
-	qs := keeper.NewQueryServerImpl(f.keeper)
-
-	resp, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
+	resp, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, &types.QueryGetPriceRequest{
 		BaseAssetType:  cstypes.PricingAssetType_COIN,
 		BaseAsset:      "uverana",
 		QuoteAssetType: cstypes.PricingAssetType_COIN,
@@ -62,132 +50,101 @@ func TestGetPrice_ZeroAmount(t *testing.T) {
 	f := initFixture(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
 
-	req := &types.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_COIN,
-		BaseAsset:      "uverana",
-		QuoteAssetType: cstypes.PricingAssetType_FIAT,
-		QuoteAsset:     "USD",
-		Amount:         "0",
-	}
-
-	// No exchange rate.
-	resp, err := qs.GetPrice(f.ctx, req)
+	resp, err := qs.GetPrice(f.ctx, priceReq("0"))
 	require.NoError(t, err)
 	require.Equal(t, "0", resp.Price)
 
-	// Inactive and expired exchange rate.
-	seedPriceExchangeRate(t, f, "500", 2, false, true)
-
-	resp, err = qs.GetPrice(f.ctx, req)
+	seedPrice(t, f, false)
+	f.at(testNow.Add(time.Hour))
+	resp, err = qs.GetPrice(f.ctx, priceReq("0"))
 	require.NoError(t, err)
 	require.Equal(t, "0", resp.Price)
 }
 
 func TestGetPrice_ZeroAmountInvalidAsset(t *testing.T) {
 	f := initFixture(t)
-	qs := keeper.NewQueryServerImpl(f.keeper)
-
-	_, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_FIAT,
-		BaseAsset:      "usd",
-		QuoteAssetType: cstypes.PricingAssetType_COIN,
-		QuoteAsset:     "uverana",
-		Amount:         "0",
-	})
-	require.Error(t, err)
+	req := priceReq("0")
+	req.QuoteAsset = "usd"
+	_, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, req)
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
 	require.Contains(t, err.Error(), "ISO-4217")
+}
+
+func TestGetPrice_TrustUnit(t *testing.T) {
+	f := initFixture(t)
+	req := priceReq("100")
+	req.BaseAssetType, req.BaseAsset = cstypes.PricingAssetType_TU, "tu"
+	_, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, req)
+	require.ErrorIs(t, err, types.ErrInvalidAssetType)
 }
 
 func TestGetPrice_NegativeAmount(t *testing.T) {
 	f := initFixture(t)
-	qs := keeper.NewQueryServerImpl(f.keeper)
-
-	_, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_COIN,
-		BaseAsset:      "uverana",
-		QuoteAssetType: cstypes.PricingAssetType_COIN,
-		QuoteAsset:     "uverana",
-		Amount:         "-1",
-	})
+	_, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, priceReq("-1"))
 	require.ErrorIs(t, err, types.ErrInvalidAmount)
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+}
+
+func TestGetPrice_InvalidAmount(t *testing.T) {
+	f := initFixture(t)
+	_, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, priceReq("1.5"))
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
 }
 
 func TestGetPrice_ValidConversion(t *testing.T) {
 	f := initFixture(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
+	seedPrice(t, f, true)
 
-	// Rate=500, RateScale=2 => price = floor(amount * 500 / 100) = floor(amount * 5)
-	seedPriceExchangeRate(t, f, "500", 2, true, false)
-
-	resp, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_COIN,
-		BaseAsset:      "uverana",
-		QuoteAssetType: cstypes.PricingAssetType_FIAT,
-		QuoteAsset:     "USD",
-		Amount:         "100",
-	})
+	resp, err := qs.GetPrice(f.ctx, priceReq("100"))
 	require.NoError(t, err)
-	// 100 * 500 / 100 = 500
 	require.Equal(t, "500", resp.Price)
 
-	// Test with amount that results in floor division
-	resp, err = qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_COIN,
-		BaseAsset:      "uverana",
-		QuoteAssetType: cstypes.PricingAssetType_FIAT,
-		QuoteAsset:     "USD",
-		Amount:         "3",
-	})
+	resp, err = qs.GetPrice(f.ctx, priceReq("3"))
 	require.NoError(t, err)
-	// floor(3 * 500 / 100) = floor(1500/100) = 15
 	require.Equal(t, "15", resp.Price)
+}
+
+func TestGetPrice_RoundsDown(t *testing.T) {
+	f := initFixture(t)
+	msg := createMsg(t, f)
+	msg.Rate = 199
+	createRate(t, f, msg, true)
+
+	for amount, want := range map[int64]int64{1: 1, 3: 5, 100: 199} {
+		price, err := f.keeper.GetPrice(f.ctx, cstypes.PricingAssetType_COIN, "uverana", cstypes.PricingAssetType_FIAT, "USD", math.NewInt(amount))
+		require.NoError(t, err)
+		require.Equal(t, math.NewInt(want), price, "amount %d", amount)
+	}
 }
 
 func TestGetPrice_ExpiredRate(t *testing.T) {
 	f := initFixture(t)
-	qs := keeper.NewQueryServerImpl(f.keeper)
-
-	seedPriceExchangeRate(t, f, "500", 2, true, true)
-
-	_, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_COIN,
-		BaseAsset:      "uverana",
-		QuoteAssetType: cstypes.PricingAssetType_FIAT,
-		QuoteAsset:     "USD",
-		Amount:         "100",
-	})
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "expired")
+	seedPrice(t, f, true)
+	f.at(testNow.Add(10 * time.Minute))
+	_, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, priceReq("100"))
+	require.ErrorIs(t, err, types.ErrExchangeRateExpired)
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 }
 
 func TestGetPrice_NotActive(t *testing.T) {
 	f := initFixture(t)
-	qs := keeper.NewQueryServerImpl(f.keeper)
-
-	seedPriceExchangeRate(t, f, "500", 2, false, false)
-
-	_, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_COIN,
-		BaseAsset:      "uverana",
-		QuoteAssetType: cstypes.PricingAssetType_FIAT,
-		QuoteAsset:     "USD",
-		Amount:         "100",
-	})
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "not active")
+	seedPrice(t, f, false)
+	_, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, priceReq("100"))
+	require.ErrorIs(t, err, types.ErrExchangeRateNotActive)
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 }
 
 func TestGetPrice_NotFound(t *testing.T) {
 	f := initFixture(t)
-	qs := keeper.NewQueryServerImpl(f.keeper)
+	_, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, priceReq("100"))
+	require.ErrorIs(t, err, types.ErrExchangeRateNotFound)
+	require.Equal(t, codes.NotFound, status.Code(err))
+}
 
-	_, err := qs.GetPrice(f.ctx, &types.QueryGetPriceRequest{
-		BaseAssetType:  cstypes.PricingAssetType_COIN,
-		BaseAsset:      "uverana",
-		QuoteAssetType: cstypes.PricingAssetType_FIAT,
-		QuoteAsset:     "USD",
-		Amount:         "100",
-	})
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "not found")
+func TestGetPrice_Overflow(t *testing.T) {
+	f := initFixture(t)
+	seedPrice(t, f, true)
+	_, err := keeper.NewQueryServerImpl(f.keeper).GetPrice(f.ctx, priceReq("1"+strings.Repeat("0", 76)))
+	require.ErrorIs(t, err, types.ErrInvalidAmount)
 }

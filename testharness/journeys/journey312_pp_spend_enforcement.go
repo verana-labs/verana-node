@@ -23,7 +23,7 @@ import (
 // depends only on Journey 301 (the Corporation + funded accounts) and builds its
 // own ecosystem -> schema -> root permission. The root carries non-zero
 // validation_fees so each StartParticipantOP commits a non-zero nominal amount
-// (fees + trust deposit) that the delegate's spend_limit is debited by.
+// (its trust deposit) that the delegate's spend_limit is debited by.
 //
 // TEST 1 (positive): grant a generous spend_limit, run one StartParticipantOP,
 // assert remaining_spend was debited below the granted limit.
@@ -48,9 +48,10 @@ func RunPermissionSpendEnforcementJourney(ctx context.Context, client cosmosclie
 	fmt.Printf("  Delegate:    %s\n", delegateAddr)
 
 	const (
-		// validation_fees on the root, in trust units. trust_unit_price is
-		// 1_000_000 uvna, so this drives ~10 VNA of fees per StartParticipantOP
-		// plus the trust deposit on top.
+		// validation_fees on the root, in USD cents. At the genesis rate of
+		// 1_000_000 uvna per cent the native basis is 10 VNA, so each
+		// StartParticipantOP commits a 0.5 VNA trust deposit; the fiat fee
+		// itself settles off-chain.
 		rootValidationFees = uint64(10)
 		largeSpendLimit    = int64(100_000_000) // 100 VNA, comfortably above one op
 		tinySpendLimit     = int64(1)           // 1 uvna, below one op's cost

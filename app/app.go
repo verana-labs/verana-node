@@ -298,6 +298,8 @@ func New(
 	app.DeKeeper.SetGovernanceFrameworkKeeper(app.GfKeeper)
 	// Wire MOD-VS into MOD-DE (vs_account_fee_period, MOD-DE-MSG-5-5).
 	app.DeKeeper.SetVerifiableServiceKeeper(app.VsKeeper)
+	// MOD-XR reads main_fiat_currency from MOD-TD.
+	app.XrKeeper.SetTrustDepositKeeper(app.TrustdepositKeeper)
 
 	// add to default baseapp options
 	// enable optimistic execution

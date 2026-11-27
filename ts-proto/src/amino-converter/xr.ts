@@ -25,10 +25,9 @@ export const MsgCreateExchangeRateAminoConverter: AminoConverter = {
     base_asset: m.baseAsset || undefined,
     quote_asset_type: m.quoteAssetType ?? 0,
     quote_asset: m.quoteAsset || undefined,
-    rate: m.rate || undefined,
+    rate: u64ToStr(m.rate),
     rate_scale: u32ToAmino(m.rateScale),
     validity_duration: durationToAmino(m.validityDuration),
-    state: m.state ? true : undefined,
   }),
   fromAmino: (a: any): MsgCreateExchangeRate =>
     MsgCreateExchangeRate.fromPartial({
@@ -37,10 +36,9 @@ export const MsgCreateExchangeRateAminoConverter: AminoConverter = {
       baseAsset: a.base_asset ?? "",
       quoteAssetType: a.quote_asset_type ?? 0,
       quoteAsset: a.quote_asset ?? "",
-      rate: a.rate ?? "",
+      rate: strToU64(a.rate) != null ? Number(strToU64(a.rate)!.toString()) : 0,
       rateScale: a.rate_scale ?? 0,
       validityDuration: aminoToDuration(a.validity_duration),
-      state: a.state ?? false,
     }),
 };
 
@@ -49,13 +47,13 @@ export const MsgUpdateExchangeRateAminoConverter: AminoConverter = {
   toAmino: (m: MsgUpdateExchangeRate) => clean({
     signer: m.signer || undefined,
     id: u64ToStr(m.id),
-    rate: m.rate || undefined,
+    rate: u64ToStr(m.rate),
   }),
   fromAmino: (a: any): MsgUpdateExchangeRate =>
     MsgUpdateExchangeRate.fromPartial({
       signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
-      rate: a.rate ?? "",
+      rate: strToU64(a.rate) != null ? Number(strToU64(a.rate)!.toString()) : 0,
     }),
 };
 

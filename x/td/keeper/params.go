@@ -35,6 +35,11 @@ func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
 	return nil
 }
 
+// MainFiatCurrency returns the immutable main_fiat_currency.
+func (k Keeper) MainFiatCurrency(ctx context.Context) string {
+	return k.GetParams(ctx).MainFiatCurrency
+}
+
 // GetPendingTuDecayRate returns the tu_decay_rate waiting for the next epoch boundary.
 func (k Keeper) GetPendingTuDecayRate(ctx context.Context) (math.LegacyDec, bool, error) {
 	rate, err := k.PendingTuDecayRate.Get(ctx)

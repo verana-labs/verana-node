@@ -1,0 +1,27 @@
+syntax = "proto3";
+package verana.xr.v1;
+
+import "verana/cs/v1/types.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/xr/types";
+
+// ExchangeRateRecord is the stored ExchangeRate, keyed by id; times in Unix seconds, durations in seconds.
+message ExchangeRateRecord {
+  verana.cs.v1.PricingAssetType base_asset_type = 1;
+  string base_asset = 2;
+  verana.cs.v1.PricingAssetType quote_asset_type = 3;
+  string quote_asset = 4;
+  uint64 rate = 5;
+  uint32 rate_scale = 6;
+  uint32 validity_duration = 7;
+  int64 updated = 8;
+  int64 expires = 9;
+  bool state = 10;
+}
+
+// ExchangeRateAuthorizationRecord is the stored ExchangeRateAuthorization, keyed by (xr_id, feeder).
+message ExchangeRateAuthorizationRecord {
+  int64 expiration = 1;
+  uint32 min_interval = 2;
+  uint32 max_deviation_bps = 3;
+}

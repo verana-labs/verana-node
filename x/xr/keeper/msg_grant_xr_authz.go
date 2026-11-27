@@ -1,15 +1,14 @@
 package keeper
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"time"
 
 	"cosmossdk.io/collections"
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/verana-labs/verana-node/util/events"
 	"github.com/verana-labs/verana-node/x/xr/types"
 )
 
@@ -18,56 +17,46 @@ func (ms msgServer) GrantExchangeRateAuthorization(ctx context.Context, msg *typ
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-
-	// [MOD-XR-MSG-4-2-1] authority MUST equal the council account.
-	authority, err := ms.addressCodec.StringToBytes(msg.Signer)
+	if err := ms.checkAuthority(msg.Signer); err != nil {
+		return nil, err
+	}
+	feederBz, err := ms.addressCodec.StringToBytes(msg.Feeder)
 	if err != nil {
-		return nil, errorsmod.Wrap(err, "invalid authority address")
+		return nil, errorsmod.Wrap(err, "invalid feeder address")
 	}
-	if !bytes.Equal(ms.GetAuthority(), authority) {
-		expected, _ := ms.addressCodec.BytesToString(ms.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid signer; expected %s, got %s", expected, msg.Signer)
-	}
+	feeder := sdk.AccAddress(feederBz)
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	now := sdkCtx.BlockTime()
 
-	// xr_id MUST refer to an existing ExchangeRate.
-	if _, err := ms.ExchangeRates.Get(ctx, msg.XrId); err != nil {
+	xr, err := ms.ExchangeRates.Get(ctx, msg.XrId)
+	if err != nil {
 		return nil, errorsmod.Wrapf(types.ErrExchangeRateNotFound, "exchange rate with id %d not found", msg.XrId)
 	}
-
-	// expiration MUST be in the future.
-	if !msg.Expiration.After(now) {
+	if msg.Expiration.Unix() <= sdkCtx.BlockTime().Unix() {
 		return nil, types.ErrInvalidExpiration
 	}
+	if msg.MaxDeviationBps == 0 && ms.isGenesisPair(ctx, &xr) {
+		return nil, errorsmod.Wrap(types.ErrInvalidMaxDeviation, "max_deviation_bps is mandatory on the genesis exchange rate")
+	}
 
-	// Build the authorization record (zero min_interval / max_deviation_bps = unset).
-	authz := types.ExchangeRateAuthorization{
-		XrId:            msg.XrId,
-		Feeder:          msg.Feeder,
-		Expiration:      *msg.Expiration,
+	authz := types.ExchangeRateAuthorizationRecord{
+		Expiration:      msg.Expiration.Unix(),
 		MaxDeviationBps: msg.MaxDeviationBps,
 	}
 	if msg.MinInterval != nil {
-		authz.MinInterval = *msg.MinInterval
+		authz.MinInterval = uint32(*msg.MinInterval / time.Second)
 	}
-
-	key := collections.Join(msg.XrId, msg.Feeder)
-	if err := ms.ExchangeRateAuthorizations.Set(ctx, key, authz); err != nil {
+	if err := ms.ExchangeRateAuthorizations.Set(ctx, collections.Join(msg.XrId, feeder), authz); err != nil {
 		return nil, errorsmod.Wrap(err, "failed to store exchange rate authorization")
 	}
 
-	sdkCtx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeGrantExchangeRateAuthz,
-			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.XrId)),
-			sdk.NewAttribute(types.AttributeKeyFeeder, msg.Feeder),
-			sdk.NewAttribute(types.AttributeKeyExpiration, authz.Expiration.UTC().Format(time.RFC3339Nano)),
-			sdk.NewAttribute(types.AttributeKeyMinInterval, fmt.Sprintf("%d", authz.MinInterval)),
-			sdk.NewAttribute(types.AttributeKeyMaxDeviationBps, fmt.Sprintf("%d", authz.MaxDeviationBps)),
-		),
-	)
+	ev := events.New(types.ModuleName, types.EventTypeGrantExchangeRateAuthorization).
+		Uint(types.AttributeKeyXrID, msg.XrId).
+		Addr(types.AttributeKeyFeeder, feeder)
+	if err := ev.Msg(ms.cdc, msg); err != nil {
+		return nil, err
+	}
+	ev.Emit(sdkCtx)
 
 	return &types.MsgGrantExchangeRateAuthorizationResponse{}, nil
 }

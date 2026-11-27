@@ -96,16 +96,19 @@ assert.equal(diRoundTrip.digest, "sha256-abc123");
 const xrCreateConverter = amino.register[veranaTypeUrls.MsgCreateExchangeRate];
 const xrCreateMsg = MsgCreateExchangeRate.fromPartial({
   signer: "verana1authority0000000000000000000000000000000",
-  baseAssetType: 1,
+  baseAssetType: 3,
   baseAsset: "EUR",
-  quoteAssetType: 1,
+  quoteAssetType: 3,
   quoteAsset: "USD",
-  rate: "1.0705",
+  rate: 10705,
   rateScale: 4,
   validityDuration: { seconds: 1800, nanos: 9 },
 });
-const xrCreateRoundTrip = xrCreateConverter.fromAmino(xrCreateConverter.toAmino(xrCreateMsg));
+const xrCreateAmino = xrCreateConverter.toAmino(xrCreateMsg);
+assert.equal(xrCreateAmino.rate, "10705");
+const xrCreateRoundTrip = xrCreateConverter.fromAmino(xrCreateAmino);
 assert.equal(xrCreateRoundTrip.baseAsset, "EUR");
+assert.equal(xrCreateRoundTrip.rate, 10705);
 assert.equal(xrCreateRoundTrip.validityDuration?.seconds, 1800);
 assert.equal(xrCreateRoundTrip.validityDuration?.nanos, 9);
 
@@ -113,11 +116,16 @@ const xrUpdateConverter = amino.register[veranaTypeUrls.MsgUpdateExchangeRate];
 const xrUpdateMsg = MsgUpdateExchangeRate.fromPartial({
   signer: "verana1feeder000000000000000000000000000000000",
   id: 12,
-  rate: "1.0800",
+  rate: 10800,
 });
 const xrUpdateRoundTrip = xrUpdateConverter.fromAmino(xrUpdateConverter.toAmino(xrUpdateMsg));
 assert.equal(xrUpdateRoundTrip.id, 12);
-assert.equal(xrUpdateRoundTrip.rate, "1.0800");
+assert.equal(xrUpdateRoundTrip.signer, "verana1feeder000000000000000000000000000000000");
+assert.equal(xrUpdateRoundTrip.rate, 10800);
+// uint64 rates past 2^63 stay unsigned in the sign bytes
+const xrUpdateHighRate = MsgUpdateExchangeRate.fromPartial({ id: 1, rate: 2 ** 63 });
+assert.equal(xrUpdateConverter.toAmino(xrUpdateHighRate).rate, "9223372036854775808");
+assert.equal(xrUpdateConverter.fromAmino(xrUpdateConverter.toAmino(xrUpdateHighRate)).rate, 2 ** 63);
 
 const xrSetStateConverter = amino.register[veranaTypeUrls.MsgSetExchangeRateState];
 const xrSetStateMsg = MsgSetExchangeRateState.fromPartial({

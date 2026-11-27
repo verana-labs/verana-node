@@ -42,10 +42,10 @@ type MsgClient interface {
 	UpdateExchangeRate(ctx context.Context, in *MsgUpdateExchangeRate, opts ...grpc.CallOption) (*MsgUpdateExchangeRateResponse, error)
 	// SetExchangeRateState defines a governance operation for enabling or disabling an exchange rate.
 	SetExchangeRateState(ctx context.Context, in *MsgSetExchangeRateState, opts ...grpc.CallOption) (*MsgSetExchangeRateStateResponse, error)
-	// GrantExchangeRateAuthorization defines a governance operation authorizing an
+	// GrantExchangeRateAuthorization defines a governance operation authorizing a
 	// feeder to update a given exchange rate. [MOD-XR-MSG-4]
 	GrantExchangeRateAuthorization(ctx context.Context, in *MsgGrantExchangeRateAuthorization, opts ...grpc.CallOption) (*MsgGrantExchangeRateAuthorizationResponse, error)
-	// RevokeExchangeRateAuthorization defines a governance operation revoking an
+	// RevokeExchangeRateAuthorization defines a governance operation revoking a
 	// feeder's authorization for a given exchange rate. [MOD-XR-MSG-5]
 	RevokeExchangeRateAuthorization(ctx context.Context, in *MsgRevokeExchangeRateAuthorization, opts ...grpc.CallOption) (*MsgRevokeExchangeRateAuthorizationResponse, error)
 }
@@ -133,10 +133,10 @@ type MsgServer interface {
 	UpdateExchangeRate(context.Context, *MsgUpdateExchangeRate) (*MsgUpdateExchangeRateResponse, error)
 	// SetExchangeRateState defines a governance operation for enabling or disabling an exchange rate.
 	SetExchangeRateState(context.Context, *MsgSetExchangeRateState) (*MsgSetExchangeRateStateResponse, error)
-	// GrantExchangeRateAuthorization defines a governance operation authorizing an
+	// GrantExchangeRateAuthorization defines a governance operation authorizing a
 	// feeder to update a given exchange rate. [MOD-XR-MSG-4]
 	GrantExchangeRateAuthorization(context.Context, *MsgGrantExchangeRateAuthorization) (*MsgGrantExchangeRateAuthorizationResponse, error)
-	// RevokeExchangeRateAuthorization defines a governance operation revoking an
+	// RevokeExchangeRateAuthorization defines a governance operation revoking a
 	// feeder's authorization for a given exchange rate. [MOD-XR-MSG-5]
 	RevokeExchangeRateAuthorization(context.Context, *MsgRevokeExchangeRateAuthorization) (*MsgRevokeExchangeRateAuthorizationResponse, error)
 	mustEmbedUnimplementedMsgServer()
