@@ -31,6 +31,18 @@ service Query {
   rpc GetVSOperatorAuthorization(QueryGetVSOperatorAuthorizationRequest) returns (QueryGetVSOperatorAuthorizationResponse) {
     option (google.api.http).get = "/de/v1/vs-authz/get/{id}";
   }
+
+  // [MOD-DE-QRY-5] GetSponsorship returns the Sponsorship of a sponsor and a
+  // sponsored corporation.
+  rpc GetSponsorship(QueryGetSponsorshipRequest) returns (QueryGetSponsorshipResponse) {
+    option (google.api.http).get = "/de/v1/sponsorship/get";
+  }
+
+  // [MOD-DE-QRY-6] ListSponsorships returns the sponsorships of a sponsor with
+  // whether each is active.
+  rpc ListSponsorships(QueryListSponsorshipsRequest) returns (QueryListSponsorshipsResponse) {
+    option (google.api.http).get = "/de/v1/sponsorship/list";
+  }
 }
 
 // QueryListDelegateAuthorizationsRequest is the request type for the
@@ -91,4 +103,40 @@ message QueryGetVSOperatorAuthorizationRequest {
 // Query/GetVSOperatorAuthorization RPC method.
 message QueryGetVSOperatorAuthorizationResponse {
   VSOperatorAuthorization vs_operator_authorization = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryGetSponsorshipRequest is the request type for the Query/GetSponsorship
+// RPC method.
+message QueryGetSponsorshipRequest {
+  uint64 sponsor_corporation_id = 1;
+  uint64 sponsored_corporation_id = 2;
+}
+
+// QueryGetSponsorshipResponse is the response type for the
+// Query/GetSponsorship RPC method.
+message QueryGetSponsorshipResponse {
+  Sponsorship sponsorship = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryListSponsorshipsRequest is the request type for the
+// Query/ListSponsorships RPC method.
+message QueryListSponsorshipsRequest {
+  // sponsor_corporation_id is the sponsor whose sponsorships are listed.
+  uint64 sponsor_corporation_id = 1;
+  // response_max_size limits the number of results. Must be 1-1024, defaults to 64.
+  uint32 response_max_size = 2;
+}
+
+// ListedSponsorship is a Sponsorship with its derived active flag.
+message ListedSponsorship {
+  Sponsorship sponsorship = 1 [(gogoproto.nullable) = false];
+  // active is true iff the sponsored corporation elected this sponsor and the
+  // sponsorship is not expired.
+  bool active = 2;
+}
+
+// QueryListSponsorshipsResponse is the response type for the
+// Query/ListSponsorships RPC method.
+message QueryListSponsorshipsResponse {
+  repeated ListedSponsorship sponsorships = 1 [(gogoproto.nullable) = false];
 }

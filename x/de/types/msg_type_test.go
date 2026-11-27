@@ -112,6 +112,7 @@ func TestMsgTypeURL(t *testing.T) {
 		types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION:                 {"/verana.de.v1.MsgGrantDelegateAuthorization"},
 		types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION:                {"/verana.de.v1.MsgRevokeDelegateAuthorization"},
 		types.MsgType_MSG_TYPE_STORE_DIGEST:                                 {"/verana.di.v1.MsgStoreDigest"},
+		types.MsgType_MSG_TYPE_REVOKE_SPONSORSHIP:                           {"/verana.de.v1.MsgRevokeSponsorship"},
 		types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION:               {"/verana.pp.v1.MsgCreateOrUpdateParticipantSession"},
 	}
 	for n := range types.MsgType_name {

@@ -23,6 +23,8 @@ const (
 	Query_ListVSOperatorAuthorizations_FullMethodName = "/verana.de.v1.Query/ListVSOperatorAuthorizations"
 	Query_GetDelegateAuthorization_FullMethodName     = "/verana.de.v1.Query/GetDelegateAuthorization"
 	Query_GetVSOperatorAuthorization_FullMethodName   = "/verana.de.v1.Query/GetVSOperatorAuthorization"
+	Query_GetSponsorship_FullMethodName               = "/verana.de.v1.Query/GetSponsorship"
+	Query_ListSponsorships_FullMethodName             = "/verana.de.v1.Query/ListSponsorships"
 )
 
 // QueryClient is the client API for Query service.
@@ -39,6 +41,12 @@ type QueryClient interface {
 	GetDelegateAuthorization(ctx context.Context, in *QueryGetDelegateAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(ctx context.Context, in *QueryGetVSOperatorAuthorizationRequest, opts ...grpc.CallOption) (*QueryGetVSOperatorAuthorizationResponse, error)
+	// [MOD-DE-QRY-5] GetSponsorship returns the Sponsorship of a sponsor and a
+	// sponsored corporation.
+	GetSponsorship(ctx context.Context, in *QueryGetSponsorshipRequest, opts ...grpc.CallOption) (*QueryGetSponsorshipResponse, error)
+	// [MOD-DE-QRY-6] ListSponsorships returns the sponsorships of a sponsor with
+	// whether each is active.
+	ListSponsorships(ctx context.Context, in *QueryListSponsorshipsRequest, opts ...grpc.CallOption) (*QueryListSponsorshipsResponse, error)
 }
 
 type queryClient struct {
@@ -89,6 +97,26 @@ func (c *queryClient) GetVSOperatorAuthorization(ctx context.Context, in *QueryG
 	return out, nil
 }
 
+func (c *queryClient) GetSponsorship(ctx context.Context, in *QueryGetSponsorshipRequest, opts ...grpc.CallOption) (*QueryGetSponsorshipResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryGetSponsorshipResponse)
+	err := c.cc.Invoke(ctx, Query_GetSponsorship_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ListSponsorships(ctx context.Context, in *QueryListSponsorshipsRequest, opts ...grpc.CallOption) (*QueryListSponsorshipsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryListSponsorshipsResponse)
+	err := c.cc.Invoke(ctx, Query_ListSponsorships_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility.
@@ -103,6 +131,12 @@ type QueryServer interface {
 	GetDelegateAuthorization(context.Context, *QueryGetDelegateAuthorizationRequest) (*QueryGetDelegateAuthorizationResponse, error)
 	// [MOD-DE-QRY-4] GetVSOperatorAuthorization returns a single VSOperatorAuthorization by id.
 	GetVSOperatorAuthorization(context.Context, *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error)
+	// [MOD-DE-QRY-5] GetSponsorship returns the Sponsorship of a sponsor and a
+	// sponsored corporation.
+	GetSponsorship(context.Context, *QueryGetSponsorshipRequest) (*QueryGetSponsorshipResponse, error)
+	// [MOD-DE-QRY-6] ListSponsorships returns the sponsorships of a sponsor with
+	// whether each is active.
+	ListSponsorships(context.Context, *QueryListSponsorshipsRequest) (*QueryListSponsorshipsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -124,6 +158,12 @@ func (UnimplementedQueryServer) GetDelegateAuthorization(context.Context, *Query
 }
 func (UnimplementedQueryServer) GetVSOperatorAuthorization(context.Context, *QueryGetVSOperatorAuthorizationRequest) (*QueryGetVSOperatorAuthorizationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVSOperatorAuthorization not implemented")
+}
+func (UnimplementedQueryServer) GetSponsorship(context.Context, *QueryGetSponsorshipRequest) (*QueryGetSponsorshipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSponsorship not implemented")
+}
+func (UnimplementedQueryServer) ListSponsorships(context.Context, *QueryListSponsorshipsRequest) (*QueryListSponsorshipsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSponsorships not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 func (UnimplementedQueryServer) testEmbeddedByValue()               {}
@@ -218,6 +258,42 @@ func _Query_GetVSOperatorAuthorization_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GetSponsorship_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetSponsorshipRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetSponsorship(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GetSponsorship_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetSponsorship(ctx, req.(*QueryGetSponsorshipRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ListSponsorships_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryListSponsorshipsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ListSponsorships(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ListSponsorships_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ListSponsorships(ctx, req.(*QueryListSponsorshipsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -240,6 +316,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetVSOperatorAuthorization",
 			Handler:    _Query_GetVSOperatorAuthorization_Handler,
+		},
+		{
+			MethodName: "GetSponsorship",
+			Handler:    _Query_GetSponsorship_Handler,
+		},
+		{
+			MethodName: "ListSponsorships",
+			Handler:    _Query_ListSponsorships_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

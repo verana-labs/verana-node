@@ -26,6 +26,11 @@ export interface Corporation {
   modified: Date | undefined;
   language: string;
   activeVersion: number;
+  /**
+   * sponsor_corporation_id is the elected sponsor; 0 when the corporation
+   * funds itself.
+   */
+  sponsorCorporationId: number;
 }
 
 /**
@@ -42,10 +47,24 @@ export interface CorporationWithGF {
   language: string;
   activeVersion: number;
   versions: GovernanceFrameworkVersionWithDocs[];
+  /**
+   * sponsor_corporation_id is the elected sponsor; 0 when the corporation
+   * funds itself.
+   */
+  sponsorCorporationId: number;
 }
 
 function createBaseCorporation(): Corporation {
-  return { id: 0, policyAddress: "", did: "", created: undefined, modified: undefined, language: "", activeVersion: 0 };
+  return {
+    id: 0,
+    policyAddress: "",
+    did: "",
+    created: undefined,
+    modified: undefined,
+    language: "",
+    activeVersion: 0,
+    sponsorCorporationId: 0,
+  };
 }
 
 export const Corporation = {
@@ -70,6 +89,9 @@ export const Corporation = {
     }
     if (message.activeVersion !== 0) {
       writer.uint32(56).uint32(message.activeVersion);
+    }
+    if (message.sponsorCorporationId !== 0) {
+      writer.uint32(64).uint64(message.sponsorCorporationId);
     }
     return writer;
   },
@@ -130,6 +152,13 @@ export const Corporation = {
 
           message.activeVersion = reader.uint32();
           continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.sponsorCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -148,6 +177,7 @@ export const Corporation = {
       modified: isSet(object.modified) ? fromJsonTimestamp(object.modified) : undefined,
       language: isSet(object.language) ? globalThis.String(object.language) : "",
       activeVersion: isSet(object.activeVersion) ? globalThis.Number(object.activeVersion) : 0,
+      sponsorCorporationId: isSet(object.sponsorCorporationId) ? globalThis.Number(object.sponsorCorporationId) : 0,
     };
   },
 
@@ -174,6 +204,9 @@ export const Corporation = {
     if (message.activeVersion !== 0) {
       obj.activeVersion = Math.round(message.activeVersion);
     }
+    if (message.sponsorCorporationId !== 0) {
+      obj.sponsorCorporationId = Math.round(message.sponsorCorporationId);
+    }
     return obj;
   },
 
@@ -189,6 +222,7 @@ export const Corporation = {
     message.modified = object.modified ?? undefined;
     message.language = object.language ?? "";
     message.activeVersion = object.activeVersion ?? 0;
+    message.sponsorCorporationId = object.sponsorCorporationId ?? 0;
     return message;
   },
 };
@@ -203,6 +237,7 @@ function createBaseCorporationWithGF(): CorporationWithGF {
     language: "",
     activeVersion: 0,
     versions: [],
+    sponsorCorporationId: 0,
   };
 }
 
@@ -231,6 +266,9 @@ export const CorporationWithGF = {
     }
     for (const v of message.versions) {
       GovernanceFrameworkVersionWithDocs.encode(v!, writer.uint32(66).fork()).ldelim();
+    }
+    if (message.sponsorCorporationId !== 0) {
+      writer.uint32(72).uint64(message.sponsorCorporationId);
     }
     return writer;
   },
@@ -298,6 +336,13 @@ export const CorporationWithGF = {
 
           message.versions.push(GovernanceFrameworkVersionWithDocs.decode(reader, reader.uint32()));
           continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.sponsorCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -319,6 +364,7 @@ export const CorporationWithGF = {
       versions: globalThis.Array.isArray(object?.versions)
         ? object.versions.map((e: any) => GovernanceFrameworkVersionWithDocs.fromJSON(e))
         : [],
+      sponsorCorporationId: isSet(object.sponsorCorporationId) ? globalThis.Number(object.sponsorCorporationId) : 0,
     };
   },
 
@@ -348,6 +394,9 @@ export const CorporationWithGF = {
     if (message.versions?.length) {
       obj.versions = message.versions.map((e) => GovernanceFrameworkVersionWithDocs.toJSON(e));
     }
+    if (message.sponsorCorporationId !== 0) {
+      obj.sponsorCorporationId = Math.round(message.sponsorCorporationId);
+    }
     return obj;
   },
 
@@ -364,6 +413,7 @@ export const CorporationWithGF = {
     message.language = object.language ?? "";
     message.activeVersion = object.activeVersion ?? 0;
     message.versions = object.versions?.map((e) => GovernanceFrameworkVersionWithDocs.fromPartial(e)) || [];
+    message.sponsorCorporationId = object.sponsorCorporationId ?? 0;
     return message;
   },
 };

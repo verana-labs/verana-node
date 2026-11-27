@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Msg_GrantDelegateAuthorization_FullMethodName  = "/verana.de.v1.Msg/GrantDelegateAuthorization"
 	Msg_RevokeDelegateAuthorization_FullMethodName = "/verana.de.v1.Msg/RevokeDelegateAuthorization"
+	Msg_GrantSponsorship_FullMethodName            = "/verana.de.v1.Msg/GrantSponsorship"
+	Msg_RevokeSponsorship_FullMethodName           = "/verana.de.v1.Msg/RevokeSponsorship"
 )
 
 // MsgClient is the client API for Msg service.
@@ -33,6 +35,10 @@ type MsgClient interface {
 	GrantDelegateAuthorization(ctx context.Context, in *MsgGrantDelegateAuthorization, opts ...grpc.CallOption) (*MsgGrantDelegateAuthorizationResponse, error)
 	// [MOD-DE-MSG-4] Revoke Delegate Authorization
 	RevokeDelegateAuthorization(ctx context.Context, in *MsgRevokeDelegateAuthorization, opts ...grpc.CallOption) (*MsgRevokeDelegateAuthorizationResponse, error)
+	// [MOD-DE-MSG-10] Grant Sponsorship
+	GrantSponsorship(ctx context.Context, in *MsgGrantSponsorship, opts ...grpc.CallOption) (*MsgGrantSponsorshipResponse, error)
+	// [MOD-DE-MSG-11] Revoke Sponsorship
+	RevokeSponsorship(ctx context.Context, in *MsgRevokeSponsorship, opts ...grpc.CallOption) (*MsgRevokeSponsorshipResponse, error)
 }
 
 type msgClient struct {
@@ -63,6 +69,26 @@ func (c *msgClient) RevokeDelegateAuthorization(ctx context.Context, in *MsgRevo
 	return out, nil
 }
 
+func (c *msgClient) GrantSponsorship(ctx context.Context, in *MsgGrantSponsorship, opts ...grpc.CallOption) (*MsgGrantSponsorshipResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGrantSponsorshipResponse)
+	err := c.cc.Invoke(ctx, Msg_GrantSponsorship_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RevokeSponsorship(ctx context.Context, in *MsgRevokeSponsorship, opts ...grpc.CallOption) (*MsgRevokeSponsorshipResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgRevokeSponsorshipResponse)
+	err := c.cc.Invoke(ctx, Msg_RevokeSponsorship_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility.
@@ -73,6 +99,10 @@ type MsgServer interface {
 	GrantDelegateAuthorization(context.Context, *MsgGrantDelegateAuthorization) (*MsgGrantDelegateAuthorizationResponse, error)
 	// [MOD-DE-MSG-4] Revoke Delegate Authorization
 	RevokeDelegateAuthorization(context.Context, *MsgRevokeDelegateAuthorization) (*MsgRevokeDelegateAuthorizationResponse, error)
+	// [MOD-DE-MSG-10] Grant Sponsorship
+	GrantSponsorship(context.Context, *MsgGrantSponsorship) (*MsgGrantSponsorshipResponse, error)
+	// [MOD-DE-MSG-11] Revoke Sponsorship
+	RevokeSponsorship(context.Context, *MsgRevokeSponsorship) (*MsgRevokeSponsorshipResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -88,6 +118,12 @@ func (UnimplementedMsgServer) GrantDelegateAuthorization(context.Context, *MsgGr
 }
 func (UnimplementedMsgServer) RevokeDelegateAuthorization(context.Context, *MsgRevokeDelegateAuthorization) (*MsgRevokeDelegateAuthorizationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RevokeDelegateAuthorization not implemented")
+}
+func (UnimplementedMsgServer) GrantSponsorship(context.Context, *MsgGrantSponsorship) (*MsgGrantSponsorshipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GrantSponsorship not implemented")
+}
+func (UnimplementedMsgServer) RevokeSponsorship(context.Context, *MsgRevokeSponsorship) (*MsgRevokeSponsorshipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeSponsorship not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 func (UnimplementedMsgServer) testEmbeddedByValue()             {}
@@ -146,6 +182,42 @@ func _Msg_RevokeDelegateAuthorization_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_GrantSponsorship_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGrantSponsorship)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GrantSponsorship(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GrantSponsorship_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GrantSponsorship(ctx, req.(*MsgGrantSponsorship))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RevokeSponsorship_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRevokeSponsorship)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RevokeSponsorship(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_RevokeSponsorship_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RevokeSponsorship(ctx, req.(*MsgRevokeSponsorship))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -160,6 +232,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RevokeDelegateAuthorization",
 			Handler:    _Msg_RevokeDelegateAuthorization_Handler,
+		},
+		{
+			MethodName: "GrantSponsorship",
+			Handler:    _Msg_GrantSponsorship_Handler,
+		},
+		{
+			MethodName: "RevokeSponsorship",
+			Handler:    _Msg_RevokeSponsorship_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

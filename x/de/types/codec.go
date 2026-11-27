@@ -11,12 +11,16 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgGrantDelegateAuthorization{}, "verana/x/de/MsgGrantDelegateAuthz")
 	legacy.RegisterAminoMsg(cdc, &MsgRevokeDelegateAuthorization{}, "verana/x/de/MsgRevokeDelegateAuthz")
+	legacy.RegisterAminoMsg(cdc, &MsgGrantSponsorship{}, "verana/x/de/MsgGrantSponsorship")
+	legacy.RegisterAminoMsg(cdc, &MsgRevokeSponsorship{}, "verana/x/de/MsgRevokeSponsorship")
 }
 
 func RegisterInterfaces(registrar codectypes.InterfaceRegistry) {
 	registrar.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgGrantDelegateAuthorization{},
 		&MsgRevokeDelegateAuthorization{},
+		&MsgGrantSponsorship{},
+		&MsgRevokeSponsorship{},
 	)
 	msgservice.RegisterMsgServiceDesc(registrar, &_Msg_serviceDesc)
 }

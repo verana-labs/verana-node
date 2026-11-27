@@ -28,14 +28,15 @@ func (q querier) GetCorporation(goCtx context.Context, req *types.QueryGetCorpor
 	}
 	return &types.QueryGetCorporationResponse{
 		Corporation: types.CorporationWithGF{
-			Id:            co.Id,
-			PolicyAddress: co.PolicyAddress,
-			Did:           co.Did,
-			Created:       co.Created,
-			Modified:      co.Modified,
-			Language:      co.Language,
-			ActiveVersion: co.ActiveVersion,
-			Versions:      versions,
+			Id:                   co.Id,
+			PolicyAddress:        co.PolicyAddress,
+			Did:                  co.Did,
+			Created:              co.Created,
+			Modified:             co.Modified,
+			Language:             co.Language,
+			ActiveVersion:        co.ActiveVersion,
+			Versions:             versions,
+			SponsorCorporationId: co.SponsorCorporationId,
 		},
 	}, nil
 }
@@ -75,14 +76,15 @@ func (q querier) ListCorporations(goCtx context.Context, req *types.QueryListCor
 			return nil, status.Errorf(codes.Internal, "list gf versions for co %d: %v", co.Id, err)
 		}
 		out = append(out, types.CorporationWithGF{
-			Id:            co.Id,
-			PolicyAddress: co.PolicyAddress,
-			Did:           co.Did,
-			Created:       co.Created,
-			Modified:      co.Modified,
-			Language:      co.Language,
-			ActiveVersion: co.ActiveVersion,
-			Versions:      versions,
+			Id:                   co.Id,
+			PolicyAddress:        co.PolicyAddress,
+			Did:                  co.Did,
+			Created:              co.Created,
+			Modified:             co.Modified,
+			Language:             co.Language,
+			ActiveVersion:        co.ActiveVersion,
+			Versions:             versions,
+			SponsorCorporationId: co.SponsorCorporationId,
 		})
 	}
 	return &types.QueryListCorporationsResponse{Corporations: out}, nil

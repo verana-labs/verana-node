@@ -3715,6 +3715,2328 @@ func (x *fastReflection_QueryGetVSOperatorAuthorizationResponse) ProtoMethods() 
 	}
 }
 
+var (
+	md_QueryGetSponsorshipRequest                          protoreflect.MessageDescriptor
+	fd_QueryGetSponsorshipRequest_sponsor_corporation_id   protoreflect.FieldDescriptor
+	fd_QueryGetSponsorshipRequest_sponsored_corporation_id protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_verana_de_v1_query_proto_init()
+	md_QueryGetSponsorshipRequest = File_verana_de_v1_query_proto.Messages().ByName("QueryGetSponsorshipRequest")
+	fd_QueryGetSponsorshipRequest_sponsor_corporation_id = md_QueryGetSponsorshipRequest.Fields().ByName("sponsor_corporation_id")
+	fd_QueryGetSponsorshipRequest_sponsored_corporation_id = md_QueryGetSponsorshipRequest.Fields().ByName("sponsored_corporation_id")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryGetSponsorshipRequest)(nil)
+
+type fastReflection_QueryGetSponsorshipRequest QueryGetSponsorshipRequest
+
+func (x *QueryGetSponsorshipRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryGetSponsorshipRequest)(x)
+}
+
+func (x *QueryGetSponsorshipRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_verana_de_v1_query_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryGetSponsorshipRequest_messageType fastReflection_QueryGetSponsorshipRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryGetSponsorshipRequest_messageType{}
+
+type fastReflection_QueryGetSponsorshipRequest_messageType struct{}
+
+func (x fastReflection_QueryGetSponsorshipRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryGetSponsorshipRequest)(nil)
+}
+func (x fastReflection_QueryGetSponsorshipRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryGetSponsorshipRequest)
+}
+func (x fastReflection_QueryGetSponsorshipRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetSponsorshipRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryGetSponsorshipRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetSponsorshipRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryGetSponsorshipRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryGetSponsorshipRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryGetSponsorshipRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryGetSponsorshipRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryGetSponsorshipRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryGetSponsorshipRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryGetSponsorshipRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.SponsorCorporationId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SponsorCorporationId)
+		if !f(fd_QueryGetSponsorshipRequest_sponsor_corporation_id, value) {
+			return
+		}
+	}
+	if x.SponsoredCorporationId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SponsoredCorporationId)
+		if !f(fd_QueryGetSponsorshipRequest_sponsored_corporation_id, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryGetSponsorshipRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsor_corporation_id":
+		return x.SponsorCorporationId != uint64(0)
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsored_corporation_id":
+		return x.SponsoredCorporationId != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryGetSponsorshipRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsor_corporation_id":
+		x.SponsorCorporationId = uint64(0)
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsored_corporation_id":
+		x.SponsoredCorporationId = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryGetSponsorshipRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsor_corporation_id":
+		value := x.SponsorCorporationId
+		return protoreflect.ValueOfUint64(value)
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsored_corporation_id":
+		value := x.SponsoredCorporationId
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryGetSponsorshipRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsor_corporation_id":
+		x.SponsorCorporationId = value.Uint()
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsored_corporation_id":
+		x.SponsoredCorporationId = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryGetSponsorshipRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsor_corporation_id":
+		panic(fmt.Errorf("field sponsor_corporation_id of message verana.de.v1.QueryGetSponsorshipRequest is not mutable"))
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsored_corporation_id":
+		panic(fmt.Errorf("field sponsored_corporation_id of message verana.de.v1.QueryGetSponsorshipRequest is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryGetSponsorshipRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsor_corporation_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "verana.de.v1.QueryGetSponsorshipRequest.sponsored_corporation_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryGetSponsorshipRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryGetSponsorshipRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryGetSponsorshipRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryGetSponsorshipRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryGetSponsorshipRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryGetSponsorshipRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryGetSponsorshipRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.SponsorCorporationId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SponsorCorporationId))
+		}
+		if x.SponsoredCorporationId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SponsoredCorporationId))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryGetSponsorshipRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.SponsoredCorporationId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SponsoredCorporationId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.SponsorCorporationId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SponsorCorporationId))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryGetSponsorshipRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetSponsorshipRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetSponsorshipRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SponsorCorporationId", wireType)
+				}
+				x.SponsorCorporationId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SponsorCorporationId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SponsoredCorporationId", wireType)
+				}
+				x.SponsoredCorporationId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SponsoredCorporationId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_QueryGetSponsorshipResponse             protoreflect.MessageDescriptor
+	fd_QueryGetSponsorshipResponse_sponsorship protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_verana_de_v1_query_proto_init()
+	md_QueryGetSponsorshipResponse = File_verana_de_v1_query_proto.Messages().ByName("QueryGetSponsorshipResponse")
+	fd_QueryGetSponsorshipResponse_sponsorship = md_QueryGetSponsorshipResponse.Fields().ByName("sponsorship")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryGetSponsorshipResponse)(nil)
+
+type fastReflection_QueryGetSponsorshipResponse QueryGetSponsorshipResponse
+
+func (x *QueryGetSponsorshipResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryGetSponsorshipResponse)(x)
+}
+
+func (x *QueryGetSponsorshipResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_verana_de_v1_query_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryGetSponsorshipResponse_messageType fastReflection_QueryGetSponsorshipResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryGetSponsorshipResponse_messageType{}
+
+type fastReflection_QueryGetSponsorshipResponse_messageType struct{}
+
+func (x fastReflection_QueryGetSponsorshipResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryGetSponsorshipResponse)(nil)
+}
+func (x fastReflection_QueryGetSponsorshipResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryGetSponsorshipResponse)
+}
+func (x fastReflection_QueryGetSponsorshipResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetSponsorshipResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryGetSponsorshipResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetSponsorshipResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryGetSponsorshipResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryGetSponsorshipResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryGetSponsorshipResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryGetSponsorshipResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryGetSponsorshipResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryGetSponsorshipResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryGetSponsorshipResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Sponsorship != nil {
+		value := protoreflect.ValueOfMessage(x.Sponsorship.ProtoReflect())
+		if !f(fd_QueryGetSponsorshipResponse_sponsorship, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryGetSponsorshipResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipResponse.sponsorship":
+		return x.Sponsorship != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryGetSponsorshipResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipResponse.sponsorship":
+		x.Sponsorship = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryGetSponsorshipResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipResponse.sponsorship":
+		value := x.Sponsorship
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryGetSponsorshipResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipResponse.sponsorship":
+		x.Sponsorship = value.Message().Interface().(*Sponsorship)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryGetSponsorshipResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipResponse.sponsorship":
+		if x.Sponsorship == nil {
+			x.Sponsorship = new(Sponsorship)
+		}
+		return protoreflect.ValueOfMessage(x.Sponsorship.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryGetSponsorshipResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryGetSponsorshipResponse.sponsorship":
+		m := new(Sponsorship)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryGetSponsorshipResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryGetSponsorshipResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryGetSponsorshipResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryGetSponsorshipResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryGetSponsorshipResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryGetSponsorshipResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryGetSponsorshipResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryGetSponsorshipResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryGetSponsorshipResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Sponsorship != nil {
+			l = options.Size(x.Sponsorship)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryGetSponsorshipResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Sponsorship != nil {
+			encoded, err := options.Marshal(x.Sponsorship)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryGetSponsorshipResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetSponsorshipResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetSponsorshipResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Sponsorship", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Sponsorship == nil {
+					x.Sponsorship = &Sponsorship{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Sponsorship); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_QueryListSponsorshipsRequest                        protoreflect.MessageDescriptor
+	fd_QueryListSponsorshipsRequest_sponsor_corporation_id protoreflect.FieldDescriptor
+	fd_QueryListSponsorshipsRequest_response_max_size      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_verana_de_v1_query_proto_init()
+	md_QueryListSponsorshipsRequest = File_verana_de_v1_query_proto.Messages().ByName("QueryListSponsorshipsRequest")
+	fd_QueryListSponsorshipsRequest_sponsor_corporation_id = md_QueryListSponsorshipsRequest.Fields().ByName("sponsor_corporation_id")
+	fd_QueryListSponsorshipsRequest_response_max_size = md_QueryListSponsorshipsRequest.Fields().ByName("response_max_size")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryListSponsorshipsRequest)(nil)
+
+type fastReflection_QueryListSponsorshipsRequest QueryListSponsorshipsRequest
+
+func (x *QueryListSponsorshipsRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryListSponsorshipsRequest)(x)
+}
+
+func (x *QueryListSponsorshipsRequest) slowProtoReflect() protoreflect.Message {
+	mi := &file_verana_de_v1_query_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryListSponsorshipsRequest_messageType fastReflection_QueryListSponsorshipsRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryListSponsorshipsRequest_messageType{}
+
+type fastReflection_QueryListSponsorshipsRequest_messageType struct{}
+
+func (x fastReflection_QueryListSponsorshipsRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryListSponsorshipsRequest)(nil)
+}
+func (x fastReflection_QueryListSponsorshipsRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryListSponsorshipsRequest)
+}
+func (x fastReflection_QueryListSponsorshipsRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryListSponsorshipsRequest
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryListSponsorshipsRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryListSponsorshipsRequest
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryListSponsorshipsRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryListSponsorshipsRequest_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryListSponsorshipsRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryListSponsorshipsRequest)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryListSponsorshipsRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryListSponsorshipsRequest)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryListSponsorshipsRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.SponsorCorporationId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SponsorCorporationId)
+		if !f(fd_QueryListSponsorshipsRequest_sponsor_corporation_id, value) {
+			return
+		}
+	}
+	if x.ResponseMaxSize != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.ResponseMaxSize)
+		if !f(fd_QueryListSponsorshipsRequest_response_max_size, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryListSponsorshipsRequest) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsRequest.sponsor_corporation_id":
+		return x.SponsorCorporationId != uint64(0)
+	case "verana.de.v1.QueryListSponsorshipsRequest.response_max_size":
+		return x.ResponseMaxSize != uint32(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryListSponsorshipsRequest) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsRequest.sponsor_corporation_id":
+		x.SponsorCorporationId = uint64(0)
+	case "verana.de.v1.QueryListSponsorshipsRequest.response_max_size":
+		x.ResponseMaxSize = uint32(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryListSponsorshipsRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsRequest.sponsor_corporation_id":
+		value := x.SponsorCorporationId
+		return protoreflect.ValueOfUint64(value)
+	case "verana.de.v1.QueryListSponsorshipsRequest.response_max_size":
+		value := x.ResponseMaxSize
+		return protoreflect.ValueOfUint32(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsRequest does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryListSponsorshipsRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsRequest.sponsor_corporation_id":
+		x.SponsorCorporationId = value.Uint()
+	case "verana.de.v1.QueryListSponsorshipsRequest.response_max_size":
+		x.ResponseMaxSize = uint32(value.Uint())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryListSponsorshipsRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsRequest.sponsor_corporation_id":
+		panic(fmt.Errorf("field sponsor_corporation_id of message verana.de.v1.QueryListSponsorshipsRequest is not mutable"))
+	case "verana.de.v1.QueryListSponsorshipsRequest.response_max_size":
+		panic(fmt.Errorf("field response_max_size of message verana.de.v1.QueryListSponsorshipsRequest is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryListSponsorshipsRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsRequest.sponsor_corporation_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "verana.de.v1.QueryListSponsorshipsRequest.response_max_size":
+		return protoreflect.ValueOfUint32(uint32(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsRequest"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsRequest does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryListSponsorshipsRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryListSponsorshipsRequest", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryListSponsorshipsRequest) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryListSponsorshipsRequest) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryListSponsorshipsRequest) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryListSponsorshipsRequest) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryListSponsorshipsRequest)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.SponsorCorporationId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SponsorCorporationId))
+		}
+		if x.ResponseMaxSize != 0 {
+			n += 1 + runtime.Sov(uint64(x.ResponseMaxSize))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryListSponsorshipsRequest)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.ResponseMaxSize != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ResponseMaxSize))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.SponsorCorporationId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SponsorCorporationId))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryListSponsorshipsRequest)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListSponsorshipsRequest: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListSponsorshipsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SponsorCorporationId", wireType)
+				}
+				x.SponsorCorporationId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SponsorCorporationId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ResponseMaxSize", wireType)
+				}
+				x.ResponseMaxSize = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ResponseMaxSize |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_ListedSponsorship             protoreflect.MessageDescriptor
+	fd_ListedSponsorship_sponsorship protoreflect.FieldDescriptor
+	fd_ListedSponsorship_active      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_verana_de_v1_query_proto_init()
+	md_ListedSponsorship = File_verana_de_v1_query_proto.Messages().ByName("ListedSponsorship")
+	fd_ListedSponsorship_sponsorship = md_ListedSponsorship.Fields().ByName("sponsorship")
+	fd_ListedSponsorship_active = md_ListedSponsorship.Fields().ByName("active")
+}
+
+var _ protoreflect.Message = (*fastReflection_ListedSponsorship)(nil)
+
+type fastReflection_ListedSponsorship ListedSponsorship
+
+func (x *ListedSponsorship) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ListedSponsorship)(x)
+}
+
+func (x *ListedSponsorship) slowProtoReflect() protoreflect.Message {
+	mi := &file_verana_de_v1_query_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_ListedSponsorship_messageType fastReflection_ListedSponsorship_messageType
+var _ protoreflect.MessageType = fastReflection_ListedSponsorship_messageType{}
+
+type fastReflection_ListedSponsorship_messageType struct{}
+
+func (x fastReflection_ListedSponsorship_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ListedSponsorship)(nil)
+}
+func (x fastReflection_ListedSponsorship_messageType) New() protoreflect.Message {
+	return new(fastReflection_ListedSponsorship)
+}
+func (x fastReflection_ListedSponsorship_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ListedSponsorship
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_ListedSponsorship) Descriptor() protoreflect.MessageDescriptor {
+	return md_ListedSponsorship
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_ListedSponsorship) Type() protoreflect.MessageType {
+	return _fastReflection_ListedSponsorship_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_ListedSponsorship) New() protoreflect.Message {
+	return new(fastReflection_ListedSponsorship)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_ListedSponsorship) Interface() protoreflect.ProtoMessage {
+	return (*ListedSponsorship)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_ListedSponsorship) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Sponsorship != nil {
+		value := protoreflect.ValueOfMessage(x.Sponsorship.ProtoReflect())
+		if !f(fd_ListedSponsorship_sponsorship, value) {
+			return
+		}
+	}
+	if x.Active != false {
+		value := protoreflect.ValueOfBool(x.Active)
+		if !f(fd_ListedSponsorship_active, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_ListedSponsorship) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "verana.de.v1.ListedSponsorship.sponsorship":
+		return x.Sponsorship != nil
+	case "verana.de.v1.ListedSponsorship.active":
+		return x.Active != false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.ListedSponsorship"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.ListedSponsorship does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ListedSponsorship) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "verana.de.v1.ListedSponsorship.sponsorship":
+		x.Sponsorship = nil
+	case "verana.de.v1.ListedSponsorship.active":
+		x.Active = false
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.ListedSponsorship"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.ListedSponsorship does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_ListedSponsorship) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "verana.de.v1.ListedSponsorship.sponsorship":
+		value := x.Sponsorship
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "verana.de.v1.ListedSponsorship.active":
+		value := x.Active
+		return protoreflect.ValueOfBool(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.ListedSponsorship"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.ListedSponsorship does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ListedSponsorship) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "verana.de.v1.ListedSponsorship.sponsorship":
+		x.Sponsorship = value.Message().Interface().(*Sponsorship)
+	case "verana.de.v1.ListedSponsorship.active":
+		x.Active = value.Bool()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.ListedSponsorship"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.ListedSponsorship does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ListedSponsorship) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.ListedSponsorship.sponsorship":
+		if x.Sponsorship == nil {
+			x.Sponsorship = new(Sponsorship)
+		}
+		return protoreflect.ValueOfMessage(x.Sponsorship.ProtoReflect())
+	case "verana.de.v1.ListedSponsorship.active":
+		panic(fmt.Errorf("field active of message verana.de.v1.ListedSponsorship is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.ListedSponsorship"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.ListedSponsorship does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_ListedSponsorship) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.ListedSponsorship.sponsorship":
+		m := new(Sponsorship)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "verana.de.v1.ListedSponsorship.active":
+		return protoreflect.ValueOfBool(false)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.ListedSponsorship"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.ListedSponsorship does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_ListedSponsorship) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.ListedSponsorship", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_ListedSponsorship) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ListedSponsorship) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_ListedSponsorship) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_ListedSponsorship) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*ListedSponsorship)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Sponsorship != nil {
+			l = options.Size(x.Sponsorship)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Active {
+			n += 2
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*ListedSponsorship)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Active {
+			i--
+			if x.Active {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.Sponsorship != nil {
+			encoded, err := options.Marshal(x.Sponsorship)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*ListedSponsorship)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ListedSponsorship: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ListedSponsorship: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Sponsorship", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Sponsorship == nil {
+					x.Sponsorship = &Sponsorship{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Sponsorship); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Active", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.Active = bool(v != 0)
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_QueryListSponsorshipsResponse_1_list)(nil)
+
+type _QueryListSponsorshipsResponse_1_list struct {
+	list *[]*ListedSponsorship
+}
+
+func (x *_QueryListSponsorshipsResponse_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueryListSponsorshipsResponse_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_QueryListSponsorshipsResponse_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*ListedSponsorship)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueryListSponsorshipsResponse_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*ListedSponsorship)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueryListSponsorshipsResponse_1_list) AppendMutable() protoreflect.Value {
+	v := new(ListedSponsorship)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryListSponsorshipsResponse_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueryListSponsorshipsResponse_1_list) NewElement() protoreflect.Value {
+	v := new(ListedSponsorship)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_QueryListSponsorshipsResponse_1_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_QueryListSponsorshipsResponse              protoreflect.MessageDescriptor
+	fd_QueryListSponsorshipsResponse_sponsorships protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_verana_de_v1_query_proto_init()
+	md_QueryListSponsorshipsResponse = File_verana_de_v1_query_proto.Messages().ByName("QueryListSponsorshipsResponse")
+	fd_QueryListSponsorshipsResponse_sponsorships = md_QueryListSponsorshipsResponse.Fields().ByName("sponsorships")
+}
+
+var _ protoreflect.Message = (*fastReflection_QueryListSponsorshipsResponse)(nil)
+
+type fastReflection_QueryListSponsorshipsResponse QueryListSponsorshipsResponse
+
+func (x *QueryListSponsorshipsResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryListSponsorshipsResponse)(x)
+}
+
+func (x *QueryListSponsorshipsResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_verana_de_v1_query_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_QueryListSponsorshipsResponse_messageType fastReflection_QueryListSponsorshipsResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryListSponsorshipsResponse_messageType{}
+
+type fastReflection_QueryListSponsorshipsResponse_messageType struct{}
+
+func (x fastReflection_QueryListSponsorshipsResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryListSponsorshipsResponse)(nil)
+}
+func (x fastReflection_QueryListSponsorshipsResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryListSponsorshipsResponse)
+}
+func (x fastReflection_QueryListSponsorshipsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryListSponsorshipsResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_QueryListSponsorshipsResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryListSponsorshipsResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_QueryListSponsorshipsResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryListSponsorshipsResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_QueryListSponsorshipsResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryListSponsorshipsResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_QueryListSponsorshipsResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryListSponsorshipsResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_QueryListSponsorshipsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.Sponsorships) != 0 {
+		value := protoreflect.ValueOfList(&_QueryListSponsorshipsResponse_1_list{list: &x.Sponsorships})
+		if !f(fd_QueryListSponsorshipsResponse_sponsorships, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_QueryListSponsorshipsResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsResponse.sponsorships":
+		return len(x.Sponsorships) != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryListSponsorshipsResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsResponse.sponsorships":
+		x.Sponsorships = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_QueryListSponsorshipsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsResponse.sponsorships":
+		if len(x.Sponsorships) == 0 {
+			return protoreflect.ValueOfList(&_QueryListSponsorshipsResponse_1_list{})
+		}
+		listValue := &_QueryListSponsorshipsResponse_1_list{list: &x.Sponsorships}
+		return protoreflect.ValueOfList(listValue)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryListSponsorshipsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsResponse.sponsorships":
+		lv := value.List()
+		clv := lv.(*_QueryListSponsorshipsResponse_1_list)
+		x.Sponsorships = *clv.list
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryListSponsorshipsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsResponse.sponsorships":
+		if x.Sponsorships == nil {
+			x.Sponsorships = []*ListedSponsorship{}
+		}
+		value := &_QueryListSponsorshipsResponse_1_list{list: &x.Sponsorships}
+		return protoreflect.ValueOfList(value)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_QueryListSponsorshipsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "verana.de.v1.QueryListSponsorshipsResponse.sponsorships":
+		list := []*ListedSponsorship{}
+		return protoreflect.ValueOfList(&_QueryListSponsorshipsResponse_1_list{list: &list})
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.QueryListSponsorshipsResponse"))
+		}
+		panic(fmt.Errorf("message verana.de.v1.QueryListSponsorshipsResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_QueryListSponsorshipsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.QueryListSponsorshipsResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_QueryListSponsorshipsResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_QueryListSponsorshipsResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_QueryListSponsorshipsResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_QueryListSponsorshipsResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*QueryListSponsorshipsResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.Sponsorships) > 0 {
+			for _, e := range x.Sponsorships {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*QueryListSponsorshipsResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Sponsorships) > 0 {
+			for iNdEx := len(x.Sponsorships) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Sponsorships[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0xa
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*QueryListSponsorshipsResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListSponsorshipsResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListSponsorshipsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Sponsorships", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Sponsorships = append(x.Sponsorships, &ListedSponsorship{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Sponsorships[len(x.Sponsorships)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -4064,6 +6386,218 @@ func (x *QueryGetVSOperatorAuthorizationResponse) GetVsOperatorAuthorization() *
 	return nil
 }
 
+// QueryGetSponsorshipRequest is the request type for the Query/GetSponsorship
+// RPC method.
+type QueryGetSponsorshipRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	SponsorCorporationId   uint64 `protobuf:"varint,1,opt,name=sponsor_corporation_id,json=sponsorCorporationId,proto3" json:"sponsor_corporation_id,omitempty"`
+	SponsoredCorporationId uint64 `protobuf:"varint,2,opt,name=sponsored_corporation_id,json=sponsoredCorporationId,proto3" json:"sponsored_corporation_id,omitempty"`
+}
+
+func (x *QueryGetSponsorshipRequest) Reset() {
+	*x = QueryGetSponsorshipRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_verana_de_v1_query_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryGetSponsorshipRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryGetSponsorshipRequest) ProtoMessage() {}
+
+// Deprecated: Use QueryGetSponsorshipRequest.ProtoReflect.Descriptor instead.
+func (*QueryGetSponsorshipRequest) Descriptor() ([]byte, []int) {
+	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *QueryGetSponsorshipRequest) GetSponsorCorporationId() uint64 {
+	if x != nil {
+		return x.SponsorCorporationId
+	}
+	return 0
+}
+
+func (x *QueryGetSponsorshipRequest) GetSponsoredCorporationId() uint64 {
+	if x != nil {
+		return x.SponsoredCorporationId
+	}
+	return 0
+}
+
+// QueryGetSponsorshipResponse is the response type for the
+// Query/GetSponsorship RPC method.
+type QueryGetSponsorshipResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Sponsorship *Sponsorship `protobuf:"bytes,1,opt,name=sponsorship,proto3" json:"sponsorship,omitempty"`
+}
+
+func (x *QueryGetSponsorshipResponse) Reset() {
+	*x = QueryGetSponsorshipResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_verana_de_v1_query_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryGetSponsorshipResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryGetSponsorshipResponse) ProtoMessage() {}
+
+// Deprecated: Use QueryGetSponsorshipResponse.ProtoReflect.Descriptor instead.
+func (*QueryGetSponsorshipResponse) Descriptor() ([]byte, []int) {
+	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *QueryGetSponsorshipResponse) GetSponsorship() *Sponsorship {
+	if x != nil {
+		return x.Sponsorship
+	}
+	return nil
+}
+
+// QueryListSponsorshipsRequest is the request type for the
+// Query/ListSponsorships RPC method.
+type QueryListSponsorshipsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// sponsor_corporation_id is the sponsor whose sponsorships are listed.
+	SponsorCorporationId uint64 `protobuf:"varint,1,opt,name=sponsor_corporation_id,json=sponsorCorporationId,proto3" json:"sponsor_corporation_id,omitempty"`
+	// response_max_size limits the number of results. Must be 1-1024, defaults to 64.
+	ResponseMaxSize uint32 `protobuf:"varint,2,opt,name=response_max_size,json=responseMaxSize,proto3" json:"response_max_size,omitempty"`
+}
+
+func (x *QueryListSponsorshipsRequest) Reset() {
+	*x = QueryListSponsorshipsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_verana_de_v1_query_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryListSponsorshipsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryListSponsorshipsRequest) ProtoMessage() {}
+
+// Deprecated: Use QueryListSponsorshipsRequest.ProtoReflect.Descriptor instead.
+func (*QueryListSponsorshipsRequest) Descriptor() ([]byte, []int) {
+	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *QueryListSponsorshipsRequest) GetSponsorCorporationId() uint64 {
+	if x != nil {
+		return x.SponsorCorporationId
+	}
+	return 0
+}
+
+func (x *QueryListSponsorshipsRequest) GetResponseMaxSize() uint32 {
+	if x != nil {
+		return x.ResponseMaxSize
+	}
+	return 0
+}
+
+// ListedSponsorship is a Sponsorship with its derived active flag.
+type ListedSponsorship struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Sponsorship *Sponsorship `protobuf:"bytes,1,opt,name=sponsorship,proto3" json:"sponsorship,omitempty"`
+	// active is true iff the sponsored corporation elected this sponsor and the
+	// sponsorship is not expired.
+	Active bool `protobuf:"varint,2,opt,name=active,proto3" json:"active,omitempty"`
+}
+
+func (x *ListedSponsorship) Reset() {
+	*x = ListedSponsorship{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_verana_de_v1_query_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListedSponsorship) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListedSponsorship) ProtoMessage() {}
+
+// Deprecated: Use ListedSponsorship.ProtoReflect.Descriptor instead.
+func (*ListedSponsorship) Descriptor() ([]byte, []int) {
+	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ListedSponsorship) GetSponsorship() *Sponsorship {
+	if x != nil {
+		return x.Sponsorship
+	}
+	return nil
+}
+
+func (x *ListedSponsorship) GetActive() bool {
+	if x != nil {
+		return x.Active
+	}
+	return false
+}
+
+// QueryListSponsorshipsResponse is the response type for the
+// Query/ListSponsorships RPC method.
+type QueryListSponsorshipsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Sponsorships []*ListedSponsorship `protobuf:"bytes,1,rep,name=sponsorships,proto3" json:"sponsorships,omitempty"`
+}
+
+func (x *QueryListSponsorshipsResponse) Reset() {
+	*x = QueryListSponsorshipsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_verana_de_v1_query_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryListSponsorshipsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryListSponsorshipsResponse) ProtoMessage() {}
+
+// Deprecated: Use QueryListSponsorshipsResponse.ProtoReflect.Descriptor instead.
+func (*QueryListSponsorshipsResponse) Descriptor() ([]byte, []int) {
+	return file_verana_de_v1_query_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *QueryListSponsorshipsResponse) GetSponsorships() []*ListedSponsorship {
+	if x != nil {
+		return x.Sponsorships
+	}
+	return nil
+}
+
 var File_verana_de_v1_query_proto protoreflect.FileDescriptor
 
 var file_verana_de_v1_query_proto_rawDesc = []byte{
@@ -4146,7 +6680,44 @@ var file_verana_de_v1_query_proto_rawDesc = []byte{
 	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x56, 0x53, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41,
 	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde,
 	0x1f, 0x00, 0x52, 0x17, 0x76, 0x73, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75,
-	0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x32, 0xb1, 0x05, 0x0a, 0x05,
+	0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x8c, 0x01, 0x0a, 0x1a,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73,
+	0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x34, 0x0a, 0x16, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x6f, 0x72, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
+	0x12, 0x38, 0x0a, 0x18, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x65, 0x64, 0x5f, 0x63, 0x6f,
+	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x16, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x65, 0x64, 0x43, 0x6f, 0x72,
+	0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0x60, 0x0a, 0x1b, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69,
+	0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x41, 0x0a, 0x0b, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19,
+	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x70,
+	0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
+	0x0b, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x22, 0x80, 0x01, 0x0a,
+	0x1c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f,
+	0x72, 0x73, 0x68, 0x69, 0x70, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x34, 0x0a,
+	0x16, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x11, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f,
+	0x6d, 0x61, 0x78, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0f,
+	0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x4d, 0x61, 0x78, 0x53, 0x69, 0x7a, 0x65, 0x22,
+	0x6e, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74, 0x65, 0x64, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72,
+	0x73, 0x68, 0x69, 0x70, 0x12, 0x41, 0x0a, 0x0b, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73,
+	0x68, 0x69, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72,
+	0x73, 0x68, 0x69, 0x70, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0b, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x22,
+	0x6a, 0x0a, 0x1d, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x70, 0x6f, 0x6e,
+	0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x49, 0x0a, 0x0c, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x73,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
+	0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x65, 0x64, 0x53, 0x70, 0x6f, 0x6e,
+	0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x73, 0x32, 0xc8, 0x07, 0x0a, 0x05,
 	0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0xa4, 0x01, 0x0a, 0x1a, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65,
 	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x73, 0x12, 0x34, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65,
@@ -4189,19 +6760,36 @@ var file_verana_de_v1_query_proto_rawDesc = []byte{
 	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x20, 0x82,
 	0xd3, 0xe4, 0x93, 0x02, 0x1a, 0x12, 0x18, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x76, 0x73,
-	0x2d, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x2f, 0x67, 0x65, 0x74, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x42,
-	0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64,
-	0x65, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56,
-	0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e, 0x56,
-	0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31,
-	0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x44, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x2d, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x2f, 0x67, 0x65, 0x74, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12,
+	0x85, 0x01, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68,
+	0x69, 0x70, 0x12, 0x28, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76,
+	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f,
+	0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x47, 0x65, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x18, 0x12,
+	0x16, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73,
+	0x68, 0x69, 0x70, 0x2f, 0x67, 0x65, 0x74, 0x12, 0x8c, 0x01, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74,
+	0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x73, 0x12, 0x2a, 0x2e, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73,
+	0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x73, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x19, 0x12, 0x17, 0x2f,
+	0x64, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69,
+	0x70, 0x2f, 0x6c, 0x69, 0x73, 0x74, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62,
+	0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x64,
+	0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x44, 0x65, 0x3a,
+	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4216,7 +6804,7 @@ func file_verana_de_v1_query_proto_rawDescGZIP() []byte {
 	return file_verana_de_v1_query_proto_rawDescData
 }
 
-var file_verana_de_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_verana_de_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_verana_de_v1_query_proto_goTypes = []interface{}{
 	(*QueryListDelegateAuthorizationsRequest)(nil),    // 0: verana.de.v1.QueryListDelegateAuthorizationsRequest
 	(*QueryListDelegateAuthorizationsResponse)(nil),   // 1: verana.de.v1.QueryListDelegateAuthorizationsResponse
@@ -4226,27 +6814,40 @@ var file_verana_de_v1_query_proto_goTypes = []interface{}{
 	(*QueryGetDelegateAuthorizationResponse)(nil),     // 5: verana.de.v1.QueryGetDelegateAuthorizationResponse
 	(*QueryGetVSOperatorAuthorizationRequest)(nil),    // 6: verana.de.v1.QueryGetVSOperatorAuthorizationRequest
 	(*QueryGetVSOperatorAuthorizationResponse)(nil),   // 7: verana.de.v1.QueryGetVSOperatorAuthorizationResponse
-	(*DelegateAuthorization)(nil),                     // 8: verana.de.v1.DelegateAuthorization
-	(*VSOperatorAuthorization)(nil),                   // 9: verana.de.v1.VSOperatorAuthorization
+	(*QueryGetSponsorshipRequest)(nil),                // 8: verana.de.v1.QueryGetSponsorshipRequest
+	(*QueryGetSponsorshipResponse)(nil),               // 9: verana.de.v1.QueryGetSponsorshipResponse
+	(*QueryListSponsorshipsRequest)(nil),              // 10: verana.de.v1.QueryListSponsorshipsRequest
+	(*ListedSponsorship)(nil),                         // 11: verana.de.v1.ListedSponsorship
+	(*QueryListSponsorshipsResponse)(nil),             // 12: verana.de.v1.QueryListSponsorshipsResponse
+	(*DelegateAuthorization)(nil),                     // 13: verana.de.v1.DelegateAuthorization
+	(*VSOperatorAuthorization)(nil),                   // 14: verana.de.v1.VSOperatorAuthorization
+	(*Sponsorship)(nil),                               // 15: verana.de.v1.Sponsorship
 }
 var file_verana_de_v1_query_proto_depIdxs = []int32{
-	8, // 0: verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations:type_name -> verana.de.v1.DelegateAuthorization
-	9, // 1: verana.de.v1.QueryListVSOperatorAuthorizationsResponse.vs_operator_authorizations:type_name -> verana.de.v1.VSOperatorAuthorization
-	8, // 2: verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization:type_name -> verana.de.v1.DelegateAuthorization
-	9, // 3: verana.de.v1.QueryGetVSOperatorAuthorizationResponse.vs_operator_authorization:type_name -> verana.de.v1.VSOperatorAuthorization
-	0, // 4: verana.de.v1.Query.ListDelegateAuthorizations:input_type -> verana.de.v1.QueryListDelegateAuthorizationsRequest
-	2, // 5: verana.de.v1.Query.ListVSOperatorAuthorizations:input_type -> verana.de.v1.QueryListVSOperatorAuthorizationsRequest
-	4, // 6: verana.de.v1.Query.GetDelegateAuthorization:input_type -> verana.de.v1.QueryGetDelegateAuthorizationRequest
-	6, // 7: verana.de.v1.Query.GetVSOperatorAuthorization:input_type -> verana.de.v1.QueryGetVSOperatorAuthorizationRequest
-	1, // 8: verana.de.v1.Query.ListDelegateAuthorizations:output_type -> verana.de.v1.QueryListDelegateAuthorizationsResponse
-	3, // 9: verana.de.v1.Query.ListVSOperatorAuthorizations:output_type -> verana.de.v1.QueryListVSOperatorAuthorizationsResponse
-	5, // 10: verana.de.v1.Query.GetDelegateAuthorization:output_type -> verana.de.v1.QueryGetDelegateAuthorizationResponse
-	7, // 11: verana.de.v1.Query.GetVSOperatorAuthorization:output_type -> verana.de.v1.QueryGetVSOperatorAuthorizationResponse
-	8, // [8:12] is the sub-list for method output_type
-	4, // [4:8] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	13, // 0: verana.de.v1.QueryListDelegateAuthorizationsResponse.delegate_authorizations:type_name -> verana.de.v1.DelegateAuthorization
+	14, // 1: verana.de.v1.QueryListVSOperatorAuthorizationsResponse.vs_operator_authorizations:type_name -> verana.de.v1.VSOperatorAuthorization
+	13, // 2: verana.de.v1.QueryGetDelegateAuthorizationResponse.delegate_authorization:type_name -> verana.de.v1.DelegateAuthorization
+	14, // 3: verana.de.v1.QueryGetVSOperatorAuthorizationResponse.vs_operator_authorization:type_name -> verana.de.v1.VSOperatorAuthorization
+	15, // 4: verana.de.v1.QueryGetSponsorshipResponse.sponsorship:type_name -> verana.de.v1.Sponsorship
+	15, // 5: verana.de.v1.ListedSponsorship.sponsorship:type_name -> verana.de.v1.Sponsorship
+	11, // 6: verana.de.v1.QueryListSponsorshipsResponse.sponsorships:type_name -> verana.de.v1.ListedSponsorship
+	0,  // 7: verana.de.v1.Query.ListDelegateAuthorizations:input_type -> verana.de.v1.QueryListDelegateAuthorizationsRequest
+	2,  // 8: verana.de.v1.Query.ListVSOperatorAuthorizations:input_type -> verana.de.v1.QueryListVSOperatorAuthorizationsRequest
+	4,  // 9: verana.de.v1.Query.GetDelegateAuthorization:input_type -> verana.de.v1.QueryGetDelegateAuthorizationRequest
+	6,  // 10: verana.de.v1.Query.GetVSOperatorAuthorization:input_type -> verana.de.v1.QueryGetVSOperatorAuthorizationRequest
+	8,  // 11: verana.de.v1.Query.GetSponsorship:input_type -> verana.de.v1.QueryGetSponsorshipRequest
+	10, // 12: verana.de.v1.Query.ListSponsorships:input_type -> verana.de.v1.QueryListSponsorshipsRequest
+	1,  // 13: verana.de.v1.Query.ListDelegateAuthorizations:output_type -> verana.de.v1.QueryListDelegateAuthorizationsResponse
+	3,  // 14: verana.de.v1.Query.ListVSOperatorAuthorizations:output_type -> verana.de.v1.QueryListVSOperatorAuthorizationsResponse
+	5,  // 15: verana.de.v1.Query.GetDelegateAuthorization:output_type -> verana.de.v1.QueryGetDelegateAuthorizationResponse
+	7,  // 16: verana.de.v1.Query.GetVSOperatorAuthorization:output_type -> verana.de.v1.QueryGetVSOperatorAuthorizationResponse
+	9,  // 17: verana.de.v1.Query.GetSponsorship:output_type -> verana.de.v1.QueryGetSponsorshipResponse
+	12, // 18: verana.de.v1.Query.ListSponsorships:output_type -> verana.de.v1.QueryListSponsorshipsResponse
+	13, // [13:19] is the sub-list for method output_type
+	7,  // [7:13] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_verana_de_v1_query_proto_init() }
@@ -4352,6 +6953,66 @@ func file_verana_de_v1_query_proto_init() {
 				return nil
 			}
 		}
+		file_verana_de_v1_query_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryGetSponsorshipRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_verana_de_v1_query_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryGetSponsorshipResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_verana_de_v1_query_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryListSponsorshipsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_verana_de_v1_query_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListedSponsorship); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_verana_de_v1_query_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryListSponsorshipsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -4359,7 +7020,7 @@ func file_verana_de_v1_query_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_verana_de_v1_query_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

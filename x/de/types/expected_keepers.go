@@ -28,11 +28,12 @@ type ParamSubspace interface {
 	Set(context.Context, []byte, interface{})
 }
 
-// CorporationView is the read shape MOD-DE needs about a Corporation subject
-// for AUTHZ-CHECK-5: the signing `corporation` policy_address resolved to its id.
+// CorporationView is the read shape MOD-DE needs about a Corporation: its id,
+// its policy_address and its elected sponsor (0 when none).
 type CorporationView struct {
-	Id            uint64
-	PolicyAddress string
+	Id                   uint64
+	PolicyAddress        string
+	SponsorCorporationId uint64
 }
 
 // CorporationKeeper backs AUTHZ-CHECK-5 for MOD-DE's delegable Grant/Revoke
@@ -44,6 +45,10 @@ type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 	ResolveSigner(ctx context.Context, corporation, signer string) (CorporationView, bool, error)
 	ResolveCorporationByID(ctx context.Context, id uint64) (CorporationView, error)
+	// GetCorporationByPolicyAddress is the AUTHZ-CHECK-5 lookup without GF-CHECK-1.
+	GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, bool, error)
+	// ClearSponsor clears corporationID's election if it names sponsorID.
+	ClearSponsor(ctx context.Context, corporationID, sponsorID uint64) (bool, error)
 }
 
 // FeegrantKeeper is the cosmos x/feegrant keeper subset MOD-DE uses to realize
@@ -54,6 +59,11 @@ type FeegrantKeeper interface {
 	GrantAllowance(ctx context.Context, granter, grantee sdk.AccAddress, allowance feegrant.FeeAllowanceI) error
 	RevokeAllowance(ctx context.Context, granter, grantee sdk.AccAddress) error
 	GetAllowance(ctx context.Context, granter, grantee sdk.AccAddress) (feegrant.FeeAllowanceI, error)
+}
+
+// NetworkFeeKeeper exposes the keys of GlobalVariables.max_gas_per_msg_type.
+type NetworkFeeKeeper interface {
+	MaxGasMsgTypeURLs(ctx context.Context) ([]string, error)
 }
 
 // ParticipantView is what MOD-DE reads about a Participant entry: its glossary

@@ -29,6 +29,9 @@ message Corporation {
   ];
   string language = 6;
   uint32 active_version = 7;
+  // sponsor_corporation_id is the elected sponsor; 0 when the corporation
+  // funds itself.
+  uint64 sponsor_corporation_id = 8;
 }
 
 // CorporationWithGF is the query response shape including nested governance
@@ -54,4 +57,7 @@ message CorporationWithGF {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+  // sponsor_corporation_id is the elected sponsor; 0 when the corporation
+  // funds itself.
+  uint64 sponsor_corporation_id = 9;
 }

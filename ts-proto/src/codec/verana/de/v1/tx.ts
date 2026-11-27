@@ -10,6 +10,7 @@ import { Coin } from "../../../cosmos/base/v1beta1/coin";
 import { Duration } from "../../../google/protobuf/duration";
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { MsgType, msgTypeFromJSON, msgTypeToJSON } from "./msg_type";
+import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
 
@@ -91,6 +92,68 @@ export interface MsgRevokeDelegateAuthorization {
  * MsgRevokeDelegateAuthorization.
  */
 export interface MsgRevokeDelegateAuthorizationResponse {
+}
+
+/**
+ * [MOD-DE-MSG-10] MsgGrantSponsorship declares the budget a sponsor corporation
+ * pays for another corporation. Executed by the sponsor's policy account
+ * through a group proposal.
+ */
+export interface MsgGrantSponsorship {
+  /** signer is the policy_address of the sponsor corporation. */
+  signer: string;
+  /** sponsored_corporation_id is the id of the corporation to sponsor. */
+  sponsoredCorporationId: number;
+  /** msg_types are the covered paying message types; empty means all of them. */
+  msgTypes: MsgType[];
+  /** spend_limit is the maximum operation funds paid per cycle. */
+  spendLimit: Coin[];
+  /** period is the cycle length for spend_limit. */
+  period:
+    | Duration
+    | undefined;
+  /**
+   * expiration is the end of the sponsorship, or the end of the first cycle
+   * when period is set.
+   */
+  expiration:
+    | Date
+    | undefined;
+  /**
+   * covers_fees indicates the sponsor also pays the network fees of the
+   * sponsored corporation.
+   */
+  coversFees: boolean;
+  /**
+   * fee_spend_limit is the maximum network fees paid per period, or in total
+   * when period is unset. Ignored if covers_fees is false.
+   */
+  feeSpendLimit: Coin[];
+}
+
+/** MsgGrantSponsorshipResponse defines the response for MsgGrantSponsorship. */
+export interface MsgGrantSponsorshipResponse {
+}
+
+/**
+ * [MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the
+ * sponsor corporation. On the group-proposal path `signer` equals
+ * `corporation`.
+ */
+export interface MsgRevokeSponsorship {
+  /** corporation is the policy_address of the sponsor corporation. */
+  corporation: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
+  /** sponsored_corporation_id is the id of the sponsored corporation. */
+  sponsoredCorporationId: number;
+}
+
+/** MsgRevokeSponsorshipResponse defines the response for MsgRevokeSponsorship. */
+export interface MsgRevokeSponsorshipResponse {
 }
 
 function createBaseMsgGrantDelegateAuthorization(): MsgGrantDelegateAuthorization {
@@ -511,12 +574,386 @@ export const MsgRevokeDelegateAuthorizationResponse = {
   },
 };
 
+function createBaseMsgGrantSponsorship(): MsgGrantSponsorship {
+  return {
+    signer: "",
+    sponsoredCorporationId: 0,
+    msgTypes: [],
+    spendLimit: [],
+    period: undefined,
+    expiration: undefined,
+    coversFees: false,
+    feeSpendLimit: [],
+  };
+}
+
+export const MsgGrantSponsorship = {
+  encode(message: MsgGrantSponsorship, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.sponsoredCorporationId !== 0) {
+      writer.uint32(16).uint64(message.sponsoredCorporationId);
+    }
+    writer.uint32(26).fork();
+    for (const v of message.msgTypes) {
+      writer.int32(v);
+    }
+    writer.ldelim();
+    for (const v of message.spendLimit) {
+      Coin.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.period !== undefined) {
+      Duration.encode(message.period, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.expiration !== undefined) {
+      Timestamp.encode(toTimestamp(message.expiration), writer.uint32(50).fork()).ldelim();
+    }
+    if (message.coversFees !== false) {
+      writer.uint32(56).bool(message.coversFees);
+    }
+    for (const v of message.feeSpendLimit) {
+      Coin.encode(v!, writer.uint32(66).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantSponsorship {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgGrantSponsorship();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.signer = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.sponsoredCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 3:
+          if (tag === 24) {
+            message.msgTypes.push(reader.int32() as any);
+
+            continue;
+          }
+
+          if (tag === 26) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.msgTypes.push(reader.int32() as any);
+            }
+
+            continue;
+          }
+
+          break;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.spendLimit.push(Coin.decode(reader, reader.uint32()));
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.period = Duration.decode(reader, reader.uint32());
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.expiration = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.coversFees = reader.bool();
+          continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.feeSpendLimit.push(Coin.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgGrantSponsorship {
+    return {
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
+      sponsoredCorporationId: isSet(object.sponsoredCorporationId)
+        ? globalThis.Number(object.sponsoredCorporationId)
+        : 0,
+      msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
+      spendLimit: globalThis.Array.isArray(object?.spendLimit)
+        ? object.spendLimit.map((e: any) => Coin.fromJSON(e))
+        : [],
+      period: isSet(object.period) ? Duration.fromJSON(object.period) : undefined,
+      expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
+      coversFees: isSet(object.coversFees) ? globalThis.Boolean(object.coversFees) : false,
+      feeSpendLimit: globalThis.Array.isArray(object?.feeSpendLimit)
+        ? object.feeSpendLimit.map((e: any) => Coin.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: MsgGrantSponsorship): unknown {
+    const obj: any = {};
+    if (message.signer !== "") {
+      obj.signer = message.signer;
+    }
+    if (message.sponsoredCorporationId !== 0) {
+      obj.sponsoredCorporationId = Math.round(message.sponsoredCorporationId);
+    }
+    if (message.msgTypes?.length) {
+      obj.msgTypes = message.msgTypes.map((e) => msgTypeToJSON(e));
+    }
+    if (message.spendLimit?.length) {
+      obj.spendLimit = message.spendLimit.map((e) => Coin.toJSON(e));
+    }
+    if (message.period !== undefined) {
+      obj.period = Duration.toJSON(message.period);
+    }
+    if (message.expiration !== undefined) {
+      obj.expiration = message.expiration.toISOString();
+    }
+    if (message.coversFees !== false) {
+      obj.coversFees = message.coversFees;
+    }
+    if (message.feeSpendLimit?.length) {
+      obj.feeSpendLimit = message.feeSpendLimit.map((e) => Coin.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MsgGrantSponsorship>, I>>(base?: I): MsgGrantSponsorship {
+    return MsgGrantSponsorship.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MsgGrantSponsorship>, I>>(object: I): MsgGrantSponsorship {
+    const message = createBaseMsgGrantSponsorship();
+    message.signer = object.signer ?? "";
+    message.sponsoredCorporationId = object.sponsoredCorporationId ?? 0;
+    message.msgTypes = object.msgTypes?.map((e) => e) || [];
+    message.spendLimit = object.spendLimit?.map((e) => Coin.fromPartial(e)) || [];
+    message.period = (object.period !== undefined && object.period !== null)
+      ? Duration.fromPartial(object.period)
+      : undefined;
+    message.expiration = object.expiration ?? undefined;
+    message.coversFees = object.coversFees ?? false;
+    message.feeSpendLimit = object.feeSpendLimit?.map((e) => Coin.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseMsgGrantSponsorshipResponse(): MsgGrantSponsorshipResponse {
+  return {};
+}
+
+export const MsgGrantSponsorshipResponse = {
+  encode(_: MsgGrantSponsorshipResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantSponsorshipResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgGrantSponsorshipResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgGrantSponsorshipResponse {
+    return {};
+  },
+
+  toJSON(_: MsgGrantSponsorshipResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MsgGrantSponsorshipResponse>, I>>(base?: I): MsgGrantSponsorshipResponse {
+    return MsgGrantSponsorshipResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MsgGrantSponsorshipResponse>, I>>(_: I): MsgGrantSponsorshipResponse {
+    const message = createBaseMsgGrantSponsorshipResponse();
+    return message;
+  },
+};
+
+function createBaseMsgRevokeSponsorship(): MsgRevokeSponsorship {
+  return { corporation: "", signer: "", sponsoredCorporationId: 0 };
+}
+
+export const MsgRevokeSponsorship = {
+  encode(message: MsgRevokeSponsorship, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.corporation !== "") {
+      writer.uint32(10).string(message.corporation);
+    }
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
+    }
+    if (message.sponsoredCorporationId !== 0) {
+      writer.uint32(24).uint64(message.sponsoredCorporationId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeSponsorship {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgRevokeSponsorship();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.corporation = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.signer = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.sponsoredCorporationId = longToNumber(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgRevokeSponsorship {
+    return {
+      corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
+      sponsoredCorporationId: isSet(object.sponsoredCorporationId)
+        ? globalThis.Number(object.sponsoredCorporationId)
+        : 0,
+    };
+  },
+
+  toJSON(message: MsgRevokeSponsorship): unknown {
+    const obj: any = {};
+    if (message.corporation !== "") {
+      obj.corporation = message.corporation;
+    }
+    if (message.signer !== "") {
+      obj.signer = message.signer;
+    }
+    if (message.sponsoredCorporationId !== 0) {
+      obj.sponsoredCorporationId = Math.round(message.sponsoredCorporationId);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MsgRevokeSponsorship>, I>>(base?: I): MsgRevokeSponsorship {
+    return MsgRevokeSponsorship.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeSponsorship>, I>>(object: I): MsgRevokeSponsorship {
+    const message = createBaseMsgRevokeSponsorship();
+    message.corporation = object.corporation ?? "";
+    message.signer = object.signer ?? "";
+    message.sponsoredCorporationId = object.sponsoredCorporationId ?? 0;
+    return message;
+  },
+};
+
+function createBaseMsgRevokeSponsorshipResponse(): MsgRevokeSponsorshipResponse {
+  return {};
+}
+
+export const MsgRevokeSponsorshipResponse = {
+  encode(_: MsgRevokeSponsorshipResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeSponsorshipResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgRevokeSponsorshipResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgRevokeSponsorshipResponse {
+    return {};
+  },
+
+  toJSON(_: MsgRevokeSponsorshipResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MsgRevokeSponsorshipResponse>, I>>(base?: I): MsgRevokeSponsorshipResponse {
+    return MsgRevokeSponsorshipResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeSponsorshipResponse>, I>>(_: I): MsgRevokeSponsorshipResponse {
+    const message = createBaseMsgRevokeSponsorshipResponse();
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   /** [MOD-DE-MSG-3] Grant Delegate Authorization */
   GrantDelegateAuthorization(request: MsgGrantDelegateAuthorization): Promise<MsgGrantDelegateAuthorizationResponse>;
   /** [MOD-DE-MSG-4] Revoke Delegate Authorization */
   RevokeDelegateAuthorization(request: MsgRevokeDelegateAuthorization): Promise<MsgRevokeDelegateAuthorizationResponse>;
+  /** [MOD-DE-MSG-10] Grant Sponsorship */
+  GrantSponsorship(request: MsgGrantSponsorship): Promise<MsgGrantSponsorshipResponse>;
+  /** [MOD-DE-MSG-11] Revoke Sponsorship */
+  RevokeSponsorship(request: MsgRevokeSponsorship): Promise<MsgRevokeSponsorshipResponse>;
 }
 
 export const MsgServiceName = "verana.de.v1.Msg";
@@ -528,6 +965,8 @@ export class MsgClientImpl implements Msg {
     this.rpc = rpc;
     this.GrantDelegateAuthorization = this.GrantDelegateAuthorization.bind(this);
     this.RevokeDelegateAuthorization = this.RevokeDelegateAuthorization.bind(this);
+    this.GrantSponsorship = this.GrantSponsorship.bind(this);
+    this.RevokeSponsorship = this.RevokeSponsorship.bind(this);
   }
   GrantDelegateAuthorization(request: MsgGrantDelegateAuthorization): Promise<MsgGrantDelegateAuthorizationResponse> {
     const data = MsgGrantDelegateAuthorization.encode(request).finish();
@@ -541,6 +980,18 @@ export class MsgClientImpl implements Msg {
     const data = MsgRevokeDelegateAuthorization.encode(request).finish();
     const promise = this.rpc.request(this.service, "RevokeDelegateAuthorization", data);
     return promise.then((data) => MsgRevokeDelegateAuthorizationResponse.decode(_m0.Reader.create(data)));
+  }
+
+  GrantSponsorship(request: MsgGrantSponsorship): Promise<MsgGrantSponsorshipResponse> {
+    const data = MsgGrantSponsorship.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GrantSponsorship", data);
+    return promise.then((data) => MsgGrantSponsorshipResponse.decode(_m0.Reader.create(data)));
+  }
+
+  RevokeSponsorship(request: MsgRevokeSponsorship): Promise<MsgRevokeSponsorshipResponse> {
+    const data = MsgRevokeSponsorship.encode(request).finish();
+    const promise = this.rpc.request(this.service, "RevokeSponsorship", data);
+    return promise.then((data) => MsgRevokeSponsorshipResponse.decode(_m0.Reader.create(data)));
   }
 }
 
@@ -580,6 +1031,21 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
+}
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (long.lt(globalThis.Number.MIN_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
 }
 
 function isSet(value: any): boolean {

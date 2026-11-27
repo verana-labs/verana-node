@@ -2,8 +2,10 @@ package keeper
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 
+	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/co/types"
@@ -77,7 +79,7 @@ func (a CoAsDeCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.C
 	if err != nil {
 		return detypes.CorporationView{}, err
 	}
-	return detypes.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, nil
+	return deCorporationView(&co), nil
 }
 
 // ResolveSigner backs the MOD-DE group-proposal path.
@@ -96,7 +98,39 @@ func (a CoAsDeCorporationKeeper) ResolveCorporationByID(ctx context.Context, id 
 	if err != nil {
 		return detypes.CorporationView{}, err
 	}
-	return detypes.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, nil
+	return deCorporationView(&co), nil
+}
+
+func (a CoAsDeCorporationKeeper) GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (detypes.CorporationView, bool, error) {
+	id, err := a.k.CorporationByPolicyAddr.Get(ctx, policyAddress)
+	if stderrors.Is(err, collections.ErrNotFound) {
+		return detypes.CorporationView{}, false, nil
+	}
+	if err != nil {
+		return detypes.CorporationView{}, false, err
+	}
+	co, err := a.k.Corporation.Get(ctx, id)
+	if err != nil {
+		return detypes.CorporationView{}, false, err
+	}
+	return deCorporationView(&co), true, nil
+}
+
+// ClearSponsor is called by MOD-DE-MSG-11 (Revoke Sponsorship).
+func (a CoAsDeCorporationKeeper) ClearSponsor(ctx context.Context, corporationID, sponsorID uint64) (bool, error) {
+	co, err := a.k.Corporation.Get(ctx, corporationID)
+	if err != nil {
+		return false, fmt.Errorf("corporation %d not found: %w", corporationID, err)
+	}
+	if co.SponsorCorporationId != sponsorID {
+		return false, nil
+	}
+	co.SponsorCorporationId = 0
+	return true, a.k.Corporation.Set(ctx, co.Id, co)
+}
+
+func deCorporationView(co *types.Corporation) detypes.CorporationView {
+	return detypes.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress, SponsorCorporationId: co.SponsorCorporationId}
 }
 
 // SetActiveVersion is called by MOD-GF MSG-2 (IncreaseActiveGovernanceFrameworkVersion).
