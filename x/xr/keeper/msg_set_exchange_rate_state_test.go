@@ -112,7 +112,7 @@ func TestSetExchangeRateState_InvalidAuthority(t *testing.T) {
 		State:     true,
 	})
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "expected gov account as only signer")
+	require.Contains(t, err.Error(), "expected council account as only signer")
 }
 
 func TestSetExchangeRateState_NotFound(t *testing.T) {

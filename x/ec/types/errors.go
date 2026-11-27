@@ -6,7 +6,7 @@ import sdkerrors "cosmossdk.io/errors"
 
 // x/ec sentinel errors. Codes are arbitrary but stable within this module.
 var (
-	ErrInvalidSigner               = sdkerrors.Register(ModuleName, 1100, "expected gov account as authority for proposal message")
+	ErrInvalidSigner               = sdkerrors.Register(ModuleName, 1100, "expected council account as authority for proposal message")
 	ErrEcosystemNotFound           = sdkerrors.Register(ModuleName, 1101, "ecosystem not found")
 	ErrUnauthorizedDelegate        = sdkerrors.Register(ModuleName, 1103, "signing corporation does not control this ecosystem")
 	ErrDIDOwnershipConflict        = sdkerrors.Register(ModuleName, 1104, "did already bound to an ecosystem controlled by a different corporation")

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	goruntime "runtime"
 	"testing"
 	"time"
@@ -9,10 +10,10 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	cmtjson "github.com/cometbft/cometbft/libs/json"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	cmttypes "github.com/cometbft/cometbft/types"
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -24,10 +25,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
-	icagenesistypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/genesis/types"
-	icatypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/types"
 	"github.com/stretchr/testify/require"
-	"github.com/verana-labs/cosmos-group"
 
 	cotypes "github.com/verana-labs/verana-node/x/co/types"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
@@ -39,7 +37,6 @@ const feeGranterChainID = "verana-test-1"
 
 type feeGranterEnv struct {
 	app    *App
-	valSet *cmttypes.ValidatorSet
 	now    time.Time
 	height int64
 
@@ -57,11 +54,8 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 	a, err := New(log.NewNopLogger(), dbm.NewMemDB(), true, opts, baseapp.SetChainID(feeGranterChainID))
 	require.NoError(t, err)
 
-	valSet, err := simtestutil.CreateRandomValidatorSet()
-	require.NoError(t, err)
-
 	e := &feeGranterEnv{
-		app: a, valSet: valSet, now: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+		app: a, now: time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
 		op: secp256k1.GenPrivKey(), exec: secp256k1.GenPrivKey(),
 		corp:  sdk.AccAddress([]byte("corp_policy_address_")),
 		other: sdk.AccAddress([]byte("other_fee_granter___")),
@@ -73,16 +67,20 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 		accs = append(accs, authtypes.NewBaseAccount(addr, nil, uint64(i), 0))
 		bals = append(bals, banktypes.Balance{Address: addr.String(), Coins: coins})
 	}
-	gen, err := simtestutil.GenesisStateWithValSet(a.AppCodec(), a.DefaultGenesis(), valSet, accs, bals...)
-	require.NoError(t, err)
-	var ica icagenesistypes.GenesisState
-	a.AppCodec().MustUnmarshalJSON(gen[icatypes.ModuleName], &ica)
-	ica.HostGenesisState.Params.AllowMessages = []string{"/cosmos.bank.v1beta1.MsgSend"}
-	gen[icatypes.ModuleName] = a.AppCodec().MustMarshalJSON(&ica)
-	council := []string{sdk.AccAddress(valSet.Validators[0].Address).String()}
-	cg, err := poatypes.CouncilGenesis(CouncilAuthority, council, "test council", poatypes.CouncilPercentage, time.Hour, 0, e.now)
-	require.NoError(t, err)
-	gen[group.ModuleName] = a.AppCodec().MustMarshalJSON(cg)
+	gen := a.DefaultGenesis()
+	gen[authtypes.ModuleName] = a.AppCodec().MustMarshalJSON(authtypes.NewGenesisState(authtypes.DefaultParams(), accs))
+	bankGen := banktypes.DefaultGenesisState()
+	bankGen.Balances = bals
+	gen[banktypes.ModuleName] = a.AppCodec().MustMarshalJSON(bankGen)
+	spec := GenesisCouncil{Percentage: poatypes.CouncilPercentage, VotingPeriod: time.Hour}
+	for i := 0; i < poatypes.MinCouncilCorporations; i++ {
+		gc := GenesisCorporation{Did: fmt.Sprintf("did:example:council%d", i), Language: "en", Members: []string{e.opAddr().String()}}
+		if i == 0 {
+			gc.Validator = &GenesisValidator{Moniker: "v", PubKey: ed25519.GenPrivKey().PubKey()}
+		}
+		spec.Corporations = append(spec.Corporations, gc)
+	}
+	require.NoError(t, SetGenesisCouncil(a.AppCodec(), gen, spec, e.now))
 	state, err := cmtjson.MarshalIndent(gen, "", " ")
 	require.NoError(t, err)
 
@@ -96,7 +94,7 @@ func newFeeGranterEnv(t *testing.T) *feeGranterEnv {
 	e.finalize(t)
 
 	ctx := e.nextBlockCtx()
-	corp := cotypes.Corporation{Id: 1, PolicyAddress: e.corp.String(), Did: "did:example:corp"}
+	corp := cotypes.Corporation{Id: 4, PolicyAddress: e.corp.String(), Did: "did:example:corp"}
 	require.NoError(t, a.CoKeeper.Corporation.Set(ctx, corp.Id, corp))
 	require.NoError(t, a.CoKeeper.CorporationByPolicyAddr.Set(ctx, corp.PolicyAddress, corp.Id))
 	from := e.now.Add(-time.Hour)
@@ -142,7 +140,7 @@ func (e *feeGranterEnv) finalize(t *testing.T, txs ...[]byte) []*abci.ExecTxResu
 	t.Helper()
 	e.height++
 	res, err := e.app.FinalizeBlock(&abci.RequestFinalizeBlock{
-		Height: e.height, Time: e.now, Txs: txs, NextValidatorsHash: e.valSet.Hash(),
+		Height: e.height, Time: e.now, Txs: txs,
 	})
 	require.NoError(t, err)
 	_, err = e.app.Commit()

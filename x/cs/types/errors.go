@@ -8,7 +8,7 @@ import (
 
 // x/cs module sentinel errors
 var (
-	ErrInvalidSigner            = sdkerrors.Register(ModuleName, 1100, "expected gov account as only signer for proposal message")
+	ErrInvalidSigner            = sdkerrors.Register(ModuleName, 1100, "expected council account as only signer for proposal message")
 	ErrCredentialSchemaNotFound = sdkerrors.Register(ModuleName, 1102, "credential schema not found")
 	ErrInvalidJSONSchema        = sdkerrors.Register(ModuleName, 1103, "invalid JSON schema")
 )

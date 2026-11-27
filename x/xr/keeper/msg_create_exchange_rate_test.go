@@ -63,7 +63,7 @@ func TestCreateExchangeRate_InvalidAuthority(t *testing.T) {
 		ValidityDuration: 10 * time.Minute,
 	})
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "expected gov account as only signer")
+	require.Contains(t, err.Error(), "expected council account as only signer")
 }
 
 func TestCreateExchangeRate_InvalidAssetType(t *testing.T) {

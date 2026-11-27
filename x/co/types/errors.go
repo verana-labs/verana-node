@@ -3,7 +3,7 @@ package types
 import "cosmossdk.io/errors"
 
 var (
-	ErrInvalidSigner             = errors.Register(ModuleName, 1100, "expected gov account as only signer")
+	ErrInvalidSigner             = errors.Register(ModuleName, 1100, "expected council account as only signer")
 	ErrCorporationNotRegistered  = errors.Register(ModuleName, 1101, "signing account is not the policy_address of a registered Corporation")
 	ErrDIDAlreadyExists          = errors.Register(ModuleName, 1102, "DID is already registered by another Corporation")
 	ErrPolicyAddressAlreadyBound = errors.Register(ModuleName, 1103, "policy_address is already bound to an existing Corporation")

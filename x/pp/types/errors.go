@@ -8,7 +8,7 @@ import (
 
 // x/pp module sentinel errors
 var (
-	ErrInvalidSigner = sdkerrors.Register(ModuleName, 1100, "expected gov account as only signer for proposal message")
+	ErrInvalidSigner = sdkerrors.Register(ModuleName, 1100, "expected council account as only signer for proposal message")
 	ErrSample        = sdkerrors.Register(ModuleName, 1101, "sample error")
 	// ErrDIDOwnershipConflict is returned when a create would introduce a
 	// Participant whose did is already controlled by a different corporation,
