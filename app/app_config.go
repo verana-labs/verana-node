@@ -167,6 +167,8 @@ var (
 		demoduletypes.ModuleName,
 		dimoduletypes.ModuleName,
 		xrmoduletypes.ModuleName,
+		// after td, so that a boundary block counts in the epoch it opens
+		dsmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	}
 
@@ -190,6 +192,7 @@ var (
 		{Account: protocolpooltypes.ModuleName},
 		{Account: protocolpooltypes.ProtocolPoolEscrowAccount},
 		{Account: trustdepositmoduletypes.YieldIntermediatePool},
+		{Account: dsmoduletypes.ModuleName, Permissions: []string{authtypes.Burner}},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 

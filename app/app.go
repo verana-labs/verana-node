@@ -300,6 +300,8 @@ func New(
 	app.DeKeeper.SetVerifiableServiceKeeper(app.VsKeeper)
 	// MOD-XR reads main_fiat_currency from MOD-TD.
 	app.XrKeeper.SetTrustDepositKeeper(app.TrustdepositKeeper)
+	// Wire MOD-TD into the distribution module (main_fiat_currency); x/td calls its epoch payout.
+	app.DsKeeper.SetTrustDepositKeeper(app.TrustdepositKeeper)
 
 	// add to default baseapp options
 	// enable optimistic execution

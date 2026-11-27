@@ -32,6 +32,10 @@ type ModuleInputs struct {
 	StoreService store.KVStoreService
 	Cdc          codec.Codec
 	AddressCodec address.Codec
+
+	BankKeeper         types.BankKeeper
+	StakingKeeper      types.StakingKeeper
+	ExchangeRateKeeper types.ExchangeRateKeeper
 }
 
 type ModuleOutputs struct {
@@ -46,7 +50,7 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		panic("x/ds requires an explicit authority")
 	}
 	authority := authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
-	k := keeper.NewKeeper(in.StoreService, in.Cdc, in.AddressCodec, authority)
+	k := keeper.NewKeeper(in.StoreService, in.Cdc, in.AddressCodec, authority, in.BankKeeper, in.StakingKeeper, in.ExchangeRateKeeper)
 	m := NewAppModule(in.Cdc, k)
 
 	return ModuleOutputs{DsKeeper: k, Module: m}

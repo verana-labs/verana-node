@@ -7,22 +7,41 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Params } from "./params";
+import Long = require("long");
 
 export const protobufPackage = "verana.ds.v1";
 
 /** GenesisState defines the ds module's genesis state. */
 export interface GenesisState {
-  params: Params | undefined;
+  params:
+    | Params
+    | undefined;
+  /** counters of the open epoch */
+  validatorBlocks: GenesisValidatorBlocks[];
+  epochBlocks: number;
+}
+
+/** GenesisValidatorBlocks is a ValidatorBlocks entry with its key. */
+export interface GenesisValidatorBlocks {
+  validatorAddress: string;
+  signedBlocks: number;
+  memberBlocks: number;
 }
 
 function createBaseGenesisState(): GenesisState {
-  return { params: undefined };
+  return { params: undefined, validatorBlocks: [], epochBlocks: 0 };
 }
 
 export const GenesisState = {
   encode(message: GenesisState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.validatorBlocks) {
+      GenesisValidatorBlocks.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.epochBlocks !== 0) {
+      writer.uint32(24).uint64(message.epochBlocks);
     }
     return writer;
   },
@@ -41,6 +60,20 @@ export const GenesisState = {
 
           message.params = Params.decode(reader, reader.uint32());
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.validatorBlocks.push(GenesisValidatorBlocks.decode(reader, reader.uint32()));
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.epochBlocks = longToNumber(reader.uint64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -51,13 +84,25 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    return { params: isSet(object.params) ? Params.fromJSON(object.params) : undefined };
+    return {
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+      validatorBlocks: globalThis.Array.isArray(object?.validatorBlocks)
+        ? object.validatorBlocks.map((e: any) => GenesisValidatorBlocks.fromJSON(e))
+        : [],
+      epochBlocks: isSet(object.epochBlocks) ? globalThis.Number(object.epochBlocks) : 0,
+    };
   },
 
   toJSON(message: GenesisState): unknown {
     const obj: any = {};
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
+    }
+    if (message.validatorBlocks?.length) {
+      obj.validatorBlocks = message.validatorBlocks.map((e) => GenesisValidatorBlocks.toJSON(e));
+    }
+    if (message.epochBlocks !== 0) {
+      obj.epochBlocks = Math.round(message.epochBlocks);
     }
     return obj;
   },
@@ -70,6 +115,97 @@ export const GenesisState = {
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
+    message.validatorBlocks = object.validatorBlocks?.map((e) => GenesisValidatorBlocks.fromPartial(e)) || [];
+    message.epochBlocks = object.epochBlocks ?? 0;
+    return message;
+  },
+};
+
+function createBaseGenesisValidatorBlocks(): GenesisValidatorBlocks {
+  return { validatorAddress: "", signedBlocks: 0, memberBlocks: 0 };
+}
+
+export const GenesisValidatorBlocks = {
+  encode(message: GenesisValidatorBlocks, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.validatorAddress !== "") {
+      writer.uint32(10).string(message.validatorAddress);
+    }
+    if (message.signedBlocks !== 0) {
+      writer.uint32(16).uint64(message.signedBlocks);
+    }
+    if (message.memberBlocks !== 0) {
+      writer.uint32(24).uint64(message.memberBlocks);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GenesisValidatorBlocks {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGenesisValidatorBlocks();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.validatorAddress = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.signedBlocks = longToNumber(reader.uint64() as Long);
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.memberBlocks = longToNumber(reader.uint64() as Long);
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GenesisValidatorBlocks {
+    return {
+      validatorAddress: isSet(object.validatorAddress) ? globalThis.String(object.validatorAddress) : "",
+      signedBlocks: isSet(object.signedBlocks) ? globalThis.Number(object.signedBlocks) : 0,
+      memberBlocks: isSet(object.memberBlocks) ? globalThis.Number(object.memberBlocks) : 0,
+    };
+  },
+
+  toJSON(message: GenesisValidatorBlocks): unknown {
+    const obj: any = {};
+    if (message.validatorAddress !== "") {
+      obj.validatorAddress = message.validatorAddress;
+    }
+    if (message.signedBlocks !== 0) {
+      obj.signedBlocks = Math.round(message.signedBlocks);
+    }
+    if (message.memberBlocks !== 0) {
+      obj.memberBlocks = Math.round(message.memberBlocks);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GenesisValidatorBlocks>, I>>(base?: I): GenesisValidatorBlocks {
+    return GenesisValidatorBlocks.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GenesisValidatorBlocks>, I>>(object: I): GenesisValidatorBlocks {
+    const message = createBaseGenesisValidatorBlocks();
+    message.validatorAddress = object.validatorAddress ?? "";
+    message.signedBlocks = object.signedBlocks ?? 0;
+    message.memberBlocks = object.memberBlocks ?? 0;
     return message;
   },
 };
@@ -85,6 +221,21 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (long.lt(globalThis.Number.MIN_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

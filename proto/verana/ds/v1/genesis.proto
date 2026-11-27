@@ -2,6 +2,7 @@ syntax = "proto3";
 package verana.ds.v1;
 
 import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "verana/ds/v1/params.proto";
 
@@ -13,4 +14,14 @@ message GenesisState {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+  // counters of the open epoch
+  repeated GenesisValidatorBlocks validator_blocks = 2 [(gogoproto.nullable) = false];
+  uint64 epoch_blocks = 3;
+}
+
+// GenesisValidatorBlocks is a ValidatorBlocks entry with its key.
+message GenesisValidatorBlocks {
+  string validator_address = 1 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+  uint64 signed_blocks = 2;
+  uint64 member_blocks = 3;
 }
