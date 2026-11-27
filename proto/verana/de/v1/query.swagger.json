@@ -16,9 +16,9 @@
     "application/json"
   ],
   "paths": {
-    "/de/v1/authz/get/{id}": {
+    "/de/v1/authz/get": {
       "get": {
-        "summary": "[MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id.",
+        "summary": "[MOD-DE-QRY-3] GetDelegateAuthorization returns the DelegateAuthorization of (corporation_id, delegate).",
         "operationId": "Query_GetDelegateAuthorization",
         "responses": {
           "200": {
@@ -36,12 +36,19 @@
         },
         "parameters": [
           {
-            "name": "id",
-            "description": "id is the DelegateAuthorization id to fetch.",
-            "in": "path",
-            "required": true,
+            "name": "corporation_id",
+            "description": "corporation_id is the corporation that granted the authorization.",
+            "in": "query",
+            "required": false,
             "type": "string",
             "format": "uint64"
+          },
+          {
+            "name": "delegate",
+            "description": "delegate is the account that received the authorization.",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -51,7 +58,7 @@
     },
     "/de/v1/authz/list": {
       "get": {
-        "summary": "[MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters.",
+        "summary": "[MOD-DE-QRY-1] ListDelegateAuthorizations returns the delegate authorizations of a corporation.",
         "operationId": "Query_ListDelegateAuthorizations",
         "responses": {
           "200": {
@@ -70,18 +77,11 @@
         "parameters": [
           {
             "name": "corporation_id",
-            "description": "corporation_id filters by the corporation that granted the authorization.",
+            "description": "corporation_id is the corporation whose authorizations are listed. Mandatory.",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "uint64"
-          },
-          {
-            "name": "delegate",
-            "description": "delegate filters by the delegate account that received the authorization.",
-            "in": "query",
-            "required": false,
-            "type": "string"
           },
           {
             "name": "response_max_size",
@@ -303,15 +303,10 @@
     "verana.de.v1.DelegateAuthorization": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64",
-          "description": "id is the own uint64 key of this DelegateAuthorization."
-        },
         "corporation_id": {
           "type": "string",
           "format": "uint64",
-          "description": "corporation_id is the id of the corporation granting the authorization. The\n(corporation_id, delegate) tuple MUST be unique."
+          "description": "corporation_id is the id of the corporation granting the authorization."
         },
         "delegate": {
           "type": "string",
@@ -343,14 +338,19 @@
         "expiration": {
           "type": "string",
           "format": "date-time",
-          "description": "expiration is the timestamp after which the authorization is no longer\nvalid."
+          "description": "expiration is the absolute end of the authorization when period is unset,\nelse the end of its current cycle."
         },
         "period": {
           "type": "string",
           "description": "period is the reset period for spend_limit. If set, expiration MUST also be set."
+        },
+        "accepted_cgf_version": {
+          "type": "integer",
+          "format": "int64",
+          "description": "accepted_cgf_version is the last version of the corporation's governance\nframework the delegate accepted; 0 until it accepts."
         }
       },
-      "description": "DelegateAuthorization is the delegate authorization record. It is keyed by\nits own uint64 id; (corporation_id, delegate) is a unique secondary index."
+      "description": "DelegateAuthorization is the delegate authorization record, keyed by\n(corporation_id, delegate). The key fields are not stored in the value."
     },
     "verana.de.v1.ListedSponsorship": {
       "type": "object",

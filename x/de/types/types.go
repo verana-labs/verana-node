@@ -40,40 +40,24 @@ func (msg *MsgGrantDelegateAuthorization) ValidateBasic() error {
 		return err
 	}
 
-	// authz_spend_limit if specified must be valid and all-positive
 	if len(msg.AuthzSpendLimit) > 0 && !msg.AuthzSpendLimit.IsValid() {
-		return fmt.Errorf("invalid authz_spend_limit")
+		return errorsmod.Wrap(ErrInvalidSpendLimit, "authz_spend_limit")
 	}
-	if len(msg.AuthzSpendLimit) > 0 && !msg.AuthzSpendLimit.IsAllPositive() {
-		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "authz_spend_limit amounts must be positive")
+	if len(msg.FeegrantSpendLimit) > 0 && !msg.FeegrantSpendLimit.IsValid() {
+		return errorsmod.Wrap(ErrInvalidSpendLimit, "feegrant_spend_limit")
 	}
-
-	// authz_spend_limit_period if specified must be a valid (positive) period;
-	// ignored if authz_spend_limit is not set [MOD-DE-MSG-3-2]
-	if len(msg.AuthzSpendLimit) > 0 && msg.AuthzSpendLimitPeriod != nil && *msg.AuthzSpendLimitPeriod <= 0 {
-		return fmt.Errorf("authz_spend_limit_period must be a positive duration")
+	if msg.AuthzSpendLimitPeriod != nil && *msg.AuthzSpendLimitPeriod <= 0 {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "authz_spend_limit_period must be a positive duration")
 	}
-
-	// [MOD-DE-MSG-3-2] a spend period requires an expiration window
-	// (DelegateAuthorization invariant: period set => expiration set).
-	if len(msg.AuthzSpendLimit) > 0 && msg.AuthzSpendLimitPeriod != nil && msg.Expiration == nil {
-		return fmt.Errorf("expiration must be set when authz_spend_limit_period is set")
+	if msg.FeegrantSpendLimitPeriod != nil && *msg.FeegrantSpendLimitPeriod <= 0 {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "feegrant_spend_limit_period must be a positive duration")
 	}
-
-	// feegrant_spend_limit is ignored when with_feegrant is false (spec MOD-DE-MSG-3-2).
-
-	// feegrant_spend_limit if specified must be valid and all-positive (only relevant if with_feegrant)
-	if msg.WithFeegrant && len(msg.FeegrantSpendLimit) > 0 && !msg.FeegrantSpendLimit.IsValid() {
-		return fmt.Errorf("invalid feegrant_spend_limit")
+	if (msg.AuthzSpendLimitPeriod != nil || msg.FeegrantSpendLimitPeriod != nil) && msg.Expiration == nil {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "expiration must be set with a spend limit period")
 	}
-	if len(msg.FeegrantSpendLimit) > 0 && !msg.FeegrantSpendLimit.IsAllPositive() {
-		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "feegrant_spend_limit amounts must be positive")
-	}
-
-	// feegrant_spend_limit_period if specified must be a valid (positive) period;
-	// ignored if feegrant_spend_limit is not set or with_feegrant is false [MOD-DE-MSG-3-2]
-	if msg.WithFeegrant && len(msg.FeegrantSpendLimit) > 0 && msg.FeegrantSpendLimitPeriod != nil && *msg.FeegrantSpendLimitPeriod <= 0 {
-		return fmt.Errorf("feegrant_spend_limit_period must be a positive duration")
+	// A fee allowance never cycles under an authorization that expires.
+	if msg.FeegrantSpendLimitPeriod != nil && (len(msg.AuthzSpendLimit) == 0 || msg.AuthzSpendLimitPeriod == nil) {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "feegrant_spend_limit_period requires authz_spend_limit and authz_spend_limit_period")
 	}
 
 	return nil

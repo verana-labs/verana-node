@@ -59,3 +59,19 @@ func TestGenesis_RebuildsDelegateIndex(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(4), corp)
 }
+
+func TestGenesis_DelegateAuthorizations(t *testing.T) {
+	exp := time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)
+	period := time.Hour
+	das := []types.DelegateAuthorization{
+		{CorporationId: 1, Delegate: acc("delegate_b__________"), MsgTypes: []types.MsgType{mtEcosystem}, AcceptedCgfVersion: 2},
+		{CorporationId: 2, Delegate: acc("delegate_a__________"), MsgTypes: []types.MsgType{mtSchema},
+			SpendLimit: uvna(5), RemainingSpend: uvna(3), Expiration: &exp, Period: &period},
+	}
+
+	f := initFixture(t)
+	require.NoError(t, f.keeper.InitGenesis(f.ctx, types.GenesisState{DelegateAuthorizations: das}))
+	got, err := f.keeper.ExportGenesis(f.ctx)
+	require.NoError(t, err)
+	require.Equal(t, das, got.DelegateAuthorizations)
+}

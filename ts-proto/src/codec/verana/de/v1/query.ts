@@ -16,10 +16,8 @@ export const protobufPackage = "verana.de.v1";
  * Query/ListDelegateAuthorizations RPC method.
  */
 export interface QueryListDelegateAuthorizationsRequest {
-  /** corporation_id filters by the corporation that granted the authorization. */
+  /** corporation_id is the corporation whose authorizations are listed. Mandatory. */
   corporationId: number;
-  /** delegate filters by the delegate account that received the authorization. */
-  delegate: string;
   /** response_max_size limits the number of results. Must be 1-1024, defaults to 64. */
   responseMaxSize: number;
 }
@@ -58,8 +56,10 @@ export interface QueryListVSOperatorAuthorizationsResponse {
  * Query/GetDelegateAuthorization RPC method.
  */
 export interface QueryGetDelegateAuthorizationRequest {
-  /** id is the DelegateAuthorization id to fetch. */
-  id: number;
+  /** corporation_id is the corporation that granted the authorization. */
+  corporationId: number;
+  /** delegate is the account that received the authorization. */
+  delegate: string;
 }
 
 /**
@@ -136,16 +136,13 @@ export interface QueryListSponsorshipsResponse {
 }
 
 function createBaseQueryListDelegateAuthorizationsRequest(): QueryListDelegateAuthorizationsRequest {
-  return { corporationId: 0, delegate: "", responseMaxSize: 0 };
+  return { corporationId: 0, responseMaxSize: 0 };
 }
 
 export const QueryListDelegateAuthorizationsRequest = {
   encode(message: QueryListDelegateAuthorizationsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.corporationId !== 0) {
       writer.uint32(8).uint64(message.corporationId);
-    }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
     }
     if (message.responseMaxSize !== 0) {
       writer.uint32(24).uint32(message.responseMaxSize);
@@ -167,13 +164,6 @@ export const QueryListDelegateAuthorizationsRequest = {
 
           message.corporationId = longToNumber(reader.uint64() as Long);
           continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.delegate = reader.string();
-          continue;
         case 3:
           if (tag !== 24) {
             break;
@@ -193,7 +183,6 @@ export const QueryListDelegateAuthorizationsRequest = {
   fromJSON(object: any): QueryListDelegateAuthorizationsRequest {
     return {
       corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
       responseMaxSize: isSet(object.responseMaxSize) ? globalThis.Number(object.responseMaxSize) : 0,
     };
   },
@@ -202,9 +191,6 @@ export const QueryListDelegateAuthorizationsRequest = {
     const obj: any = {};
     if (message.corporationId !== 0) {
       obj.corporationId = Math.round(message.corporationId);
-    }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
     }
     if (message.responseMaxSize !== 0) {
       obj.responseMaxSize = Math.round(message.responseMaxSize);
@@ -222,7 +208,6 @@ export const QueryListDelegateAuthorizationsRequest = {
   ): QueryListDelegateAuthorizationsRequest {
     const message = createBaseQueryListDelegateAuthorizationsRequest();
     message.corporationId = object.corporationId ?? 0;
-    message.delegate = object.delegate ?? "";
     message.responseMaxSize = object.responseMaxSize ?? 0;
     return message;
   },
@@ -454,13 +439,16 @@ export const QueryListVSOperatorAuthorizationsResponse = {
 };
 
 function createBaseQueryGetDelegateAuthorizationRequest(): QueryGetDelegateAuthorizationRequest {
-  return { id: 0 };
+  return { corporationId: 0, delegate: "" };
 }
 
 export const QueryGetDelegateAuthorizationRequest = {
   encode(message: QueryGetDelegateAuthorizationRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== 0) {
-      writer.uint32(8).uint64(message.id);
+    if (message.corporationId !== 0) {
+      writer.uint32(8).uint64(message.corporationId);
+    }
+    if (message.delegate !== "") {
+      writer.uint32(18).string(message.delegate);
     }
     return writer;
   },
@@ -477,7 +465,14 @@ export const QueryGetDelegateAuthorizationRequest = {
             break;
           }
 
-          message.id = longToNumber(reader.uint64() as Long);
+          message.corporationId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.delegate = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -489,13 +484,19 @@ export const QueryGetDelegateAuthorizationRequest = {
   },
 
   fromJSON(object: any): QueryGetDelegateAuthorizationRequest {
-    return { id: isSet(object.id) ? globalThis.Number(object.id) : 0 };
+    return {
+      corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
+      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+    };
   },
 
   toJSON(message: QueryGetDelegateAuthorizationRequest): unknown {
     const obj: any = {};
-    if (message.id !== 0) {
-      obj.id = Math.round(message.id);
+    if (message.corporationId !== 0) {
+      obj.corporationId = Math.round(message.corporationId);
+    }
+    if (message.delegate !== "") {
+      obj.delegate = message.delegate;
     }
     return obj;
   },
@@ -509,7 +510,8 @@ export const QueryGetDelegateAuthorizationRequest = {
     object: I,
   ): QueryGetDelegateAuthorizationRequest {
     const message = createBaseQueryGetDelegateAuthorizationRequest();
-    message.id = object.id ?? 0;
+    message.corporationId = object.corporationId ?? 0;
+    message.delegate = object.delegate ?? "";
     return message;
   },
 };
@@ -1061,7 +1063,7 @@ export const QueryListSponsorshipsResponse = {
 
 /** Query defines the gRPC querier service. */
 export interface Query {
-  /** [MOD-DE-QRY-1] ListDelegateAuthorizations returns delegate authorizations matching optional filters. */
+  /** [MOD-DE-QRY-1] ListDelegateAuthorizations returns the delegate authorizations of a corporation. */
   ListDelegateAuthorizations(
     request: QueryListDelegateAuthorizationsRequest,
   ): Promise<QueryListDelegateAuthorizationsResponse>;
@@ -1069,7 +1071,7 @@ export interface Query {
   ListVSOperatorAuthorizations(
     request: QueryListVSOperatorAuthorizationsRequest,
   ): Promise<QueryListVSOperatorAuthorizationsResponse>;
-  /** [MOD-DE-QRY-3] GetDelegateAuthorization returns a single DelegateAuthorization by id. */
+  /** [MOD-DE-QRY-3] GetDelegateAuthorization returns the DelegateAuthorization of (corporation_id, delegate). */
   GetDelegateAuthorization(
     request: QueryGetDelegateAuthorizationRequest,
   ): Promise<QueryGetDelegateAuthorizationResponse>;

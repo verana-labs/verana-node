@@ -20,32 +20,30 @@ func DefaultGenesis() *GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	// DelegateAuthorization: id (key) non-zero + unique; (corporation_id,
-	// delegate) secondary index unique.
-	oaIDs := make(map[uint64]bool)
-	oaCorpOp := make(map[string]bool)
+	// DelegateAuthorization: (corporation_id, delegate) key unique.
+	daKeys := make(map[string]bool)
 	for i, da := range gs.DelegateAuthorizations {
-		if da.Id == 0 {
-			return fmt.Errorf("delegate_authorizations[%d]: id cannot be 0", i)
-		}
-		if oaIDs[da.Id] {
-			return fmt.Errorf("delegate_authorizations[%d]: duplicate id %d", i, da.Id)
-		}
-		oaIDs[da.Id] = true
 		if da.CorporationId == 0 {
 			return fmt.Errorf("delegate_authorizations[%d]: corporation_id cannot be 0", i)
 		}
-		if _, err := sdk.AccAddressFromBech32(da.Delegate); err != nil {
+		delegate, err := sdk.AccAddressFromBech32(da.Delegate)
+		if err != nil {
 			return fmt.Errorf("delegate_authorizations[%d]: invalid delegate address: %w", i, err)
 		}
 		if err := ValidateMsgTypes(da.MsgTypes, DelegateAuthorizationMsgTypes); err != nil {
 			return fmt.Errorf("delegate_authorizations[%d]: %w", i, err)
 		}
-		idx := fmt.Sprintf("%d/%s", da.CorporationId, da.Delegate)
-		if oaCorpOp[idx] {
-			return fmt.Errorf("delegate_authorizations[%d]: duplicate (corporation_id, delegate) %s", i, idx)
+		if !da.SpendLimit.IsValid() || !da.RemainingSpend.IsValid() || !da.SpendLimit.IsAllGTE(da.RemainingSpend) {
+			return fmt.Errorf("delegate_authorizations[%d]: spend_limit and remaining_spend must be valid, remaining within the limit", i)
 		}
-		oaCorpOp[idx] = true
+		if da.Period != nil && (*da.Period <= 0 || len(da.SpendLimit) == 0 || da.Expiration == nil) {
+			return fmt.Errorf("delegate_authorizations[%d]: period must be positive and requires spend_limit and expiration", i)
+		}
+		key := fmt.Sprintf("%d/%s", da.CorporationId, delegate)
+		if daKeys[key] {
+			return fmt.Errorf("delegate_authorizations[%d]: duplicate (corporation_id, delegate) %s", i, key)
+		}
+		daKeys[key] = true
 	}
 
 	// FeeGrant: composite key (grantor_corporation_id, grantee) unique.

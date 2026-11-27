@@ -12,7 +12,6 @@ const (
 	// Emitted whenever an AUTHZ-CHECK path mutates an authorization between grant
 	// and revoke (spend debit or cycle renewal). Carries only ids: the indexer
 	// re-reads authoritative state via ABCI at that height.
-	EventTypeDelegateAuthorizationUpdated   = "delegate_authorization_updated"
 	EventTypeVSOperatorAuthorizationUpdated = "vs_operator_authorization_updated"
 
 	EventTypeGrantSponsorship  = "grant_sponsorship"
@@ -24,11 +23,9 @@ const (
 	AttributeKeyCorporationID = "corporation_id"
 	AttributeKeyDelegate      = "delegate"
 	AttributeKeyGrantee       = "grantee"
-	AttributeKeyWithFeegrant  = "with_feegrant"
 	AttributeKeyTimestamp     = "timestamp"
 	AttributeKeyVsOperator    = "vs_operator"
 	AttributeKeyPermissionID  = "permission_id"
-	AttributeKeyAuthzID       = "authz_id"
 	AttributeKeyVsoaID        = "vsoa_id"
 	AttributeKeyParticipantID = "participant_id"
 

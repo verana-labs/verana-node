@@ -10,14 +10,10 @@ import "verana/de/v1/msg_type.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/de/types";
 
-// DelegateAuthorization is the delegate authorization record. It is keyed by
-// its own uint64 id; (corporation_id, delegate) is a unique secondary index.
+// DelegateAuthorization is the delegate authorization record, keyed by
+// (corporation_id, delegate). The key fields are not stored in the value.
 message DelegateAuthorization {
-
-  // id is the own uint64 key of this DelegateAuthorization.
-  uint64 id = 1;
-  // corporation_id is the id of the corporation granting the authorization. The
-  // (corporation_id, delegate) tuple MUST be unique.
+  // corporation_id is the id of the corporation granting the authorization.
   uint64 corporation_id = 2;
   // delegate is the account receiving the authorization.
   string delegate = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -34,11 +30,14 @@ message DelegateAuthorization {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  // expiration is the timestamp after which the authorization is no longer
-  // valid.
+  // expiration is the absolute end of the authorization when period is unset,
+  // else the end of its current cycle.
   google.protobuf.Timestamp expiration = 9 [(gogoproto.stdtime) = true];
   // period is the reset period for spend_limit. If set, expiration MUST also be set.
   google.protobuf.Duration period = 10 [(gogoproto.stdduration) = true];
+  // accepted_cgf_version is the last version of the corporation's governance
+  // framework the delegate accepted; 0 until it accepts.
+  uint32 accepted_cgf_version = 11;
 }
 
 // FeeGrant is the chain-level fee allowance, keyed by the composite

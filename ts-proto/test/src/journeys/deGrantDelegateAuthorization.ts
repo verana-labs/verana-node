@@ -135,7 +135,6 @@ async function main() {
       signer: corp.policyAddress,
       grantee: delegateAccount.address,
       msgTypes: allMsgTypes,
-      withFeegrant: false,
     }),
   ).finish();
 

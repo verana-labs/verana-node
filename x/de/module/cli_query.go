@@ -35,23 +35,26 @@ func (am AppModule) GetQueryCmd() *cobra.Command {
 // [MOD-DE-QRY-3] GetDelegateAuthorization query.
 func CmdGetDelegateAuthorization() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get-delegate-authorization [id]",
-		Short: "Get a delegate authorization by id",
-		Long:  "[MOD-DE-QRY-3] Get a single delegate authorization by its id.",
-		Args:  cobra.ExactArgs(1),
+		Use:   "get-delegate-authorization [corporation-id] [delegate]",
+		Short: "Get the delegate authorization of a corporation and a delegate",
+		Long:  "[MOD-DE-QRY-3] Get the delegate authorization keyed by (corporation_id, delegate).",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			corporationID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("invalid id: %w", err)
+				return fmt.Errorf("invalid corporation id: %w", err)
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.GetDelegateAuthorization(cmd.Context(), &types.QueryGetDelegateAuthorizationRequest{Id: id})
+			res, err := queryClient.GetDelegateAuthorization(cmd.Context(), &types.QueryGetDelegateAuthorizationRequest{
+				CorporationId: corporationID,
+				Delegate:      args[1],
+			})
 			if err != nil {
 				return err
 			}
@@ -97,24 +100,26 @@ func CmdGetVSOperatorAuthorization() *cobra.Command {
 // [MOD-DE-QRY-1] ListDelegateAuthorizations query.
 func CmdListDelegateAuthorizations() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-delegate-authorizations",
-		Short: "List delegate authorizations with optional filters",
-		Long:  "[MOD-DE-QRY-1] List delegate authorizations. Optionally filter by corporation and/or delegate address.",
+		Use:   "list-delegate-authorizations [corporation-id]",
+		Short: "List the delegate authorizations of a corporation",
+		Long:  "[MOD-DE-QRY-1] List the delegate authorizations granted by a corporation.",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			corporationID, _ := cmd.Flags().GetUint64("corporation-id")
-			delegate, _ := cmd.Flags().GetString("delegate")
+			corporationID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid corporation id: %w", err)
+			}
 			limit, _ := cmd.Flags().GetUint32("limit")
 
 			queryClient := types.NewQueryClient(clientCtx)
 
 			res, err := queryClient.ListDelegateAuthorizations(cmd.Context(), &types.QueryListDelegateAuthorizationsRequest{
 				CorporationId:   corporationID,
-				Delegate:        delegate,
 				ResponseMaxSize: limit,
 			})
 			if err != nil {
@@ -125,8 +130,6 @@ func CmdListDelegateAuthorizations() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Uint64("corporation-id", 0, "filter by the corporation id that granted the authorization")
-	cmd.Flags().String("delegate", "", "filter by the delegate account that received the authorization")
 	cmd.Flags().Uint32("limit", 64, "maximum number of results (1-1024, default 64)")
 
 	flags.AddQueryFlagsToCmd(cmd)

@@ -2229,18 +2229,15 @@ func GrantDelegateAuthorizationWithFeegrantViaGroup(
 	granteeAddr string,
 	msgTypes []detypes.MsgType,
 	feegrantSpendLimit sdk.Coins,
-	feegrantSpendLimitPeriod *time.Duration,
 	expiration *time.Time,
 ) error {
 	return submitGrantOpAuthzViaGroup(client, ctx, admin, voter2, policyAddr, &detypes.MsgGrantDelegateAuthorization{
-		Corporation:              policyAddr,
-		Signer:                   policyAddr, // group-proposal path: signer == corporation policy_address
-		Grantee:                  granteeAddr,
-		MsgTypes:                 msgTypes,
-		WithFeegrant:             true,
-		FeegrantSpendLimit:       feegrantSpendLimit,
-		FeegrantSpendLimitPeriod: feegrantSpendLimitPeriod,
-		Expiration:               expiration,
+		Corporation:        policyAddr,
+		Signer:             policyAddr, // group-proposal path: signer == corporation policy_address
+		Grantee:            granteeAddr,
+		MsgTypes:           msgTypes,
+		FeegrantSpendLimit: feegrantSpendLimit,
+		Expiration:         expiration,
 	})
 }
 

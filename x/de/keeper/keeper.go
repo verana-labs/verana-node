@@ -24,12 +24,10 @@ type Keeper struct {
 
 	Schema collections.Schema
 
-	// DelegateAuthorization: keyed by its own uint64 id; (corporation_id,
-	// delegate) is a unique secondary index. Runtime spend balances live
-	// on-object (remaining_spend).
-	DelegateAuthorizations              collections.Map[uint64, types.DelegateAuthorization]
-	DelegateAuthorizationByCorpDelegate collections.Map[collections.Pair[uint64, string], uint64]
-	DelegateAuthorizationSeq            collections.Sequence
+	// DelegateAuthorizations is keyed by (corporation_id, delegate); use
+	// getDelegateAuthorization and setDelegateAuthorization, which keep the key
+	// fields out of the stored value.
+	DelegateAuthorizations collections.Map[collections.Pair[uint64, sdk.AccAddress], types.DelegateAuthorization]
 
 	// FeeGrant: composite key (grantor_corporation_id, grantee).
 	FeeGrants collections.Map[collections.Pair[uint64, string], types.FeeGrant]
@@ -105,10 +103,7 @@ func NewKeeper(
 		vsRef:          &vsKeeperRef{K: StubVerifiableServiceKeeper{}},
 
 		DelegateAuthorizations: collections.NewMap(sb, types.DelegateAuthorizationKey, "delegate_authorization",
-			collections.Uint64Key, codec.CollValue[types.DelegateAuthorization](cdc)),
-		DelegateAuthorizationByCorpDelegate: collections.NewMap(sb, types.DelegateAuthorizationByCorpDelegateKey, "delegate_authorization_by_corp_delegate",
-			corpOpKeyCodec, collections.Uint64Value),
-		DelegateAuthorizationSeq: collections.NewSequence(sb, types.DelegateAuthorizationSeqKey, "delegate_authorization_seq"),
+			collections.PairKeyCodec(collections.Uint64Key, sdk.AccAddressKey), codec.CollValue[types.DelegateAuthorization](cdc)),
 
 		FeeGrants: collections.NewMap(sb, types.FeeGrantKey, "fee_grant",
 			corpOpKeyCodec, codec.CollValue[types.FeeGrant](cdc)),
@@ -197,15 +192,6 @@ func (k Keeper) corporationKeeper() types.CorporationKeeper {
 	return k.corpRef.K
 }
 
-// nextDelegateAuthorizationID returns a fresh, 1-based DelegateAuthorization id.
-func (k Keeper) nextDelegateAuthorizationID(ctx context.Context) (uint64, error) {
-	n, err := k.DelegateAuthorizationSeq.Next(ctx)
-	if err != nil {
-		return 0, err
-	}
-	return n + 1, nil
-}
-
 // nextVSOAID returns a fresh, 1-based VSOperatorAuthorization id.
 func (k Keeper) nextVSOAID(ctx context.Context) (uint64, error) {
 	n, err := k.VSOASeq.Next(ctx)
@@ -215,22 +201,34 @@ func (k Keeper) nextVSOAID(ctx context.Context) (uint64, error) {
 	return n + 1, nil
 }
 
-// getDelegateAuthorizationByCorpDelegate loads the DelegateAuthorization indexed by
-// the (corporation_id, delegate) secondary index. Returns found=false when no
-// entry exists.
-func (k Keeper) getDelegateAuthorizationByCorpDelegate(ctx context.Context, corporationID uint64, delegate string) (types.DelegateAuthorization, bool, error) {
-	id, err := k.DelegateAuthorizationByCorpDelegate.Get(ctx, collections.Join(corporationID, delegate))
+// getDelegateAuthorization loads the DelegateAuthorization of (corporationID,
+// delegate), with its key fields set. Returns found=false when none exists.
+func (k Keeper) getDelegateAuthorization(ctx context.Context, corporationID uint64, delegate sdk.AccAddress) (types.DelegateAuthorization, bool, error) {
+	da, err := k.DelegateAuthorizations.Get(ctx, collections.Join(corporationID, delegate))
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
 			return types.DelegateAuthorization{}, false, nil
 		}
 		return types.DelegateAuthorization{}, false, err
 	}
-	da, err := k.DelegateAuthorizations.Get(ctx, id)
-	if err != nil {
-		return types.DelegateAuthorization{}, false, err
-	}
+	withKey(&da, corporationID, delegate)
 	return da, true, nil
+}
+
+// setDelegateAuthorization stores da under its key, without the key fields.
+func (k Keeper) setDelegateAuthorization(ctx context.Context, da types.DelegateAuthorization) error {
+	addr, err := sdk.AccAddressFromBech32(da.Delegate)
+	if err != nil {
+		return fmt.Errorf("invalid delegate address: %w", err)
+	}
+	key := collections.Join(da.CorporationId, addr)
+	da.CorporationId, da.Delegate = 0, ""
+	return k.DelegateAuthorizations.Set(ctx, key, da)
+}
+
+// withKey sets the key fields of a stored DelegateAuthorization.
+func withKey(da *types.DelegateAuthorization, corporationID uint64, delegate sdk.AccAddress) {
+	da.CorporationId, da.Delegate = corporationID, delegate.String()
 }
 
 // getVSOAByCorpOp loads the VSOperatorAuthorization indexed by the

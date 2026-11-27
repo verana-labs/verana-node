@@ -1,9 +1,9 @@
 package types_test
 
 import (
-	"time"
-
+	"strings"
 	"testing"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -14,9 +14,16 @@ func TestGenesisState_Validate(t *testing.T) {
 	addr := sdk.AccAddress([]byte("delegate____________")).String()
 	withOA := func(mts ...types.MsgType) *types.GenesisState {
 		return &types.GenesisState{DelegateAuthorizations: []types.DelegateAuthorization{
-			{Id: 1, CorporationId: 1, Delegate: addr, MsgTypes: mts},
+			{CorporationId: 1, Delegate: addr, MsgTypes: mts},
 		}}
 	}
+	withDAs := func(das ...types.DelegateAuthorization) *types.GenesisState {
+		for i := range das {
+			das[i].MsgTypes = []types.MsgType{types.MsgType_MSG_TYPE_STORE_DIGEST}
+		}
+		return &types.GenesisState{DelegateAuthorizations: das}
+	}
+	limit := sdk.NewCoins(sdk.NewInt64Coin("uvna", 10))
 	withFG := func(mts ...types.MsgType) *types.GenesisState {
 		return &types.GenesisState{FeeGrants: []types.FeeGrant{
 			{GrantorCorporationId: 1, Grantee: addr, MsgTypes: mts},
@@ -56,6 +63,40 @@ func TestGenesisState_Validate(t *testing.T) {
 		{desc: "delegate authorization delegable value", genState: withOA(types.MsgType_MSG_TYPE_STORE_DIGEST), valid: true},
 		{desc: "delegate authorization issuance value", genState: withOA(types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE), valid: false},
 		{desc: "delegate authorization without values", genState: withOA(), valid: false},
+		{desc: "delegate authorization without corporation", genState: withDAs(types.DelegateAuthorization{Delegate: addr}), valid: false},
+		{desc: "delegate authorization invalid delegate", genState: withDAs(types.DelegateAuthorization{CorporationId: 1, Delegate: "x"}), valid: false},
+		{desc: "delegate authorizations of two corporations", genState: withDAs(
+			types.DelegateAuthorization{CorporationId: 1, Delegate: addr},
+			types.DelegateAuthorization{CorporationId: 2, Delegate: addr},
+		), valid: true},
+		{desc: "delegate authorization duplicate key", genState: withDAs(
+			types.DelegateAuthorization{CorporationId: 1, Delegate: addr},
+			types.DelegateAuthorization{CorporationId: 1, Delegate: strings.ToUpper(addr)},
+		), valid: false},
+		{desc: "delegate authorization cycle", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Expiration: &exp, Period: &period,
+		}), valid: true},
+		{desc: "delegate authorization period without expiration", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Period: &period,
+		}), valid: false},
+		{desc: "delegate authorization remaining without limit", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, RemainingSpend: limit,
+		}), valid: false},
+		{desc: "delegate authorization spent", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: limit,
+		}), valid: true},
+		{desc: "delegate authorization remaining above limit", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit.Add(limit...),
+		}), valid: false},
+		{desc: "delegate authorization unsorted limit", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: sdk.Coins{sdk.NewInt64Coin("uvna", 1), sdk.NewInt64Coin("uatom", 1)},
+		}), valid: false},
+		{desc: "delegate authorization period without limit", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, Expiration: &exp, Period: &period,
+		}), valid: false},
+		{desc: "delegate authorization zero period", genState: withDAs(types.DelegateAuthorization{
+			CorporationId: 1, Delegate: addr, SpendLimit: limit, RemainingSpend: limit, Expiration: &exp, Period: new(time.Duration),
+		}), valid: false},
 		{desc: "fee grant session value", genState: withFG(types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION), valid: true},
 		{desc: "fee grant unspecified value", genState: withFG(types.MsgType_MSG_TYPE_UNSPECIFIED), valid: false},
 		{desc: "record vs value", genState: withRecord(types.MsgType_MSG_TYPE_VALIDATE_ONBOARDING), valid: true},

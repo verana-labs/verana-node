@@ -48,7 +48,9 @@ message MsgGrantDelegateAuthorization {
   // msg_types is the list of VPR delegable message types for which
   // authorization is granted.
   repeated MsgType msg_types = 4;
-  // expiration is the optional timestamp after which the authorization expires.
+  // expiration is the optional end of the authorization, or of its first cycle
+  // when authz_spend_limit and authz_spend_limit_period are set; a fee
+  // allowance receives the same value.
   google.protobuf.Timestamp expiration = 5 [
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = true
@@ -59,21 +61,21 @@ message MsgGrantDelegateAuthorization {
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
   // authz_spend_limit_period is the optional reset period for
+  // authz_spend_limit. It requires expiration and has no effect without
   // authz_spend_limit.
   google.protobuf.Duration authz_spend_limit_period = 7 [
     (gogoproto.stdduration) = true,
     (gogoproto.nullable) = true
   ];
-  // with_feegrant indicates whether to also grant a fee allowance.
-  bool with_feegrant = 8;
-  // feegrant_spend_limit is the optional maximum fee amount. Ignored if
-  // with_feegrant is false.
+  // feegrant_spend_limit, when set, makes the corporation pay the grantee's
+  // network fees for msg_types up to this amount; absent means no fee allowance.
   repeated cosmos.base.v1beta1.Coin feegrant_spend_limit = 9 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
   // feegrant_spend_limit_period is the optional reset period for
-  // feegrant_spend_limit. Ignored if with_feegrant is false.
+  // feegrant_spend_limit. It requires expiration, authz_spend_limit and
+  // authz_spend_limit_period, and has no effect without feegrant_spend_limit.
   google.protobuf.Duration feegrant_spend_limit_period = 10 [
     (gogoproto.stdduration) = true,
     (gogoproto.nullable) = true

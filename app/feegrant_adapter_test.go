@@ -256,12 +256,9 @@ func TestSelfFeeGrant_DelegateAuthorization(t *testing.T) {
 	msgTypes := []detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM}
 
 	// Stored before the handler refused the corporation as its own grantee.
-	n, err := de.DelegateAuthorizationSeq.Next(e.ctx)
-	require.NoError(t, err)
-	require.NoError(t, de.DelegateAuthorizations.Set(e.ctx, n+1, detypes.DelegateAuthorization{Id: n + 1, CorporationId: 2, Delegate: X, MsgTypes: msgTypes}))
-	require.NoError(t, de.DelegateAuthorizationByCorpDelegate.Set(e.ctx, collections.Join(uint64(2), X), n+1))
+	require.NoError(t, de.DelegateAuthorizations.Set(e.ctx, collections.Join(uint64(2), e.pX), detypes.DelegateAuthorization{MsgTypes: msgTypes}))
 	require.NoError(t, de.GrantFeeAllowance(e.ctx, 2, X, msgTypes, nil, sdk.NewCoins(sdk.NewInt64Coin("uvna", 10)), nil))
-	_, err = e.a.FeeGrantKeeper.GetAllowance(e.ctx, e.pX, e.pX)
+	_, err := e.a.FeeGrantKeeper.GetAllowance(e.ctx, e.pX, e.pX)
 	require.NoError(t, err)
 
 	_, err = e.des.GrantDelegateAuthorization(e.ctx, &detypes.MsgGrantDelegateAuthorization{Corporation: X, Signer: X, Grantee: X, MsgTypes: msgTypes})
@@ -293,7 +290,7 @@ func TestSelfFeeGrant_Refused(t *testing.T) {
 
 	_, err = e.des.GrantDelegateAuthorization(e.ctx, &detypes.MsgGrantDelegateAuthorization{
 		Corporation: X, Signer: X, Grantee: X, MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
-		WithFeegrant: true, FeegrantSpendLimit: limit,
+		FeegrantSpendLimit: limit,
 	})
 	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
 

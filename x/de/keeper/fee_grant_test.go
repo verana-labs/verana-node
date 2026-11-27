@@ -130,7 +130,7 @@ func TestGrantFeeAllowance_ForeignAllowance(t *testing.T) {
 	putSlot(f, testCorpID, grantee, foreign)
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
 		Corporation: corp, Signer: corp, Grantee: grantee,
-		MsgTypes: []types.MsgType{mtEcosystem}, WithFeegrant: true, FeegrantSpendLimit: uvna(10),
+		MsgTypes: []types.MsgType{mtEcosystem}, FeegrantSpendLimit: uvna(10),
 	})
 	require.ErrorIs(t, err, types.ErrFeeAllowanceNotOwned)
 

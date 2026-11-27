@@ -80,9 +80,13 @@ func (k Keeper) GrantVSOperatorAuthorization(
 
 	// Mutual exclusivity: no DelegateAuthorization may exist for
 	// (corporation_id, vs_operator).
-	hasOA, err := k.DelegateAuthorizationByCorpDelegate.Has(ctx, collections.Join(corporationID, vsOperator))
+	vsOperatorAddr, err := sdk.AccAddressFromBech32(vsOperator)
 	if err != nil {
-		return fmt.Errorf("failed to check DelegateAuthorization index: %w", err)
+		return fmt.Errorf("invalid vs_operator address: %w", err)
+	}
+	hasOA, err := k.DelegateAuthorizations.Has(ctx, collections.Join(corporationID, vsOperatorAddr))
+	if err != nil {
+		return fmt.Errorf("failed to check DelegateAuthorization: %w", err)
 	}
 	if hasOA {
 		return types.ErrDelegateAuthzExistsMutex

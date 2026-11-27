@@ -4,25 +4,12 @@ import (
 	"context"
 	"fmt"
 	"slices"
-	"strconv"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/de/types"
 )
-
-// emitDelegateAuthzUpdated signals that an AUTHZ-CHECK-1 path mutated the
-// delegate authorization (spend debit or cycle renewal). It carries only the id;
-// the indexer re-reads authoritative state via ABCI at this height.
-func (k Keeper) emitDelegateAuthzUpdated(ctx context.Context, authzID uint64) {
-	sdk.UnwrapSDKContext(ctx).EventManager().EmitEvent(
-		sdk.NewEvent(
-			types.EventTypeDelegateAuthorizationUpdated,
-			sdk.NewAttribute(types.AttributeKeyAuthzID, strconv.FormatUint(authzID, 10)),
-		),
-	)
-}
 
 // CheckDelegateAuthorization implements [AUTHZ-CHECK-1] for delegate acting for
 // the corporation that AUTHZ-CHECK-5 resolved to corporationID: existence,
@@ -71,10 +58,9 @@ func (k Keeper) ConsumeDelegateSpend(
 			types.ErrAuthzSpendLimitExceeded, amount.String(), da.RemainingSpend.String())
 	}
 	da.RemainingSpend = da.RemainingSpend.Sub(amount...)
-	if err := k.DelegateAuthorizations.Set(ctx, da.Id, da); err != nil {
+	if err := k.setDelegateAuthorization(ctx, da); err != nil {
 		return fmt.Errorf("failed to debit delegate spend: %w", err)
 	}
-	k.emitDelegateAuthzUpdated(ctx, da.Id)
 	return nil
 }
 
@@ -98,8 +84,12 @@ func (k Keeper) checkDelegateAuthorizationCore(
 	msgType types.MsgType,
 	now time.Time,
 ) (types.DelegateAuthorization, error) {
-	// 1. Load DelegateAuthorization via the (corporation_id, delegate) index.
-	da, found, err := k.getDelegateAuthorizationByCorpDelegate(ctx, corporationID, delegate)
+	// 1. Load DelegateAuthorization by its (corporation_id, delegate) key.
+	addr, err := sdk.AccAddressFromBech32(delegate)
+	if err != nil {
+		return types.DelegateAuthorization{}, types.ErrAuthzNotFound
+	}
+	da, found, err := k.getDelegateAuthorization(ctx, corporationID, addr)
 	if err != nil {
 		return types.DelegateAuthorization{}, err
 	}
@@ -116,10 +106,9 @@ func (k Keeper) checkDelegateAuthorizationCore(
 			}
 			newExp := now.Add(*da.Period)
 			da.Expiration = &newExp
-			if err := k.DelegateAuthorizations.Set(ctx, da.Id, da); err != nil {
+			if err := k.setDelegateAuthorization(ctx, da); err != nil {
 				return types.DelegateAuthorization{}, fmt.Errorf("failed to persist authz renewal: %w", err)
 			}
-			k.emitDelegateAuthzUpdated(ctx, da.Id)
 		} else if !da.Expiration.After(now) {
 			return types.DelegateAuthorization{}, types.ErrAuthzExpired
 		}

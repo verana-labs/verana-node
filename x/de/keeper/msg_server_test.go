@@ -11,6 +11,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	feegrant "github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/verana-labs/verana-node/x/de/keeper"
 	"github.com/verana-labs/verana-node/x/de/types"
@@ -128,52 +130,122 @@ func TestGrantDelegateAuthorization_NewAndUpdate(t *testing.T) {
 	qs := keeper.NewQueryServerImpl(f.keeper)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
+	spend := uvna(100)
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
 		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		AuthzSpendLimit: spend,
 	})
 	require.NoError(t, err)
 
-	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
+	// The key fields are stored in the key only; no acceptance at grant.
+	key := collections.Join(testCorpID, sdk.MustAccAddressFromBech32(grantee))
+	stored, err := f.keeper.DelegateAuthorizations.Get(ctx, key)
 	require.NoError(t, err)
-	require.Len(t, list.DelegateAuthorizations, 1)
-	firstID := list.DelegateAuthorizations[0].Id
-	require.NotZero(t, firstID)
-	require.Equal(t, grantee, list.DelegateAuthorizations[0].Delegate)
+	require.Zero(t, stored.CorporationId)
+	require.Empty(t, stored.Delegate)
+	require.Zero(t, stored.AcceptedCgfVersion)
 
-	// Re-grant is an in-place update that preserves the id.
+	// The delegate accepts and spends; a re-grant keeps the acceptance and
+	// restarts the budget.
+	stored.AcceptedCgfVersion = 3
+	stored.RemainingSpend = uvna(1)
+	require.NoError(t, f.keeper.DelegateAuthorizations.Set(ctx, key, stored))
+
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtSchema},
+		Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(grantee), MsgTypes: []types.MsgType{mtSchema},
+		AuthzSpendLimit: spend,
 	})
 	require.NoError(t, err)
-	list, err = qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
-	require.NoError(t, err)
-	require.Len(t, list.DelegateAuthorizations, 1)
-	require.Equal(t, firstID, list.DelegateAuthorizations[0].Id)
-	require.Equal(t, []types.MsgType{mtSchema}, list.DelegateAuthorizations[0].MsgTypes)
 
-	// [MOD-DE-QRY-3] get by id.
-	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: firstID})
+	got, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{CorporationId: testCorpID, Delegate: grantee})
 	require.NoError(t, err)
-	require.Equal(t, grantee, got.DelegateAuthorization.Delegate)
+	require.Equal(t, types.DelegateAuthorization{
+		CorporationId: testCorpID, Delegate: grantee, MsgTypes: []types.MsgType{mtSchema},
+		SpendLimit: spend, RemainingSpend: spend, AcceptedCgfVersion: 3,
+	}, got.DelegateAuthorization)
 }
 
-func TestGrantDelegateAuthorization_MutualExclusivity(t *testing.T) {
+// [MOD-DE-MSG-3-4] the period is stored only with a spend limit.
+func TestGrantDelegateAuthorization_PeriodWithoutLimit(t *testing.T) {
 	f, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
+	exp := ctx.BlockTime().Add(time.Hour)
+	period := time.Hour
 
-	// Resolve the signing corporation to its co.id (same path MSG-3 uses).
-	co, err := f.corpKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Expiration: &exp, AuthzSpendLimitPeriod: &period,
+	})
 	require.NoError(t, err)
-	// A VSOperatorAuthorization for (co.id, grantee) blocks the delegate grant.
-	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, co.Id, grantee,
-		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}}))
+
+	stored, err := f.keeper.DelegateAuthorizations.Get(ctx, collections.Join(testCorpID, sdk.MustAccAddressFromBech32(grantee)))
+	require.NoError(t, err)
+	require.Nil(t, stored.Period)
+	require.True(t, stored.Expiration.Equal(exp))
+}
+
+// [MOD-DE-MSG-3-4] feegrant_spend_limit switches the fee allowance, which also
+// covers AcceptCorporationGovernanceFramework once that message exists.
+func TestGrantDelegateAuthorization_FeeAllowance(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	grantee := acc("grantee_____________")
+	exp := ctx.BlockTime().Add(time.Hour)
+
+	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Expiration: &exp, FeegrantSpendLimit: uvna(10),
+	})
+	require.NoError(t, err)
+	fg, err := f.keeper.FeeGrants.Get(ctx, collections.Join(testCorpID, grantee))
+	require.NoError(t, err)
+	want := []types.MsgType{mtEcosystem}
+	if cgf := types.MsgType_MSG_TYPE_ACCEPT_CORPORATION_GOVERNANCE_FRAMEWORK; len(cgf.URLs()) > 0 {
+		want = append(want, cgf)
+	}
+	require.Equal(t, want, fg.MsgTypes)
+	require.Equal(t, uvna(10), fg.SpendLimit)
+	require.True(t, fg.Expiration.Equal(exp))
+	require.Len(t, f.feegrants.grants, 1)
 
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
 		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
-	require.ErrorIs(t, err, types.ErrVSOperatorAuthzExists)
+	require.NoError(t, err)
+	has, err := f.keeper.FeeGrants.Has(ctx, collections.Join(testCorpID, grantee))
+	require.NoError(t, err)
+	require.False(t, has)
+	require.Empty(t, f.feegrants.grants)
+}
+
+func TestGrantDelegateAuthorization_MutualExclusivity(t *testing.T) {
+	same := func(s string) string { return s }
+	for _, tc := range []struct {
+		name        string
+		vsoa, grant func(string) string
+	}{
+		{"same spelling", same, same},
+		{"upper-case vs operator", strings.ToUpper, same},
+		{"upper-case grantee", same, strings.ToUpper},
+		{"upper-case both", strings.ToUpper, strings.ToUpper},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f, ms, ctx := setupMsgServer(t)
+			corporation := acc("corp________________")
+			grantee := acc("grantee_____________")
+
+			// A VSOperatorAuthorization for (co.id, grantee) blocks the delegate grant.
+			require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, testCorpID, tc.vsoa(grantee),
+				types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}}))
+
+			_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+				Corporation: corporation, Signer: corporation, Grantee: tc.grant(grantee), MsgTypes: []types.MsgType{mtEcosystem},
+			})
+			require.ErrorIs(t, err, types.ErrVSOperatorAuthzExists)
+		})
+	}
 }
 
 // [MOD-DE-MSG-3] The delegate path: a delegate authorized for the de grant
@@ -198,12 +270,14 @@ func TestGrantDelegateAuthorization_DelegatePath(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// A delegate does not grant to itself.
-	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Signer: delegate, Grantee: delegate,
-		MsgTypes: []types.MsgType{mtEcosystem},
-	})
-	require.ErrorContains(t, err, "grantee must not be the signer")
+	// A delegate does not grant to itself, in either bech32 spelling.
+	for _, self := range []string{delegate, strings.ToUpper(delegate)} {
+		_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+			Corporation: corporation, Signer: delegate, Grantee: self,
+			MsgTypes: []types.MsgType{mtEcosystem},
+		})
+		require.ErrorContains(t, err, "grantee must not be the signer")
+	}
 
 	// An unauthorized delegate is rejected by AUTHZ-CHECK-1.
 	stranger := acc("stranger____________")
@@ -251,9 +325,9 @@ func TestGrantDelegateAuthorization_OwnPolicyAddress(t *testing.T) {
 
 	for name, msg := range map[string]*types.MsgGrantDelegateAuthorization{
 		"group proposal": {Corporation: corporation, Signer: corporation, Grantee: corporation},
-		"with feegrant":  {Corporation: corporation, Signer: corporation, Grantee: corporation, WithFeegrant: true, FeegrantSpendLimit: uvna(10)},
+		"with feegrant":  {Corporation: corporation, Signer: corporation, Grantee: corporation, FeegrantSpendLimit: uvna(10)},
 		"delegate path":  {Corporation: corporation, Signer: delegate, Grantee: corporation},
-		"upper case":     {Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(corporation), WithFeegrant: true},
+		"upper case":     {Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(corporation), FeegrantSpendLimit: uvna(10)},
 	} {
 		t.Run(name, func(t *testing.T) {
 			msg.MsgTypes = []types.MsgType{mtEcosystem}
@@ -261,12 +335,34 @@ func TestGrantDelegateAuthorization_OwnPolicyAddress(t *testing.T) {
 			_, err := ms.GrantDelegateAuthorization(ctx, msg)
 			require.ErrorIs(t, err, types.ErrOwnPolicyAddress)
 
-			has, err := f.keeper.DelegateAuthorizationByCorpDelegate.Has(ctx, collections.Join(uint64(1), msg.Grantee))
+			has, err := f.keeper.DelegateAuthorizations.Has(ctx, collections.Join(testCorpID, sdk.MustAccAddressFromBech32(msg.Grantee)))
 			require.NoError(t, err)
 			require.False(t, has)
 			require.Empty(t, f.feegrants.grants)
 		})
 	}
+}
+
+// [MOD-DE-MSG-3-2] grantee MUST NOT be the policy_address of a corporation the
+// corporation sponsors.
+func TestGrantDelegateAuthorization_SponsoredPolicyAddress(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	grant := func(grantee string) error {
+		_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+			Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		})
+		return err
+	}
+
+	require.NoError(t, grant(corpPolicyAddr(2)))
+	setSponsorship(t, f, ctx, types.Sponsorship{SponsorCorporationId: testCorpID, SponsoredCorporationId: 2})
+	require.ErrorIs(t, grant(corpPolicyAddr(2)), types.ErrSponsorshipSlotTaken)
+	require.ErrorIs(t, grant(strings.ToUpper(corpPolicyAddr(2))), types.ErrSponsorshipSlotTaken)
+
+	// Another sponsor's sponsorship does not count.
+	setSponsorship(t, f, ctx, types.Sponsorship{SponsorCorporationId: 9, SponsoredCorporationId: 3})
+	require.NoError(t, grant(corpPolicyAddr(3)))
 }
 
 func TestRevokeDelegateAuthorization(t *testing.T) {
@@ -277,22 +373,129 @@ func TestRevokeDelegateAuthorization(t *testing.T) {
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
 		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		FeegrantSpendLimit: uvna(10),
 	})
 	require.NoError(t, err)
 
 	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
-		Corporation: corporation, Signer: corporation, Grantee: grantee,
+		Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(grantee),
 	})
 	require.NoError(t, err)
-	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{Delegate: grantee})
+	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{CorporationId: testCorpID})
 	require.NoError(t, err)
 	require.Empty(t, list.DelegateAuthorizations)
+	has, err := f.keeper.FeeGrants.Has(ctx, collections.Join(testCorpID, grantee))
+	require.NoError(t, err)
+	require.False(t, has)
+	require.Empty(t, f.feegrants.grants)
 
 	// Revoking a missing entry aborts.
 	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
 		Corporation: corporation, Signer: corporation, Grantee: grantee,
 	})
 	require.ErrorIs(t, err, types.ErrDelegateAuthzNotFound)
+}
+
+// The events carry the entry key and the message parameters.
+func TestDelegateAuthorization_Events(t *testing.T) {
+	_, ms, ctx := setupMsgServer(t)
+	corporation := acc("corp________________")
+	delegate := acc("delegate____________")
+	grantee := acc("grantee_____________")
+
+	attrs := func(ctx sdk.Context, eventType string) map[string]string {
+		evs := ctx.EventManager().Events()
+		require.NotEmpty(t, evs)
+		ev := evs[len(evs)-1]
+		require.Equal(t, eventType, ev.Type)
+		m := map[string]string{}
+		for _, a := range ev.Attributes {
+			m[a.Key] = a.Value
+		}
+		return m
+	}
+	fresh := func() sdk.Context { return ctx.WithEventManager(sdk.NewEventManager()) }
+
+	c := fresh()
+	_, err := ms.GrantDelegateAuthorization(c, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(delegate),
+		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION, types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION},
+	})
+	require.NoError(t, err)
+	got := attrs(c, types.EventTypeGrantDelegateAuthorization)
+	require.Equal(t, types.ModuleName, got["module"])
+	require.Equal(t, "1", got["corporation_id"])
+	require.Equal(t, delegate, got["delegate"])
+	require.Contains(t, got["msg"], `"msg_types":["MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION","MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION"]`)
+
+	c = fresh()
+	_, err = ms.GrantDelegateAuthorization(c, &types.MsgGrantDelegateAuthorization{
+		Corporation: corporation, Signer: delegate, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+	})
+	require.NoError(t, err)
+	got = attrs(c, types.EventTypeGrantDelegateAuthorization)
+	require.Equal(t, grantee, got["delegate"])
+	require.Contains(t, got["msg"], `"grantee":"`+grantee+`"`)
+
+	c = fresh()
+	_, err = ms.RevokeDelegateAuthorization(c, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Signer: delegate, Grantee: grantee,
+	})
+	require.NoError(t, err)
+	got = attrs(c, types.EventTypeRevokeDelegateAuthorization)
+	require.Equal(t, types.ModuleName, got["module"])
+	require.Equal(t, "1", got["corporation_id"])
+	require.Equal(t, grantee, got["delegate"])
+	require.Contains(t, got["msg"], `"signer":"`+delegate+`"`)
+
+	c = fresh()
+	_, err = ms.RevokeDelegateAuthorization(c, &types.MsgRevokeDelegateAuthorization{
+		Corporation: corporation, Signer: corporation, Grantee: delegate,
+	})
+	require.NoError(t, err)
+	got = attrs(c, types.EventTypeRevokeDelegateAuthorization)
+	require.Equal(t, delegate, got["delegate"])
+	require.Contains(t, got["msg"], `"grantee":"`+delegate+`"`)
+}
+
+// [MOD-DE-QRY-1] lists one corporation's entries by key prefix, up to
+// response_max_size.
+func TestListDelegateAuthorizations(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	qs := keeper.NewQueryServerImpl(f.keeper)
+	set := func(corpID uint64, delegate string) {
+		require.NoError(t, f.keeper.DelegateAuthorizations.Set(ctx,
+			collections.Join(corpID, sdk.MustAccAddressFromBech32(delegate)),
+			types.DelegateAuthorization{MsgTypes: []types.MsgType{mtEcosystem}}))
+	}
+	set(1, acc("delegate_a__________"))
+	set(2, acc("delegate_b__________"))
+	set(2, acc("delegate_c__________"))
+	set(3, acc("delegate_d__________"))
+
+	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{CorporationId: 2})
+	require.NoError(t, err)
+	require.Len(t, list.DelegateAuthorizations, 2)
+	for _, da := range list.DelegateAuthorizations {
+		require.Equal(t, uint64(2), da.CorporationId)
+	}
+	require.ElementsMatch(t, []string{acc("delegate_b__________"), acc("delegate_c__________")},
+		[]string{list.DelegateAuthorizations[0].Delegate, list.DelegateAuthorizations[1].Delegate})
+
+	list, err = qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{CorporationId: 2, ResponseMaxSize: 1})
+	require.NoError(t, err)
+	require.Len(t, list.DelegateAuthorizations, 1)
+
+	list, err = qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{CorporationId: 9})
+	require.NoError(t, err)
+	require.Empty(t, list.DelegateAuthorizations)
+
+	for _, req := range []*types.QueryListDelegateAuthorizationsRequest{
+		nil, {}, {CorporationId: 2, ResponseMaxSize: 1025},
+	} {
+		_, err = qs.ListDelegateAuthorizations(ctx, req)
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -331,8 +534,8 @@ func TestGrantVSOperatorAuthorization_MutualExclusivity(t *testing.T) {
 	corpID := uint64(1)
 	vsOp := acc("vsop________________")
 	// Seed an DelegateAuthorization for (corpID, vsOp).
-	require.NoError(t, k.DelegateAuthorizations.Set(ctx, 99, types.DelegateAuthorization{Id: 99, CorporationId: corpID, Delegate: vsOp, MsgTypes: []types.MsgType{mtEcosystem}}))
-	require.NoError(t, k.DelegateAuthorizationByCorpDelegate.Set(ctx, collections.Join(corpID, vsOp), 99))
+	require.NoError(t, k.DelegateAuthorizations.Set(ctx, collections.Join(corpID, sdk.MustAccAddressFromBech32(vsOp)),
+		types.DelegateAuthorization{MsgTypes: []types.MsgType{mtEcosystem}}))
 
 	err := k.GrantVSOperatorAuthorization(ctx, corpID, vsOp,
 		types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}})
@@ -577,8 +780,14 @@ func TestRecomputeFeeAllowance_QueuesWindowEnd(t *testing.T) {
 func TestQueriesNotFound(t *testing.T) {
 	f, _, ctx := setupMsgServer(t)
 	qs := keeper.NewQueryServerImpl(f.keeper)
-	_, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: 999})
-	require.Error(t, err)
+	_, err := qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{CorporationId: testCorpID, Delegate: acc("grantee_____________")})
+	require.Equal(t, codes.NotFound, status.Code(err))
+	for _, req := range []*types.QueryGetDelegateAuthorizationRequest{
+		nil, {Delegate: acc("grantee_____________")}, {CorporationId: testCorpID}, {CorporationId: testCorpID, Delegate: "x"},
+	} {
+		_, err = qs.GetDelegateAuthorization(ctx, req)
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+	}
 	_, err = qs.GetVSOperatorAuthorization(ctx, &types.QueryGetVSOperatorAuthorizationRequest{Id: 999})
 	require.Error(t, err)
 }
