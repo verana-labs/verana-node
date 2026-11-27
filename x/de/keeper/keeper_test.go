@@ -21,6 +21,7 @@ import (
 	"github.com/verana-labs/verana-node/x/de/keeper"
 	module "github.com/verana-labs/verana-node/x/de/module"
 	"github.com/verana-labs/verana-node/x/de/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 // mockCorpKeeper backs AUTHZ-CHECK-5 in MOD-DE tests. It resolves any signing
@@ -42,6 +43,11 @@ func (m *mockCorpKeeper) ResolveCorporationByPolicyAddress(_ context.Context, ad
 		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
 	}
 	return types.CorporationView{Id: 1, PolicyAddress: addr, SponsorCorporationId: m.sponsors[1]}, nil
+}
+
+func (m *mockCorpKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
 }
 
 func (m *mockCorpKeeper) ResolveCorporationByID(_ context.Context, id uint64) (types.CorporationView, error) {
@@ -194,6 +200,7 @@ type fixture struct {
 	gf           *mockGFKeeper
 	budgets      memVsAccountBudgets
 	bank         memBank
+	vs           *mockVsKeeper
 }
 
 func initFixture(t *testing.T) *fixture {
@@ -206,7 +213,7 @@ func initFixture(t *testing.T) *fixture {
 	storeService := runtime.NewKVStoreService(storeKey)
 	ctx := testutil.DefaultContextWithDB(t, storeKey, storetypes.NewTransientStoreKey("transient_test")).Ctx
 
-	authority := authtypes.NewModuleAddress(types.GovModuleName)
+	authority := authtypes.NewModuleAddress("council")
 
 	bank := memBank{}
 	k := keeper.NewKeeper(
@@ -230,11 +237,8 @@ func initFixture(t *testing.T) *fixture {
 	budgets := memVsAccountBudgets{}
 	k.SetVsAccountBudgetStore(budgets)
 	k.SetNetworkFeeKeeper(stubNetworkFee(testMaxGasURLs))
-
-	// Initialize params
-	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
-		t.Fatalf("failed to set params: %v", err)
-	}
+	vs := &mockVsKeeper{period: vstypes.DefaultVsAccountFeePeriod}
+	k.SetVerifiableServiceKeeper(vs)
 
 	return &fixture{
 		ctx:          ctx,
@@ -246,5 +250,12 @@ func initFixture(t *testing.T) *fixture {
 		gf:           gf,
 		budgets:      budgets,
 		bank:         bank,
+		vs:           vs,
 	}
+}
+
+type mockVsKeeper struct{ period time.Duration }
+
+func (m *mockVsKeeper) VsAccountFeePeriod(context.Context) (time.Duration, error) {
+	return m.period, nil
 }

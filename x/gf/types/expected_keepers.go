@@ -55,6 +55,7 @@ type CorporationView struct {
 //     `co.modified` per MOD-GF-MSG-2-3.
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+	ResolveSigner(ctx context.Context, corporation, signer string) (CorporationView, bool, error)
 	GetByID(ctx context.Context, corporationID uint64) (CorporationView, bool)
 	SetActiveVersion(ctx context.Context, corporationID uint64, newVersion uint32) error
 }

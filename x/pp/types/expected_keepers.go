@@ -65,6 +65,7 @@ type CorporationView struct {
 // feegrant, slashing) operate on the Corporation policy_address account.
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+	ResolveSigner(ctx context.Context, corporation, signer string) (CorporationView, bool, error)
 	ResolveByID(ctx context.Context, id uint64) (CorporationView, bool)
 	ResolveDIDOwner(ctx context.Context, did string) (uint64, bool, error)
 }

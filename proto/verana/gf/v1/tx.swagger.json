@@ -153,11 +153,11 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "corporation is the signing corporation (group_policy_address)."
+          "description": "corporation is the policy_address of the corporation; absent on the\nnetwork path."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, corporation itself on the\ngroup-proposal path, or the council account on the network path."
         },
         "ecosystem_id": {
           "type": "string",
@@ -181,9 +181,9 @@
           "format": "int64",
           "description": "version is the target governance framework version."
         },
-        "authority": {
-          "type": "string",
-          "description": "authority is the council account, set on the network path only."
+        "network": {
+          "type": "boolean",
+          "description": "network targets the network governance framework."
         }
       },
       "description": "[MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft\nversion owned by an Ecosystem or a Corporation."
@@ -196,20 +196,20 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "corporation is the signing corporation (group_policy_address)."
+          "description": "corporation is the policy_address of the corporation; absent on the\nnetwork path."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, corporation itself on the\ngroup-proposal path, or the council account on the network path."
         },
         "ecosystem_id": {
           "type": "string",
           "format": "uint64",
           "description": "ecosystem_id is optional. If set, target is the Ecosystem; otherwise the\nsigning Corporation's own CGF."
         },
-        "authority": {
-          "type": "string",
-          "description": "authority is the council account, set on the network path only."
+        "network": {
+          "type": "boolean",
+          "description": "network targets the network governance framework."
         }
       },
       "description": "[MOD-GF-MSG-2] Activates the next governance framework version for an\nEcosystem or Corporation owned by the signing corporation."
@@ -220,9 +220,9 @@
     "verana.gf.v1.MsgUpdateParams": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov)."
+          "description": "signer is the council account."
         },
         "params": {
           "$ref": "#/definitions/verana.gf.v1.Params",
@@ -236,7 +236,12 @@
     },
     "verana.gf.v1.Params": {
       "type": "object",
-      "description": "Params defines the parameters for the x/gf module.\nThe module has no parameters at this time; the message is kept for forward compat\nso that gov-proposed parameter changes can land without proto migrations."
+      "properties": {
+        "gf_acceptance_grace_min": {
+          "type": "string"
+        }
+      },
+      "description": "Params defines the parameters for the x/gf module."
     }
   }
 }

@@ -7,38 +7,21 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 import { Timestamp } from "../../../google/protobuf/timestamp";
-import { Params } from "./params";
 
 export const protobufPackage = "verana.di.v1";
-
-/** MsgUpdateParams is the Msg/UpdateParams request type. */
-export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
-  /**
-   * params defines the module parameters to update.
-   *
-   * NOTE: All parameters must be supplied.
-   */
-  params: Params | undefined;
-}
-
-/**
- * MsgUpdateParamsResponse defines the response structure for executing a
- * MsgUpdateParams message.
- */
-export interface MsgUpdateParamsResponse {
-}
 
 /** [MOD-DI-MSG-1] MsgStoreDigest stores a digest on behalf of a corporation. */
 export interface MsgStoreDigest {
   /**
-   * authority is the corporation (group account) on whose behalf this message
-   * is executed.
+   * corporation is the policy_address of the corporation on whose behalf
+   * this message is executed.
    */
-  authority: string;
-  /** delegate is the account authorized by the corporation to run this Msg. */
-  delegate: string;
+  corporation: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   /**
    * digest is the digest string to store. It is opaque to the chain: bounded at
    * 256 bytes, but no format is imposed and it is never recomputed against any
@@ -60,136 +43,17 @@ export interface Digest {
   created: Date | undefined;
 }
 
-function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
-}
-
-export const MsgUpdateParams = {
-  encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
-    }
-    if (message.params !== undefined) {
-      Params.encode(message.params, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateParams {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateParams();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.authority = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.params = Params.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgUpdateParams {
-    return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
-      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
-    };
-  },
-
-  toJSON(message: MsgUpdateParams): unknown {
-    const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
-    }
-    if (message.params !== undefined) {
-      obj.params = Params.toJSON(message.params);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(base?: I): MsgUpdateParams {
-    return MsgUpdateParams.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
-    const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
-    message.params = (object.params !== undefined && object.params !== null)
-      ? Params.fromPartial(object.params)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseMsgUpdateParamsResponse(): MsgUpdateParamsResponse {
-  return {};
-}
-
-export const MsgUpdateParamsResponse = {
-  encode(_: MsgUpdateParamsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateParamsResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateParamsResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(_: any): MsgUpdateParamsResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateParamsResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<MsgUpdateParamsResponse>, I>>(base?: I): MsgUpdateParamsResponse {
-    return MsgUpdateParamsResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MsgUpdateParamsResponse>, I>>(_: I): MsgUpdateParamsResponse {
-    const message = createBaseMsgUpdateParamsResponse();
-    return message;
-  },
-};
-
 function createBaseMsgStoreDigest(): MsgStoreDigest {
-  return { authority: "", delegate: "", digest: "" };
+  return { corporation: "", signer: "", digest: "" };
 }
 
 export const MsgStoreDigest = {
   encode(message: MsgStoreDigest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.corporation !== "") {
+      writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.digest !== "") {
       writer.uint32(26).string(message.digest);
@@ -209,14 +73,14 @@ export const MsgStoreDigest = {
             break;
           }
 
-          message.authority = reader.string();
+          message.corporation = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -236,19 +100,19 @@ export const MsgStoreDigest = {
 
   fromJSON(object: any): MsgStoreDigest {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       digest: isSet(object.digest) ? globalThis.String(object.digest) : "",
     };
   },
 
   toJSON(message: MsgStoreDigest): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.corporation !== "") {
+      obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.digest !== "") {
       obj.digest = message.digest;
@@ -261,8 +125,8 @@ export const MsgStoreDigest = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgStoreDigest>, I>>(object: I): MsgStoreDigest {
     const message = createBaseMsgStoreDigest();
-    message.authority = object.authority ?? "";
-    message.delegate = object.delegate ?? "";
+    message.corporation = object.corporation ?? "";
+    message.signer = object.signer ?? "";
     message.digest = object.digest ?? "";
     return message;
   },
@@ -387,11 +251,6 @@ export const Digest = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
-  /**
-   * UpdateParams defines a (governance) operation for updating the module
-   * parameters. The authority defaults to the x/gov module account.
-   */
-  UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse>;
   /** [MOD-DI-MSG-1] Store Digest */
   StoreDigest(request: MsgStoreDigest): Promise<MsgStoreDigestResponse>;
 }
@@ -403,15 +262,8 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc, opts?: { service?: string }) {
     this.service = opts?.service || MsgServiceName;
     this.rpc = rpc;
-    this.UpdateParams = this.UpdateParams.bind(this);
     this.StoreDigest = this.StoreDigest.bind(this);
   }
-  UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
-    const data = MsgUpdateParams.encode(request).finish();
-    const promise = this.rpc.request(this.service, "UpdateParams", data);
-    return promise.then((data) => MsgUpdateParamsResponse.decode(_m0.Reader.create(data)));
-  }
-
   StoreDigest(request: MsgStoreDigest): Promise<MsgStoreDigestResponse> {
     const data = MsgStoreDigest.encode(request).finish();
     const promise = this.rpc.request(this.service, "StoreDigest", data);

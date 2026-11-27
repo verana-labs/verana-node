@@ -25,7 +25,7 @@ func createActiveExchangeRate(t *testing.T, f *fixture, ms types.MsgServer) uint
 	require.NoError(t, err)
 
 	resp, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -55,7 +55,7 @@ func grantXRAuthz(t *testing.T, f *fixture, ms types.MsgServer, id uint64, feede
 
 	exp := sdk.UnwrapSDKContext(f.ctx).BlockTime().Add(time.Hour)
 	msg := &types.MsgGrantExchangeRateAuthorization{
-		Authority:       authorityStr,
+		Signer:          authorityStr,
 		XrId:            id,
 		Feeder:          feeder,
 		Expiration:      &exp,
@@ -80,7 +80,7 @@ func TestUpdateExchangeRate_HappyPath(t *testing.T) {
 	blockTime := sdkCtx.BlockTime()
 
 	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Feeder: feederAddr,
+		Signer: feederAddr,
 		Id:     id,
 		Rate:   "200",
 	})
@@ -100,7 +100,7 @@ func TestUpdateExchangeRate_NotFound(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
 	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Feeder: stdFeeder(),
+		Signer: stdFeeder(),
 		Id:     999,
 		Rate:   "200",
 	})
@@ -116,7 +116,7 @@ func TestUpdateExchangeRate_NotAuthorized(t *testing.T) {
 
 	// No authorization granted for the feeder.
 	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Feeder: stdFeeder(),
+		Signer: stdFeeder(),
 		Id:     id,
 		Rate:   "200",
 	})
@@ -137,7 +137,7 @@ func TestUpdateExchangeRate_NotActive(t *testing.T) {
 
 	// Create exchange rate (starts disabled per spec [MOD-XR-MSG-1-3])
 	resp, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -153,14 +153,14 @@ func TestUpdateExchangeRate_NotActive(t *testing.T) {
 
 	// Disable the exchange rate so it is not active
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
-		Authority: authorityStr,
-		Id:        resp.Id,
-		State:     false,
+		Signer: authorityStr,
+		Id:     resp.Id,
+		State:  false,
 	})
 	require.NoError(t, err)
 
 	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Feeder: feederAddr,
+		Signer: feederAddr,
 		Id:     resp.Id,
 		Rate:   "200",
 	})
@@ -188,7 +188,7 @@ func TestUpdateExchangeRate_InvalidRate(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-				Feeder: feederAddr,
+				Signer: feederAddr,
 				Id:     1,
 				Rate:   tc.rate,
 			})
@@ -215,7 +215,7 @@ func TestUpdateExchangeRate_ExpiredStillUpdatable(t *testing.T) {
 	require.NoError(t, f.keeper.ExchangeRates.Set(f.ctx, id, xr))
 
 	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{
-		Feeder: feederAddr, Id: id, Rate: "200",
+		Signer: feederAddr, Id: id, Rate: "200",
 	})
 	require.NoError(t, err)
 

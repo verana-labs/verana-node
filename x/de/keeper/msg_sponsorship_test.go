@@ -376,7 +376,7 @@ func TestRevokeSponsorship_Delegate(t *testing.T) {
 			f, ms, ctx := setupMsgServer(t)
 			setSponsorship(t, f, ctx, types.Sponsorship{SponsorCorporationId: testCorpID, SponsoredCorporationId: sponsoredID})
 			_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-				Corporation: sponsorPolicy, Delegate: sponsorPolicy, Grantee: delegate, MsgTypes: tc.msgTypes,
+				Corporation: sponsorPolicy, Signer: sponsorPolicy, Grantee: delegate, MsgTypes: tc.msgTypes,
 			})
 			require.NoError(t, err)
 

@@ -101,7 +101,7 @@ async function main() {
       typeUrl: typeUrls.MsgSlashParticipantTrustDeposit,
       value: MsgSlashParticipantTrustDeposit.fromPartial({
         corporation: setup.authorityAddress,
-        delegate: setup.delegateAddress,
+        signer: setup.delegateAddress,
         id: issuerParticipantId,
         amount: slashAmount,
         // [MOD-PP-MSG-12-1] reason is mandatory per spec v4 draft 13.

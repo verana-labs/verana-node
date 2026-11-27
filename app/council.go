@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/verana-labs/cosmos-group"
@@ -14,26 +13,15 @@ import (
 	poatypes "github.com/verana-labs/verana-node/x/poa/types"
 )
 
-var (
-	CouncilAuthority = poatypes.CouncilAuthorityBech32(AccountAddressPrefix)
-	// FrozenAuthority has no signer; params behind it change only by software upgrade.
-	FrozenAuthority = mustBech32(authtypes.NewModuleAddress("frozen_authority"))
-)
-
-func mustBech32(addr sdk.AccAddress) string {
-	s, err := sdk.Bech32ifyAddressBytes(AccountAddressPrefix, addr)
-	if err != nil {
-		panic(err)
-	}
-	return s
-}
+// CouncilAuthority is GlobalVariables.council_account: the council group's policy, fixed at genesis.
+var CouncilAuthority = poatypes.CouncilAuthorityBech32(AccountAddressPrefix)
 
 func (app *App) setAnteHandler() error {
 	base := app.AnteHandler()
 	if base == nil {
 		return fmt.Errorf("no ante handler installed")
 	}
-	poa := poaante.NewDecorator(func() bool { return app.inGenesis }, app.PoaKeeper)
+	poa := poaante.NewDecorator(app.PoaKeeper)
 	app.SetAnteHandler(func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
 		return poa.AnteHandle(ctx, tx, simulate, base)
 	})
@@ -59,12 +47,22 @@ func (app *App) assertGenesisCouncil(ctx sdk.Context) error {
 	if err != nil {
 		return err
 	}
-	if len(members.Members) == 0 {
-		return fmt.Errorf("council has no members")
+	if len(members.Members) < poatypes.MinCouncilCorporations {
+		return fmt.Errorf("council needs at least %d member corporations, got %d", poatypes.MinCouncilCorporations, len(members.Members))
 	}
 	for _, m := range members.Members {
 		if m.Member.Weight != "1" {
 			return fmt.Errorf("council member %s has weight %s, want 1", m.Member.Address, m.Member.Weight)
+		}
+		if _, err := app.CoKeeper.ResolveCorporationByPolicyAddress(ctx, m.Member.Address); err != nil {
+			return fmt.Errorf("council member %s is not a corporation: %w", m.Member.Address, err)
+		}
+		corp, err := app.GroupKeeper.GroupPolicyInfo(ctx, &group.QueryGroupPolicyInfoRequest{Address: m.Member.Address})
+		if err != nil {
+			return fmt.Errorf("corporation %s has no group policy: %w", m.Member.Address, err)
+		}
+		if corp.Info.Admin != m.Member.Address {
+			return fmt.Errorf("corporation %s must administer its own policy, admin is %s", m.Member.Address, corp.Info.Admin)
 		}
 	}
 
@@ -80,7 +78,7 @@ func (app *App) assertGenesisCouncil(ctx sdk.Context) error {
 		if err != nil {
 			return err
 		}
-		if err := app.PoaKeeper.CheckMessages(ctx, msgs, false); err != nil {
+		if err := app.PoaKeeper.CheckMessages(ctx, msgs); err != nil {
 			return fmt.Errorf("council proposal %d in genesis: %w", p.Id, err)
 		}
 	}

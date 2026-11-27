@@ -62,23 +62,16 @@ func (m *MockTDCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.
 	return m.GetCorporationByPolicyAddress(ctx, addr)
 }
 
+func (m *MockTDCorporationKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
+
 func (m *MockTDCorporationKeeper) GetCorporationByPolicyAddress(_ context.Context, addr string) (types.CorporationView, error) {
 	if m.Unregistered[addr] {
 		return types.CorporationView{}, cotypes.ErrCorporationNotRegistered
 	}
 	return types.CorporationView{Id: m.IDFor(addr), PolicyAddress: addr}, nil
-}
-
-// MockMintKeeper is a mock implementation of types.MintKeeper
-type MockMintKeeper struct{}
-
-func NewMockMintKeeper() types.MintKeeper {
-	return &MockMintKeeper{}
-}
-
-func (k *MockMintKeeper) GetBlocksPerYear(ctx context.Context) (uint64, error) {
-	// Return a default value for testing (6311520 blocks per year for 5 second blocks)
-	return 6311520, nil
 }
 
 func TrustdepositKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
@@ -93,7 +86,6 @@ func TrustdepositKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	cdc := codec.NewProtoCodec(registry)
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 	bankKeeper := NewMockBankKeeper()
-	mintKeeper := NewMockMintKeeper()
 	delegationKeeper := &MockDelegationKeeper{}
 
 	k := keeper.NewKeeper(
@@ -102,7 +94,6 @@ func TrustdepositKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 		log.NewNopLogger(),
 		authority.String(),
 		bankKeeper,
-		mintKeeper,
 		delegationKeeper,
 		NewMockTDCorporationKeeper(),
 	)
@@ -131,7 +122,6 @@ func TrustdepositKeeperWithDelegation(t testing.TB) (keeper.Keeper, sdk.Context,
 	cdc := codec.NewProtoCodec(registry)
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 	bankKeeper := NewMockBankKeeper()
-	mintKeeper := NewMockMintKeeper()
 	delegationKeeper := &MockDelegationKeeper{}
 
 	k := keeper.NewKeeper(
@@ -140,7 +130,6 @@ func TrustdepositKeeperWithDelegation(t testing.TB) (keeper.Keeper, sdk.Context,
 		log.NewNopLogger(),
 		authority.String(),
 		bankKeeper,
-		mintKeeper,
 		delegationKeeper,
 		NewMockTDCorporationKeeper(),
 	)
@@ -177,7 +166,6 @@ func TrustdepositKeeperWithCorp(t testing.TB) (keeper.Keeper, sdk.Context, *Mock
 		log.NewNopLogger(),
 		authority.String(),
 		NewMockBankKeeper(),
-		NewMockMintKeeper(),
 		delegationKeeper,
 		coKeeper,
 	)

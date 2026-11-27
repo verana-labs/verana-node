@@ -32,7 +32,7 @@ func TestMsgServer(t *testing.T) {
 func TestMsgReclaimTrustDepositYield(t *testing.T) {
 	_, ms, ctx, _ := setupMsgServer(t)
 	addr := sdk.AccAddress([]byte("test_address")).String()
-	_, err := ms.ReclaimTrustDepositYield(ctx, &types.MsgReclaimTrustDepositYield{Corporation: addr, Delegate: addr})
+	_, err := ms.ReclaimTrustDepositYield(ctx, &types.MsgReclaimTrustDepositYield{Corporation: addr, Signer: addr})
 	require.ErrorIs(t, err, types.ErrMsgVoid)
 }
 
@@ -240,29 +240,17 @@ func TestUtilityFunctions(t *testing.T) {
 
 	// Test parameter getters
 	t.Run("Parameter getters", func(t *testing.T) {
-		// Set custom params for testing
-		params := types.Params{
-			TrustDepositRate:          math.LegacyMustNewDecFromStr("0.2"),
-			UserAgentRewardRate:       math.LegacyMustNewDecFromStr("0.3"),
-			WalletUserAgentRewardRate: math.LegacyMustNewDecFromStr("0.4"),
-			TrustDepositShareValue:    math.LegacyMustNewDecFromStr("1.5"),
-		}
+		params := defaultTestParams()
+		params.VuaRewardRate = math.LegacyMustNewDecFromStr("0.3")
+		require.NoError(t, k.SetParams(ctx, params))
 
-		err := k.SetParams(ctx, params)
-		require.NoError(t, err)
+		require.Equal(t, params.TrustDepositRate, k.GetTrustDepositRate(sdkCtx))
+		require.Equal(t, params.VuaRewardRate, k.GetUserAgentRewardRate(sdkCtx))
+		require.Equal(t, params.VuaRewardRate, k.GetWalletUserAgentRewardRate(sdkCtx))
 
-		// Test each getter function
-		rate := k.GetTrustDepositRate(sdkCtx)
-		require.Equal(t, params.TrustDepositRate, rate)
-
-		userRate := k.GetUserAgentRewardRate(sdkCtx)
-		require.Equal(t, params.UserAgentRewardRate, userRate)
-
-		walletRate := k.GetWalletUserAgentRewardRate(sdkCtx)
-		require.Equal(t, params.WalletUserAgentRewardRate, walletRate)
-
-		shareValue := k.GetTrustDepositShareValue(sdkCtx)
-		require.Equal(t, params.TrustDepositShareValue, shareValue)
+		require.Equal(t, math.LegacyOneDec(), k.GetTrustDepositShareValue(sdkCtx))
+		require.NoError(t, k.SetTrustDepositShareValue(sdkCtx, math.LegacyMustNewDecFromStr("1.5")))
+		require.Equal(t, math.LegacyMustNewDecFromStr("1.5"), k.GetTrustDepositShareValue(sdkCtx))
 	})
 }
 
@@ -272,12 +260,9 @@ func govAuthority() string {
 }
 
 func defaultTestParams() types.Params {
-	return types.Params{
-		TrustDepositShareValue:    math.LegacyMustNewDecFromStr("1.0"),
-		TrustDepositRate:          math.LegacyMustNewDecFromStr("0.2"),
-		WalletUserAgentRewardRate: math.LegacyMustNewDecFromStr("0.3"),
-		UserAgentRewardRate:       math.LegacyMustNewDecFromStr("0.2"),
-	}
+	p := types.DefaultParams()
+	p.TrustDepositRate = math.LegacyMustNewDecFromStr("0.2")
+	return p
 }
 
 func setupMsgServerWithDelegation(t testing.TB) (keeper.Keeper, types.MsgServer, context.Context, *keepertest.MockDelegationKeeper, *keepertest.MockTDCorporationKeeper) {
@@ -307,17 +292,17 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 		{
 			name: "Invalid authority",
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     "verana1invalidauthority",
+				Signer:        "verana1invalidauthority",
 				CorporationId: corpID,
 				Deposit:       math.NewInt(100),
 			},
 			expErr:    true,
-			expErrMsg: "invalid authority",
+			expErrMsg: "invalid signer",
 		},
 		{
 			name: "Zero amount",
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(0),
 			},
@@ -327,7 +312,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 		{
 			name: "Negative amount",
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(-100),
 			},
@@ -337,7 +322,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 		{
 			name: "Trust deposit not found",
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: 999, // no trust deposit for this id
 				Deposit:       math.NewInt(100),
 			},
@@ -358,7 +343,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 				require.NoError(t, err)
 			},
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(200),
 			},
@@ -379,7 +364,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 				require.NoError(t, err)
 			},
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(300),
 			},
@@ -412,7 +397,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 				require.NoError(t, err)
 			},
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(100),
 			},
@@ -439,7 +424,7 @@ func TestMsgSlashTrustDeposit(t *testing.T) {
 				require.NoError(t, err)
 			},
 			msg: &types.MsgSlashTrustDeposit{
-				Authority:     govAuthority(),
+				Signer:        govAuthority(),
 				CorporationId: corpID,
 				Deposit:       math.NewInt(500),
 			},
@@ -498,7 +483,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			name: "Trust deposit not found",
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: sdk.AccAddress([]byte("nonexistent_addr__")).String(),
-				Delegate:    testAccString,
+				Signer:      testAccString,
 				Deposit:     100,
 			},
 			expErr:    true,
@@ -521,7 +506,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			},
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: testAccString,
-				Delegate:    testAccString,
+				Signer:      testAccString,
 				Deposit:     200, // outstanding is 300
 			},
 			expErr:    true,
@@ -545,7 +530,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			},
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: testAccString,
-				Delegate:    testAccString,
+				Signer:      testAccString,
 				Deposit:     300,
 			},
 			expErr: false,
@@ -581,7 +566,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			},
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: testAccString,
-				Delegate:    testAccString,
+				Signer:      testAccString,
 				Deposit:     300, // clears the remaining outstanding slash
 			},
 			expErr: false,
@@ -610,7 +595,7 @@ func TestMsgRepaySlashedTrustDeposit(t *testing.T) {
 			},
 			msg: &types.MsgRepaySlashedTrustDeposit{
 				Corporation: testAccString,
-				Delegate:    sdk.AccAddress([]byte("different_delegate")).String(),
+				Signer:      sdk.AccAddress([]byte("different_delegate")).String(),
 				Deposit:     100,
 			},
 			expErr: false,
@@ -666,7 +651,7 @@ func TestMsgRepaySlashedTrustDepositAuthz(t *testing.T) {
 		dk.ErrToReturn = fmt.Errorf("mock: delegate not authorized")
 		_, err = ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
 			Corporation: testAccString,
-			Delegate:    delegateAddr,
+			Signer:      delegateAddr,
 			Deposit:     300,
 		})
 		require.Error(t, err)
@@ -689,7 +674,7 @@ func TestMsgRepaySlashedTrustDepositAuthz(t *testing.T) {
 		dk.ErrToReturn = nil
 		_, err = ms.RepaySlashedTrustDeposit(ctx, &types.MsgRepaySlashedTrustDeposit{
 			Corporation: testAccString,
-			Delegate:    delegateAddr,
+			Signer:      delegateAddr,
 			Deposit:     300,
 		})
 		require.NoError(t, err)
@@ -762,7 +747,7 @@ func TestBurnEcosystemSlashedTrustDeposit(t *testing.T) {
 			amount:  50,
 			setup: func() {
 				params := defaultTestParams()
-				params.TrustDepositShareValue = math.LegacyMustNewDecFromStr("0")
+				require.NoError(t, k.SetTrustDepositShareValue(ctx, math.LegacyMustNewDecFromStr("0")))
 				err := k.SetParams(ctx, params)
 				require.NoError(t, err)
 				td := types.TrustDeposit{
@@ -853,6 +838,7 @@ func TestBurnEcosystemSlashedTrustDeposit(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			require.NoError(t, k.ShareValue.Remove(sdkCtx))
 			if tc.setup != nil {
 				tc.setup()
 			}

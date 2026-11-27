@@ -13,9 +13,8 @@ import (
 	"github.com/verana-labs/verana-node/x/poa/types"
 )
 
-// MsgCreateValidator is allowed only while gentxs are delivered at genesis. Runs at
-// submission; x/group executes proposals without the ante and seat changes do not abort open proposals.
-func (k Keeper) CheckMessages(ctx context.Context, msgs []sdk.Msg, inGenesis bool) error {
+// CheckMessages runs at submission; x/group executes proposals without the ante.
+func (k Keeper) CheckMessages(ctx context.Context, msgs []sdk.Msg) error {
 	unseated := map[string]bool{}
 	for _, msg := range msgs {
 		switch m := msg.(type) {
@@ -34,9 +33,7 @@ func (k Keeper) CheckMessages(ctx context.Context, msgs []sdk.Msg, inGenesis boo
 		case *stakingtypes.MsgDelegate, *stakingtypes.MsgUndelegate, *stakingtypes.MsgBeginRedelegate, *stakingtypes.MsgCancelUnbondingDelegation:
 			return errorsmod.Wrap(types.ErrMsgNotAllowed, sdk.MsgTypeURL(msg))
 		case *stakingtypes.MsgCreateValidator:
-			if err := k.checkGenesisValidator(ctx, m, inGenesis); err != nil {
-				return err
-			}
+			return errorsmod.Wrap(types.ErrMsgNotAllowed, "validators are seated by council proposal")
 		case *group.MsgUpdateGroupAdmin:
 			if err := k.checkCouncilAdmin(ctx, m.GroupId, "", m.NewAdmin); err != nil {
 				return err
@@ -54,7 +51,7 @@ func (k Keeper) CheckMessages(ctx context.Context, msgs []sdk.Msg, inGenesis boo
 				return err
 			}
 		case *group.MsgLeaveGroup:
-			if err := k.checkCouncilLeave(ctx, m, unseated); err != nil {
+			if err := k.checkCouncilLeave(ctx, m); err != nil {
 				return err
 			}
 		case *authz.MsgExec:
@@ -62,7 +59,7 @@ func (k Keeper) CheckMessages(ctx context.Context, msgs []sdk.Msg, inGenesis boo
 			if err != nil {
 				return err
 			}
-			if err := k.CheckMessages(ctx, inner, inGenesis); err != nil {
+			if err := k.CheckMessages(ctx, inner); err != nil {
 				return err
 			}
 		case *group.MsgSubmitProposal:
@@ -70,39 +67,10 @@ func (k Keeper) CheckMessages(ctx context.Context, msgs []sdk.Msg, inGenesis boo
 			if err != nil {
 				return err
 			}
-			if err := k.CheckMessages(ctx, inner, inGenesis); err != nil {
+			if err := k.CheckMessages(ctx, inner); err != nil {
 				return err
 			}
 		}
-	}
-	return nil
-}
-
-func (k Keeper) checkGenesisValidator(ctx context.Context, m *stakingtypes.MsgCreateValidator, inGenesis bool) error {
-	if !inGenesis {
-		return errorsmod.Wrap(types.ErrMsgNotAllowed, "validators are seated by council proposal")
-	}
-	bond, err := k.ValidatorBond(ctx)
-	if err != nil {
-		return err
-	}
-	if !m.Value.Equal(bond) {
-		return errorsmod.Wrapf(types.ErrInvalidBond, "got %s want %s", m.Value, bond)
-	}
-	valAddr, err := k.staking.ValidatorAddressCodec().StringToBytes(m.ValidatorAddress)
-	if err != nil {
-		return err
-	}
-	operator, err := k.addressCodec.BytesToString(valAddr)
-	if err != nil {
-		return err
-	}
-	member, err := k.IsCouncilMember(ctx, operator)
-	if err != nil {
-		return err
-	}
-	if !member {
-		return errorsmod.Wrap(types.ErrNotCouncilMember, m.ValidatorAddress)
 	}
 	return nil
 }
@@ -207,6 +175,9 @@ func (k Keeper) checkCouncilMembers(ctx context.Context, m *group.MsgUpdateGroup
 			}
 			delete(seats, addr)
 		case "1":
+			if _, err := k.corporations.ResolveCorporationByPolicyAddress(ctx, addr); err != nil {
+				return errorsmod.Wrap(types.ErrNotACorporation, addr)
+			}
 			seats[addr] = true
 		default:
 			return errorsmod.Wrapf(types.ErrCouncilIntegrity, "seat weight must be 1, got %s", u.Weight)
@@ -218,26 +189,13 @@ func (k Keeper) checkCouncilMembers(ctx context.Context, m *group.MsgUpdateGroup
 	return nil
 }
 
-func (k Keeper) checkCouncilLeave(ctx context.Context, m *group.MsgLeaveGroup, unseated map[string]bool) error {
+// A member leaves only by council decision.
+func (k Keeper) checkCouncilLeave(ctx context.Context, m *group.MsgLeaveGroup) error {
 	council, err := k.isCouncil(ctx, m.GroupId, "")
 	if err != nil || !council {
 		return err
 	}
-	addr, err := k.canonical(m.Address)
-	if err != nil {
-		return err
-	}
-	if err := k.checkSeatRelease(ctx, addr, unseated); err != nil {
-		return err
-	}
-	members, err := k.CouncilMembers(ctx)
-	if err != nil {
-		return err
-	}
-	if len(members) <= 1 {
-		return errorsmod.Wrap(types.ErrCouncilIntegrity, "the last seat cannot leave")
-	}
-	return nil
+	return errorsmod.Wrap(types.ErrCouncilIntegrity, "a council member leaves only by council decision")
 }
 
 // A seat whose validator still holds tokens leaves only together with that validator.

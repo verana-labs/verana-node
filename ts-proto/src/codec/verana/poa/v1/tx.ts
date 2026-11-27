@@ -533,9 +533,9 @@ export const MsgSelfRemoveValidatorResponse = {
 
 /** Msg defines the poa Msg service. */
 export interface Msg {
-  /** AddValidator seats a council member as a validator with the fixed bond. */
+  /** AddValidator seats a council member as a validator, bonding the fixed bond from its balance. */
   AddValidator(request: MsgAddValidator): Promise<MsgAddValidatorResponse>;
-  /** RemoveValidator unseats a validator and burns its bond. */
+  /** RemoveValidator unseats a validator; its bond returns after the unbonding time. */
   RemoveValidator(request: MsgRemoveValidator): Promise<MsgRemoveValidatorResponse>;
   /** SelfRemoveValidator lets an operator unseat its own validator. */
   SelfRemoveValidator(request: MsgSelfRemoveValidator): Promise<MsgSelfRemoveValidatorResponse>;

@@ -59,7 +59,7 @@ func TestGenesisState_Validate(t *testing.T) {
 	now := time.Now().UTC()
 	validSchema := types.CredentialSchema{
 		Id:                                      1,
-		EcosystemId:                                    100,
+		EcosystemId:                             100,
 		Created:                                 now.Add(-24 * time.Hour),
 		Modified:                                now.Add(-12 * time.Hour),
 		JsonSchema:                              validJsonSchema,
@@ -102,16 +102,16 @@ func TestGenesisState_Validate(t *testing.T) {
 				CredentialSchemas: []types.CredentialSchema{
 					validSchema,
 					{
-						Id:                         1, // Duplicate ID
-						EcosystemId:                       101,
-						Created:                    now.Add(-10 * time.Hour),
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 validJsonSchema,
-						IssuerOnboardingMode:       types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
-						VerifierOnboardingMode:     types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha384",
+						Id:                     1, // Duplicate ID
+						EcosystemId:            101,
+						Created:                now.Add(-10 * time.Hour),
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             validJsonSchema,
+						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha384",
 					},
 				},
 			},
@@ -123,16 +123,16 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: types.DefaultParams(),
 				CredentialSchemas: []types.CredentialSchema{
 					{
-						Id:                         3,
-						EcosystemId:                       101,
-						Created:                    now.Add(-10 * time.Hour),
-						Modified:                   now.Add(-5 * time.Hour),
-						JsonSchema:                 "", // Empty schema
-						IssuerOnboardingMode:       types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
-						VerifierOnboardingMode:     types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
-						PricingAssetType:           types.PricingAssetType_TU,
-						PricingAsset:               "tu",
-						DigestAlgorithm:            "sha384",
+						Id:                     3,
+						EcosystemId:            101,
+						Created:                now.Add(-10 * time.Hour),
+						Modified:               now.Add(-5 * time.Hour),
+						JsonSchema:             "", // Empty schema
+						IssuerOnboardingMode:   types.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_OPEN,
+						VerifierOnboardingMode: types.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_ECOSYSTEM_ONBOARDING_PROCESS,
+						PricingAssetType:       types.PricingAssetType_TU,
+						PricingAsset:           "tu",
+						DigestAlgorithm:        "sha384",
 					},
 				},
 			},
@@ -142,12 +142,12 @@ func TestGenesisState_Validate(t *testing.T) {
 			name: "invalid parameter values",
 			genState: &types.GenesisState{
 				Params: types.Params{
-					CredentialSchemaSchemaMaxSize:                                  0, // Invalid - must be positive
-					CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays:   365,
-					CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays: 365,
-					CredentialSchemaIssuerValidationValidityPeriodMaxDays:          180,
-					CredentialSchemaVerifierValidationValidityPeriodMaxDays:        180,
-					CredentialSchemaHolderValidationValidityPeriodMaxDays:          180,
+					CredentialSchemaSchemaMaxSize:                                     0, // Invalid - must be positive
+					CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays:   365,
+					CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays: 365,
+					CredentialSchemaIssuerAccreditationValidityPeriodMaxDays:          180,
+					CredentialSchemaVerifierAccreditationValidityPeriodMaxDays:        180,
+					CredentialSchemaHolderAccreditationValidityPeriodMaxDays:          180,
 				},
 				CredentialSchemas: []types.CredentialSchema{validSchema},
 			},

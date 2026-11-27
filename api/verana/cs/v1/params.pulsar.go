@@ -15,24 +15,26 @@ import (
 )
 
 var (
-	md_Params                                                                        protoreflect.MessageDescriptor
-	fd_Params_credential_schema_schema_max_size                                      protoreflect.FieldDescriptor
-	fd_Params_credential_schema_issuer_grantor_validation_validity_period_max_days   protoreflect.FieldDescriptor
-	fd_Params_credential_schema_verifier_grantor_validation_validity_period_max_days protoreflect.FieldDescriptor
-	fd_Params_credential_schema_issuer_validation_validity_period_max_days           protoreflect.FieldDescriptor
-	fd_Params_credential_schema_verifier_validation_validity_period_max_days         protoreflect.FieldDescriptor
-	fd_Params_credential_schema_holder_validation_validity_period_max_days           protoreflect.FieldDescriptor
+	md_Params                                                                           protoreflect.MessageDescriptor
+	fd_Params_credential_schema_schema_max_size                                         protoreflect.FieldDescriptor
+	fd_Params_credential_schema_issuer_grantor_accreditation_validity_period_max_days   protoreflect.FieldDescriptor
+	fd_Params_credential_schema_verifier_grantor_accreditation_validity_period_max_days protoreflect.FieldDescriptor
+	fd_Params_credential_schema_issuer_accreditation_validity_period_max_days           protoreflect.FieldDescriptor
+	fd_Params_credential_schema_verifier_accreditation_validity_period_max_days         protoreflect.FieldDescriptor
+	fd_Params_credential_schema_holder_accreditation_validity_period_max_days           protoreflect.FieldDescriptor
+	fd_Params_credential_schema_presentation_validity_period_max_days                   protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_cs_v1_params_proto_init()
 	md_Params = File_verana_cs_v1_params_proto.Messages().ByName("Params")
 	fd_Params_credential_schema_schema_max_size = md_Params.Fields().ByName("credential_schema_schema_max_size")
-	fd_Params_credential_schema_issuer_grantor_validation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_issuer_grantor_validation_validity_period_max_days")
-	fd_Params_credential_schema_verifier_grantor_validation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_verifier_grantor_validation_validity_period_max_days")
-	fd_Params_credential_schema_issuer_validation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_issuer_validation_validity_period_max_days")
-	fd_Params_credential_schema_verifier_validation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_verifier_validation_validity_period_max_days")
-	fd_Params_credential_schema_holder_validation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_holder_validation_validity_period_max_days")
+	fd_Params_credential_schema_issuer_grantor_accreditation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_issuer_grantor_accreditation_validity_period_max_days")
+	fd_Params_credential_schema_verifier_grantor_accreditation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_verifier_grantor_accreditation_validity_period_max_days")
+	fd_Params_credential_schema_issuer_accreditation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_issuer_accreditation_validity_period_max_days")
+	fd_Params_credential_schema_verifier_accreditation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_verifier_accreditation_validity_period_max_days")
+	fd_Params_credential_schema_holder_accreditation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_holder_accreditation_validity_period_max_days")
+	fd_Params_credential_schema_presentation_validity_period_max_days = md_Params.Fields().ByName("credential_schema_presentation_validity_period_max_days")
 }
 
 var _ protoreflect.Message = (*fastReflection_Params)(nil)
@@ -106,33 +108,39 @@ func (x *fastReflection_Params) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
-	if x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays)
-		if !f(fd_Params_credential_schema_issuer_grantor_validation_validity_period_max_days, value) {
+	if x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays)
+		if !f(fd_Params_credential_schema_issuer_grantor_accreditation_validity_period_max_days, value) {
 			return
 		}
 	}
-	if x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays)
-		if !f(fd_Params_credential_schema_verifier_grantor_validation_validity_period_max_days, value) {
+	if x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays)
+		if !f(fd_Params_credential_schema_verifier_grantor_accreditation_validity_period_max_days, value) {
 			return
 		}
 	}
-	if x.CredentialSchemaIssuerValidationValidityPeriodMaxDays != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.CredentialSchemaIssuerValidationValidityPeriodMaxDays)
-		if !f(fd_Params_credential_schema_issuer_validation_validity_period_max_days, value) {
+	if x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays)
+		if !f(fd_Params_credential_schema_issuer_accreditation_validity_period_max_days, value) {
 			return
 		}
 	}
-	if x.CredentialSchemaVerifierValidationValidityPeriodMaxDays != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.CredentialSchemaVerifierValidationValidityPeriodMaxDays)
-		if !f(fd_Params_credential_schema_verifier_validation_validity_period_max_days, value) {
+	if x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays)
+		if !f(fd_Params_credential_schema_verifier_accreditation_validity_period_max_days, value) {
 			return
 		}
 	}
-	if x.CredentialSchemaHolderValidationValidityPeriodMaxDays != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.CredentialSchemaHolderValidationValidityPeriodMaxDays)
-		if !f(fd_Params_credential_schema_holder_validation_validity_period_max_days, value) {
+	if x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays)
+		if !f(fd_Params_credential_schema_holder_accreditation_validity_period_max_days, value) {
+			return
+		}
+	}
+	if x.CredentialSchemaPresentationValidityPeriodMaxDays != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.CredentialSchemaPresentationValidityPeriodMaxDays)
+		if !f(fd_Params_credential_schema_presentation_validity_period_max_days, value) {
 			return
 		}
 	}
@@ -153,16 +161,18 @@ func (x *fastReflection_Params) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "verana.cs.v1.Params.credential_schema_schema_max_size":
 		return x.CredentialSchemaSchemaMaxSize != uint64(0)
-	case "verana.cs.v1.Params.credential_schema_issuer_grantor_validation_validity_period_max_days":
-		return x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays != uint32(0)
-	case "verana.cs.v1.Params.credential_schema_verifier_grantor_validation_validity_period_max_days":
-		return x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays != uint32(0)
-	case "verana.cs.v1.Params.credential_schema_issuer_validation_validity_period_max_days":
-		return x.CredentialSchemaIssuerValidationValidityPeriodMaxDays != uint32(0)
-	case "verana.cs.v1.Params.credential_schema_verifier_validation_validity_period_max_days":
-		return x.CredentialSchemaVerifierValidationValidityPeriodMaxDays != uint32(0)
-	case "verana.cs.v1.Params.credential_schema_holder_validation_validity_period_max_days":
-		return x.CredentialSchemaHolderValidationValidityPeriodMaxDays != uint32(0)
+	case "verana.cs.v1.Params.credential_schema_issuer_grantor_accreditation_validity_period_max_days":
+		return x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays != uint32(0)
+	case "verana.cs.v1.Params.credential_schema_verifier_grantor_accreditation_validity_period_max_days":
+		return x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays != uint32(0)
+	case "verana.cs.v1.Params.credential_schema_issuer_accreditation_validity_period_max_days":
+		return x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays != uint32(0)
+	case "verana.cs.v1.Params.credential_schema_verifier_accreditation_validity_period_max_days":
+		return x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays != uint32(0)
+	case "verana.cs.v1.Params.credential_schema_holder_accreditation_validity_period_max_days":
+		return x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays != uint32(0)
+	case "verana.cs.v1.Params.credential_schema_presentation_validity_period_max_days":
+		return x.CredentialSchemaPresentationValidityPeriodMaxDays != uint32(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.cs.v1.Params"))
@@ -181,16 +191,18 @@ func (x *fastReflection_Params) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "verana.cs.v1.Params.credential_schema_schema_max_size":
 		x.CredentialSchemaSchemaMaxSize = uint64(0)
-	case "verana.cs.v1.Params.credential_schema_issuer_grantor_validation_validity_period_max_days":
-		x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays = uint32(0)
-	case "verana.cs.v1.Params.credential_schema_verifier_grantor_validation_validity_period_max_days":
-		x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays = uint32(0)
-	case "verana.cs.v1.Params.credential_schema_issuer_validation_validity_period_max_days":
-		x.CredentialSchemaIssuerValidationValidityPeriodMaxDays = uint32(0)
-	case "verana.cs.v1.Params.credential_schema_verifier_validation_validity_period_max_days":
-		x.CredentialSchemaVerifierValidationValidityPeriodMaxDays = uint32(0)
-	case "verana.cs.v1.Params.credential_schema_holder_validation_validity_period_max_days":
-		x.CredentialSchemaHolderValidationValidityPeriodMaxDays = uint32(0)
+	case "verana.cs.v1.Params.credential_schema_issuer_grantor_accreditation_validity_period_max_days":
+		x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays = uint32(0)
+	case "verana.cs.v1.Params.credential_schema_verifier_grantor_accreditation_validity_period_max_days":
+		x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays = uint32(0)
+	case "verana.cs.v1.Params.credential_schema_issuer_accreditation_validity_period_max_days":
+		x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays = uint32(0)
+	case "verana.cs.v1.Params.credential_schema_verifier_accreditation_validity_period_max_days":
+		x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays = uint32(0)
+	case "verana.cs.v1.Params.credential_schema_holder_accreditation_validity_period_max_days":
+		x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays = uint32(0)
+	case "verana.cs.v1.Params.credential_schema_presentation_validity_period_max_days":
+		x.CredentialSchemaPresentationValidityPeriodMaxDays = uint32(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.cs.v1.Params"))
@@ -210,20 +222,23 @@ func (x *fastReflection_Params) Get(descriptor protoreflect.FieldDescriptor) pro
 	case "verana.cs.v1.Params.credential_schema_schema_max_size":
 		value := x.CredentialSchemaSchemaMaxSize
 		return protoreflect.ValueOfUint64(value)
-	case "verana.cs.v1.Params.credential_schema_issuer_grantor_validation_validity_period_max_days":
-		value := x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays
+	case "verana.cs.v1.Params.credential_schema_issuer_grantor_accreditation_validity_period_max_days":
+		value := x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays
 		return protoreflect.ValueOfUint32(value)
-	case "verana.cs.v1.Params.credential_schema_verifier_grantor_validation_validity_period_max_days":
-		value := x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays
+	case "verana.cs.v1.Params.credential_schema_verifier_grantor_accreditation_validity_period_max_days":
+		value := x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays
 		return protoreflect.ValueOfUint32(value)
-	case "verana.cs.v1.Params.credential_schema_issuer_validation_validity_period_max_days":
-		value := x.CredentialSchemaIssuerValidationValidityPeriodMaxDays
+	case "verana.cs.v1.Params.credential_schema_issuer_accreditation_validity_period_max_days":
+		value := x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays
 		return protoreflect.ValueOfUint32(value)
-	case "verana.cs.v1.Params.credential_schema_verifier_validation_validity_period_max_days":
-		value := x.CredentialSchemaVerifierValidationValidityPeriodMaxDays
+	case "verana.cs.v1.Params.credential_schema_verifier_accreditation_validity_period_max_days":
+		value := x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays
 		return protoreflect.ValueOfUint32(value)
-	case "verana.cs.v1.Params.credential_schema_holder_validation_validity_period_max_days":
-		value := x.CredentialSchemaHolderValidationValidityPeriodMaxDays
+	case "verana.cs.v1.Params.credential_schema_holder_accreditation_validity_period_max_days":
+		value := x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays
+		return protoreflect.ValueOfUint32(value)
+	case "verana.cs.v1.Params.credential_schema_presentation_validity_period_max_days":
+		value := x.CredentialSchemaPresentationValidityPeriodMaxDays
 		return protoreflect.ValueOfUint32(value)
 	default:
 		if descriptor.IsExtension() {
@@ -247,16 +262,18 @@ func (x *fastReflection_Params) Set(fd protoreflect.FieldDescriptor, value proto
 	switch fd.FullName() {
 	case "verana.cs.v1.Params.credential_schema_schema_max_size":
 		x.CredentialSchemaSchemaMaxSize = value.Uint()
-	case "verana.cs.v1.Params.credential_schema_issuer_grantor_validation_validity_period_max_days":
-		x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays = uint32(value.Uint())
-	case "verana.cs.v1.Params.credential_schema_verifier_grantor_validation_validity_period_max_days":
-		x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays = uint32(value.Uint())
-	case "verana.cs.v1.Params.credential_schema_issuer_validation_validity_period_max_days":
-		x.CredentialSchemaIssuerValidationValidityPeriodMaxDays = uint32(value.Uint())
-	case "verana.cs.v1.Params.credential_schema_verifier_validation_validity_period_max_days":
-		x.CredentialSchemaVerifierValidationValidityPeriodMaxDays = uint32(value.Uint())
-	case "verana.cs.v1.Params.credential_schema_holder_validation_validity_period_max_days":
-		x.CredentialSchemaHolderValidationValidityPeriodMaxDays = uint32(value.Uint())
+	case "verana.cs.v1.Params.credential_schema_issuer_grantor_accreditation_validity_period_max_days":
+		x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays = uint32(value.Uint())
+	case "verana.cs.v1.Params.credential_schema_verifier_grantor_accreditation_validity_period_max_days":
+		x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays = uint32(value.Uint())
+	case "verana.cs.v1.Params.credential_schema_issuer_accreditation_validity_period_max_days":
+		x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays = uint32(value.Uint())
+	case "verana.cs.v1.Params.credential_schema_verifier_accreditation_validity_period_max_days":
+		x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays = uint32(value.Uint())
+	case "verana.cs.v1.Params.credential_schema_holder_accreditation_validity_period_max_days":
+		x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays = uint32(value.Uint())
+	case "verana.cs.v1.Params.credential_schema_presentation_validity_period_max_days":
+		x.CredentialSchemaPresentationValidityPeriodMaxDays = uint32(value.Uint())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.cs.v1.Params"))
@@ -279,16 +296,18 @@ func (x *fastReflection_Params) Mutable(fd protoreflect.FieldDescriptor) protore
 	switch fd.FullName() {
 	case "verana.cs.v1.Params.credential_schema_schema_max_size":
 		panic(fmt.Errorf("field credential_schema_schema_max_size of message verana.cs.v1.Params is not mutable"))
-	case "verana.cs.v1.Params.credential_schema_issuer_grantor_validation_validity_period_max_days":
-		panic(fmt.Errorf("field credential_schema_issuer_grantor_validation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
-	case "verana.cs.v1.Params.credential_schema_verifier_grantor_validation_validity_period_max_days":
-		panic(fmt.Errorf("field credential_schema_verifier_grantor_validation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
-	case "verana.cs.v1.Params.credential_schema_issuer_validation_validity_period_max_days":
-		panic(fmt.Errorf("field credential_schema_issuer_validation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
-	case "verana.cs.v1.Params.credential_schema_verifier_validation_validity_period_max_days":
-		panic(fmt.Errorf("field credential_schema_verifier_validation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
-	case "verana.cs.v1.Params.credential_schema_holder_validation_validity_period_max_days":
-		panic(fmt.Errorf("field credential_schema_holder_validation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
+	case "verana.cs.v1.Params.credential_schema_issuer_grantor_accreditation_validity_period_max_days":
+		panic(fmt.Errorf("field credential_schema_issuer_grantor_accreditation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
+	case "verana.cs.v1.Params.credential_schema_verifier_grantor_accreditation_validity_period_max_days":
+		panic(fmt.Errorf("field credential_schema_verifier_grantor_accreditation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
+	case "verana.cs.v1.Params.credential_schema_issuer_accreditation_validity_period_max_days":
+		panic(fmt.Errorf("field credential_schema_issuer_accreditation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
+	case "verana.cs.v1.Params.credential_schema_verifier_accreditation_validity_period_max_days":
+		panic(fmt.Errorf("field credential_schema_verifier_accreditation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
+	case "verana.cs.v1.Params.credential_schema_holder_accreditation_validity_period_max_days":
+		panic(fmt.Errorf("field credential_schema_holder_accreditation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
+	case "verana.cs.v1.Params.credential_schema_presentation_validity_period_max_days":
+		panic(fmt.Errorf("field credential_schema_presentation_validity_period_max_days of message verana.cs.v1.Params is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.cs.v1.Params"))
@@ -304,15 +323,17 @@ func (x *fastReflection_Params) NewField(fd protoreflect.FieldDescriptor) protor
 	switch fd.FullName() {
 	case "verana.cs.v1.Params.credential_schema_schema_max_size":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "verana.cs.v1.Params.credential_schema_issuer_grantor_validation_validity_period_max_days":
+	case "verana.cs.v1.Params.credential_schema_issuer_grantor_accreditation_validity_period_max_days":
 		return protoreflect.ValueOfUint32(uint32(0))
-	case "verana.cs.v1.Params.credential_schema_verifier_grantor_validation_validity_period_max_days":
+	case "verana.cs.v1.Params.credential_schema_verifier_grantor_accreditation_validity_period_max_days":
 		return protoreflect.ValueOfUint32(uint32(0))
-	case "verana.cs.v1.Params.credential_schema_issuer_validation_validity_period_max_days":
+	case "verana.cs.v1.Params.credential_schema_issuer_accreditation_validity_period_max_days":
 		return protoreflect.ValueOfUint32(uint32(0))
-	case "verana.cs.v1.Params.credential_schema_verifier_validation_validity_period_max_days":
+	case "verana.cs.v1.Params.credential_schema_verifier_accreditation_validity_period_max_days":
 		return protoreflect.ValueOfUint32(uint32(0))
-	case "verana.cs.v1.Params.credential_schema_holder_validation_validity_period_max_days":
+	case "verana.cs.v1.Params.credential_schema_holder_accreditation_validity_period_max_days":
+		return protoreflect.ValueOfUint32(uint32(0))
+	case "verana.cs.v1.Params.credential_schema_presentation_validity_period_max_days":
 		return protoreflect.ValueOfUint32(uint32(0))
 	default:
 		if fd.IsExtension() {
@@ -386,20 +407,23 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 		if x.CredentialSchemaSchemaMaxSize != 0 {
 			n += 1 + runtime.Sov(uint64(x.CredentialSchemaSchemaMaxSize))
 		}
-		if x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays != 0 {
-			n += 1 + runtime.Sov(uint64(x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays != 0 {
+			n += 1 + runtime.Sov(uint64(x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays))
 		}
-		if x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays != 0 {
-			n += 1 + runtime.Sov(uint64(x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays != 0 {
+			n += 1 + runtime.Sov(uint64(x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays))
 		}
-		if x.CredentialSchemaIssuerValidationValidityPeriodMaxDays != 0 {
-			n += 1 + runtime.Sov(uint64(x.CredentialSchemaIssuerValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays != 0 {
+			n += 1 + runtime.Sov(uint64(x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays))
 		}
-		if x.CredentialSchemaVerifierValidationValidityPeriodMaxDays != 0 {
-			n += 1 + runtime.Sov(uint64(x.CredentialSchemaVerifierValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays != 0 {
+			n += 1 + runtime.Sov(uint64(x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays))
 		}
-		if x.CredentialSchemaHolderValidationValidityPeriodMaxDays != 0 {
-			n += 1 + runtime.Sov(uint64(x.CredentialSchemaHolderValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays != 0 {
+			n += 1 + runtime.Sov(uint64(x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays))
+		}
+		if x.CredentialSchemaPresentationValidityPeriodMaxDays != 0 {
+			n += 1 + runtime.Sov(uint64(x.CredentialSchemaPresentationValidityPeriodMaxDays))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -430,28 +454,33 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.CredentialSchemaHolderValidationValidityPeriodMaxDays != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaHolderValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaPresentationValidityPeriodMaxDays != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaPresentationValidityPeriodMaxDays))
+			i--
+			dAtA[i] = 0x38
+		}
+		if x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays))
 			i--
 			dAtA[i] = 0x30
 		}
-		if x.CredentialSchemaVerifierValidationValidityPeriodMaxDays != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaVerifierValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays))
 			i--
 			dAtA[i] = 0x28
 		}
-		if x.CredentialSchemaIssuerValidationValidityPeriodMaxDays != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaIssuerValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays))
 			i--
 			dAtA[i] = 0x20
 		}
-		if x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays))
 			i--
 			dAtA[i] = 0x18
 		}
-		if x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays))
+		if x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays))
 			i--
 			dAtA[i] = 0x10
 		}
@@ -530,9 +559,9 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 				}
 			case 2:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays", wireType)
 				}
-				x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays = 0
+				x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -542,16 +571,16 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
+					x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 3:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays", wireType)
 				}
-				x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays = 0
+				x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -561,16 +590,16 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
+					x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 4:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaIssuerValidationValidityPeriodMaxDays", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaIssuerAccreditationValidityPeriodMaxDays", wireType)
 				}
-				x.CredentialSchemaIssuerValidationValidityPeriodMaxDays = 0
+				x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -580,16 +609,16 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.CredentialSchemaIssuerValidationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
+					x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 5:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaVerifierValidationValidityPeriodMaxDays", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaVerifierAccreditationValidityPeriodMaxDays", wireType)
 				}
-				x.CredentialSchemaVerifierValidationValidityPeriodMaxDays = 0
+				x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -599,16 +628,16 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.CredentialSchemaVerifierValidationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
+					x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 6:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaHolderValidationValidityPeriodMaxDays", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaHolderAccreditationValidityPeriodMaxDays", wireType)
 				}
-				x.CredentialSchemaHolderValidationValidityPeriodMaxDays = 0
+				x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -618,7 +647,26 @@ func (x *fastReflection_Params) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.CredentialSchemaHolderValidationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
+					x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CredentialSchemaPresentationValidityPeriodMaxDays", wireType)
+				}
+				x.CredentialSchemaPresentationValidityPeriodMaxDays = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.CredentialSchemaPresentationValidityPeriodMaxDays |= uint32(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -677,12 +725,13 @@ type Params struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	CredentialSchemaSchemaMaxSize                                  uint64 `protobuf:"varint,1,opt,name=credential_schema_schema_max_size,json=credentialSchemaSchemaMaxSize,proto3" json:"credential_schema_schema_max_size,omitempty"`
-	CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays   uint32 `protobuf:"varint,2,opt,name=credential_schema_issuer_grantor_validation_validity_period_max_days,json=credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays,proto3" json:"credential_schema_issuer_grantor_validation_validity_period_max_days,omitempty"`
-	CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays uint32 `protobuf:"varint,3,opt,name=credential_schema_verifier_grantor_validation_validity_period_max_days,json=credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays,proto3" json:"credential_schema_verifier_grantor_validation_validity_period_max_days,omitempty"`
-	CredentialSchemaIssuerValidationValidityPeriodMaxDays          uint32 `protobuf:"varint,4,opt,name=credential_schema_issuer_validation_validity_period_max_days,json=credentialSchemaIssuerValidationValidityPeriodMaxDays,proto3" json:"credential_schema_issuer_validation_validity_period_max_days,omitempty"`
-	CredentialSchemaVerifierValidationValidityPeriodMaxDays        uint32 `protobuf:"varint,5,opt,name=credential_schema_verifier_validation_validity_period_max_days,json=credentialSchemaVerifierValidationValidityPeriodMaxDays,proto3" json:"credential_schema_verifier_validation_validity_period_max_days,omitempty"`
-	CredentialSchemaHolderValidationValidityPeriodMaxDays          uint32 `protobuf:"varint,6,opt,name=credential_schema_holder_validation_validity_period_max_days,json=credentialSchemaHolderValidationValidityPeriodMaxDays,proto3" json:"credential_schema_holder_validation_validity_period_max_days,omitempty"`
+	CredentialSchemaSchemaMaxSize                                     uint64 `protobuf:"varint,1,opt,name=credential_schema_schema_max_size,json=credentialSchemaSchemaMaxSize,proto3" json:"credential_schema_schema_max_size,omitempty"`
+	CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays   uint32 `protobuf:"varint,2,opt,name=credential_schema_issuer_grantor_accreditation_validity_period_max_days,json=credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays,proto3" json:"credential_schema_issuer_grantor_accreditation_validity_period_max_days,omitempty"`
+	CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays uint32 `protobuf:"varint,3,opt,name=credential_schema_verifier_grantor_accreditation_validity_period_max_days,json=credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays,proto3" json:"credential_schema_verifier_grantor_accreditation_validity_period_max_days,omitempty"`
+	CredentialSchemaIssuerAccreditationValidityPeriodMaxDays          uint32 `protobuf:"varint,4,opt,name=credential_schema_issuer_accreditation_validity_period_max_days,json=credentialSchemaIssuerAccreditationValidityPeriodMaxDays,proto3" json:"credential_schema_issuer_accreditation_validity_period_max_days,omitempty"`
+	CredentialSchemaVerifierAccreditationValidityPeriodMaxDays        uint32 `protobuf:"varint,5,opt,name=credential_schema_verifier_accreditation_validity_period_max_days,json=credentialSchemaVerifierAccreditationValidityPeriodMaxDays,proto3" json:"credential_schema_verifier_accreditation_validity_period_max_days,omitempty"`
+	CredentialSchemaHolderAccreditationValidityPeriodMaxDays          uint32 `protobuf:"varint,6,opt,name=credential_schema_holder_accreditation_validity_period_max_days,json=credentialSchemaHolderAccreditationValidityPeriodMaxDays,proto3" json:"credential_schema_holder_accreditation_validity_period_max_days,omitempty"`
+	CredentialSchemaPresentationValidityPeriodMaxDays                 uint32 `protobuf:"varint,7,opt,name=credential_schema_presentation_validity_period_max_days,json=credentialSchemaPresentationValidityPeriodMaxDays,proto3" json:"credential_schema_presentation_validity_period_max_days,omitempty"`
 }
 
 func (x *Params) Reset() {
@@ -712,37 +761,44 @@ func (x *Params) GetCredentialSchemaSchemaMaxSize() uint64 {
 	return 0
 }
 
-func (x *Params) GetCredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays() uint32 {
+func (x *Params) GetCredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays() uint32 {
 	if x != nil {
-		return x.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays
+		return x.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays
 	}
 	return 0
 }
 
-func (x *Params) GetCredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays() uint32 {
+func (x *Params) GetCredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays() uint32 {
 	if x != nil {
-		return x.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays
+		return x.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays
 	}
 	return 0
 }
 
-func (x *Params) GetCredentialSchemaIssuerValidationValidityPeriodMaxDays() uint32 {
+func (x *Params) GetCredentialSchemaIssuerAccreditationValidityPeriodMaxDays() uint32 {
 	if x != nil {
-		return x.CredentialSchemaIssuerValidationValidityPeriodMaxDays
+		return x.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays
 	}
 	return 0
 }
 
-func (x *Params) GetCredentialSchemaVerifierValidationValidityPeriodMaxDays() uint32 {
+func (x *Params) GetCredentialSchemaVerifierAccreditationValidityPeriodMaxDays() uint32 {
 	if x != nil {
-		return x.CredentialSchemaVerifierValidationValidityPeriodMaxDays
+		return x.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays
 	}
 	return 0
 }
 
-func (x *Params) GetCredentialSchemaHolderValidationValidityPeriodMaxDays() uint32 {
+func (x *Params) GetCredentialSchemaHolderAccreditationValidityPeriodMaxDays() uint32 {
 	if x != nil {
-		return x.CredentialSchemaHolderValidationValidityPeriodMaxDays
+		return x.CredentialSchemaHolderAccreditationValidityPeriodMaxDays
+	}
+	return 0
+}
+
+func (x *Params) GetCredentialSchemaPresentationValidityPeriodMaxDays() uint32 {
+	if x != nil {
+		return x.CredentialSchemaPresentationValidityPeriodMaxDays
 	}
 	return 0
 }
@@ -755,67 +811,76 @@ var file_verana_cs_v1_params_proto_rawDesc = []byte{
 	0x61, 0x6e, 0x61, 0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e, 0x6f,
 	0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f,
 	0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x22, 0x88, 0x06, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x48, 0x0a,
+	0x74, 0x6f, 0x22, 0x9d, 0x07, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x48, 0x0a,
 	0x21, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x5f, 0x73, 0x63, 0x68, 0x65,
 	0x6d, 0x61, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x73, 0x69,
 	0x7a, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1d, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e,
 	0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61,
-	0x4d, 0x61, 0x78, 0x53, 0x69, 0x7a, 0x65, 0x12, 0x8a, 0x01, 0x0a, 0x44, 0x63, 0x72, 0x65, 0x64,
+	0x4d, 0x61, 0x78, 0x53, 0x69, 0x7a, 0x65, 0x12, 0x90, 0x01, 0x0a, 0x47, 0x63, 0x72, 0x65, 0x64,
 	0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x69, 0x73,
-	0x73, 0x75, 0x65, 0x72, 0x5f, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x5f, 0x76, 0x61, 0x6c,
-	0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79,
-	0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x64, 0x61, 0x79, 0x73,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x3c, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69,
-	0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x47, 0x72,
-	0x61, 0x6e, 0x74, 0x6f, 0x72, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x56,
-	0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x78,
-	0x44, 0x61, 0x79, 0x73, 0x12, 0x8e, 0x01, 0x0a, 0x46, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74,
-	0x69, 0x61, 0x6c, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x76, 0x65, 0x72, 0x69, 0x66,
-	0x69, 0x65, 0x72, 0x5f, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x5f, 0x76, 0x61, 0x6c, 0x69,
-	0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x5f,
-	0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x64, 0x61, 0x79, 0x73, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x3e, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61,
-	0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x56, 0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x72, 0x47,
-	0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x56, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61,
-	0x78, 0x44, 0x61, 0x79, 0x73, 0x12, 0x7b, 0x0a, 0x3c, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74,
-	0x69, 0x61, 0x6c, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x69, 0x73, 0x73, 0x75, 0x65,
-	0x72, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c,
-	0x69, 0x64, 0x69, 0x74, 0x79, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78,
-	0x5f, 0x64, 0x61, 0x79, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x35, 0x63, 0x72, 0x65,
-	0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x49, 0x73, 0x73,
-	0x75, 0x65, 0x72, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c,
-	0x69, 0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x78, 0x44, 0x61,
-	0x79, 0x73, 0x12, 0x7f, 0x0a, 0x3e, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c,
-	0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x76, 0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x72,
-	0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69,
-	0x64, 0x69, 0x74, 0x79, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78, 0x5f,
-	0x64, 0x61, 0x79, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x37, 0x63, 0x72, 0x65, 0x64,
-	0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x56, 0x65, 0x72, 0x69,
-	0x66, 0x69, 0x65, 0x72, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61,
-	0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x78, 0x44,
-	0x61, 0x79, 0x73, 0x12, 0x7b, 0x0a, 0x3c, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61,
-	0x6c, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x68, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x5f,
-	0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64,
+	0x73, 0x75, 0x65, 0x72, 0x5f, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x63, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64,
 	0x69, 0x74, 0x79, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x64,
-	0x61, 0x79, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x35, 0x63, 0x72, 0x65, 0x64, 0x65,
-	0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x48, 0x6f, 0x6c, 0x64, 0x65,
-	0x72, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c, 0x69, 0x64,
-	0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x78, 0x44, 0x61, 0x79, 0x73,
-	0x3a, 0x1b, 0xe8, 0xa0, 0x1f, 0x01, 0x8a, 0xe7, 0xb0, 0x2a, 0x12, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2f, 0x78, 0x2f, 0x63, 0x73, 0x2f, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0xab, 0x01,
-	0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x63, 0x73, 0x2e,
-	0x76, 0x31, 0x42, 0x0b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
-	0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
-	0x2f, 0x63, 0x73, 0x2f, 0x76, 0x31, 0x3b, 0x63, 0x73, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x43,
-	0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x43, 0x73, 0x2e, 0x56, 0x31,
-	0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x43, 0x73, 0x5c, 0x56, 0x31, 0xe2,
-	0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x43, 0x73, 0x5c, 0x56, 0x31, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72,
-	0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x43, 0x73, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x61, 0x79, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x3f, 0x63, 0x72, 0x65, 0x64, 0x65,
+	0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x49, 0x73, 0x73, 0x75, 0x65,
+	0x72, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x41, 0x63, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72,
+	0x69, 0x6f, 0x64, 0x4d, 0x61, 0x78, 0x44, 0x61, 0x79, 0x73, 0x12, 0x94, 0x01, 0x0a, 0x49, 0x63,
+	0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61,
+	0x5f, 0x76, 0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x72, 0x5f, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x6f,
+	0x72, 0x5f, 0x61, 0x63, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
+	0x76, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f,
+	0x6d, 0x61, 0x78, 0x5f, 0x64, 0x61, 0x79, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x41,
+	0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61,
+	0x56, 0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x72, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x6f, 0x72, 0x41,
+	0x63, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c, 0x69,
+	0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x78, 0x44, 0x61, 0x79,
+	0x73, 0x12, 0x81, 0x01, 0x0a, 0x3f, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c,
+	0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x5f, 0x61,
+	0x63, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c,
+	0x69, 0x64, 0x69, 0x74, 0x79, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78,
+	0x5f, 0x64, 0x61, 0x79, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x38, 0x63, 0x72, 0x65,
+	0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x49, 0x73, 0x73,
+	0x75, 0x65, 0x72, 0x41, 0x63, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x56, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61,
+	0x78, 0x44, 0x61, 0x79, 0x73, 0x12, 0x85, 0x01, 0x0a, 0x41, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e,
+	0x74, 0x69, 0x61, 0x6c, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x76, 0x65, 0x72, 0x69,
+	0x66, 0x69, 0x65, 0x72, 0x5f, 0x61, 0x63, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x5f, 0x70, 0x65, 0x72, 0x69,
+	0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x64, 0x61, 0x79, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x0d, 0x52, 0x3a, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63, 0x68,
+	0x65, 0x6d, 0x61, 0x56, 0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x72, 0x41, 0x63, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79,
+	0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x78, 0x44, 0x61, 0x79, 0x73, 0x12, 0x81, 0x01,
+	0x0a, 0x3f, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x5f, 0x73, 0x63, 0x68,
+	0x65, 0x6d, 0x61, 0x5f, 0x68, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x5f, 0x61, 0x63, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74,
+	0x79, 0x5f, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x64, 0x61, 0x79,
+	0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x38, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74,
+	0x69, 0x61, 0x6c, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x48, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x41,
+	0x63, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x56, 0x61, 0x6c, 0x69,
+	0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x78, 0x44, 0x61, 0x79,
+	0x73, 0x12, 0x72, 0x0a, 0x37, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x5f,
+	0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x70, 0x72, 0x65, 0x73, 0x65, 0x6e, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x5f, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x5f, 0x70, 0x65, 0x72,
+	0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x78, 0x5f, 0x64, 0x61, 0x79, 0x73, 0x18, 0x07, 0x20, 0x01,
+	0x28, 0x0d, 0x52, 0x31, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x53, 0x63,
+	0x68, 0x65, 0x6d, 0x61, 0x50, 0x72, 0x65, 0x73, 0x65, 0x6e, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x56, 0x61, 0x6c, 0x69, 0x64, 0x69, 0x74, 0x79, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61,
+	0x78, 0x44, 0x61, 0x79, 0x73, 0x3a, 0x1b, 0xe8, 0xa0, 0x1f, 0x01, 0x8a, 0xe7, 0xb0, 0x2a, 0x12,
+	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x63, 0x73, 0x2f, 0x50, 0x61, 0x72, 0x61,
+	0x6d, 0x73, 0x42, 0xab, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2e, 0x63, 0x73, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x63, 0x73, 0x2f, 0x76, 0x31, 0x3b, 0x63, 0x73, 0x76, 0x31,
+	0xa2, 0x02, 0x03, 0x56, 0x43, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
+	0x43, 0x73, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x43,
+	0x73, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x43, 0x73,
+	0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x43, 0x73, 0x3a, 0x3a, 0x56, 0x31,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

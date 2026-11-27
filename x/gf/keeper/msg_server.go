@@ -19,9 +19,9 @@ var _ types.MsgServer = msgServer{}
 
 // checkNetworkPath checks the council signer of the network path. The node
 // has no network governance framework to act on yet.
-func (ms msgServer) checkNetworkPath(authority string) error {
-	if authority != ms.GetAuthority() {
-		return errors.Wrapf(sdkerrors.ErrUnauthorized, "expected %s got %s", ms.GetAuthority(), authority)
+func (ms msgServer) checkNetworkPath(signer string) error {
+	if signer != ms.GetAuthority() {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "expected %s got %s", ms.GetAuthority(), signer)
 	}
 	return types.ErrNetworkPathUnavailable
 }

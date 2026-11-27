@@ -21,20 +21,21 @@ func (ms msgServer) corpIDFromAccount(ctx context.Context, account string) (uint
 	return co.Id, nil
 }
 
-// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
-// delegate, and returns the resolved corporation id.
-func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (uint64, error) {
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for a
+// delegate signer, and returns the resolved corporation id and whether the
+// signer is on the group-proposal path.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, signer string, msgType detypes.MsgType) (uint64, bool, error) {
 	if ms.delegationKeeper == nil {
-		return 0, fmt.Errorf("delegation keeper is required for delegate authorization")
+		return 0, false, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	corporationID, err := ms.corpIDFromAccount(ctx, corporation)
-	if err != nil {
-		return 0, err
+	co, group, err := ms.coKeeper.ResolveSigner(ctx, corporation, signer)
+	if err != nil || group {
+		return co.Id, group, err
 	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, corporationID, delegate, msgType, ctx.BlockTime()); err != nil {
-		return 0, fmt.Errorf("authorization check failed: %w", err)
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, signer, msgType, ctx.BlockTime()); err != nil {
+		return 0, false, fmt.Errorf("authorization check failed: %w", err)
 	}
-	return corporationID, nil
+	return co.Id, false, nil
 }
 
 // corpAccountFromID resolves a Participant's corporation_id back to the

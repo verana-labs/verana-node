@@ -9,15 +9,19 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/types/tx/amino"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/durationpb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -25,16 +29,25 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Params defines the parameters for the module.
+// Params holds the Trust Deposit and Trust Unit Index, Native denom and
+// Network fees groups of GlobalVariables.
 type Params struct {
-	TrustDepositShareValue    cosmossdk_io_math.LegacyDec `protobuf:"bytes,1,opt,name=trust_deposit_share_value,json=trustDepositShareValue,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"trust_deposit_share_value" yaml:"trust_deposit_share_value"`
-	TrustDepositRate          cosmossdk_io_math.LegacyDec `protobuf:"bytes,2,opt,name=trust_deposit_rate,json=trustDepositRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"trust_deposit_rate" yaml:"trust_deposit_rate"`
-	WalletUserAgentRewardRate cosmossdk_io_math.LegacyDec `protobuf:"bytes,3,opt,name=wallet_user_agent_reward_rate,json=walletUserAgentRewardRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"wallet_user_agent_reward_rate" yaml:"wallet_user_agent_reward_rate"`
-	UserAgentRewardRate       cosmossdk_io_math.LegacyDec `protobuf:"bytes,4,opt,name=user_agent_reward_rate,json=userAgentRewardRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"user_agent_reward_rate" yaml:"user_agent_reward_rate"`
-	// trust_deposit_max_yield_rate is the maximum annualized yield rate (e.g. 0.15 for 15%)
-	TrustDepositMaxYieldRate cosmossdk_io_math.LegacyDec `protobuf:"bytes,5,opt,name=trust_deposit_max_yield_rate,json=trustDepositMaxYieldRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"trust_deposit_max_yield_rate" yaml:"trust_deposit_max_yield_rate"`
-	// trust_deposit_block_reward_share is the fraction of block rewards allocated to trust deposit yield (e.g. "0.2" for 20%)
-	TrustDepositBlockRewardShare cosmossdk_io_math.LegacyDec `protobuf:"bytes,6,opt,name=trust_deposit_block_reward_share,json=trustDepositBlockRewardShare,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"trust_deposit_block_reward_share" yaml:"trust_deposit_block_reward_share"`
+	TrustDepositRate cosmossdk_io_math.LegacyDec `protobuf:"bytes,1,opt,name=trust_deposit_rate,json=trustDepositRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"trust_deposit_rate"`
+	// immutable
+	MainFiatCurrency string `protobuf:"bytes,2,opt,name=main_fiat_currency,json=mainFiatCurrency,proto3" json:"main_fiat_currency,omitempty"`
+	// immutable
+	TuPegValueGenesis cosmossdk_io_math.LegacyDec `protobuf:"bytes,3,opt,name=tu_peg_value_genesis,json=tuPegValueGenesis,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"tu_peg_value_genesis"`
+	// the rate in force; an update that sends another value stores it as pending
+	// until the next epoch boundary, one that sends this rate keeps a pending value
+	TuDecayRate cosmossdk_io_math.LegacyDec `protobuf:"bytes,4,opt,name=tu_decay_rate,json=tuDecayRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"tu_decay_rate"`
+	// immutable
+	EpochLength   time.Duration               `protobuf:"bytes,5,opt,name=epoch_length,json=epochLength,proto3,stdduration" json:"epoch_length"`
+	VuaRewardRate cosmossdk_io_math.LegacyDec `protobuf:"bytes,6,opt,name=vua_reward_rate,json=vuaRewardRate,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"vua_reward_rate"`
+	// immutable
+	VnaTotalSupply  uint64                      `protobuf:"varint,7,opt,name=vna_total_supply,json=vnaTotalSupply,proto3" json:"vna_total_supply,omitempty"`
+	NetworkGasPrice cosmossdk_io_math.LegacyDec `protobuf:"bytes,8,opt,name=network_gas_price,json=networkGasPrice,proto3,customtype=cosmossdk.io/math.LegacyDec" json:"network_gas_price"`
+	// one entry per protobuf type URL
+	MaxGasPerMsgType []MaxGasEntry `protobuf:"bytes,9,rep,name=max_gas_per_msg_type,json=maxGasPerMsgType,proto3" json:"max_gas_per_msg_type"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -70,44 +83,133 @@ func (m *Params) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Params proto.InternalMessageInfo
 
+func (m *Params) GetMainFiatCurrency() string {
+	if m != nil {
+		return m.MainFiatCurrency
+	}
+	return ""
+}
+
+func (m *Params) GetEpochLength() time.Duration {
+	if m != nil {
+		return m.EpochLength
+	}
+	return 0
+}
+
+func (m *Params) GetVnaTotalSupply() uint64 {
+	if m != nil {
+		return m.VnaTotalSupply
+	}
+	return 0
+}
+
+func (m *Params) GetMaxGasPerMsgType() []MaxGasEntry {
+	if m != nil {
+		return m.MaxGasPerMsgType
+	}
+	return nil
+}
+
+// MaxGasEntry is one entry of the max_gas_per_msg_type map.
+type MaxGasEntry struct {
+	MsgTypeUrl string `protobuf:"bytes,1,opt,name=msg_type_url,json=msgTypeUrl,proto3" json:"msg_type_url,omitempty"`
+	MaxGas     uint64 `protobuf:"varint,2,opt,name=max_gas,json=maxGas,proto3" json:"max_gas,omitempty"`
+}
+
+func (m *MaxGasEntry) Reset()         { *m = MaxGasEntry{} }
+func (m *MaxGasEntry) String() string { return proto.CompactTextString(m) }
+func (*MaxGasEntry) ProtoMessage()    {}
+func (*MaxGasEntry) Descriptor() ([]byte, []int) {
+	return fileDescriptor_81f1920ecd6d86c2, []int{1}
+}
+func (m *MaxGasEntry) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MaxGasEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MaxGasEntry.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MaxGasEntry) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MaxGasEntry.Merge(m, src)
+}
+func (m *MaxGasEntry) XXX_Size() int {
+	return m.Size()
+}
+func (m *MaxGasEntry) XXX_DiscardUnknown() {
+	xxx_messageInfo_MaxGasEntry.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MaxGasEntry proto.InternalMessageInfo
+
+func (m *MaxGasEntry) GetMsgTypeUrl() string {
+	if m != nil {
+		return m.MsgTypeUrl
+	}
+	return ""
+}
+
+func (m *MaxGasEntry) GetMaxGas() uint64 {
+	if m != nil {
+		return m.MaxGas
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Params)(nil), "verana.td.v1.Params")
+	proto.RegisterType((*MaxGasEntry)(nil), "verana.td.v1.MaxGasEntry")
 }
 
 func init() { proto.RegisterFile("verana/td/v1/params.proto", fileDescriptor_81f1920ecd6d86c2) }
 
 var fileDescriptor_81f1920ecd6d86c2 = []byte{
-	// 471 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0x4d, 0x8b, 0xd3, 0x40,
-	0x18, 0xc7, 0x3b, 0xbe, 0x14, 0x1c, 0x3c, 0x68, 0x94, 0xa5, 0xdd, 0x97, 0xb4, 0x44, 0x41, 0x11,
-	0x36, 0x61, 0xf1, 0xb6, 0x27, 0x2d, 0x85, 0x05, 0xdf, 0x90, 0x88, 0x82, 0x5e, 0xc2, 0xd3, 0xe4,
-	0x21, 0x0d, 0x9b, 0x64, 0xca, 0xcc, 0xa4, 0xdb, 0x5c, 0x3d, 0x2e, 0x08, 0x9e, 0x3c, 0xfb, 0x11,
-	0xfc, 0x18, 0x0b, 0x5e, 0xf6, 0x28, 0x1e, 0x8a, 0xb4, 0x07, 0x3d, 0xfb, 0x09, 0x64, 0x66, 0xb6,
-	0xd0, 0x60, 0xba, 0xe4, 0x12, 0x1e, 0xf2, 0x9f, 0xe7, 0xff, 0xff, 0xcd, 0xcb, 0x43, 0xbb, 0x53,
-	0xe4, 0x90, 0x83, 0x27, 0x23, 0x6f, 0x7a, 0xe0, 0x4d, 0x80, 0x43, 0x26, 0xdc, 0x09, 0x67, 0x92,
-	0x59, 0x37, 0x8d, 0xe4, 0xca, 0xc8, 0x9d, 0x1e, 0x6c, 0xdf, 0x86, 0x2c, 0xc9, 0x99, 0xa7, 0xbf,
-	0x66, 0xc1, 0xf6, 0xdd, 0x98, 0xc5, 0x4c, 0x97, 0x9e, 0xaa, 0xcc, 0x5f, 0xe7, 0x7b, 0x9b, 0xb6,
-	0x5f, 0x6b, 0x1f, 0xeb, 0x23, 0xa1, 0x5d, 0xc9, 0x0b, 0x21, 0x83, 0x08, 0x27, 0x4c, 0x24, 0x32,
-	0x10, 0x63, 0xe0, 0x18, 0x4c, 0x21, 0x2d, 0xb0, 0x43, 0xfa, 0xe4, 0xe1, 0x8d, 0xc1, 0xd1, 0xd9,
-	0xbc, 0xd7, 0xfa, 0x39, 0xef, 0xed, 0x84, 0x4c, 0x64, 0x4c, 0x88, 0xe8, 0xd8, 0x4d, 0x98, 0x97,
-	0x81, 0x1c, 0xbb, 0x2f, 0x30, 0x86, 0xb0, 0x1c, 0x62, 0xf8, 0x77, 0xde, 0xeb, 0x97, 0x90, 0xa5,
-	0x87, 0xce, 0x46, 0x37, 0xc7, 0xdf, 0xd2, 0xda, 0xd0, 0x48, 0x6f, 0x94, 0xf2, 0x4e, 0x09, 0x56,
-	0x4e, 0xad, 0x6a, 0x17, 0x07, 0x89, 0x9d, 0x2b, 0x3a, 0xfc, 0x49, 0xb3, 0xf0, 0x6e, 0x5d, 0xb8,
-	0xb2, 0x71, 0xfc, 0x5b, 0xeb, 0xa9, 0x3e, 0x48, 0xb4, 0x3e, 0x11, 0xba, 0x77, 0x02, 0x69, 0x8a,
-	0x32, 0x28, 0x04, 0xf2, 0x00, 0x62, 0xcc, 0x65, 0xc0, 0xf1, 0x04, 0x78, 0x64, 0xb2, 0xaf, 0xea,
-	0xec, 0xe7, 0xcd, 0xb2, 0xef, 0x9b, 0xec, 0x4b, 0x1d, 0x1d, 0xbf, 0x6b, 0xf4, 0xb7, 0x02, 0xf9,
-	0x53, 0xa5, 0xfa, 0x5a, 0xd4, 0x3c, 0x25, 0xdd, 0xda, 0xc0, 0x71, 0x4d, 0x73, 0x0c, 0x9b, 0x71,
-	0xec, 0x19, 0x8e, 0x4d, 0x00, 0x77, 0x8a, 0x9a, 0xe8, 0x53, 0x42, 0x77, 0xab, 0x87, 0x96, 0xc1,
-	0x2c, 0x28, 0x13, 0x4c, 0x2f, 0x08, 0xae, 0x6b, 0x82, 0x67, 0xcd, 0x08, 0xee, 0xd5, 0xdd, 0x42,
-	0xd5, 0xd0, 0xf1, 0x3b, 0xeb, 0xf7, 0xf1, 0x12, 0x66, 0xef, 0x95, 0xa6, 0x61, 0xbe, 0x10, 0xda,
-	0xaf, 0xf6, 0x8e, 0x52, 0x16, 0x1e, 0xaf, 0xb6, 0xa1, 0xdf, 0x52, 0xa7, 0xad, 0x81, 0x5e, 0x35,
-	0x03, 0x7a, 0x50, 0x07, 0xf4, 0xbf, 0xa9, 0xe3, 0xef, 0xae, 0x43, 0x0d, 0xd4, 0x02, 0x73, 0x48,
-	0xfa, 0x95, 0x1e, 0xee, 0xfc, 0xf9, 0xda, 0x23, 0xa7, 0xbf, 0xbf, 0x3d, 0xb2, 0x2e, 0x66, 0x71,
-	0xa6, 0xa6, 0xd1, 0x8c, 0xd0, 0xe0, 0xe8, 0x6c, 0x61, 0x93, 0xf3, 0x85, 0x4d, 0x7e, 0x2d, 0x6c,
-	0xf2, 0x79, 0x69, 0xb7, 0xce, 0x97, 0x76, 0xeb, 0xc7, 0xd2, 0x6e, 0x7d, 0xd8, 0x8f, 0x13, 0x39,
-	0x2e, 0x46, 0x6e, 0xc8, 0x32, 0xcf, 0x34, 0xee, 0xa7, 0x30, 0x12, 0xab, 0x3a, 0x67, 0x11, 0x1a,
-	0x27, 0x59, 0x4e, 0x50, 0x8c, 0xda, 0x7a, 0x3a, 0x1f, 0xff, 0x0b, 0x00, 0x00, 0xff, 0xff, 0x77,
-	0xbc, 0xbd, 0xdb, 0xf1, 0x03, 0x00, 0x00,
+	// 579 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xbf, 0x4f, 0xdb, 0x40,
+	0x14, 0xc7, 0xe3, 0x12, 0x02, 0x5c, 0xa0, 0x80, 0x85, 0x54, 0x03, 0x92, 0x13, 0xd1, 0x25, 0xaa,
+	0x8a, 0x2d, 0xda, 0x8d, 0x31, 0x4d, 0xc9, 0x50, 0x28, 0xa9, 0x4b, 0x3b, 0x74, 0x39, 0xbd, 0xd8,
+	0xc7, 0xc5, 0xc2, 0xf6, 0x59, 0xf7, 0xc3, 0xe0, 0x7f, 0xa1, 0x53, 0xc7, 0x8e, 0x9d, 0x3a, 0xf7,
+	0xcf, 0x60, 0x64, 0xac, 0x3a, 0xd0, 0x0a, 0x86, 0xf6, 0xcf, 0xa8, 0xee, 0x2e, 0x91, 0x18, 0xb3,
+	0x44, 0x2f, 0xef, 0xf9, 0xf3, 0xbe, 0xdf, 0x7b, 0xf7, 0x0e, 0x6d, 0x57, 0x84, 0x43, 0x01, 0xa1,
+	0x4c, 0xc2, 0xea, 0x20, 0x2c, 0x81, 0x43, 0x2e, 0x82, 0x92, 0x33, 0xc9, 0xdc, 0x55, 0x5b, 0x0a,
+	0x64, 0x12, 0x54, 0x07, 0x3b, 0x9b, 0x90, 0xa7, 0x05, 0x0b, 0xcd, 0xaf, 0xfd, 0x60, 0x67, 0x8b,
+	0x32, 0xca, 0x4c, 0x18, 0xea, 0x68, 0x9a, 0xf5, 0x29, 0x63, 0x34, 0x23, 0xa1, 0xf9, 0x37, 0x56,
+	0xe7, 0x61, 0xa2, 0x38, 0xc8, 0x94, 0x15, 0xb6, 0xbe, 0xf7, 0x7d, 0x11, 0xb5, 0x46, 0x46, 0xc7,
+	0x7d, 0x87, 0x5c, 0xc9, 0x95, 0x90, 0x38, 0x21, 0x25, 0x13, 0xa9, 0xc4, 0x1c, 0x24, 0xf1, 0x9c,
+	0xae, 0xd3, 0x5b, 0xe9, 0x3f, 0xbd, 0xbe, 0xed, 0x34, 0x7e, 0xdd, 0x76, 0x76, 0x63, 0x26, 0x72,
+	0x26, 0x44, 0x72, 0x11, 0xa4, 0x2c, 0xcc, 0x41, 0x4e, 0x82, 0x63, 0x42, 0x21, 0xae, 0x07, 0x24,
+	0x8e, 0x36, 0x0c, 0x3e, 0xb0, 0x74, 0x04, 0x92, 0xb8, 0xcf, 0x91, 0x9b, 0x43, 0x5a, 0xe0, 0xf3,
+	0x14, 0x24, 0x8e, 0x15, 0xe7, 0xa4, 0x88, 0x6b, 0xef, 0x91, 0x6e, 0x19, 0x6d, 0xe8, 0xca, 0x51,
+	0x0a, 0xf2, 0xd5, 0x34, 0xef, 0x9e, 0xa1, 0x2d, 0xa9, 0x70, 0x49, 0x28, 0xae, 0x20, 0x53, 0x04,
+	0x53, 0x52, 0x10, 0x91, 0x0a, 0x6f, 0x61, 0x7e, 0x0b, 0x9b, 0x52, 0x8d, 0x08, 0xfd, 0xa8, 0xf1,
+	0xa1, 0xa5, 0xdd, 0x21, 0x5a, 0x93, 0x0a, 0x27, 0x24, 0x86, 0xda, 0x9e, 0xa8, 0x39, 0x7f, 0xbb,
+	0xb6, 0x54, 0x03, 0x0d, 0x9a, 0xc3, 0x1c, 0xa1, 0x55, 0x52, 0xb2, 0x78, 0x82, 0x33, 0x52, 0x50,
+	0x39, 0xf1, 0x16, 0xbb, 0x4e, 0xaf, 0xfd, 0x62, 0x3b, 0xb0, 0x13, 0x0e, 0x66, 0x13, 0x0e, 0x06,
+	0xd3, 0x09, 0xf7, 0x97, 0xb5, 0xc4, 0xd7, 0xdf, 0x1d, 0x27, 0x6a, 0x1b, 0xf0, 0xd8, 0x70, 0xee,
+	0x1b, 0xb4, 0x5e, 0x29, 0xc0, 0x9c, 0x5c, 0x02, 0x4f, 0xac, 0xa5, 0xd6, 0xfc, 0x96, 0xd6, 0x2a,
+	0x05, 0x91, 0x41, 0x8d, 0xa9, 0x1e, 0xda, 0xa8, 0x0a, 0xc0, 0x92, 0x49, 0xc8, 0xb0, 0x50, 0x65,
+	0x99, 0xd5, 0xde, 0x52, 0xd7, 0xe9, 0x35, 0xa3, 0xc7, 0x55, 0x01, 0x67, 0x3a, 0xfd, 0xde, 0x64,
+	0xdd, 0x53, 0xb4, 0x59, 0x10, 0x79, 0xc9, 0xf8, 0x05, 0xa6, 0x20, 0x70, 0xc9, 0xd3, 0x98, 0x78,
+	0xcb, 0xf3, 0x0b, 0xaf, 0x4f, 0xe9, 0x21, 0x88, 0x91, 0x66, 0xdd, 0x53, 0xb4, 0x95, 0xc3, 0x95,
+	0x6d, 0x46, 0x38, 0xce, 0x05, 0xc5, 0xb2, 0x2e, 0x89, 0xb7, 0xd2, 0x5d, 0x30, 0x73, 0x79, 0xb8,
+	0xb0, 0xc1, 0x09, 0x5c, 0x0d, 0x41, 0xbc, 0x2e, 0x24, 0xaf, 0xfb, 0x4d, 0x2d, 0xa7, 0xef, 0x5f,
+	0xa7, 0x46, 0x84, 0x9f, 0x08, 0x7a, 0x56, 0x97, 0xe4, 0x70, 0xf7, 0xdf, 0xb7, 0x8e, 0xf3, 0xf9,
+	0xef, 0x8f, 0x67, 0xee, 0xf4, 0x19, 0x5c, 0xe9, 0x87, 0x60, 0xb7, 0x73, 0xef, 0x2d, 0x6a, 0x3f,
+	0xe8, 0xe1, 0x76, 0xd1, 0xea, 0x4c, 0x10, 0x2b, 0x9e, 0xd9, 0x35, 0x8d, 0x50, 0x6e, 0x5b, 0x7d,
+	0xe0, 0x99, 0xfb, 0x04, 0x2d, 0x4d, 0xed, 0x99, 0x85, 0x6b, 0x46, 0x2d, 0x2b, 0x78, 0xd8, 0xd4,
+	0x32, 0xfd, 0xe1, 0xf5, 0x9d, 0xef, 0xdc, 0xdc, 0xf9, 0xce, 0x9f, 0x3b, 0xdf, 0xf9, 0x72, 0xef,
+	0x37, 0x6e, 0xee, 0xfd, 0xc6, 0xcf, 0x7b, 0xbf, 0xf1, 0x69, 0x9f, 0xa6, 0x72, 0xa2, 0xc6, 0x41,
+	0xcc, 0xf2, 0xd0, 0x1a, 0xd9, 0xcf, 0x60, 0x2c, 0x66, 0x71, 0xc1, 0x12, 0x62, 0x9d, 0x69, 0x71,
+	0x31, 0x6e, 0x99, 0x8b, 0x7f, 0xf9, 0x3f, 0x00, 0x00, 0xff, 0xff, 0x37, 0x62, 0x1c, 0xb6, 0xbc,
+	0x03, 0x00, 0x00,
 }
 
 func (this *Params) Equal(that interface{}) bool {
@@ -129,22 +231,63 @@ func (this *Params) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.TrustDepositShareValue.Equal(that1.TrustDepositShareValue) {
-		return false
-	}
 	if !this.TrustDepositRate.Equal(that1.TrustDepositRate) {
 		return false
 	}
-	if !this.WalletUserAgentRewardRate.Equal(that1.WalletUserAgentRewardRate) {
+	if this.MainFiatCurrency != that1.MainFiatCurrency {
 		return false
 	}
-	if !this.UserAgentRewardRate.Equal(that1.UserAgentRewardRate) {
+	if !this.TuPegValueGenesis.Equal(that1.TuPegValueGenesis) {
 		return false
 	}
-	if !this.TrustDepositMaxYieldRate.Equal(that1.TrustDepositMaxYieldRate) {
+	if !this.TuDecayRate.Equal(that1.TuDecayRate) {
 		return false
 	}
-	if !this.TrustDepositBlockRewardShare.Equal(that1.TrustDepositBlockRewardShare) {
+	if this.EpochLength != that1.EpochLength {
+		return false
+	}
+	if !this.VuaRewardRate.Equal(that1.VuaRewardRate) {
+		return false
+	}
+	if this.VnaTotalSupply != that1.VnaTotalSupply {
+		return false
+	}
+	if !this.NetworkGasPrice.Equal(that1.NetworkGasPrice) {
+		return false
+	}
+	if len(this.MaxGasPerMsgType) != len(that1.MaxGasPerMsgType) {
+		return false
+	}
+	for i := range this.MaxGasPerMsgType {
+		if !this.MaxGasPerMsgType[i].Equal(&that1.MaxGasPerMsgType[i]) {
+			return false
+		}
+	}
+	return true
+}
+func (this *MaxGasEntry) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*MaxGasEntry)
+	if !ok {
+		that2, ok := that.(MaxGasEntry)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.MsgTypeUrl != that1.MsgTypeUrl {
+		return false
+	}
+	if this.MaxGas != that1.MaxGas {
 		return false
 	}
 	return true
@@ -169,30 +312,57 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.MaxGasPerMsgType) > 0 {
+		for iNdEx := len(m.MaxGasPerMsgType) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.MaxGasPerMsgType[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintParams(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x4a
+		}
+	}
 	{
-		size := m.TrustDepositBlockRewardShare.Size()
+		size := m.NetworkGasPrice.Size()
 		i -= size
-		if _, err := m.TrustDepositBlockRewardShare.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.NetworkGasPrice.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintParams(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x42
+	if m.VnaTotalSupply != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.VnaTotalSupply))
+		i--
+		dAtA[i] = 0x38
+	}
+	{
+		size := m.VuaRewardRate.Size()
+		i -= size
+		if _, err := m.VuaRewardRate.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintParams(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x32
-	{
-		size := m.TrustDepositMaxYieldRate.Size()
-		i -= size
-		if _, err := m.TrustDepositMaxYieldRate.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintParams(dAtA, i, uint64(size))
+	n1, err1 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(m.EpochLength, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.EpochLength):])
+	if err1 != nil {
+		return 0, err1
 	}
+	i -= n1
+	i = encodeVarintParams(dAtA, i, uint64(n1))
 	i--
 	dAtA[i] = 0x2a
 	{
-		size := m.UserAgentRewardRate.Size()
+		size := m.TuDecayRate.Size()
 		i -= size
-		if _, err := m.UserAgentRewardRate.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.TuDecayRate.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintParams(dAtA, i, uint64(size))
@@ -200,15 +370,22 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x22
 	{
-		size := m.WalletUserAgentRewardRate.Size()
+		size := m.TuPegValueGenesis.Size()
 		i -= size
-		if _, err := m.WalletUserAgentRewardRate.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.TuPegValueGenesis.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintParams(dAtA, i, uint64(size))
 	}
 	i--
 	dAtA[i] = 0x1a
+	if len(m.MainFiatCurrency) > 0 {
+		i -= len(m.MainFiatCurrency)
+		copy(dAtA[i:], m.MainFiatCurrency)
+		i = encodeVarintParams(dAtA, i, uint64(len(m.MainFiatCurrency)))
+		i--
+		dAtA[i] = 0x12
+	}
 	{
 		size := m.TrustDepositRate.Size()
 		i -= size
@@ -218,17 +395,42 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintParams(dAtA, i, uint64(size))
 	}
 	i--
-	dAtA[i] = 0x12
-	{
-		size := m.TrustDepositShareValue.Size()
-		i -= size
-		if _, err := m.TrustDepositShareValue.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintParams(dAtA, i, uint64(size))
-	}
-	i--
 	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *MaxGasEntry) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MaxGasEntry) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MaxGasEntry) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MaxGas != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.MaxGas))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.MsgTypeUrl) > 0 {
+		i -= len(m.MsgTypeUrl)
+		copy(dAtA[i:], m.MsgTypeUrl)
+		i = encodeVarintParams(dAtA, i, uint64(len(m.MsgTypeUrl)))
+		i--
+		dAtA[i] = 0xa
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -249,18 +451,47 @@ func (m *Params) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = m.TrustDepositShareValue.Size()
-	n += 1 + l + sovParams(uint64(l))
 	l = m.TrustDepositRate.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = m.WalletUserAgentRewardRate.Size()
+	l = len(m.MainFiatCurrency)
+	if l > 0 {
+		n += 1 + l + sovParams(uint64(l))
+	}
+	l = m.TuPegValueGenesis.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = m.UserAgentRewardRate.Size()
+	l = m.TuDecayRate.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = m.TrustDepositMaxYieldRate.Size()
+	l = github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.EpochLength)
 	n += 1 + l + sovParams(uint64(l))
-	l = m.TrustDepositBlockRewardShare.Size()
+	l = m.VuaRewardRate.Size()
 	n += 1 + l + sovParams(uint64(l))
+	if m.VnaTotalSupply != 0 {
+		n += 1 + sovParams(uint64(m.VnaTotalSupply))
+	}
+	l = m.NetworkGasPrice.Size()
+	n += 1 + l + sovParams(uint64(l))
+	if len(m.MaxGasPerMsgType) > 0 {
+		for _, e := range m.MaxGasPerMsgType {
+			l = e.Size()
+			n += 1 + l + sovParams(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MaxGasEntry) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.MsgTypeUrl)
+	if l > 0 {
+		n += 1 + l + sovParams(uint64(l))
+	}
+	if m.MaxGas != 0 {
+		n += 1 + sovParams(uint64(m.MaxGas))
+	}
 	return n
 }
 
@@ -301,40 +532,6 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TrustDepositShareValue", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.TrustDepositShareValue.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TrustDepositRate", wireType)
 			}
 			var stringLen uint64
@@ -367,9 +564,9 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field WalletUserAgentRewardRate", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MainFiatCurrency", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -397,13 +594,45 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.WalletUserAgentRewardRate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.MainFiatCurrency = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TuPegValueGenesis", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.TuPegValueGenesis.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UserAgentRewardRate", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TuDecayRate", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -431,15 +660,15 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.UserAgentRewardRate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.TuDecayRate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TrustDepositMaxYieldRate", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field EpochLength", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowParams
@@ -449,29 +678,28 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthParams
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthParams
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.TrustDepositMaxYieldRate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdDurationUnmarshal(&m.EpochLength, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TrustDepositBlockRewardShare", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field VuaRewardRate", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -499,10 +727,198 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.TrustDepositBlockRewardShare.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.VuaRewardRate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VnaTotalSupply", wireType)
+			}
+			m.VnaTotalSupply = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.VnaTotalSupply |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NetworkGasPrice", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.NetworkGasPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxGasPerMsgType", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MaxGasPerMsgType = append(m.MaxGasPerMsgType, MaxGasEntry{})
+			if err := m.MaxGasPerMsgType[len(m.MaxGasPerMsgType)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipParams(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthParams
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MaxGasEntry) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowParams
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MaxGasEntry: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MaxGasEntry: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MsgTypeUrl", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MsgTypeUrl = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxGas", wireType)
+			}
+			m.MaxGas = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxGas |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipParams(dAtA[iNdEx:])

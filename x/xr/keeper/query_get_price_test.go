@@ -19,7 +19,7 @@ func seedPriceExchangeRate(t *testing.T, f *fixture, rate string, rateScale uint
 	require.NoError(t, err)
 
 	resp, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,

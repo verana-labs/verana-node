@@ -8,7 +8,7 @@ import (
 
 // x/xr module sentinel errors
 var (
-	ErrInvalidSigner         = errors.Register(ModuleName, 1100, "expected gov account as only signer for proposal message")
+	ErrInvalidSigner         = errors.Register(ModuleName, 1100, "expected council account as only signer for proposal message")
 	ErrInvalidAssetType      = errors.Register(ModuleName, 1101, "invalid pricing asset type")
 	ErrInvalidAsset          = errors.Register(ModuleName, 1102, "invalid asset value")
 	ErrInvalidRate           = errors.Register(ModuleName, 1103, "invalid rate")
@@ -28,4 +28,5 @@ var (
 	ErrInvalidExpiration     = errors.Register(ModuleName, 1117, "expiration must be in the future")
 	ErrInvalidMaxDeviation   = errors.Register(ModuleName, 1118, "max_deviation_bps must be in range (0, 10000]")
 	ErrInvalidMinInterval    = errors.Register(ModuleName, 1119, "min_interval must be a strictly positive duration")
+	ErrInvalidParams         = errors.Register(ModuleName, 1120, "invalid parameters")
 )

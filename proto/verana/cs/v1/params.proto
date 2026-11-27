@@ -12,9 +12,10 @@ message Params {
   option (gogoproto.equal) = true;
 
   uint64 credential_schema_schema_max_size = 1;
-  uint32 credential_schema_issuer_grantor_validation_validity_period_max_days = 2;
-  uint32 credential_schema_verifier_grantor_validation_validity_period_max_days = 3;
-  uint32 credential_schema_issuer_validation_validity_period_max_days = 4;
-  uint32 credential_schema_verifier_validation_validity_period_max_days = 5;
-  uint32 credential_schema_holder_validation_validity_period_max_days = 6;
+  uint32 credential_schema_issuer_grantor_accreditation_validity_period_max_days = 2;
+  uint32 credential_schema_verifier_grantor_accreditation_validity_period_max_days = 3;
+  uint32 credential_schema_issuer_accreditation_validity_period_max_days = 4;
+  uint32 credential_schema_verifier_accreditation_validity_period_max_days = 5;
+  uint32 credential_schema_holder_accreditation_validity_period_max_days = 6;
+  uint32 credential_schema_presentation_validity_period_max_days = 7;
 }

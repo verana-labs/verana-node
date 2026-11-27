@@ -23,7 +23,7 @@ func TestMsgCreateRootParticipant_ValidateBasic(t *testing.T) {
 	valid := func() *types.MsgCreateRootParticipant {
 		return &types.MsgCreateRootParticipant{
 			Corporation:      validAddr,
-			Delegate:         validAddr,
+			Signer:           validAddr,
 			SchemaId:         1,
 			Did:              validDid,
 			ValidationFees:   0,
@@ -40,8 +40,8 @@ func TestMsgCreateRootParticipant_ValidateBasic(t *testing.T) {
 		{"valid baseline", func(m *types.MsgCreateRootParticipant) {}, ""},
 		{"empty corporation", func(m *types.MsgCreateRootParticipant) { m.Corporation = "" }, "invalid corporation address"},
 		{"invalid corporation bech32", func(m *types.MsgCreateRootParticipant) { m.Corporation = "not-bech32" }, "invalid corporation address"},
-		{"empty delegate", func(m *types.MsgCreateRootParticipant) { m.Delegate = "" }, "invalid delegate address"},
-		{"invalid delegate bech32", func(m *types.MsgCreateRootParticipant) { m.Delegate = "cosmos1garbage" }, "invalid delegate address"},
+		{"empty delegate", func(m *types.MsgCreateRootParticipant) { m.Signer = "" }, "invalid signer address"},
+		{"invalid delegate bech32", func(m *types.MsgCreateRootParticipant) { m.Signer = "cosmos1garbage" }, "invalid signer address"},
 		{"schema_id = 0", func(m *types.MsgCreateRootParticipant) { m.SchemaId = 0 }, "schema ID cannot be 0"},
 		{"empty did", func(m *types.MsgCreateRootParticipant) { m.Did = "" }, "DID is required"},
 		{"malformed did", func(m *types.MsgCreateRootParticipant) { m.Did = "not-a-did" }, "invalid DID format"},

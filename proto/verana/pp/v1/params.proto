@@ -10,4 +10,6 @@ option go_package = "github.com/verana-labs/verana-node/x/pp/types";
 message Params {
   option (amino.name) = "verana/x/pp/Params";
   option (gogoproto.equal) = true;
+
+  uint32 accreditation_max_entries_per_participation = 1;
 }

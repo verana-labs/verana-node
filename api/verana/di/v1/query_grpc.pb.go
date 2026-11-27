@@ -19,7 +19,6 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Query_Params_FullMethodName    = "/verana.di.v1.Query/Params"
 	Query_GetDigest_FullMethodName = "/verana.di.v1.Query/GetDigest"
 )
 
@@ -29,8 +28,6 @@ const (
 //
 // Query defines the gRPC querier service.
 type QueryClient interface {
-	// Parameters queries the parameters of the module.
-	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// [MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a
 	// query-string parameter (not a path segment) so base64 (/, +, =) is safe.
 	GetDigest(ctx context.Context, in *QueryGetDigestRequest, opts ...grpc.CallOption) (*QueryGetDigestResponse, error)
@@ -42,16 +39,6 @@ type queryClient struct {
 
 func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 	return &queryClient{cc}
-}
-
-func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryParamsResponse)
-	err := c.cc.Invoke(ctx, Query_Params_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *queryClient) GetDigest(ctx context.Context, in *QueryGetDigestRequest, opts ...grpc.CallOption) (*QueryGetDigestResponse, error) {
@@ -70,8 +57,6 @@ func (c *queryClient) GetDigest(ctx context.Context, in *QueryGetDigestRequest, 
 //
 // Query defines the gRPC querier service.
 type QueryServer interface {
-	// Parameters queries the parameters of the module.
-	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// [MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a
 	// query-string parameter (not a path segment) so base64 (/, +, =) is safe.
 	GetDigest(context.Context, *QueryGetDigestRequest) (*QueryGetDigestResponse, error)
@@ -85,9 +70,6 @@ type QueryServer interface {
 // pointer dereference when methods are called.
 type UnimplementedQueryServer struct{}
 
-func (UnimplementedQueryServer) Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
-}
 func (UnimplementedQueryServer) GetDigest(context.Context, *QueryGetDigestRequest) (*QueryGetDigestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDigest not implemented")
 }
@@ -110,24 +92,6 @@ func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&Query_ServiceDesc, srv)
-}
-
-func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryParamsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Params(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_Params_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_GetDigest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -155,10 +119,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "verana.di.v1.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Params",
-			Handler:    _Query_Params_Handler,
-		},
 		{
 			MethodName: "GetDigest",
 			Handler:    _Query_GetDigest_Handler,

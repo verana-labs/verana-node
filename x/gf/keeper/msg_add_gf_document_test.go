@@ -72,6 +72,11 @@ func (m *mockCorporation) ResolveCorporationByPolicyAddress(_ context.Context, _
 	}
 	return m.view, nil
 }
+
+func (m *mockCorporation) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
 func (m *mockCorporation) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool) {
 	return m.view, m.found
 }
@@ -85,7 +90,7 @@ func (m *mockCorporation) SetActiveVersion(_ context.Context, id uint64, v uint3
 func validMsg(corp, op string, ecoID uint64, version uint32) *types.MsgAddGovernanceFrameworkDocument {
 	return &types.MsgAddGovernanceFrameworkDocument{
 		Corporation:  corp,
-		Delegate:     op,
+		Signer:       op,
 		EcosystemId:  ecoID,
 		DocLanguage:  "en",
 		DocUrl:       testURL,
@@ -132,6 +137,16 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testDelegate, 0, 1))
 		require.Error(t, err)
+	})
+
+	t.Run("MOD-GF-MSG-1-2-1: group-proposal path skips AUTHZ-CHECK-1", func(t *testing.T) {
+		corp := &mockCorporation{view: types.CorporationView{Id: 1, PolicyAddress: testCorp, Language: "en"}, found: true}
+		k, ctx := keepertest.GfKeeperWithDelegation(t,
+			mockDelegation{err: cerrors.Wrap(sdkerrors.ErrUnauthorized, "unauthorized")},
+			&mockEcosystem{}, corp,
+		)
+		_, err := keeper.NewMsgServerImpl(k).AddGovernanceFrameworkDocument(ctx, validMsg(testCorp, testCorp, 0, 1))
+		require.NoError(t, err)
 	})
 
 	t.Run("MOD-GF-MSG-1-2-1: ecosystem not controlled by signer aborts", func(t *testing.T) {
@@ -303,19 +318,19 @@ func TestAddGovernanceFrameworkDocument(t *testing.T) {
 func TestGovernanceFrameworkNetworkPath(t *testing.T) {
 	k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, &mockCorporation{})
 	ms := keeper.NewMsgServerImpl(k)
-	doc := func(authority string) *types.MsgAddGovernanceFrameworkDocument {
-		m := validMsg("", "", 0, 1)
-		m.Authority = authority
+	doc := func(signer string) *types.MsgAddGovernanceFrameworkDocument {
+		m := validMsg("", signer, 0, 1)
+		m.Network = true
 		return m
 	}
 
 	_, err := ms.AddGovernanceFrameworkDocument(ctx, doc(testDelegate))
 	require.ErrorIs(t, err, sdkerrors.ErrUnauthorized)
-	_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: testDelegate})
+	_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: testDelegate, Network: true})
 	require.ErrorIs(t, err, sdkerrors.ErrUnauthorized)
 
 	_, err = ms.AddGovernanceFrameworkDocument(ctx, doc(k.GetAuthority()))
 	require.ErrorIs(t, err, types.ErrNetworkPathUnavailable)
-	_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: k.GetAuthority()})
+	_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: k.GetAuthority(), Network: true})
 	require.ErrorIs(t, err, types.ErrNetworkPathUnavailable)
 }

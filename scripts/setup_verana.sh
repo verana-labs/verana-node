@@ -17,7 +17,6 @@ APP_TOML_PATH="$HOME_DIR/config/app.toml"
 CONFIG_TOML_PATH="$HOME_DIR/config/config.toml"
 VALIDATOR_NAME="cooluser"
 VALIDATOR_AMOUNT="1000000000000000000000uvna"
-GENTX_AMOUNT="1000000uvna"
 
 log "Starting Verana blockchain setup..."
 
@@ -45,9 +44,23 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Seat the council: one seat, short windows for local development (overridable)
-log "Seating the council in genesis..."
-$BINARY genesis add-council $VALIDATOR_NAME \
+# Two more keys, so the council has the three corporations genesis requires
+for key in council_member1 council_member2; do
+    $BINARY keys add $key --keyring-backend test
+    $BINARY add-genesis-account $key 1000000000000uvna --keyring-backend test
+done
+
+# Seat the council: one corporation per key, the validator key's runs this node; short windows (overridable)
+log "Seating the council of corporations in genesis..."
+COUNCIL_FILE="$HOME_DIR/config/council.json"
+PUBKEY=$($BINARY comet show-validator)
+cat > "$COUNCIL_FILE" <<EOF
+{"corporations":[
+ {"did":"did:example:council-1","language":"en","members":["$VALIDATOR_NAME"],"funds":"10000000uvna","validator":{"moniker":"$MONIKER","pubkey":$PUBKEY}},
+ {"did":"did:example:council-2","language":"en","members":["council_member1"],"funds":"10000000uvna"},
+ {"did":"did:example:council-3","language":"en","members":["council_member2"],"funds":"10000000uvna"}]}
+EOF
+$BINARY genesis add-council "$COUNCIL_FILE" \
     --voting-period "${COUNCIL_VOTING_PERIOD:-30s}" \
     --min-execution-period "${COUNCIL_MIN_EXECUTION_PERIOD:-10s}" \
     --unbonding-time "${COUNCIL_UNBONDING_TIME:-60s}" \
@@ -57,27 +70,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Create gentx
-log "Creating genesis transaction..."
-$BINARY gentx $VALIDATOR_NAME $GENTX_AMOUNT --chain-id $CHAIN_ID --keyring-backend test
-if [ $? -ne 0 ]; then
-    log "Error: Failed to create genesis transaction."
-    exit 1
-fi
-
 # Update minimum-gas-prices in app.toml
 log "Updating minimum gas prices..."
 sed -i '' 's/^minimum-gas-prices = ""/minimum-gas-prices = "0.25uvna"/' "$APP_TOML_PATH"
 if [ $? -ne 0 ]; then
     log "Error: Failed to update minimum gas prices in app.toml."
-    exit 1
-fi
-
-# Collect genesis transactions
-log "Collecting genesis transactions..."
-$BINARY collect-gentxs
-if [ $? -ne 0 ]; then
-    log "Error: Failed to collect genesis transactions."
     exit 1
 fi
 

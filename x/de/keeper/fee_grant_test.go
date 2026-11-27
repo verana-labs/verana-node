@@ -129,13 +129,13 @@ func TestGrantFeeAllowance_ForeignAllowance(t *testing.T) {
 	corp := acc("corp________________")
 	putSlot(f, testCorpID, grantee, foreign)
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corp, Delegate: corp, Grantee: grantee,
+		Corporation: corp, Signer: corp, Grantee: grantee,
 		MsgTypes: []types.MsgType{mtEcosystem}, WithFeegrant: true, FeegrantSpendLimit: uvna(10),
 	})
 	require.ErrorIs(t, err, types.ErrFeeAllowanceNotOwned)
 
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corp, Delegate: corp, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corp, Signer: corp, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 	require.Same(t, foreign, slot(f, testCorpID, grantee))

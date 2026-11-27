@@ -12,6 +12,8 @@ message Params {
   option (amino.name) = "verana/x/xr/Params";
   option (gogoproto.equal) = true;
 
-  // max_validity_duration is the maximum allowed validity duration for an exchange rate.
-  google.protobuf.Duration max_validity_duration = 1 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  google.protobuf.Duration twap_window = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
 }

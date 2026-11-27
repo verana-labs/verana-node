@@ -86,13 +86,7 @@ func (k Keeper) addValidator(ctx sdk.Context, msg *types.MsgAddValidator) error 
 		return errorsmod.Wrap(sdkerrors.ErrUnknownRequest, "no handler for MsgCreateValidator")
 	}
 
-	coins := sdk.NewCoins(bond)
-	if err := k.bank.MintCoins(ctx, types.ModuleName, coins); err != nil {
-		return err
-	}
-	if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accAddr, coins); err != nil {
-		return err
-	}
+	// the operator's own balance funds the bond
 	res, err := handler(ctx, createMsg)
 	if err != nil {
 		return err

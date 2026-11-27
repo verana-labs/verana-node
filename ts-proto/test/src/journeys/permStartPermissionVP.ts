@@ -80,7 +80,7 @@ async function main() {
       typeUrl: typeUrls.MsgStartParticipantOP,
       value: MsgStartParticipantOP.fromPartial({
         corporation: authzSetup.authorityAddress,
-        delegate: authzSetup.delegateAddress,
+        signer: authzSetup.delegateAddress,
         role: ParticipantRole.ISSUER,
         validatorParticipantId: rootSetup.rootPermId,
         did: rootSetup.did,

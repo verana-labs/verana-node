@@ -60,7 +60,7 @@ async function main() {
       typeUrl: typeUrls.MsgRepayParticipantSlashedTrustDeposit,
       value: MsgRepayParticipantSlashedTrustDeposit.fromPartial({
         corporation: authzSetup.authorityAddress,
-        delegate: authzSetup.delegateAddress,
+        signer: authzSetup.delegateAddress,
         id: slashSetup.slashedPermId,
       }),
     };

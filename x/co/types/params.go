@@ -8,5 +8,5 @@ func DefaultParams() Params {
 	return NewParams()
 }
 
-// Validate returns nil; the module has no params today.
+// Validate returns nil; the module owns no parameter group.
 func (p Params) Validate() error { return nil }

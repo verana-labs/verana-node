@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 	"testing"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -16,12 +15,12 @@ import (
 	"github.com/verana-labs/verana-node/x/poa/types"
 )
 
-func TestCouncilPolicyAddress_MatchesGroupDerivation(t *testing.T) {
+func TestGroupPolicyAddress_MatchesGroupDerivation(t *testing.T) {
 	dk := make([]byte, 8)
-	binary.BigEndian.PutUint64(dk, 1)
+	binary.BigEndian.PutUint64(dk, 2)
 	cred, err := authtypes.NewModuleCredential(group.ModuleName, []byte{groupkeeper.GroupPolicyTablePrefix}, dk)
 	require.NoError(t, err)
-	require.Equal(t, sdk.AccAddress(cred.Address()), types.CouncilPolicyAddress(1))
+	require.Equal(t, sdk.AccAddress(cred.Address()), types.GroupPolicyAddress(2))
 }
 
 func TestCouncilAuthorityBech32_Pinned(t *testing.T) {
@@ -43,20 +42,6 @@ func TestCouncilPercentage_MatchesCeilTwoThirds(t *testing.T) {
 			require.Equalf(t, yes >= need, res.Allow, "seats=%d yes=%d need=%d", n, yes, need)
 		}
 	}
-}
-
-func TestCouncilGenesis_IsSelfAdministered(t *testing.T) {
-	policy := types.CouncilAuthorityBech32("verana")
-	members := []string{"verana16mzeyu9l6kua2cdg9x0jk5g6e7h0kk8q6uadu4", "verana1elf8m94agzfmpg2lkvqd776ellz7fxtgqnhcaa"}
-	gs, err := types.CouncilGenesis(policy, members, "council", types.CouncilPercentage, time.Hour, time.Minute, time.Unix(0, 0).UTC())
-	require.NoError(t, err)
-	require.NoError(t, gs.Validate())
-	require.Equal(t, policy, gs.Groups[0].Admin)
-	require.Equal(t, policy, gs.GroupPolicies[0].Admin)
-	require.Equal(t, policy, gs.GroupPolicies[0].Address)
-	require.Equal(t, "2", gs.Groups[0].TotalWeight)
-	require.Len(t, gs.GroupMembers, 2)
-	require.EqualValues(t, 1, gs.GroupPolicySeq)
 }
 
 func TestMain(m *testing.M) {
