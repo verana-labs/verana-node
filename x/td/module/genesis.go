@@ -1,7 +1,11 @@
 package trustdeposit
 
 import (
+	"errors"
 	"fmt"
+	"time"
+
+	"cosmossdk.io/collections"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -19,6 +23,26 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	if genState.PendingTuDecayRate != nil {
 		if err := k.PendingTuDecayRate.Set(ctx, *genState.PendingTuDecayRate); err != nil {
 			panic(fmt.Sprintf("failed to set pending tu_decay_rate: %s", err))
+		}
+	}
+
+	if err := k.TuPegValue.Set(ctx, genState.TuPegValue); err != nil {
+		panic(fmt.Sprintf("failed to set tu_peg_value: %s", err))
+	}
+	// [TUG] the first genesis starts epoch 0 at the genesis time
+	origin := ctx.BlockTime()
+	if genState.EpochOrigin != nil {
+		if genState.EpochOrigin.After(origin) {
+			panic(fmt.Sprintf("epoch_origin %s is after the genesis time %s", genState.EpochOrigin, origin))
+		}
+		origin = *genState.EpochOrigin
+	}
+	if err := k.EpochOrigin.Set(ctx, origin.Unix()); err != nil {
+		panic(fmt.Sprintf("failed to set epoch_origin: %s", err))
+	}
+	if genState.LastClosedEpoch != nil {
+		if err := k.LastClosedEpoch.Set(ctx, *genState.LastClosedEpoch); err != nil {
+			panic(fmt.Sprintf("failed to set last_closed_epoch: %s", err))
 		}
 	}
 
@@ -91,6 +115,23 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	}
 	if found {
 		genesis.PendingTuDecayRate = &pending
+	}
+
+	if genesis.TuPegValue, err = k.TuPegValue.Get(ctx); err != nil {
+		panic(fmt.Errorf("failed to export tu_peg_value: %w", err))
+	}
+	origin, err := k.EpochOrigin.Get(ctx)
+	if err != nil {
+		panic(fmt.Errorf("failed to export epoch_origin: %w", err))
+	}
+	originTime := time.Unix(origin, 0).UTC()
+	genesis.EpochOrigin = &originTime
+	last, err := k.LastClosedEpoch.Get(ctx)
+	switch {
+	case err == nil:
+		genesis.LastClosedEpoch = &last
+	case !errors.Is(err, collections.ErrNotFound):
+		panic(fmt.Errorf("failed to export last_closed_epoch: %w", err))
 	}
 
 	return genesis

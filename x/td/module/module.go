@@ -145,10 +145,9 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 // To avoid wrong/empty versions, the initial version should be set to 1.
 func (AppModule) ConsensusVersion() uint64 { return 1 }
 
-// EndBlock contains the logic that is automatically triggered at the end of each block.
-// The end block implementation is optional.
-func (am AppModule) EndBlock(_ context.Context) error {
-	return nil
+// EndBlock closes the epochs that ended by the block time, after the block's transactions.
+func (am AppModule) EndBlock(ctx context.Context) error {
+	return am.keeper.ProcessEpochBoundaries(sdk.UnwrapSDKContext(ctx))
 }
 
 // IsOnePerModuleType implements the depinject.OnePerModuleType interface.
@@ -185,10 +184,12 @@ type ModuleInputs struct {
 	Config       *modulev1.Module
 	Logger       log.Logger
 
-	AccountKeeper     types.AccountKeeper
-	BankKeeper        types.BankKeeper
-	DelegationKeeper  types.DelegationKeeper
-	CorporationKeeper types.CorporationKeeper
+	AccountKeeper      types.AccountKeeper
+	BankKeeper         types.BankKeeper
+	DelegationKeeper   types.DelegationKeeper
+	CorporationKeeper  types.CorporationKeeper
+	ExchangeRateKeeper types.ExchangeRateKeeper
+	DistributionKeeper types.DistributionKeeper `optional:"true"`
 }
 
 type ModuleOutputs struct {
@@ -212,6 +213,8 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.BankKeeper,
 		in.DelegationKeeper,
 		in.CorporationKeeper,
+		in.ExchangeRateKeeper,
+		in.DistributionKeeper,
 	)
 	m := NewAppModule(
 		in.Cdc,

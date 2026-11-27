@@ -5,6 +5,7 @@ import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 import "verana/td/v1/params.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/td/types";
@@ -24,6 +25,18 @@ message GenesisState {
 
   // pending_tu_decay_rate is the tu_decay_rate applied at the next epoch boundary; null when none.
   string pending_tu_decay_rate = 4 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec"];
+
+  // tu_peg_value is the trust unit index; tu_peg_value_genesis until an epoch is closed.
+  string tu_peg_value = 5 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+
+  // epoch_origin is the start of epoch 0; the genesis time when absent.
+  google.protobuf.Timestamp epoch_origin = 6 [(gogoproto.stdtime) = true];
+
+  // last_closed_epoch is null when no epoch is closed.
+  google.protobuf.UInt64Value last_closed_epoch = 7 [(gogoproto.wktpointer) = true];
 }
 
 // TrustDepositRecord defines a trust deposit entry for genesis state

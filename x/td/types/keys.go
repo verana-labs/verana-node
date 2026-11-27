@@ -23,7 +23,10 @@ var (
 	// PendingTuDecayRateKey holds the tu_decay_rate applied at the next epoch boundary.
 	PendingTuDecayRateKey = collections.NewPrefix(3)
 	// ShareValueKey holds the v4 trust deposit share value.
-	ShareValueKey = collections.NewPrefix(4)
+	ShareValueKey      = collections.NewPrefix(4)
+	TuPegValueKey      = collections.NewPrefix(5)
+	EpochOriginKey     = collections.NewPrefix(6)
+	LastClosedEpochKey = collections.NewPrefix(7)
 )
 
 const (
