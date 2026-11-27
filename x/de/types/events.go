@@ -26,4 +26,6 @@ const (
 	AttributeKeyAuthzID       = "authz_id"
 	AttributeKeyVsoaID        = "vsoa_id"
 	AttributeKeyParticipantID = "participant_id"
+
+	AttributeKeyGrantorCorporationID = "grantor_corporation_id"
 )
