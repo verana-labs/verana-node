@@ -38,6 +38,11 @@ func (m *mockCorpKeeper) ResolveCorporationByPolicyAddress(_ context.Context, ad
 	return types.CorporationView{Id: 1, PolicyAddress: addr}, nil
 }
 
+func (m *mockCorpKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
+
 type fixture struct {
 	ctx          context.Context
 	keeper       keeper.Keeper
@@ -55,7 +60,7 @@ func initFixture(t *testing.T) *fixture {
 	storeService := runtime.NewKVStoreService(storeKey)
 	ctx := testutil.DefaultContextWithDB(t, storeKey, storetypes.NewTransientStoreKey("transient_test")).Ctx
 
-	authority := authtypes.NewModuleAddress(types.GovModuleName)
+	authority := authtypes.NewModuleAddress("council")
 
 	corpKeeper := newMockCorpKeeper()
 	k := keeper.NewKeeper(
@@ -66,11 +71,6 @@ func initFixture(t *testing.T) *fixture {
 		&keepertest.MockDelegationKeeper{},
 		corpKeeper,
 	)
-
-	// Initialize params
-	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
-		t.Fatalf("failed to set params: %v", err)
-	}
 
 	return &fixture{
 		ctx:          ctx,

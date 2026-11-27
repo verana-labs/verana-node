@@ -48,7 +48,7 @@ func RunXrGrantExchangeRateAuthzJourney(ctx context.Context, client cosmosclient
 
 	expiration := time.Now().Add(720 * time.Hour)
 	grantMsg := &xrtypes.MsgGrantExchangeRateAuthorization{
-		Authority:  council,
+		Signer:     council,
 		XrId:       exchangeRateID,
 		Feeder:     feederAddr,
 		Expiration: &expiration,

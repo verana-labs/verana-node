@@ -6,21 +6,10 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
-import { Params } from "./params";
 import { DelegateAuthorization, Sponsorship, VSOperatorAuthorization } from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
-
-/** QueryParamsRequest is request type for the Query/Params RPC method. */
-export interface QueryParamsRequest {
-}
-
-/** QueryParamsResponse is response type for the Query/Params RPC method. */
-export interface QueryParamsResponse {
-  /** params holds all the parameters of this module. */
-  params: Params | undefined;
-}
 
 /**
  * QueryListDelegateAuthorizationsRequest is the request type for the
@@ -145,108 +134,6 @@ export interface ListedSponsorship {
 export interface QueryListSponsorshipsResponse {
   sponsorships: ListedSponsorship[];
 }
-
-function createBaseQueryParamsRequest(): QueryParamsRequest {
-  return {};
-}
-
-export const QueryParamsRequest = {
-  encode(_: QueryParamsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryParamsRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(_: any): QueryParamsRequest {
-    return {};
-  },
-
-  toJSON(_: QueryParamsRequest): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryParamsRequest>, I>>(base?: I): QueryParamsRequest {
-    return QueryParamsRequest.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryParamsRequest>, I>>(_: I): QueryParamsRequest {
-    const message = createBaseQueryParamsRequest();
-    return message;
-  },
-};
-
-function createBaseQueryParamsResponse(): QueryParamsResponse {
-  return { params: undefined };
-}
-
-export const QueryParamsResponse = {
-  encode(message: QueryParamsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.params !== undefined) {
-      Params.encode(message.params, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryParamsResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.params = Params.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryParamsResponse {
-    return { params: isSet(object.params) ? Params.fromJSON(object.params) : undefined };
-  },
-
-  toJSON(message: QueryParamsResponse): unknown {
-    const obj: any = {};
-    if (message.params !== undefined) {
-      obj.params = Params.toJSON(message.params);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<QueryParamsResponse>, I>>(base?: I): QueryParamsResponse {
-    return QueryParamsResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<QueryParamsResponse>, I>>(object: I): QueryParamsResponse {
-    const message = createBaseQueryParamsResponse();
-    message.params = (object.params !== undefined && object.params !== null)
-      ? Params.fromPartial(object.params)
-      : undefined;
-    return message;
-  },
-};
 
 function createBaseQueryListDelegateAuthorizationsRequest(): QueryListDelegateAuthorizationsRequest {
   return { corporationId: 0, responseMaxSize: 0 };
@@ -1176,8 +1063,6 @@ export const QueryListSponsorshipsResponse = {
 
 /** Query defines the gRPC querier service. */
 export interface Query {
-  /** Parameters queries the parameters of the module. */
-  Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /** [MOD-DE-QRY-1] ListDelegateAuthorizations returns the delegate authorizations of a corporation. */
   ListDelegateAuthorizations(
     request: QueryListDelegateAuthorizationsRequest,
@@ -1213,7 +1098,6 @@ export class QueryClientImpl implements Query {
   constructor(rpc: Rpc, opts?: { service?: string }) {
     this.service = opts?.service || QueryServiceName;
     this.rpc = rpc;
-    this.Params = this.Params.bind(this);
     this.ListDelegateAuthorizations = this.ListDelegateAuthorizations.bind(this);
     this.ListVSOperatorAuthorizations = this.ListVSOperatorAuthorizations.bind(this);
     this.GetDelegateAuthorization = this.GetDelegateAuthorization.bind(this);
@@ -1221,12 +1105,6 @@ export class QueryClientImpl implements Query {
     this.GetSponsorship = this.GetSponsorship.bind(this);
     this.ListSponsorships = this.ListSponsorships.bind(this);
   }
-  Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
-    const data = QueryParamsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "Params", data);
-    return promise.then((data) => QueryParamsResponse.decode(_m0.Reader.create(data)));
-  }
-
   ListDelegateAuthorizations(
     request: QueryListDelegateAuthorizationsRequest,
   ): Promise<QueryListDelegateAuthorizationsResponse> {

@@ -6,34 +6,16 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "verana/di/v1/params.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/di/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/di/v1/params";
-  }
-
   // [MOD-DI-QRY-1] GetDigest returns a stored digest. The digest is a
   // query-string parameter (not a path segment) so base64 (/, +, =) is safe.
   rpc GetDigest(QueryGetDigestRequest) returns (QueryGetDigestResponse) {
     option (google.api.http).get = "/di/v1/get";
   }
-}
-
-// QueryParamsRequest is request type for the Query/Params RPC method.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-message QueryParamsResponse {
-  // params holds all the parameters of this module.
-  Params params = 1 [
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
 }
 
 // QueryGetDigestRequest is the request type for the Query/GetDigest RPC method.

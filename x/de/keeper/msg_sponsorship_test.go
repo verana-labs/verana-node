@@ -39,7 +39,7 @@ func sponsorAllowance(t *testing.T, f *fixture, ctx sdk.Context) (feegrant.FeeAl
 }
 
 func grantMsg(mut func(*types.MsgGrantSponsorship)) *types.MsgGrantSponsorship {
-	m := &types.MsgGrantSponsorship{Corporation: sponsorPolicy, SponsoredCorporationId: sponsoredID}
+	m := &types.MsgGrantSponsorship{Signer: sponsorPolicy, SponsoredCorporationId: sponsoredID}
 	if mut != nil {
 		mut(m)
 	}
@@ -206,6 +206,14 @@ func TestGrantSponsorship_FeeAllowanceWithoutMaxGas(t *testing.T) {
 	}
 }
 
+// x/feegrant rejects an allowance whose message filter is empty.
+func TestGrantSponsorship_FeeAllowanceEmptyMaxGas(t *testing.T) {
+	f, ms, ctx := setupMsgServer(t)
+	f.keeper.SetNetworkFeeKeeper(stubNetworkFee(nil))
+	_, err := ms.GrantSponsorship(ctx, grantMsg(func(m *types.MsgGrantSponsorship) { m.CoversFees = true }))
+	require.ErrorIs(t, err, feegrant.ErrNoMessages)
+}
+
 func TestGrantSponsorship_RaiseOnly(t *testing.T) {
 	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	exp, later, period, other := now.Add(time.Hour), now.Add(2*time.Hour), time.Hour, 2*time.Hour
@@ -327,7 +335,7 @@ func TestRevokeSponsorship_GroupPath(t *testing.T) {
 	granter, grantee := sdk.MustAccAddressFromBech32(sponsorPolicy), sdk.MustAccAddressFromBech32(corpPolicyAddr(sponsoredID))
 	require.NoError(t, f.feegrants.GrantAllowance(ctx, granter, grantee, &feegrant.BasicAllowance{}))
 
-	msg := &types.MsgRevokeSponsorship{Corporation: sponsorPolicy, Delegate: sponsorPolicy, SponsoredCorporationId: sponsoredID}
+	msg := &types.MsgRevokeSponsorship{Corporation: sponsorPolicy, Signer: sponsorPolicy, SponsoredCorporationId: sponsoredID}
 	_, err := ms.RevokeSponsorship(ctx, msg)
 	require.NoError(t, err)
 
@@ -350,7 +358,7 @@ func TestRevokeSponsorship_OtherElectionKept(t *testing.T) {
 	f.corpKeeper.sponsors[sponsoredID] = sponsorID
 	setSponsorship(t, f, ctx, types.Sponsorship{SponsorCorporationId: testCorpID, SponsoredCorporationId: sponsoredID})
 
-	_, err := ms.RevokeSponsorship(ctx, &types.MsgRevokeSponsorship{Corporation: sponsorPolicy, Delegate: sponsorPolicy, SponsoredCorporationId: sponsoredID})
+	_, err := ms.RevokeSponsorship(ctx, &types.MsgRevokeSponsorship{Corporation: sponsorPolicy, Signer: sponsorPolicy, SponsoredCorporationId: sponsoredID})
 	require.NoError(t, err)
 	require.Equal(t, sponsorID, f.corpKeeper.sponsors[sponsoredID])
 	require.Equal(t, "false", lastEvent(ctx, types.EventTypeRevokeSponsorship)[types.AttributeKeySponsorCleared])
@@ -358,7 +366,7 @@ func TestRevokeSponsorship_OtherElectionKept(t *testing.T) {
 
 func TestRevokeSponsorship_NotFound(t *testing.T) {
 	_, ms, ctx := setupMsgServer(t)
-	_, err := ms.RevokeSponsorship(ctx, &types.MsgRevokeSponsorship{Corporation: sponsorPolicy, Delegate: sponsorPolicy, SponsoredCorporationId: sponsoredID})
+	_, err := ms.RevokeSponsorship(ctx, &types.MsgRevokeSponsorship{Corporation: sponsorPolicy, Signer: sponsorPolicy, SponsoredCorporationId: sponsoredID})
 	require.ErrorIs(t, err, types.ErrSponsorshipNotFound)
 }
 
@@ -376,11 +384,11 @@ func TestRevokeSponsorship_Delegate(t *testing.T) {
 			f, ms, ctx := setupMsgServer(t)
 			setSponsorship(t, f, ctx, types.Sponsorship{SponsorCorporationId: testCorpID, SponsoredCorporationId: sponsoredID})
 			_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-				Corporation: sponsorPolicy, Delegate: sponsorPolicy, Grantee: delegate, MsgTypes: tc.msgTypes,
+				Corporation: sponsorPolicy, Signer: sponsorPolicy, Grantee: delegate, MsgTypes: tc.msgTypes,
 			})
 			require.NoError(t, err)
 
-			_, err = ms.RevokeSponsorship(ctx, &types.MsgRevokeSponsorship{Corporation: sponsorPolicy, Delegate: delegate, SponsoredCorporationId: sponsoredID})
+			_, err = ms.RevokeSponsorship(ctx, &types.MsgRevokeSponsorship{Corporation: sponsorPolicy, Signer: delegate, SponsoredCorporationId: sponsoredID})
 			if tc.wantErr != nil {
 				require.ErrorIs(t, err, tc.wantErr)
 				return

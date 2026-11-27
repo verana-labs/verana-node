@@ -10,46 +10,25 @@ import { Coin } from "../../../cosmos/base/v1beta1/coin";
 import { Duration } from "../../../google/protobuf/duration";
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { MsgType, msgTypeFromJSON, msgTypeToJSON } from "./msg_type";
-import { Params } from "./params";
 import Long = require("long");
 
 export const protobufPackage = "verana.de.v1";
-
-/** MsgUpdateParams is the Msg/UpdateParams request type. */
-export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
-  /**
-   * params defines the module parameters to update.
-   *
-   * NOTE: All parameters must be supplied.
-   */
-  params: Params | undefined;
-}
-
-/**
- * MsgUpdateParamsResponse defines the response structure for executing a
- * MsgUpdateParams message.
- */
-export interface MsgUpdateParamsResponse {
-}
 
 /**
  * [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
  * to a grantee on behalf of a corporation.
  *
- * The signer is `delegate`. On the group-proposal path the corporation's
- * policy account executes the message and `delegate` equals `corporation`;
- * only AUTHZ-CHECK-5 then applies.
+ * On the group-proposal path the corporation's policy account executes the
+ * message and `signer` equals `corporation`; only AUTHZ-CHECK-5 then applies.
  */
 export interface MsgGrantDelegateAuthorization {
   /** corporation is the policy_address of the corporation granting the authorization. */
   corporation: string;
   /**
-   * delegate is the signer: an authorized delegate, or the corporation's
-   * policy_address itself on the group-proposal path.
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
    */
-  delegate: string;
+  signer: string;
   /** grantee is the account that receives the authorization from corporation. */
   grantee: string;
   /**
@@ -104,10 +83,10 @@ export interface MsgRevokeDelegateAuthorization {
   /** corporation is the policy_address of the corporation revoking the authorization. */
   corporation: string;
   /**
-   * delegate is the signer: an authorized delegate, or the corporation's
-   * policy_address itself on the group-proposal path.
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
    */
-  delegate: string;
+  signer: string;
   /** grantee is the account whose authorization is being revoked. */
   grantee: string;
 }
@@ -125,8 +104,8 @@ export interface MsgRevokeDelegateAuthorizationResponse {
  * through a group proposal.
  */
 export interface MsgGrantSponsorship {
-  /** corporation is the policy_address of the sponsor corporation. */
-  corporation: string;
+  /** signer is the policy_address of the sponsor corporation. */
+  signer: string;
   /** sponsored_corporation_id is the id of the corporation to sponsor. */
   sponsoredCorporationId: number;
   /** msg_types are the covered paying message types; empty means all of them. */
@@ -162,17 +141,17 @@ export interface MsgGrantSponsorshipResponse {
 
 /**
  * [MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the
- * sponsor corporation. On the group-proposal path `delegate` equals
+ * sponsor corporation. On the group-proposal path `signer` equals
  * `corporation`.
  */
 export interface MsgRevokeSponsorship {
   /** corporation is the policy_address of the sponsor corporation. */
   corporation: string;
   /**
-   * delegate is the signer: an authorized delegate, or the corporation's
-   * policy_address itself on the group-proposal path.
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
    */
-  delegate: string;
+  signer: string;
   /** sponsored_corporation_id is the id of the sponsored corporation. */
   sponsoredCorporationId: number;
 }
@@ -181,129 +160,10 @@ export interface MsgRevokeSponsorship {
 export interface MsgRevokeSponsorshipResponse {
 }
 
-function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
-}
-
-export const MsgUpdateParams = {
-  encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
-    }
-    if (message.params !== undefined) {
-      Params.encode(message.params, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateParams {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateParams();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.authority = reader.string();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.params = Params.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgUpdateParams {
-    return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
-      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
-    };
-  },
-
-  toJSON(message: MsgUpdateParams): unknown {
-    const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
-    }
-    if (message.params !== undefined) {
-      obj.params = Params.toJSON(message.params);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(base?: I): MsgUpdateParams {
-    return MsgUpdateParams.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
-    const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
-    message.params = (object.params !== undefined && object.params !== null)
-      ? Params.fromPartial(object.params)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseMsgUpdateParamsResponse(): MsgUpdateParamsResponse {
-  return {};
-}
-
-export const MsgUpdateParamsResponse = {
-  encode(_: MsgUpdateParamsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateParamsResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateParamsResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(_: any): MsgUpdateParamsResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateParamsResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<MsgUpdateParamsResponse>, I>>(base?: I): MsgUpdateParamsResponse {
-    return MsgUpdateParamsResponse.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MsgUpdateParamsResponse>, I>>(_: I): MsgUpdateParamsResponse {
-    const message = createBaseMsgUpdateParamsResponse();
-    return message;
-  },
-};
-
 function createBaseMsgGrantDelegateAuthorization(): MsgGrantDelegateAuthorization {
   return {
     corporation: "",
-    delegate: "",
+    signer: "",
     grantee: "",
     msgTypes: [],
     expiration: undefined,
@@ -319,8 +179,8 @@ export const MsgGrantDelegateAuthorization = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.grantee !== "") {
       writer.uint32(26).string(message.grantee);
@@ -367,7 +227,7 @@ export const MsgGrantDelegateAuthorization = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -440,7 +300,7 @@ export const MsgGrantDelegateAuthorization = {
   fromJSON(object: any): MsgGrantDelegateAuthorization {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       grantee: isSet(object.grantee) ? globalThis.String(object.grantee) : "",
       msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
@@ -464,8 +324,8 @@ export const MsgGrantDelegateAuthorization = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.grantee !== "") {
       obj.grantee = message.grantee;
@@ -499,7 +359,7 @@ export const MsgGrantDelegateAuthorization = {
   ): MsgGrantDelegateAuthorization {
     const message = createBaseMsgGrantDelegateAuthorization();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.grantee = object.grantee ?? "";
     message.msgTypes = object.msgTypes?.map((e) => e) || [];
     message.expiration = object.expiration ?? undefined;
@@ -565,7 +425,7 @@ export const MsgGrantDelegateAuthorizationResponse = {
 };
 
 function createBaseMsgRevokeDelegateAuthorization(): MsgRevokeDelegateAuthorization {
-  return { corporation: "", delegate: "", grantee: "" };
+  return { corporation: "", signer: "", grantee: "" };
 }
 
 export const MsgRevokeDelegateAuthorization = {
@@ -573,8 +433,8 @@ export const MsgRevokeDelegateAuthorization = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.grantee !== "") {
       writer.uint32(26).string(message.grantee);
@@ -601,7 +461,7 @@ export const MsgRevokeDelegateAuthorization = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -622,7 +482,7 @@ export const MsgRevokeDelegateAuthorization = {
   fromJSON(object: any): MsgRevokeDelegateAuthorization {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       grantee: isSet(object.grantee) ? globalThis.String(object.grantee) : "",
     };
   },
@@ -632,8 +492,8 @@ export const MsgRevokeDelegateAuthorization = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.grantee !== "") {
       obj.grantee = message.grantee;
@@ -649,7 +509,7 @@ export const MsgRevokeDelegateAuthorization = {
   ): MsgRevokeDelegateAuthorization {
     const message = createBaseMsgRevokeDelegateAuthorization();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.grantee = object.grantee ?? "";
     return message;
   },
@@ -704,7 +564,7 @@ export const MsgRevokeDelegateAuthorizationResponse = {
 
 function createBaseMsgGrantSponsorship(): MsgGrantSponsorship {
   return {
-    corporation: "",
+    signer: "",
     sponsoredCorporationId: 0,
     msgTypes: [],
     spendLimit: [],
@@ -717,8 +577,8 @@ function createBaseMsgGrantSponsorship(): MsgGrantSponsorship {
 
 export const MsgGrantSponsorship = {
   encode(message: MsgGrantSponsorship, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.corporation !== "") {
-      writer.uint32(10).string(message.corporation);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.sponsoredCorporationId !== 0) {
       writer.uint32(16).uint64(message.sponsoredCorporationId);
@@ -758,7 +618,7 @@ export const MsgGrantSponsorship = {
             break;
           }
 
-          message.corporation = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 16) {
@@ -830,7 +690,7 @@ export const MsgGrantSponsorship = {
 
   fromJSON(object: any): MsgGrantSponsorship {
     return {
-      corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       sponsoredCorporationId: isSet(object.sponsoredCorporationId)
         ? globalThis.Number(object.sponsoredCorporationId)
         : 0,
@@ -849,8 +709,8 @@ export const MsgGrantSponsorship = {
 
   toJSON(message: MsgGrantSponsorship): unknown {
     const obj: any = {};
-    if (message.corporation !== "") {
-      obj.corporation = message.corporation;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.sponsoredCorporationId !== 0) {
       obj.sponsoredCorporationId = Math.round(message.sponsoredCorporationId);
@@ -881,7 +741,7 @@ export const MsgGrantSponsorship = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgGrantSponsorship>, I>>(object: I): MsgGrantSponsorship {
     const message = createBaseMsgGrantSponsorship();
-    message.corporation = object.corporation ?? "";
+    message.signer = object.signer ?? "";
     message.sponsoredCorporationId = object.sponsoredCorporationId ?? 0;
     message.msgTypes = object.msgTypes?.map((e) => e) || [];
     message.spendLimit = object.spendLimit?.map((e) => Coin.fromPartial(e)) || [];
@@ -939,7 +799,7 @@ export const MsgGrantSponsorshipResponse = {
 };
 
 function createBaseMsgRevokeSponsorship(): MsgRevokeSponsorship {
-  return { corporation: "", delegate: "", sponsoredCorporationId: 0 };
+  return { corporation: "", signer: "", sponsoredCorporationId: 0 };
 }
 
 export const MsgRevokeSponsorship = {
@@ -947,8 +807,8 @@ export const MsgRevokeSponsorship = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.sponsoredCorporationId !== 0) {
       writer.uint32(24).uint64(message.sponsoredCorporationId);
@@ -975,7 +835,7 @@ export const MsgRevokeSponsorship = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -996,7 +856,7 @@ export const MsgRevokeSponsorship = {
   fromJSON(object: any): MsgRevokeSponsorship {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       sponsoredCorporationId: isSet(object.sponsoredCorporationId)
         ? globalThis.Number(object.sponsoredCorporationId)
         : 0,
@@ -1008,8 +868,8 @@ export const MsgRevokeSponsorship = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.sponsoredCorporationId !== 0) {
       obj.sponsoredCorporationId = Math.round(message.sponsoredCorporationId);
@@ -1023,7 +883,7 @@ export const MsgRevokeSponsorship = {
   fromPartial<I extends Exact<DeepPartial<MsgRevokeSponsorship>, I>>(object: I): MsgRevokeSponsorship {
     const message = createBaseMsgRevokeSponsorship();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.sponsoredCorporationId = object.sponsoredCorporationId ?? 0;
     return message;
   },
@@ -1074,11 +934,6 @@ export const MsgRevokeSponsorshipResponse = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
-  /**
-   * UpdateParams defines a (governance) operation for updating the module
-   * parameters. The authority defaults to the x/gov module account.
-   */
-  UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse>;
   /** [MOD-DE-MSG-3] Grant Delegate Authorization */
   GrantDelegateAuthorization(request: MsgGrantDelegateAuthorization): Promise<MsgGrantDelegateAuthorizationResponse>;
   /** [MOD-DE-MSG-4] Revoke Delegate Authorization */
@@ -1096,18 +951,11 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc, opts?: { service?: string }) {
     this.service = opts?.service || MsgServiceName;
     this.rpc = rpc;
-    this.UpdateParams = this.UpdateParams.bind(this);
     this.GrantDelegateAuthorization = this.GrantDelegateAuthorization.bind(this);
     this.RevokeDelegateAuthorization = this.RevokeDelegateAuthorization.bind(this);
     this.GrantSponsorship = this.GrantSponsorship.bind(this);
     this.RevokeSponsorship = this.RevokeSponsorship.bind(this);
   }
-  UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
-    const data = MsgUpdateParams.encode(request).finish();
-    const promise = this.rpc.request(this.service, "UpdateParams", data);
-    return promise.then((data) => MsgUpdateParamsResponse.decode(_m0.Reader.create(data)));
-  }
-
   GrantDelegateAuthorization(request: MsgGrantDelegateAuthorization): Promise<MsgGrantDelegateAuthorizationResponse> {
     const data = MsgGrantDelegateAuthorization.encode(request).finish();
     const promise = this.rpc.request(this.service, "GrantDelegateAuthorization", data);

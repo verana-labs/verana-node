@@ -47,7 +47,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "CreateEcosystem",
 					Use:       "create-ecosystem [corporation] [did] [language] [doc-url] [doc-digest-sri]",
 					Short:     "Create a new ecosystem on behalf of a corporation",
-					Long:      "Create a new Ecosystem. The transaction is signed by `delegate` on behalf of `corporation` (the policy_address of the controlling Corporation). The doc_url and doc_digest_sri seed v1 of the Ecosystem's Governance Framework.",
+					Long:      "Create a new Ecosystem. The transaction is signed by `signer` on behalf of `corporation` (the policy_address of the controlling Corporation). The doc_url and doc_digest_sri seed v1 of the Ecosystem's Governance Framework.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "corporation"},
 						{ProtoField: "did"},

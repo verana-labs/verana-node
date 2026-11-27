@@ -53,6 +53,7 @@ type CorporationView struct {
 // validate ec.CorporationId ownership.
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+	ResolveSigner(ctx context.Context, corporation, signer string) (CorporationView, bool, error)
 }
 
 // DelegationKeeper backs AUTHZ-CHECK for delegable Msgs in x/cs.

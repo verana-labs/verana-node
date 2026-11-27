@@ -48,7 +48,7 @@ func RunAuthzCheck5UnregisteredJourney(ctx context.Context, client cosmosclient.
 	fmt.Println("\n--- Step 2: Self-grant from unregistered corporation (expect ErrCorporationNotRegistered) ---")
 	msg := &detypes.MsgGrantDelegateAuthorization{
 		Corporation: addr,
-		Delegate:    addr, // self-grant (delegate == corporation): AUTHZ-CHECK-1 is skipped, AUTHZ-CHECK-5 is the gate
+		Signer:      addr, // self-grant (signer == corporation): AUTHZ-CHECK-1 is skipped, AUTHZ-CHECK-5 is the gate
 		Grantee:     addr,
 		MsgTypes:    []detypes.MsgType{detypes.MsgType_MSG_TYPE_STORE_DIGEST},
 	}

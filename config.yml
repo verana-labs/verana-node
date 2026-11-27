@@ -10,9 +10,6 @@ genesis:
       params:
         slash_fraction_downtime: "0.000000000000000000"
         slash_fraction_double_sign: "0.000000000000000000"
-    mint:
-      params:
-        mint_denom: "uvna"
     crisis:
       constant_fee:
         denom: "uvna"

@@ -151,7 +151,8 @@ func TestConsumeVSAccountSpend(t *testing.T) {
 	require.Equal(t, uvna(100), f.budgets[testVsID].SpendLimit)
 
 	require.ErrorIs(t, f.keeper.ConsumeVSAccountSpend(f.ctx, testVsID, uvna(41)), types.ErrAuthzSpendLimitExceeded)
-	require.ErrorIs(t, f.keeper.ConsumeVSAccountSpend(f.ctx, testVsID, sdk.NewCoins(sdk.NewInt64Coin("other", 1))), types.ErrAuthzSpendLimitExceeded)
+	// A denom the limit does not list is not counted.
+	require.NoError(t, f.keeper.ConsumeVSAccountSpend(f.ctx, testVsID, sdk.NewCoins(sdk.NewInt64Coin("other", 1))))
 	require.Equal(t, uvna(40), f.budgets[testVsID].RemainingSpend)
 
 	require.NoError(t, f.keeper.ConsumeVSAccountSpend(f.ctx, testVsID, sdk.NewCoins()))

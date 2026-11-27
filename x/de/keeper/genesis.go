@@ -14,10 +14,6 @@ import (
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) error {
-	if err := k.Params.Set(ctx, genState.Params); err != nil {
-		return err
-	}
-
 	for _, da := range genState.DelegateAuthorizations {
 		if err := k.setDelegateAuthorization(ctx, da); err != nil {
 			return fmt.Errorf("failed to set delegate authorization: %w", err)
@@ -77,12 +73,7 @@ func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) er
 // ExportGenesis returns the module's exported genesis.
 func (k Keeper) ExportGenesis(ctx context.Context) (*types.GenesisState, error) {
 	var err error
-
 	genesis := types.DefaultGenesis()
-	genesis.Params, err = k.Params.Get(ctx)
-	if err != nil {
-		return nil, err
-	}
 
 	daList := []types.DelegateAuthorization{}
 	if err := k.DelegateAuthorizations.Walk(ctx, nil, func(key collections.Pair[uint64, sdk.AccAddress], val types.DelegateAuthorization) (bool, error) {

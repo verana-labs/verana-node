@@ -13,11 +13,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			Service: types.Query_serviceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
-					RpcMethod: "Params",
-					Use:       "params",
-					Short:     "Shows the parameters of the module",
-				},
-				{
 					RpcMethod: "GetDigest",
 					Use:       "get-digest [digest]",
 					Short:     "Look up a stored digest by its digest string",
@@ -33,16 +28,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			EnhanceCustomCommand: true, // only required if you want to use the custom command
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
-					RpcMethod: "UpdateParams",
-					Skip:      true, // skipped because authority gated
-				},
-				{
 					RpcMethod: "StoreDigest",
-					Use:       "store-digest [authority] [digest]",
+					Use:       "store-digest [corporation] [digest]",
 					Short:     "Store a digest on behalf of a corporation",
-					Long:      "[MOD-DI-MSG-1] Store Digest. The delegate (--from) stores a digest on behalf of the authority (corporation).",
+					Long:      "[MOD-DI-MSG-1] Store Digest. The signer (--from) stores a digest on behalf of the corporation.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "authority"},
+						{ProtoField: "corporation"},
 						{ProtoField: "digest"},
 					},
 				},

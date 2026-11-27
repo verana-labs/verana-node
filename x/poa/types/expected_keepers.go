@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"time"
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/math"
@@ -9,6 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/verana-labs/cosmos-group"
+
+	cotypes "github.com/verana-labs/verana-node/x/co/types"
 )
 
 type StakingKeeper interface {
@@ -16,16 +19,14 @@ type StakingKeeper interface {
 	GetValidator(ctx context.Context, addr sdk.ValAddress) (stakingtypes.Validator, error)
 	GetAllValidators(ctx context.Context) ([]stakingtypes.Validator, error)
 	GetAllDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress) ([]stakingtypes.Delegation, error)
-	RemoveValidatorTokens(ctx context.Context, validator stakingtypes.Validator, tokensToRemove math.Int) (stakingtypes.Validator, error)
-	Unbond(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, shares math.LegacyDec) (math.Int, error)
-	Hooks() stakingtypes.StakingHooks
+	GetDelegation(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (stakingtypes.Delegation, error)
+	Undelegate(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, shares math.LegacyDec) (time.Time, math.Int, error)
 	ValidatorAddressCodec() address.Codec
 }
 
-type BankKeeper interface {
-	MintCoins(ctx context.Context, moduleName string, amt sdk.Coins) error
-	BurnCoins(ctx context.Context, moduleName string, amt sdk.Coins) error
-	SendCoinsFromModuleToAccount(ctx context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
+// CorporationKeeper resolves a policy address through the AUTHZ-CHECK-5 index.
+type CorporationKeeper interface {
+	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (cotypes.Corporation, error)
 }
 
 type GroupKeeper interface {

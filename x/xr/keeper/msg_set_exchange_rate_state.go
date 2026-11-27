@@ -18,14 +18,14 @@ func (ms msgServer) SetExchangeRateState(ctx context.Context, msg *types.MsgSetE
 	}
 
 	// Governance authority check
-	authority, err := ms.addressCodec.StringToBytes(msg.Authority)
+	authority, err := ms.addressCodec.StringToBytes(msg.Signer)
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if !bytes.Equal(ms.GetAuthority(), authority) {
 		expectedAuthorityStr, _ := ms.addressCodec.BytesToString(ms.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expectedAuthorityStr, msg.Authority)
+		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid signer; expected %s, got %s", expectedAuthorityStr, msg.Signer)
 	}
 
 	// Load ExchangeRate by id (must exist)
@@ -51,7 +51,7 @@ func (ms msgServer) SetExchangeRateState(ctx context.Context, msg *types.MsgSetE
 		sdk.NewEvent(
 			types.EventTypeSetExchangeRateState,
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.Id)),
-			sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority),
+			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 			sdk.NewAttribute(types.AttributeKeyState, fmt.Sprintf("%t", xr.State)),
 		),
 	)

@@ -193,6 +193,11 @@ func (k *MockParticipantCorporationKeeper) ResolveCorporationByPolicyAddress(_ c
 	return v, nil
 }
 
+func (k *MockParticipantCorporationKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := k.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
+
 // ResolveDIDOwner reports the corporation whose own did equals `did`, for the
 // corporation leg of the DID ownership invariant. Empty unless a test registers
 // a corp did via RegisterCorpDID.

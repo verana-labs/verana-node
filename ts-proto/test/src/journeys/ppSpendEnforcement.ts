@@ -80,7 +80,7 @@ async function reGrantWithSpendLimit(
   const innerMsgValue = MsgGrantDelegateAuthorization.encode(
     MsgGrantDelegateAuthorization.fromPartial({
       corporation,
-      delegate: corporation,
+      signer: corporation,
       grantee,
       msgTypes: GRANT_MSG_TYPES,
       authzSpendLimit: [{ denom: config.denom, amount: spendLimitAmount }],
@@ -179,7 +179,7 @@ async function startParticipantOp(
     typeUrl: typeUrls.MsgStartParticipantOP,
     value: MsgStartParticipantOP.fromPartial({
       corporation,
-      delegate,
+      signer: delegate,
       role,
       validatorParticipantId: rootPermId,
       did: generateUniqueDID(),

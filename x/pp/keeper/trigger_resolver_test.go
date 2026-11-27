@@ -49,7 +49,7 @@ func TestTriggerResolver_Path1(t *testing.T) {
 
 	del.ErrToReturn = nil // CHECK-3 passes
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Delegate: delegate, Id: pid,
+		Corporation: corporation, Signer: delegate, Id: pid,
 	})
 	require.NoError(t, err)
 }
@@ -71,9 +71,35 @@ func TestTriggerResolver_Path2(t *testing.T) {
 
 	del.ErrToReturn = nil // CHECK-1 passes for the ancestor's corp delegate
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Delegate: delegate, Id: pid,
+		Corporation: corporation, Signer: delegate, Id: pid,
 	})
 	require.NoError(t, err)
+}
+
+// TestTriggerResolver_GroupPath — the corporation of an ancestor acts alone;
+// its own target is not covered.
+func TestTriggerResolver_GroupPath(t *testing.T) {
+	k, ms, ctx, trk, del := setupTriggerResolver(t)
+	corporation := sdk.AccAddress([]byte("corp_trigger________")).String()
+	corpID := trk.RegisterCorp(corporation)
+	past := ctx.BlockTime().Add(-time.Hour)
+	del.ErrToReturn = fmt.Errorf("denied")
+
+	ancestorID, err := k.CreateParticipant(ctx, activeParticipant(corpID, "other_vsop", "did:example:anc", 0, past))
+	require.NoError(t, err)
+	pid, err := k.CreateParticipant(ctx, activeParticipant(corpID, "someone_else", "did:example:holder", ancestorID, past))
+	require.NoError(t, err)
+
+	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
+		Corporation: corporation, Signer: corporation, Id: pid,
+	})
+	require.NoError(t, err)
+	require.Empty(t, del.DelegateAuthCorpIDs)
+
+	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
+		Corporation: corporation, Signer: corporation, Id: ancestorID,
+	})
+	require.ErrorContains(t, err, "authorization check failed")
 }
 
 // TestTriggerResolver_Unauthorized — no path matches.
@@ -90,7 +116,7 @@ func TestTriggerResolver_Unauthorized(t *testing.T) {
 
 	del.ErrToReturn = fmt.Errorf("denied")
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Delegate: delegate, Id: pid,
+		Corporation: corporation, Signer: delegate, Id: pid,
 	})
 	require.ErrorContains(t, err, "authorization check failed")
 }
@@ -109,7 +135,7 @@ func TestTriggerResolver_EmptyDidAllowed(t *testing.T) {
 
 	del.ErrToReturn = nil // Path 1 (delegate == vs_operator) passes
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Delegate: delegate, Id: pid,
+		Corporation: corporation, Signer: delegate, Id: pid,
 	})
 	require.NoError(t, err)
 }
@@ -128,7 +154,7 @@ func TestTriggerResolver_RejectInactive(t *testing.T) {
 
 	del.ErrToReturn = nil
 	_, err = ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Delegate: delegate, Id: pid,
+		Corporation: corporation, Signer: delegate, Id: pid,
 	})
 	require.ErrorContains(t, err, "not active")
 }
@@ -142,7 +168,7 @@ func TestTriggerResolver_RejectNotFound(t *testing.T) {
 
 	del.ErrToReturn = nil
 	_, err := ms.TriggerResolver(sdk.WrapSDKContext(ctx), &types.MsgTriggerResolver{
-		Corporation: corporation, Delegate: delegate, Id: 999,
+		Corporation: corporation, Signer: delegate, Id: 999,
 	})
 	require.ErrorContains(t, err, "not found")
 }

@@ -17,20 +17,17 @@ func (ms msgServer) RevokeDelegateAuthorization(goCtx context.Context, msg *type
 
 	// [MOD-DE-MSG-4-2] Basic checks (stateful).
 
-	// [AUTHZ-CHECK-5] Signing corporation account MUST be a registered Corporation;
-	// resolve it to co.id.
-	co, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+	// [AUTHZ-CHECK-5] Corporation account MUST be a registered Corporation;
+	// resolve it to co.id. AUTHZ-CHECK applies off the group-proposal path.
+	co, group, err := ms.corporationKeeper().ResolveSigner(ctx, msg.Corporation, msg.Signer)
 	if err != nil {
 		return nil, err
 	}
-
-	// Group-proposal path: delegate is the corporation's policy account and
-	// AUTHZ-CHECK-5 alone applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
-	if !types.IsOwnPolicyAddress(co.PolicyAddress, msg.Delegate) {
+	if !group {
 		if err := ms.CheckDelegateAuthorization(
 			ctx,
 			co.Id,
-			msg.Delegate,
+			msg.Signer,
 			types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION,
 			now,
 		); err != nil {

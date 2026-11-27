@@ -24,7 +24,7 @@ service Msg {
   rpc CreateCorporation(MsgCreateCorporation) returns (MsgCreateCorporationResponse);
 
   // [MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing
-  // Corporation. Signer: delegate.
+  // Corporation.
   rpc UpdateCorporation(MsgUpdateCorporation) returns (MsgUpdateCorporationResponse);
 }
 
@@ -44,10 +44,11 @@ message Member {
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
 message MsgUpdateParams {
-  option (cosmos.msg.v1.signer) = "authority";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/co/MsgUpdateParams";
 
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is the council account.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   Params params = 2 [
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
@@ -96,12 +97,14 @@ message MsgCreateCorporationResponse {
 // MsgUpdateCorporation — MOD-CO-MSG-2. Rotates the DID of an existing
 // Corporation. `language` is immutable and cannot be updated.
 message MsgUpdateCorporation {
-  // Only `delegate` signs; `corporation` is resolved via AUTHZ-CHECK-5.
-  option (cosmos.msg.v1.signer) = "delegate";
+  // Only `signer` signs; `corporation` is resolved via AUTHZ-CHECK-5.
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/co/MsgUpdateCorporation";
 
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is a delegate authorized by corporation, or corporation itself
+  // on the group-proposal path.
+  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string did = 3;
 }
 

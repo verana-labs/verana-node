@@ -13,7 +13,7 @@ import (
 func TestGenesisState_Validate(t *testing.T) {
 	addr := sdk.AccAddress([]byte("delegate____________")).String()
 	withOA := func(mts ...types.MsgType) *types.GenesisState {
-		return &types.GenesisState{Params: types.DefaultParams(), DelegateAuthorizations: []types.DelegateAuthorization{
+		return &types.GenesisState{DelegateAuthorizations: []types.DelegateAuthorization{
 			{CorporationId: 1, Delegate: addr, MsgTypes: mts},
 		}}
 	}
@@ -21,22 +21,22 @@ func TestGenesisState_Validate(t *testing.T) {
 		for i := range das {
 			das[i].MsgTypes = []types.MsgType{types.MsgType_MSG_TYPE_STORE_DIGEST}
 		}
-		return &types.GenesisState{Params: types.DefaultParams(), DelegateAuthorizations: das}
+		return &types.GenesisState{DelegateAuthorizations: das}
 	}
 	limit := sdk.NewCoins(sdk.NewInt64Coin("uvna", 10))
 	withFG := func(mts ...types.MsgType) *types.GenesisState {
-		return &types.GenesisState{Params: types.DefaultParams(), FeeGrants: []types.FeeGrant{
+		return &types.GenesisState{FeeGrants: []types.FeeGrant{
 			{GrantorCorporationId: 1, Grantee: addr, MsgTypes: mts},
 		}}
 	}
 	withRecord := func(mts ...types.MsgType) *types.GenesisState {
-		return &types.GenesisState{Params: types.DefaultParams(), VsOperatorAuthorizations: []types.VSOperatorAuthorization{
+		return &types.GenesisState{VsOperatorAuthorizations: []types.VSOperatorAuthorization{
 			{Id: 1, CorporationId: 1, VsOperator: addr, Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 1, MsgTypes: mts}}},
 		}}
 	}
 	period, exp := time.Hour, time.Unix(100, 0)
 	withSp := func(s ...types.Sponsorship) *types.GenesisState {
-		return &types.GenesisState{Params: types.DefaultParams(), Sponsorships: s}
+		return &types.GenesisState{Sponsorships: s}
 	}
 	tests := []struct {
 		desc     string
@@ -49,19 +49,13 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
-			genState: &types.GenesisState{Params: types.DefaultParams()},
-			valid:    true,
-		},
-		{
-			desc:     "zero fee period is invalid",
+			desc:     "empty genesis state",
 			genState: &types.GenesisState{},
-			valid:    false,
+			valid:    true,
 		},
 		{
 			desc: "queue entry without participant is invalid",
 			genState: &types.GenesisState{
-				Params:         types.DefaultParams(),
 				WindowEndQueue: []types.WindowEndQueueEntry{{ParticipantId: 0}},
 			},
 			valid: false,

@@ -38,113 +38,17 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgUpdateParams is the Msg/UpdateParams request type.
-type MsgUpdateParams struct {
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
-	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// params defines the module parameters to update.
-	//
-	// NOTE: All parameters must be supplied.
-	Params Params `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
-}
-
-func (m *MsgUpdateParams) Reset()         { *m = MsgUpdateParams{} }
-func (m *MsgUpdateParams) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateParams) ProtoMessage()    {}
-func (*MsgUpdateParams) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{0}
-}
-func (m *MsgUpdateParams) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgUpdateParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgUpdateParams.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgUpdateParams) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateParams.Merge(m, src)
-}
-func (m *MsgUpdateParams) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgUpdateParams) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateParams.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgUpdateParams proto.InternalMessageInfo
-
-func (m *MsgUpdateParams) GetAuthority() string {
-	if m != nil {
-		return m.Authority
-	}
-	return ""
-}
-
-func (m *MsgUpdateParams) GetParams() Params {
-	if m != nil {
-		return m.Params
-	}
-	return Params{}
-}
-
-// MsgUpdateParamsResponse defines the response structure for executing a
-// MsgUpdateParams message.
-type MsgUpdateParamsResponse struct {
-}
-
-func (m *MsgUpdateParamsResponse) Reset()         { *m = MsgUpdateParamsResponse{} }
-func (m *MsgUpdateParamsResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateParamsResponse) ProtoMessage()    {}
-func (*MsgUpdateParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{1}
-}
-func (m *MsgUpdateParamsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgUpdateParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgUpdateParamsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgUpdateParamsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateParamsResponse.Merge(m, src)
-}
-func (m *MsgUpdateParamsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgUpdateParamsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateParamsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgUpdateParamsResponse proto.InternalMessageInfo
-
 // [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
 // to a grantee on behalf of a corporation.
 //
-// The signer is `delegate`. On the group-proposal path the corporation's
-// policy account executes the message and `delegate` equals `corporation`;
-// only AUTHZ-CHECK-5 then applies.
+// On the group-proposal path the corporation's policy account executes the
+// message and `signer` equals `corporation`; only AUTHZ-CHECK-5 then applies.
 type MsgGrantDelegateAuthorization struct {
 	// corporation is the policy_address of the corporation granting the authorization.
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// delegate is the signer: an authorized delegate, or the corporation's
-	// policy_address itself on the group-proposal path.
-	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// signer is a delegate authorized by corporation, or corporation itself
+	// on the group-proposal path.
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 	// grantee is the account that receives the authorization from corporation.
 	Grantee string `protobuf:"bytes,3,opt,name=grantee,proto3" json:"grantee,omitempty"`
 	// msg_types is the list of VPR delegable message types for which
@@ -173,7 +77,7 @@ func (m *MsgGrantDelegateAuthorization) Reset()         { *m = MsgGrantDelegateA
 func (m *MsgGrantDelegateAuthorization) String() string { return proto.CompactTextString(m) }
 func (*MsgGrantDelegateAuthorization) ProtoMessage()    {}
 func (*MsgGrantDelegateAuthorization) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{2}
+	return fileDescriptor_05df44ca220845bb, []int{0}
 }
 func (m *MsgGrantDelegateAuthorization) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -209,9 +113,9 @@ func (m *MsgGrantDelegateAuthorization) GetCorporation() string {
 	return ""
 }
 
-func (m *MsgGrantDelegateAuthorization) GetDelegate() string {
+func (m *MsgGrantDelegateAuthorization) GetSigner() string {
 	if m != nil {
-		return m.Delegate
+		return m.Signer
 	}
 	return ""
 }
@@ -274,7 +178,7 @@ func (m *MsgGrantDelegateAuthorizationResponse) Reset()         { *m = MsgGrantD
 func (m *MsgGrantDelegateAuthorizationResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgGrantDelegateAuthorizationResponse) ProtoMessage()    {}
 func (*MsgGrantDelegateAuthorizationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{3}
+	return fileDescriptor_05df44ca220845bb, []int{1}
 }
 func (m *MsgGrantDelegateAuthorizationResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -309,9 +213,9 @@ var xxx_messageInfo_MsgGrantDelegateAuthorizationResponse proto.InternalMessageI
 type MsgRevokeDelegateAuthorization struct {
 	// corporation is the policy_address of the corporation revoking the authorization.
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// delegate is the signer: an authorized delegate, or the corporation's
-	// policy_address itself on the group-proposal path.
-	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// signer is a delegate authorized by corporation, or corporation itself
+	// on the group-proposal path.
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 	// grantee is the account whose authorization is being revoked.
 	Grantee string `protobuf:"bytes,3,opt,name=grantee,proto3" json:"grantee,omitempty"`
 }
@@ -320,7 +224,7 @@ func (m *MsgRevokeDelegateAuthorization) Reset()         { *m = MsgRevokeDelegat
 func (m *MsgRevokeDelegateAuthorization) String() string { return proto.CompactTextString(m) }
 func (*MsgRevokeDelegateAuthorization) ProtoMessage()    {}
 func (*MsgRevokeDelegateAuthorization) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{4}
+	return fileDescriptor_05df44ca220845bb, []int{2}
 }
 func (m *MsgRevokeDelegateAuthorization) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -356,9 +260,9 @@ func (m *MsgRevokeDelegateAuthorization) GetCorporation() string {
 	return ""
 }
 
-func (m *MsgRevokeDelegateAuthorization) GetDelegate() string {
+func (m *MsgRevokeDelegateAuthorization) GetSigner() string {
 	if m != nil {
-		return m.Delegate
+		return m.Signer
 	}
 	return ""
 }
@@ -381,7 +285,7 @@ func (m *MsgRevokeDelegateAuthorizationResponse) Reset() {
 func (m *MsgRevokeDelegateAuthorizationResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRevokeDelegateAuthorizationResponse) ProtoMessage()    {}
 func (*MsgRevokeDelegateAuthorizationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{5}
+	return fileDescriptor_05df44ca220845bb, []int{3}
 }
 func (m *MsgRevokeDelegateAuthorizationResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -414,8 +318,8 @@ var xxx_messageInfo_MsgRevokeDelegateAuthorizationResponse proto.InternalMessage
 // pays for another corporation. Executed by the sponsor's policy account
 // through a group proposal.
 type MsgGrantSponsorship struct {
-	// corporation is the policy_address of the sponsor corporation.
-	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
+	// signer is the policy_address of the sponsor corporation.
+	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	// sponsored_corporation_id is the id of the corporation to sponsor.
 	SponsoredCorporationId uint64 `protobuf:"varint,2,opt,name=sponsored_corporation_id,json=sponsoredCorporationId,proto3" json:"sponsored_corporation_id,omitempty"`
 	// msg_types are the covered paying message types; empty means all of them.
@@ -439,7 +343,7 @@ func (m *MsgGrantSponsorship) Reset()         { *m = MsgGrantSponsorship{} }
 func (m *MsgGrantSponsorship) String() string { return proto.CompactTextString(m) }
 func (*MsgGrantSponsorship) ProtoMessage()    {}
 func (*MsgGrantSponsorship) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{6}
+	return fileDescriptor_05df44ca220845bb, []int{4}
 }
 func (m *MsgGrantSponsorship) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -468,9 +372,9 @@ func (m *MsgGrantSponsorship) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgGrantSponsorship proto.InternalMessageInfo
 
-func (m *MsgGrantSponsorship) GetCorporation() string {
+func (m *MsgGrantSponsorship) GetSigner() string {
 	if m != nil {
-		return m.Corporation
+		return m.Signer
 	}
 	return ""
 }
@@ -532,7 +436,7 @@ func (m *MsgGrantSponsorshipResponse) Reset()         { *m = MsgGrantSponsorship
 func (m *MsgGrantSponsorshipResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgGrantSponsorshipResponse) ProtoMessage()    {}
 func (*MsgGrantSponsorshipResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{7}
+	return fileDescriptor_05df44ca220845bb, []int{5}
 }
 func (m *MsgGrantSponsorshipResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -562,14 +466,14 @@ func (m *MsgGrantSponsorshipResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgGrantSponsorshipResponse proto.InternalMessageInfo
 
 // [MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the
-// sponsor corporation. On the group-proposal path `delegate` equals
+// sponsor corporation. On the group-proposal path `signer` equals
 // `corporation`.
 type MsgRevokeSponsorship struct {
 	// corporation is the policy_address of the sponsor corporation.
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// delegate is the signer: an authorized delegate, or the corporation's
-	// policy_address itself on the group-proposal path.
-	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// signer is a delegate authorized by corporation, or corporation itself
+	// on the group-proposal path.
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 	// sponsored_corporation_id is the id of the sponsored corporation.
 	SponsoredCorporationId uint64 `protobuf:"varint,3,opt,name=sponsored_corporation_id,json=sponsoredCorporationId,proto3" json:"sponsored_corporation_id,omitempty"`
 }
@@ -578,7 +482,7 @@ func (m *MsgRevokeSponsorship) Reset()         { *m = MsgRevokeSponsorship{} }
 func (m *MsgRevokeSponsorship) String() string { return proto.CompactTextString(m) }
 func (*MsgRevokeSponsorship) ProtoMessage()    {}
 func (*MsgRevokeSponsorship) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{8}
+	return fileDescriptor_05df44ca220845bb, []int{6}
 }
 func (m *MsgRevokeSponsorship) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -614,9 +518,9 @@ func (m *MsgRevokeSponsorship) GetCorporation() string {
 	return ""
 }
 
-func (m *MsgRevokeSponsorship) GetDelegate() string {
+func (m *MsgRevokeSponsorship) GetSigner() string {
 	if m != nil {
-		return m.Delegate
+		return m.Signer
 	}
 	return ""
 }
@@ -636,7 +540,7 @@ func (m *MsgRevokeSponsorshipResponse) Reset()         { *m = MsgRevokeSponsorsh
 func (m *MsgRevokeSponsorshipResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRevokeSponsorshipResponse) ProtoMessage()    {}
 func (*MsgRevokeSponsorshipResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_05df44ca220845bb, []int{9}
+	return fileDescriptor_05df44ca220845bb, []int{7}
 }
 func (m *MsgRevokeSponsorshipResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -666,8 +570,6 @@ func (m *MsgRevokeSponsorshipResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRevokeSponsorshipResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgUpdateParams)(nil), "verana.de.v1.MsgUpdateParams")
-	proto.RegisterType((*MsgUpdateParamsResponse)(nil), "verana.de.v1.MsgUpdateParamsResponse")
 	proto.RegisterType((*MsgGrantDelegateAuthorization)(nil), "verana.de.v1.MsgGrantDelegateAuthorization")
 	proto.RegisterType((*MsgGrantDelegateAuthorizationResponse)(nil), "verana.de.v1.MsgGrantDelegateAuthorizationResponse")
 	proto.RegisterType((*MsgRevokeDelegateAuthorization)(nil), "verana.de.v1.MsgRevokeDelegateAuthorization")
@@ -681,68 +583,63 @@ func init() {
 func init() { proto.RegisterFile("verana/de/v1/tx.proto", fileDescriptor_05df44ca220845bb) }
 
 var fileDescriptor_05df44ca220845bb = []byte{
-	// 976 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x56, 0x41, 0x6f, 0xe3, 0x54,
-	0x10, 0xae, 0x49, 0x9a, 0x4d, 0xa6, 0x0b, 0xa5, 0x26, 0x65, 0xdd, 0x94, 0x3a, 0xd9, 0x48, 0x0b,
-	0xa1, 0x50, 0x9b, 0xa6, 0x15, 0xa0, 0x70, 0xda, 0x6c, 0xc5, 0x0a, 0x89, 0x48, 0x2b, 0xb7, 0x5c,
-	0x10, 0x52, 0x70, 0xe2, 0x89, 0x6b, 0x6d, 0xec, 0x67, 0xf9, 0xb9, 0xa1, 0xad, 0x04, 0x02, 0x8e,
-	0x9c, 0xf6, 0xc8, 0x4f, 0x40, 0x48, 0xa0, 0x0a, 0xf1, 0x23, 0x7a, 0x5c, 0x71, 0xe2, 0xb4, 0x8b,
-	0xda, 0x43, 0xff, 0x01, 0x27, 0x0e, 0xc8, 0x7e, 0xcf, 0x8e, 0x13, 0x67, 0xdd, 0xee, 0xd2, 0x0b,
-	0x97, 0xc4, 0x9e, 0x99, 0x37, 0x33, 0xdf, 0xbc, 0xef, 0x1b, 0x19, 0x96, 0x47, 0xe8, 0xe9, 0x8e,
-	0xae, 0x1a, 0xa8, 0x8e, 0x36, 0x55, 0xff, 0x50, 0x71, 0x3d, 0xe2, 0x13, 0xf1, 0x26, 0x33, 0x2b,
-	0x06, 0x2a, 0xa3, 0xcd, 0xca, 0x92, 0x6e, 0x5b, 0x0e, 0x51, 0xc3, 0x5f, 0x16, 0x50, 0x91, 0xfb,
-	0x84, 0xda, 0x84, 0xaa, 0x3d, 0x9d, 0x06, 0x27, 0x7b, 0xe8, 0xeb, 0x9b, 0x6a, 0x9f, 0x58, 0x0e,
-	0xf7, 0xdf, 0xe2, 0x7e, 0x9b, 0x9a, 0x41, 0x62, 0x9b, 0x9a, 0xdc, 0xb1, 0xc2, 0x1c, 0xdd, 0xf0,
-	0x4d, 0x65, 0x2f, 0xdc, 0x55, 0x36, 0x89, 0x49, 0x98, 0x3d, 0x78, 0x8a, 0x2a, 0x99, 0x84, 0x98,
-	0x43, 0x54, 0xc3, 0xb7, 0xde, 0xc1, 0x40, 0x35, 0x0e, 0x3c, 0xdd, 0xb7, 0x48, 0x54, 0xa9, 0x3a,
-	0xed, 0xf7, 0x2d, 0x1b, 0xa9, 0xaf, 0xdb, 0x2e, 0x0f, 0x58, 0x9d, 0x80, 0x68, 0x53, 0xb3, 0xeb,
-	0x1f, 0xb9, 0x18, 0xb5, 0x33, 0xe1, 0x74, 0x75, 0x4f, 0xb7, 0x79, 0x3b, 0xf5, 0xdf, 0x04, 0x58,
-	0xec, 0x50, 0xf3, 0x33, 0xd7, 0xd0, 0x7d, 0x7c, 0x10, 0x7a, 0xc4, 0xf7, 0xa1, 0xa4, 0x1f, 0xf8,
-	0xfb, 0xc4, 0xb3, 0xfc, 0x23, 0x49, 0xa8, 0x09, 0x8d, 0x52, 0x5b, 0xfa, 0xe3, 0xf7, 0x8d, 0x32,
-	0xc7, 0x71, 0xd7, 0x30, 0x3c, 0xa4, 0x74, 0xd7, 0xf7, 0x2c, 0xc7, 0xd4, 0xc6, 0xa1, 0xe2, 0x07,
-	0x50, 0x60, 0xb9, 0xa5, 0x97, 0x6a, 0x42, 0x63, 0xa1, 0x59, 0x56, 0x92, 0x03, 0x56, 0x58, 0xf6,
-	0x76, 0xe9, 0xf4, 0x49, 0x75, 0xee, 0xa7, 0x8b, 0x93, 0x75, 0x41, 0xe3, 0xe1, 0x2d, 0xe5, 0xfb,
-	0x8b, 0x93, 0xf5, 0x71, 0xa2, 0x1f, 0x2e, 0x4e, 0xd6, 0x23, 0x3c, 0x87, 0x41, 0xd3, 0x53, 0x0d,
-	0xd6, 0x57, 0xe0, 0xd6, 0x94, 0x49, 0x43, 0xea, 0x12, 0x87, 0x62, 0xfd, 0xd7, 0x02, 0xac, 0x75,
-	0xa8, 0x79, 0xdf, 0xd3, 0x1d, 0x7f, 0x07, 0x87, 0x68, 0xea, 0x3e, 0xde, 0x65, 0x89, 0x8f, 0xc3,
-	0x81, 0x8a, 0x2d, 0x58, 0xe8, 0x13, 0xcf, 0x25, 0x6c, 0xbe, 0x97, 0xe2, 0x4b, 0x06, 0x8b, 0xdb,
-	0x50, 0x34, 0x78, 0xd2, 0x10, 0x63, 0xd6, 0xc1, 0x38, 0x52, 0x6c, 0xc2, 0x0d, 0x33, 0xe8, 0x07,
-	0x51, 0xca, 0x5d, 0x72, 0x28, 0x0a, 0x14, 0x9b, 0x50, 0x8a, 0x2e, 0x91, 0x4a, 0xf9, 0x5a, 0xae,
-	0xf1, 0x4a, 0x73, 0x79, 0x72, 0x9c, 0x1d, 0x6a, 0xee, 0x1d, 0xb9, 0xa8, 0x15, 0x6d, 0xf6, 0x40,
-	0xc5, 0x1d, 0x00, 0x3c, 0x74, 0x2d, 0x0e, 0x6c, 0x3e, 0xbc, 0x83, 0x8a, 0xc2, 0x98, 0xa3, 0x44,
-	0xcc, 0x51, 0xf6, 0x22, 0xe6, 0xb4, 0x8b, 0xa7, 0x4f, 0xaa, 0xc2, 0xa3, 0xa7, 0x55, 0x41, 0x4b,
-	0x9c, 0x13, 0xbf, 0x82, 0xa5, 0xe0, 0x26, 0x8e, 0xbb, 0xd4, 0x45, 0xc7, 0xe8, 0x0e, 0x2d, 0xdb,
-	0xf2, 0xa5, 0x42, 0x2d, 0xd7, 0x58, 0x68, 0xae, 0x28, 0xbc, 0xe9, 0x40, 0x10, 0x0a, 0x17, 0x84,
-	0x72, 0x8f, 0x58, 0x4e, 0xfb, 0xbd, 0xe0, 0x56, 0x7f, 0x7e, 0x5a, 0x6d, 0x98, 0x96, 0xbf, 0x7f,
-	0xd0, 0x53, 0xfa, 0xc4, 0xe6, 0xbc, 0xe7, 0x7f, 0x1b, 0xd4, 0x78, 0xa8, 0x86, 0x70, 0xc2, 0x03,
-	0x54, 0x5b, 0x0c, 0xab, 0xec, 0x06, 0x45, 0x3e, 0x0d, 0x6a, 0x88, 0x5f, 0x80, 0x94, 0x2a, 0xdc,
-	0x75, 0xd1, 0xb3, 0x88, 0x21, 0xdd, 0x08, 0xc1, 0xac, 0xa4, 0xc0, 0xec, 0x70, 0x99, 0x30, 0x2c,
-	0x3f, 0x06, 0x58, 0x96, 0xa7, 0xf2, 0x3e, 0x08, 0x33, 0x88, 0x5f, 0x43, 0x79, 0x80, 0x18, 0x8e,
-	0x77, 0x02, 0x59, 0xe9, 0xfa, 0x91, 0x89, 0x51, 0xa1, 0x04, 0xb8, 0x1e, 0xac, 0xce, 0x2a, 0x1f,
-	0xe1, 0x83, 0xab, 0xe3, 0x93, 0xd2, 0xd9, 0x19, 0xc4, 0xd6, 0x56, 0x20, 0xa3, 0x98, 0x76, 0x81,
-	0x8a, 0x6e, 0x4f, 0xa9, 0x28, 0x25, 0x8b, 0xe3, 0xfa, 0x5b, 0x70, 0x27, 0x53, 0x2f, 0xb1, 0xb2,
-	0xfe, 0x11, 0x40, 0xee, 0x50, 0x53, 0xc3, 0x11, 0x79, 0x88, 0xff, 0x63, 0x69, 0xb5, 0xb6, 0x53,
-	0x63, 0xaa, 0x4f, 0x8d, 0x29, 0x8d, 0xf1, 0xb8, 0xde, 0x80, 0x37, 0xb3, 0xd1, 0x8f, 0x07, 0x95,
-	0x87, 0xd7, 0xa2, 0x91, 0xee, 0x06, 0x26, 0xe2, 0xd1, 0x7d, 0xcb, 0xfd, 0x4f, 0xd3, 0xf9, 0x10,
-	0x24, 0xca, 0x52, 0xa1, 0xd1, 0x4d, 0x38, 0xba, 0x96, 0x11, 0x4e, 0x2b, 0xaf, 0xbd, 0x1e, 0xfb,
-	0xef, 0x8d, 0xdd, 0x9f, 0x18, 0x93, 0x8b, 0x24, 0x77, 0xb5, 0x45, 0x32, 0x84, 0x85, 0xa4, 0x44,
-	0xf2, 0xd7, 0x2f, 0x11, 0xa0, 0x63, 0x69, 0x7c, 0x04, 0x05, 0xae, 0x82, 0xf9, 0xab, 0xab, 0x80,
-	0x1f, 0x99, 0xda, 0x79, 0x85, 0x17, 0xdc, 0x79, 0xd5, 0xe0, 0x6a, 0x46, 0xe8, 0xd1, 0xee, 0x00,
-	0x91, 0x86, 0xdb, 0xa6, 0xa8, 0x01, 0x33, 0x7d, 0x8c, 0x48, 0x45, 0x0a, 0x8b, 0x03, 0xc4, 0x89,
-	0xc5, 0x51, 0xbc, 0xfe, 0xa9, 0xbc, 0x3c, 0x40, 0x1c, 0xab, 0x9a, 0x11, 0x35, 0x49, 0x83, 0x80,
-	0xab, 0xd5, 0x59, 0x92, 0x4e, 0xd0, 0xac, 0xbe, 0x06, 0xab, 0x33, 0xcc, 0x31, 0x3b, 0xff, 0x16,
-	0xa0, 0x1c, 0x13, 0xf9, 0xba, 0xe8, 0xf9, 0x62, 0xe2, 0xcd, 0x22, 0x75, 0x2e, 0x8b, 0xd4, 0xad,
-	0x66, 0x4a, 0xc2, 0xb5, 0x99, 0x12, 0x4e, 0xce, 0x45, 0x86, 0x37, 0x66, 0xd9, 0xa3, 0xc1, 0x34,
-	0x7f, 0xc9, 0x43, 0xae, 0x43, 0x4d, 0x71, 0x0f, 0x6e, 0x4e, 0x7c, 0x0d, 0xad, 0xa5, 0xd4, 0x92,
-	0x74, 0x57, 0xee, 0x64, 0xba, 0xa3, 0xec, 0xe2, 0x37, 0x50, 0xc9, 0xf8, 0x26, 0x79, 0x27, 0x95,
-	0xe4, 0xd9, 0xc1, 0x95, 0xad, 0xe7, 0x08, 0x8e, 0xeb, 0x7f, 0x27, 0xc0, 0x6a, 0xd6, 0xea, 0x7e,
-	0x37, 0x95, 0x34, 0x23, 0xba, 0xb2, 0xfd, 0x3c, 0xd1, 0x71, 0x0f, 0x5f, 0xc2, 0xab, 0xa9, 0xa5,
-	0x78, 0x7b, 0x36, 0x98, 0x44, 0x48, 0xe5, 0xed, 0x4b, 0x43, 0xe2, 0x0a, 0x7d, 0x58, 0x4a, 0x13,
-	0xbb, 0xfe, 0x8c, 0x66, 0x93, 0x35, 0xd6, 0x2f, 0x8f, 0x89, 0x8a, 0x54, 0xe6, 0xbf, 0x0d, 0x3e,
-	0x5e, 0xdb, 0xf7, 0x4f, 0xcf, 0x64, 0xe1, 0xf1, 0x99, 0x2c, 0xfc, 0x75, 0x26, 0x0b, 0x8f, 0xce,
-	0xe5, 0xb9, 0xc7, 0xe7, 0xf2, 0xdc, 0x9f, 0xe7, 0xf2, 0xdc, 0xe7, 0x1b, 0x09, 0xc1, 0xb3, 0xb4,
-	0x1b, 0x43, 0xbd, 0x47, 0xa3, 0x67, 0x87, 0x18, 0xc8, 0x78, 0x1a, 0x6a, 0xbf, 0x57, 0x08, 0xd7,
-	0xd4, 0xd6, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x63, 0xd6, 0x25, 0xcb, 0xa6, 0x0c, 0x00, 0x00,
+	// 883 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x56, 0x41, 0x6f, 0xe3, 0x44,
+	0x18, 0x8d, 0x49, 0x9a, 0x4d, 0x27, 0xc0, 0x52, 0x93, 0x82, 0xeb, 0xb0, 0x4e, 0x36, 0x12, 0x10,
+	0x02, 0xb1, 0x9b, 0x2c, 0x07, 0x14, 0x4e, 0x9b, 0xad, 0x58, 0x21, 0x11, 0x09, 0xb9, 0x7b, 0x42,
+	0x48, 0xc6, 0x89, 0xbf, 0x4c, 0xac, 0x8d, 0x3d, 0x96, 0xc7, 0x09, 0x6d, 0x24, 0x10, 0x70, 0xe4,
+	0xd4, 0x23, 0x3f, 0x01, 0x71, 0xea, 0x81, 0x1f, 0xd1, 0x63, 0xc5, 0x05, 0x4e, 0x2d, 0x6a, 0x0f,
+	0x3d, 0x21, 0x71, 0xe2, 0x8c, 0x6c, 0x8f, 0x53, 0x27, 0x4e, 0x93, 0x14, 0x55, 0x48, 0x7b, 0x49,
+	0xec, 0xf9, 0xbe, 0x99, 0x37, 0xef, 0xe5, 0xbd, 0x4f, 0x41, 0xdb, 0x63, 0x70, 0x75, 0x5b, 0x57,
+	0x0c, 0x50, 0xc6, 0x0d, 0xc5, 0x3b, 0x90, 0x1d, 0x97, 0x78, 0x84, 0x7f, 0x39, 0x5c, 0x96, 0x0d,
+	0x90, 0xc7, 0x0d, 0x71, 0x4b, 0xb7, 0x4c, 0x9b, 0x28, 0xc1, 0x67, 0xd8, 0x20, 0x4a, 0x3d, 0x42,
+	0x2d, 0x42, 0x95, 0xae, 0x4e, 0xfd, 0x9d, 0x5d, 0xf0, 0xf4, 0x86, 0xd2, 0x23, 0xa6, 0xcd, 0xea,
+	0x6f, 0xb2, 0xba, 0x45, 0xb1, 0x7f, 0xb0, 0x45, 0x31, 0x2b, 0xec, 0x84, 0x05, 0x2d, 0x78, 0x53,
+	0xc2, 0x17, 0x56, 0x2a, 0x60, 0x82, 0x49, 0xb8, 0xee, 0x3f, 0x45, 0x48, 0x98, 0x10, 0x3c, 0x04,
+	0x25, 0x78, 0xeb, 0x8e, 0xfa, 0x8a, 0x31, 0x72, 0x75, 0xcf, 0x24, 0x11, 0x52, 0x69, 0xbe, 0xee,
+	0x99, 0x16, 0x50, 0x4f, 0xb7, 0x1c, 0xd6, 0x50, 0x9c, 0xa1, 0x68, 0x51, 0xac, 0x79, 0x87, 0x0e,
+	0x84, 0xc5, 0xca, 0xcf, 0x59, 0xf4, 0xa0, 0x43, 0xf1, 0x53, 0x57, 0xb7, 0xbd, 0x3d, 0x18, 0x02,
+	0xd6, 0x3d, 0x78, 0x3c, 0xf2, 0x06, 0xc4, 0x35, 0x27, 0x01, 0x0a, 0xdf, 0x42, 0xf9, 0x1e, 0x71,
+	0x1d, 0x12, 0x82, 0x0a, 0x5c, 0x99, 0xab, 0x6e, 0xb6, 0x85, 0xdf, 0x7e, 0xad, 0x17, 0xd8, 0xe5,
+	0x1f, 0x1b, 0x86, 0x0b, 0x94, 0xee, 0x7b, 0xae, 0x69, 0x63, 0x35, 0xde, 0xcc, 0xef, 0xa2, 0x2c,
+	0x35, 0xb1, 0x0d, 0xae, 0xf0, 0xd2, 0x8a, 0x6d, 0xac, 0x8f, 0x6f, 0xa2, 0x7b, 0xd8, 0xbf, 0x0b,
+	0x80, 0x90, 0x5e, 0xb1, 0x25, 0x6a, 0xe4, 0x9b, 0x68, 0x33, 0x62, 0x45, 0x85, 0x4c, 0x39, 0x5d,
+	0x7d, 0xb5, 0xb9, 0x2d, 0xc7, 0x7f, 0x40, 0xb9, 0x43, 0xf1, 0xb3, 0x43, 0x07, 0xd4, 0x9c, 0x15,
+	0x3e, 0x50, 0x7e, 0x0f, 0x21, 0x38, 0x70, 0x4c, 0x46, 0x6a, 0xa3, 0xcc, 0x55, 0xf3, 0x4d, 0x51,
+	0x0e, 0xa5, 0x94, 0x23, 0x29, 0xe5, 0x67, 0x91, 0x94, 0xed, 0xdc, 0xc9, 0x59, 0x89, 0x3b, 0x3a,
+	0x2f, 0x71, 0x6a, 0x6c, 0x1f, 0xff, 0x35, 0xda, 0xd2, 0x47, 0xde, 0x60, 0xa2, 0x51, 0x07, 0x6c,
+	0x43, 0x1b, 0x9a, 0x96, 0xe9, 0x09, 0xd9, 0x72, 0xba, 0x9a, 0x6f, 0xee, 0xc8, 0xec, 0xd2, 0xbe,
+	0x43, 0x64, 0xe6, 0x10, 0xf9, 0x09, 0x31, 0xed, 0xf6, 0xee, 0xc9, 0x59, 0x29, 0xf5, 0xcb, 0x79,
+	0xa9, 0x8a, 0x4d, 0x6f, 0x30, 0xea, 0xca, 0x3d, 0x62, 0x31, 0x23, 0xb0, 0xaf, 0x3a, 0x35, 0x9e,
+	0x2b, 0x01, 0x9d, 0x60, 0x03, 0x55, 0xef, 0x07, 0x28, 0xfb, 0x3e, 0xc8, 0x67, 0x3e, 0x06, 0xff,
+	0x25, 0x12, 0x12, 0xc0, 0x9a, 0x03, 0xae, 0x49, 0x0c, 0xe1, 0x5e, 0x40, 0x66, 0x27, 0x41, 0x66,
+	0x8f, 0xf9, 0x26, 0xe4, 0xf2, 0x93, 0xcf, 0x65, 0x7b, 0xee, 0xdc, 0xcf, 0x83, 0x13, 0xf8, 0x6f,
+	0x50, 0xa1, 0x0f, 0x10, 0xc8, 0x3b, 0xc3, 0x6c, 0xf3, 0xee, 0x99, 0xf1, 0x11, 0x50, 0x8c, 0x5c,
+	0x17, 0x15, 0x17, 0xc1, 0x47, 0xfc, 0xd0, 0xfa, 0xfc, 0x84, 0xe4, 0xe9, 0x21, 0xc5, 0x56, 0xe3,
+	0x87, 0xab, 0xe3, 0x1a, 0x33, 0xdd, 0x8f, 0x57, 0xc7, 0xb5, 0x87, 0x2c, 0x24, 0x07, 0x7e, 0x4c,
+	0x16, 0x05, 0x62, 0x52, 0x79, 0x17, 0xbd, 0xbd, 0x34, 0x29, 0x2a, 0x50, 0x87, 0xd8, 0x14, 0x2a,
+	0xff, 0x70, 0x48, 0xea, 0x50, 0xac, 0xc2, 0x98, 0x3c, 0x87, 0x17, 0x34, 0x54, 0xad, 0xe6, 0x9c,
+	0x40, 0x95, 0x39, 0x81, 0x92, 0xec, 0x26, 0x95, 0x2a, 0x7a, 0x67, 0x39, 0xef, 0xa9, 0x44, 0x7f,
+	0x65, 0xd0, 0xeb, 0x91, 0x98, 0xfb, 0xfe, 0x12, 0x71, 0xe9, 0xc0, 0x74, 0x62, 0xdc, 0xb8, 0x35,
+	0xb9, 0x7d, 0x84, 0x04, 0x1a, 0x1e, 0x00, 0x86, 0x16, 0x93, 0x49, 0x33, 0x8d, 0x40, 0x9f, 0x8c,
+	0xfa, 0xc6, 0xb4, 0xfe, 0xe4, 0xba, 0xfc, 0xa9, 0x31, 0x3b, 0x36, 0xd2, 0xeb, 0x8d, 0x8d, 0x21,
+	0xca, 0xc7, 0x03, 0x91, 0xb9, 0xfb, 0x40, 0x20, 0x7a, 0x1d, 0x84, 0x8f, 0x51, 0x96, 0x79, 0x7e,
+	0x63, 0x7d, 0xcf, 0xb3, 0x2d, 0x73, 0x13, 0x2e, 0xfb, 0x1f, 0x27, 0x5c, 0xc9, 0x37, 0xea, 0x18,
+	0x5c, 0xaa, 0xf5, 0x01, 0x68, 0x30, 0x5b, 0x72, 0x2a, 0x0a, 0x97, 0x3e, 0x01, 0xa0, 0x3c, 0x45,
+	0xf7, 0xfb, 0x00, 0x33, 0x63, 0x22, 0x77, 0xf7, 0xaa, 0xbc, 0xd2, 0x07, 0xb8, 0xce, 0x70, 0x4b,
+	0x99, 0x33, 0x67, 0x69, 0x51, 0x7a, 0x63, 0xbe, 0xaa, 0x3c, 0x40, 0xc5, 0x05, 0xcb, 0x53, 0x3b,
+	0xfe, 0xcd, 0xa1, 0xc2, 0xd4, 0xb9, 0x71, 0x3f, 0xfe, 0xbf, 0x39, 0x5d, 0xe6, 0xe5, 0xf4, 0x32,
+	0x2f, 0xb7, 0x76, 0xe7, 0x04, 0x29, 0x2f, 0x4c, 0x6b, 0x5c, 0x11, 0x09, 0xbd, 0xb5, 0x68, 0x3d,
+	0x92, 0xa4, 0xf9, 0x7b, 0x1a, 0xa5, 0x3b, 0x14, 0xf3, 0xdf, 0x22, 0x71, 0xc9, 0x9f, 0x83, 0xf7,
+	0x13, 0x81, 0xb9, 0xb9, 0x59, 0x7c, 0x74, 0x8b, 0xe6, 0xe8, 0x1e, 0xfc, 0xf7, 0x1c, 0x2a, 0x2e,
+	0x9b, 0xa4, 0x1f, 0x24, 0x0e, 0x5d, 0xd2, 0x2d, 0x7e, 0x78, 0x9b, 0xee, 0xe9, 0x1d, 0xbe, 0x42,
+	0xaf, 0x25, 0x26, 0xd5, 0xc3, 0xc5, 0x64, 0x62, 0x2d, 0xe2, 0x7b, 0x2b, 0x5b, 0xa6, 0x08, 0x3d,
+	0xb4, 0x95, 0x34, 0x5f, 0xe5, 0x86, 0xcb, 0xc6, 0x31, 0x6a, 0xab, 0x7b, 0x22, 0x10, 0x71, 0xe3,
+	0xbb, 0xab, 0xe3, 0x1a, 0xd7, 0x7e, 0x7a, 0x72, 0x21, 0x71, 0xa7, 0x17, 0x12, 0xf7, 0xe7, 0x85,
+	0xc4, 0x1d, 0x5d, 0x4a, 0xa9, 0xd3, 0x4b, 0x29, 0xf5, 0xc7, 0xa5, 0x94, 0xfa, 0xa2, 0x1e, 0xcb,
+	0x63, 0x78, 0x6c, 0x7d, 0xa8, 0x77, 0x69, 0xf4, 0x6c, 0x13, 0x03, 0x42, 0x47, 0x05, 0xd1, 0xec,
+	0x66, 0x83, 0x29, 0xf2, 0xe8, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xd8, 0xc5, 0xfc, 0x5c, 0x44,
+	0x0b, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -757,9 +654,6 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// UpdateParams defines a (governance) operation for updating the module
-	// parameters. The authority defaults to the x/gov module account.
-	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 	// [MOD-DE-MSG-3] Grant Delegate Authorization
 	GrantDelegateAuthorization(ctx context.Context, in *MsgGrantDelegateAuthorization, opts ...grpc.CallOption) (*MsgGrantDelegateAuthorizationResponse, error)
 	// [MOD-DE-MSG-4] Revoke Delegate Authorization
@@ -776,15 +670,6 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
-}
-
-func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
-	out := new(MsgUpdateParamsResponse)
-	err := c.cc.Invoke(ctx, "/verana.de.v1.Msg/UpdateParams", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *msgClient) GrantDelegateAuthorization(ctx context.Context, in *MsgGrantDelegateAuthorization, opts ...grpc.CallOption) (*MsgGrantDelegateAuthorizationResponse, error) {
@@ -825,9 +710,6 @@ func (c *msgClient) RevokeSponsorship(ctx context.Context, in *MsgRevokeSponsors
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// UpdateParams defines a (governance) operation for updating the module
-	// parameters. The authority defaults to the x/gov module account.
-	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	// [MOD-DE-MSG-3] Grant Delegate Authorization
 	GrantDelegateAuthorization(context.Context, *MsgGrantDelegateAuthorization) (*MsgGrantDelegateAuthorizationResponse, error)
 	// [MOD-DE-MSG-4] Revoke Delegate Authorization
@@ -842,9 +724,6 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
-}
 func (*UnimplementedMsgServer) GrantDelegateAuthorization(ctx context.Context, req *MsgGrantDelegateAuthorization) (*MsgGrantDelegateAuthorizationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GrantDelegateAuthorization not implemented")
 }
@@ -860,24 +739,6 @@ func (*UnimplementedMsgServer) RevokeSponsorship(ctx context.Context, req *MsgRe
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
-}
-
-func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateParams)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).UpdateParams(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/verana.de.v1.Msg/UpdateParams",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateParams(ctx, req.(*MsgUpdateParams))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_GrantDelegateAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -958,10 +819,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UpdateParams",
-			Handler:    _Msg_UpdateParams_Handler,
-		},
-		{
 			MethodName: "GrantDelegateAuthorization",
 			Handler:    _Msg_GrantDelegateAuthorization_Handler,
 		},
@@ -980,69 +837,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "verana/de/v1/tx.proto",
-}
-
-func (m *MsgUpdateParams) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgUpdateParams) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgUpdateParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintTx(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x12
-	if len(m.Authority) > 0 {
-		i -= len(m.Authority)
-		copy(dAtA[i:], m.Authority)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgUpdateParamsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgUpdateParamsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgUpdateParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
 }
 
 func (m *MsgGrantDelegateAuthorization) Marshal() (dAtA []byte, err error) {
@@ -1066,12 +860,12 @@ func (m *MsgGrantDelegateAuthorization) MarshalToSizedBuffer(dAtA []byte) (int, 
 	var l int
 	_ = l
 	if m.FeegrantSpendLimitPeriod != nil {
-		n2, err2 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(*m.FeegrantSpendLimitPeriod, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(*m.FeegrantSpendLimitPeriod):])
-		if err2 != nil {
-			return 0, err2
+		n1, err1 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(*m.FeegrantSpendLimitPeriod, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(*m.FeegrantSpendLimitPeriod):])
+		if err1 != nil {
+			return 0, err1
 		}
-		i -= n2
-		i = encodeVarintTx(dAtA, i, uint64(n2))
+		i -= n1
+		i = encodeVarintTx(dAtA, i, uint64(n1))
 		i--
 		dAtA[i] = 0x52
 	}
@@ -1090,12 +884,12 @@ func (m *MsgGrantDelegateAuthorization) MarshalToSizedBuffer(dAtA []byte) (int, 
 		}
 	}
 	if m.AuthzSpendLimitPeriod != nil {
-		n3, err3 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(*m.AuthzSpendLimitPeriod, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(*m.AuthzSpendLimitPeriod):])
-		if err3 != nil {
-			return 0, err3
+		n2, err2 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(*m.AuthzSpendLimitPeriod, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(*m.AuthzSpendLimitPeriod):])
+		if err2 != nil {
+			return 0, err2
 		}
-		i -= n3
-		i = encodeVarintTx(dAtA, i, uint64(n3))
+		i -= n2
+		i = encodeVarintTx(dAtA, i, uint64(n2))
 		i--
 		dAtA[i] = 0x3a
 	}
@@ -1114,30 +908,30 @@ func (m *MsgGrantDelegateAuthorization) MarshalToSizedBuffer(dAtA []byte) (int, 
 		}
 	}
 	if m.Expiration != nil {
-		n4, err4 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.Expiration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.Expiration):])
-		if err4 != nil {
-			return 0, err4
+		n3, err3 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.Expiration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.Expiration):])
+		if err3 != nil {
+			return 0, err3
 		}
-		i -= n4
-		i = encodeVarintTx(dAtA, i, uint64(n4))
+		i -= n3
+		i = encodeVarintTx(dAtA, i, uint64(n3))
 		i--
 		dAtA[i] = 0x2a
 	}
 	if len(m.MsgTypes) > 0 {
-		dAtA6 := make([]byte, len(m.MsgTypes)*10)
-		var j5 int
+		dAtA5 := make([]byte, len(m.MsgTypes)*10)
+		var j4 int
 		for _, num := range m.MsgTypes {
 			for num >= 1<<7 {
-				dAtA6[j5] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA5[j4] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j5++
+				j4++
 			}
-			dAtA6[j5] = uint8(num)
-			j5++
+			dAtA5[j4] = uint8(num)
+			j4++
 		}
-		i -= j5
-		copy(dAtA[i:], dAtA6[:j5])
-		i = encodeVarintTx(dAtA, i, uint64(j5))
+		i -= j4
+		copy(dAtA[i:], dAtA5[:j4])
+		i = encodeVarintTx(dAtA, i, uint64(j4))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -1148,10 +942,10 @@ func (m *MsgGrantDelegateAuthorization) MarshalToSizedBuffer(dAtA []byte) (int, 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.Delegate) > 0 {
-		i -= len(m.Delegate)
-		copy(dAtA[i:], m.Delegate)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Delegate)))
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1215,10 +1009,10 @@ func (m *MsgRevokeDelegateAuthorization) MarshalToSizedBuffer(dAtA []byte) (int,
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.Delegate) > 0 {
-		i -= len(m.Delegate)
-		copy(dAtA[i:], m.Delegate)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Delegate)))
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1300,22 +1094,22 @@ func (m *MsgGrantSponsorship) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x38
 	}
 	if m.Expiration != nil {
-		n7, err7 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.Expiration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.Expiration):])
+		n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.Expiration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.Expiration):])
+		if err6 != nil {
+			return 0, err6
+		}
+		i -= n6
+		i = encodeVarintTx(dAtA, i, uint64(n6))
+		i--
+		dAtA[i] = 0x32
+	}
+	if m.Period != nil {
+		n7, err7 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(*m.Period, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(*m.Period):])
 		if err7 != nil {
 			return 0, err7
 		}
 		i -= n7
 		i = encodeVarintTx(dAtA, i, uint64(n7))
-		i--
-		dAtA[i] = 0x32
-	}
-	if m.Period != nil {
-		n8, err8 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(*m.Period, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(*m.Period):])
-		if err8 != nil {
-			return 0, err8
-		}
-		i -= n8
-		i = encodeVarintTx(dAtA, i, uint64(n8))
 		i--
 		dAtA[i] = 0x2a
 	}
@@ -1334,20 +1128,20 @@ func (m *MsgGrantSponsorship) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		}
 	}
 	if len(m.MsgTypes) > 0 {
-		dAtA10 := make([]byte, len(m.MsgTypes)*10)
-		var j9 int
+		dAtA9 := make([]byte, len(m.MsgTypes)*10)
+		var j8 int
 		for _, num := range m.MsgTypes {
 			for num >= 1<<7 {
-				dAtA10[j9] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA9[j8] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j9++
+				j8++
 			}
-			dAtA10[j9] = uint8(num)
-			j9++
+			dAtA9[j8] = uint8(num)
+			j8++
 		}
-		i -= j9
-		copy(dAtA[i:], dAtA10[:j9])
-		i = encodeVarintTx(dAtA, i, uint64(j9))
+		i -= j8
+		copy(dAtA[i:], dAtA9[:j8])
+		i = encodeVarintTx(dAtA, i, uint64(j8))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1356,10 +1150,10 @@ func (m *MsgGrantSponsorship) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x10
 	}
-	if len(m.Corporation) > 0 {
-		i -= len(m.Corporation)
-		copy(dAtA[i:], m.Corporation)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Corporation)))
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1414,10 +1208,10 @@ func (m *MsgRevokeSponsorship) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x18
 	}
-	if len(m.Delegate) > 0 {
-		i -= len(m.Delegate)
-		copy(dAtA[i:], m.Delegate)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Delegate)))
+	if len(m.Signer) > 0 {
+		i -= len(m.Signer)
+		copy(dAtA[i:], m.Signer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Signer)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1465,30 +1259,6 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgUpdateParams) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Authority)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = m.Params.Size()
-	n += 1 + l + sovTx(uint64(l))
-	return n
-}
-
-func (m *MsgUpdateParamsResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
 func (m *MsgGrantDelegateAuthorization) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1499,7 +1269,7 @@ func (m *MsgGrantDelegateAuthorization) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Delegate)
+	l = len(m.Signer)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1560,7 +1330,7 @@ func (m *MsgRevokeDelegateAuthorization) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Delegate)
+	l = len(m.Signer)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1586,7 +1356,7 @@ func (m *MsgGrantSponsorship) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Corporation)
+	l = len(m.Signer)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1645,7 +1415,7 @@ func (m *MsgRevokeSponsorship) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Delegate)
+	l = len(m.Signer)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1669,171 +1439,6 @@ func sovTx(x uint64) (n int) {
 }
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateParams: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateParams: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Authority = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgUpdateParamsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateParamsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *MsgGrantDelegateAuthorization) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -1898,7 +1503,7 @@ func (m *MsgGrantDelegateAuthorization) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1926,7 +1531,7 @@ func (m *MsgGrantDelegateAuthorization) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Delegate = string(dAtA[iNdEx:postIndex])
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -2339,7 +1944,7 @@ func (m *MsgRevokeDelegateAuthorization) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2367,7 +1972,7 @@ func (m *MsgRevokeDelegateAuthorization) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Delegate = string(dAtA[iNdEx:postIndex])
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -2503,7 +2108,7 @@ func (m *MsgGrantSponsorship) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Corporation", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2531,7 +2136,7 @@ func (m *MsgGrantSponsorship) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Corporation = string(dAtA[iNdEx:postIndex])
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -2915,7 +2520,7 @@ func (m *MsgRevokeSponsorship) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2943,7 +2548,7 @@ func (m *MsgRevokeSponsorship) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Delegate = string(dAtA[iNdEx:postIndex])
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {

@@ -19,861 +19,6 @@ import (
 	sync "sync"
 )
 
-var (
-	md_MsgUpdateParams           protoreflect.MessageDescriptor
-	fd_MsgUpdateParams_authority protoreflect.FieldDescriptor
-	fd_MsgUpdateParams_params    protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_verana_de_v1_tx_proto_init()
-	md_MsgUpdateParams = File_verana_de_v1_tx_proto.Messages().ByName("MsgUpdateParams")
-	fd_MsgUpdateParams_authority = md_MsgUpdateParams.Fields().ByName("authority")
-	fd_MsgUpdateParams_params = md_MsgUpdateParams.Fields().ByName("params")
-}
-
-var _ protoreflect.Message = (*fastReflection_MsgUpdateParams)(nil)
-
-type fastReflection_MsgUpdateParams MsgUpdateParams
-
-func (x *MsgUpdateParams) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgUpdateParams)(x)
-}
-
-func (x *MsgUpdateParams) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[0]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_MsgUpdateParams_messageType fastReflection_MsgUpdateParams_messageType
-var _ protoreflect.MessageType = fastReflection_MsgUpdateParams_messageType{}
-
-type fastReflection_MsgUpdateParams_messageType struct{}
-
-func (x fastReflection_MsgUpdateParams_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgUpdateParams)(nil)
-}
-func (x fastReflection_MsgUpdateParams_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgUpdateParams)
-}
-func (x fastReflection_MsgUpdateParams_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgUpdateParams
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_MsgUpdateParams) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgUpdateParams
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgUpdateParams) Type() protoreflect.MessageType {
-	return _fastReflection_MsgUpdateParams_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgUpdateParams) New() protoreflect.Message {
-	return new(fastReflection_MsgUpdateParams)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgUpdateParams) Interface() protoreflect.ProtoMessage {
-	return (*MsgUpdateParams)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_MsgUpdateParams) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Authority != "" {
-		value := protoreflect.ValueOfString(x.Authority)
-		if !f(fd_MsgUpdateParams_authority, value) {
-			return
-		}
-	}
-	if x.Params != nil {
-		value := protoreflect.ValueOfMessage(x.Params.ProtoReflect())
-		if !f(fd_MsgUpdateParams_params, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgUpdateParams) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "verana.de.v1.MsgUpdateParams.authority":
-		return x.Authority != ""
-	case "verana.de.v1.MsgUpdateParams.params":
-		return x.Params != nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParams"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParams does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateParams) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "verana.de.v1.MsgUpdateParams.authority":
-		x.Authority = ""
-	case "verana.de.v1.MsgUpdateParams.params":
-		x.Params = nil
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParams"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParams does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgUpdateParams) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "verana.de.v1.MsgUpdateParams.authority":
-		value := x.Authority
-		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgUpdateParams.params":
-		value := x.Params
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParams"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParams does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateParams) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "verana.de.v1.MsgUpdateParams.authority":
-		x.Authority = value.Interface().(string)
-	case "verana.de.v1.MsgUpdateParams.params":
-		x.Params = value.Message().Interface().(*Params)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParams"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParams does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateParams) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.de.v1.MsgUpdateParams.params":
-		if x.Params == nil {
-			x.Params = new(Params)
-		}
-		return protoreflect.ValueOfMessage(x.Params.ProtoReflect())
-	case "verana.de.v1.MsgUpdateParams.authority":
-		panic(fmt.Errorf("field authority of message verana.de.v1.MsgUpdateParams is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParams"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParams does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgUpdateParams) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "verana.de.v1.MsgUpdateParams.authority":
-		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgUpdateParams.params":
-		m := new(Params)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParams"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParams does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgUpdateParams) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgUpdateParams", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgUpdateParams) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateParams) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_MsgUpdateParams) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgUpdateParams) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgUpdateParams)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Authority)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.Params != nil {
-			l = options.Size(x.Params)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgUpdateParams)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.Params != nil {
-			encoded, err := options.Marshal(x.Params)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if len(x.Authority) > 0 {
-			i -= len(x.Authority)
-			copy(dAtA[i:], x.Authority)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Authority)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgUpdateParams)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateParams: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateParams: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Authority = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Params == nil {
-					x.Params = &Params{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Params); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_MsgUpdateParamsResponse protoreflect.MessageDescriptor
-)
-
-func init() {
-	file_verana_de_v1_tx_proto_init()
-	md_MsgUpdateParamsResponse = File_verana_de_v1_tx_proto.Messages().ByName("MsgUpdateParamsResponse")
-}
-
-var _ protoreflect.Message = (*fastReflection_MsgUpdateParamsResponse)(nil)
-
-type fastReflection_MsgUpdateParamsResponse MsgUpdateParamsResponse
-
-func (x *MsgUpdateParamsResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgUpdateParamsResponse)(x)
-}
-
-func (x *MsgUpdateParamsResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_MsgUpdateParamsResponse_messageType fastReflection_MsgUpdateParamsResponse_messageType
-var _ protoreflect.MessageType = fastReflection_MsgUpdateParamsResponse_messageType{}
-
-type fastReflection_MsgUpdateParamsResponse_messageType struct{}
-
-func (x fastReflection_MsgUpdateParamsResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgUpdateParamsResponse)(nil)
-}
-func (x fastReflection_MsgUpdateParamsResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgUpdateParamsResponse)
-}
-func (x fastReflection_MsgUpdateParamsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgUpdateParamsResponse
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_MsgUpdateParamsResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgUpdateParamsResponse
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgUpdateParamsResponse) Type() protoreflect.MessageType {
-	return _fastReflection_MsgUpdateParamsResponse_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgUpdateParamsResponse) New() protoreflect.Message {
-	return new(fastReflection_MsgUpdateParamsResponse)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgUpdateParamsResponse) Interface() protoreflect.ProtoMessage {
-	return (*MsgUpdateParamsResponse)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_MsgUpdateParamsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgUpdateParamsResponse) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParamsResponse"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateParamsResponse) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParamsResponse"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgUpdateParamsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParamsResponse"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParamsResponse does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateParamsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParamsResponse"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateParamsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParamsResponse"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgUpdateParamsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.de.v1.MsgUpdateParamsResponse"))
-		}
-		panic(fmt.Errorf("message verana.de.v1.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgUpdateParamsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.de.v1.MsgUpdateParamsResponse", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgUpdateParamsResponse) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateParamsResponse) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_MsgUpdateParamsResponse) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgUpdateParamsResponse) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgUpdateParamsResponse)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgUpdateParamsResponse)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgUpdateParamsResponse)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateParamsResponse: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
 var _ protoreflect.List = (*_MsgGrantDelegateAuthorization_4_list)(nil)
 
 type _MsgGrantDelegateAuthorization_4_list struct {
@@ -1025,7 +170,7 @@ func (x *_MsgGrantDelegateAuthorization_9_list) IsValid() bool {
 var (
 	md_MsgGrantDelegateAuthorization                             protoreflect.MessageDescriptor
 	fd_MsgGrantDelegateAuthorization_corporation                 protoreflect.FieldDescriptor
-	fd_MsgGrantDelegateAuthorization_delegate                    protoreflect.FieldDescriptor
+	fd_MsgGrantDelegateAuthorization_signer                      protoreflect.FieldDescriptor
 	fd_MsgGrantDelegateAuthorization_grantee                     protoreflect.FieldDescriptor
 	fd_MsgGrantDelegateAuthorization_msg_types                   protoreflect.FieldDescriptor
 	fd_MsgGrantDelegateAuthorization_expiration                  protoreflect.FieldDescriptor
@@ -1039,7 +184,7 @@ func init() {
 	file_verana_de_v1_tx_proto_init()
 	md_MsgGrantDelegateAuthorization = File_verana_de_v1_tx_proto.Messages().ByName("MsgGrantDelegateAuthorization")
 	fd_MsgGrantDelegateAuthorization_corporation = md_MsgGrantDelegateAuthorization.Fields().ByName("corporation")
-	fd_MsgGrantDelegateAuthorization_delegate = md_MsgGrantDelegateAuthorization.Fields().ByName("delegate")
+	fd_MsgGrantDelegateAuthorization_signer = md_MsgGrantDelegateAuthorization.Fields().ByName("signer")
 	fd_MsgGrantDelegateAuthorization_grantee = md_MsgGrantDelegateAuthorization.Fields().ByName("grantee")
 	fd_MsgGrantDelegateAuthorization_msg_types = md_MsgGrantDelegateAuthorization.Fields().ByName("msg_types")
 	fd_MsgGrantDelegateAuthorization_expiration = md_MsgGrantDelegateAuthorization.Fields().ByName("expiration")
@@ -1058,7 +203,7 @@ func (x *MsgGrantDelegateAuthorization) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGrantDelegateAuthorization) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[2]
+	mi := &file_verana_de_v1_tx_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1120,9 +265,9 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) Range(f func(protoreflect
 			return
 		}
 	}
-	if x.Delegate != "" {
-		value := protoreflect.ValueOfString(x.Delegate)
-		if !f(fd_MsgGrantDelegateAuthorization_delegate, value) {
+	if x.Signer != "" {
+		value := protoreflect.ValueOfString(x.Signer)
+		if !f(fd_MsgGrantDelegateAuthorization_signer, value) {
 			return
 		}
 	}
@@ -1185,8 +330,8 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) Has(fd protoreflect.Field
 	switch fd.FullName() {
 	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		return x.Corporation != ""
-	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
-		return x.Delegate != ""
+	case "verana.de.v1.MsgGrantDelegateAuthorization.signer":
+		return x.Signer != ""
 	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		return x.Grantee != ""
 	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
@@ -1219,8 +364,8 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) Clear(fd protoreflect.Fie
 	switch fd.FullName() {
 	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		x.Corporation = ""
-	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
-		x.Delegate = ""
+	case "verana.de.v1.MsgGrantDelegateAuthorization.signer":
+		x.Signer = ""
 	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		x.Grantee = ""
 	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
@@ -1254,8 +399,8 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) Get(descriptor protorefle
 	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
-		value := x.Delegate
+	case "verana.de.v1.MsgGrantDelegateAuthorization.signer":
+		value := x.Signer
 		return protoreflect.ValueOfString(value)
 	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		value := x.Grantee
@@ -1309,8 +454,8 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) Set(fd protoreflect.Field
 	switch fd.FullName() {
 	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
-		x.Delegate = value.Interface().(string)
+	case "verana.de.v1.MsgGrantDelegateAuthorization.signer":
+		x.Signer = value.Interface().(string)
 	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		x.Grantee = value.Interface().(string)
 	case "verana.de.v1.MsgGrantDelegateAuthorization.msg_types":
@@ -1386,8 +531,8 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) Mutable(fd protoreflect.F
 		return protoreflect.ValueOfMessage(x.FeegrantSpendLimitPeriod.ProtoReflect())
 	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		panic(fmt.Errorf("field corporation of message verana.de.v1.MsgGrantDelegateAuthorization is not mutable"))
-	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
-		panic(fmt.Errorf("field delegate of message verana.de.v1.MsgGrantDelegateAuthorization is not mutable"))
+	case "verana.de.v1.MsgGrantDelegateAuthorization.signer":
+		panic(fmt.Errorf("field signer of message verana.de.v1.MsgGrantDelegateAuthorization is not mutable"))
 	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		panic(fmt.Errorf("field grantee of message verana.de.v1.MsgGrantDelegateAuthorization is not mutable"))
 	default:
@@ -1405,7 +550,7 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) NewField(fd protoreflect.
 	switch fd.FullName() {
 	case "verana.de.v1.MsgGrantDelegateAuthorization.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgGrantDelegateAuthorization.delegate":
+	case "verana.de.v1.MsgGrantDelegateAuthorization.signer":
 		return protoreflect.ValueOfString("")
 	case "verana.de.v1.MsgGrantDelegateAuthorization.grantee":
 		return protoreflect.ValueOfString("")
@@ -1500,7 +645,7 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) ProtoMethods() *protoifac
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Delegate)
+		l = len(x.Signer)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -1670,10 +815,10 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) ProtoMethods() *protoifac
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Delegate) > 0 {
-			i -= len(x.Delegate)
-			copy(dAtA[i:], x.Delegate)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
+		if len(x.Signer) > 0 {
+			i -= len(x.Signer)
+			copy(dAtA[i:], x.Signer)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Signer)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -1767,7 +912,7 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) ProtoMethods() *protoifac
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1795,7 +940,7 @@ func (x *fastReflection_MsgGrantDelegateAuthorization) ProtoMethods() *protoifac
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Delegate = string(dAtA[iNdEx:postIndex])
+				x.Signer = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -2127,7 +1272,7 @@ func (x *MsgGrantDelegateAuthorizationResponse) ProtoReflect() protoreflect.Mess
 }
 
 func (x *MsgGrantDelegateAuthorizationResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[3]
+	mi := &file_verana_de_v1_tx_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2468,7 +1613,7 @@ func (x *fastReflection_MsgGrantDelegateAuthorizationResponse) ProtoMethods() *p
 var (
 	md_MsgRevokeDelegateAuthorization             protoreflect.MessageDescriptor
 	fd_MsgRevokeDelegateAuthorization_corporation protoreflect.FieldDescriptor
-	fd_MsgRevokeDelegateAuthorization_delegate    protoreflect.FieldDescriptor
+	fd_MsgRevokeDelegateAuthorization_signer      protoreflect.FieldDescriptor
 	fd_MsgRevokeDelegateAuthorization_grantee     protoreflect.FieldDescriptor
 )
 
@@ -2476,7 +1621,7 @@ func init() {
 	file_verana_de_v1_tx_proto_init()
 	md_MsgRevokeDelegateAuthorization = File_verana_de_v1_tx_proto.Messages().ByName("MsgRevokeDelegateAuthorization")
 	fd_MsgRevokeDelegateAuthorization_corporation = md_MsgRevokeDelegateAuthorization.Fields().ByName("corporation")
-	fd_MsgRevokeDelegateAuthorization_delegate = md_MsgRevokeDelegateAuthorization.Fields().ByName("delegate")
+	fd_MsgRevokeDelegateAuthorization_signer = md_MsgRevokeDelegateAuthorization.Fields().ByName("signer")
 	fd_MsgRevokeDelegateAuthorization_grantee = md_MsgRevokeDelegateAuthorization.Fields().ByName("grantee")
 }
 
@@ -2489,7 +1634,7 @@ func (x *MsgRevokeDelegateAuthorization) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgRevokeDelegateAuthorization) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[4]
+	mi := &file_verana_de_v1_tx_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2551,9 +1696,9 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) Range(f func(protoreflec
 			return
 		}
 	}
-	if x.Delegate != "" {
-		value := protoreflect.ValueOfString(x.Delegate)
-		if !f(fd_MsgRevokeDelegateAuthorization_delegate, value) {
+	if x.Signer != "" {
+		value := protoreflect.ValueOfString(x.Signer)
+		if !f(fd_MsgRevokeDelegateAuthorization_signer, value) {
 			return
 		}
 	}
@@ -2580,8 +1725,8 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) Has(fd protoreflect.Fiel
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		return x.Corporation != ""
-	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
-		return x.Delegate != ""
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.signer":
+		return x.Signer != ""
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		return x.Grantee != ""
 	default:
@@ -2602,8 +1747,8 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) Clear(fd protoreflect.Fi
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		x.Corporation = ""
-	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
-		x.Delegate = ""
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.signer":
+		x.Signer = ""
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		x.Grantee = ""
 	default:
@@ -2625,8 +1770,8 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) Get(descriptor protorefl
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
-		value := x.Delegate
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.signer":
+		value := x.Signer
 		return protoreflect.ValueOfString(value)
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		value := x.Grantee
@@ -2653,8 +1798,8 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) Set(fd protoreflect.Fiel
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
-		x.Delegate = value.Interface().(string)
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.signer":
+		x.Signer = value.Interface().(string)
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		x.Grantee = value.Interface().(string)
 	default:
@@ -2679,8 +1824,8 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) Mutable(fd protoreflect.
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		panic(fmt.Errorf("field corporation of message verana.de.v1.MsgRevokeDelegateAuthorization is not mutable"))
-	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
-		panic(fmt.Errorf("field delegate of message verana.de.v1.MsgRevokeDelegateAuthorization is not mutable"))
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.signer":
+		panic(fmt.Errorf("field signer of message verana.de.v1.MsgRevokeDelegateAuthorization is not mutable"))
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		panic(fmt.Errorf("field grantee of message verana.de.v1.MsgRevokeDelegateAuthorization is not mutable"))
 	default:
@@ -2698,7 +1843,7 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) NewField(fd protoreflect
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgRevokeDelegateAuthorization.delegate":
+	case "verana.de.v1.MsgRevokeDelegateAuthorization.signer":
 		return protoreflect.ValueOfString("")
 	case "verana.de.v1.MsgRevokeDelegateAuthorization.grantee":
 		return protoreflect.ValueOfString("")
@@ -2775,7 +1920,7 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) ProtoMethods() *protoifa
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Delegate)
+		l = len(x.Signer)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -2819,10 +1964,10 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) ProtoMethods() *protoifa
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Delegate) > 0 {
-			i -= len(x.Delegate)
-			copy(dAtA[i:], x.Delegate)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
+		if len(x.Signer) > 0 {
+			i -= len(x.Signer)
+			copy(dAtA[i:], x.Signer)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Signer)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -2916,7 +2061,7 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) ProtoMethods() *protoifa
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -2944,7 +2089,7 @@ func (x *fastReflection_MsgRevokeDelegateAuthorization) ProtoMethods() *protoifa
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Delegate = string(dAtA[iNdEx:postIndex])
+				x.Signer = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -3031,7 +2176,7 @@ func (x *MsgRevokeDelegateAuthorizationResponse) ProtoReflect() protoreflect.Mes
 }
 
 func (x *MsgRevokeDelegateAuthorizationResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[5]
+	mi := &file_verana_de_v1_tx_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3519,7 +2664,7 @@ func (x *_MsgGrantSponsorship_8_list) IsValid() bool {
 
 var (
 	md_MsgGrantSponsorship                          protoreflect.MessageDescriptor
-	fd_MsgGrantSponsorship_corporation              protoreflect.FieldDescriptor
+	fd_MsgGrantSponsorship_signer                   protoreflect.FieldDescriptor
 	fd_MsgGrantSponsorship_sponsored_corporation_id protoreflect.FieldDescriptor
 	fd_MsgGrantSponsorship_msg_types                protoreflect.FieldDescriptor
 	fd_MsgGrantSponsorship_spend_limit              protoreflect.FieldDescriptor
@@ -3532,7 +2677,7 @@ var (
 func init() {
 	file_verana_de_v1_tx_proto_init()
 	md_MsgGrantSponsorship = File_verana_de_v1_tx_proto.Messages().ByName("MsgGrantSponsorship")
-	fd_MsgGrantSponsorship_corporation = md_MsgGrantSponsorship.Fields().ByName("corporation")
+	fd_MsgGrantSponsorship_signer = md_MsgGrantSponsorship.Fields().ByName("signer")
 	fd_MsgGrantSponsorship_sponsored_corporation_id = md_MsgGrantSponsorship.Fields().ByName("sponsored_corporation_id")
 	fd_MsgGrantSponsorship_msg_types = md_MsgGrantSponsorship.Fields().ByName("msg_types")
 	fd_MsgGrantSponsorship_spend_limit = md_MsgGrantSponsorship.Fields().ByName("spend_limit")
@@ -3551,7 +2696,7 @@ func (x *MsgGrantSponsorship) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGrantSponsorship) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[6]
+	mi := &file_verana_de_v1_tx_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3607,9 +2752,9 @@ func (x *fastReflection_MsgGrantSponsorship) Interface() protoreflect.ProtoMessa
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_MsgGrantSponsorship) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Corporation != "" {
-		value := protoreflect.ValueOfString(x.Corporation)
-		if !f(fd_MsgGrantSponsorship_corporation, value) {
+	if x.Signer != "" {
+		value := protoreflect.ValueOfString(x.Signer)
+		if !f(fd_MsgGrantSponsorship_signer, value) {
 			return
 		}
 	}
@@ -3670,8 +2815,8 @@ func (x *fastReflection_MsgGrantSponsorship) Range(f func(protoreflect.FieldDesc
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGrantSponsorship) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantSponsorship.corporation":
-		return x.Corporation != ""
+	case "verana.de.v1.MsgGrantSponsorship.signer":
+		return x.Signer != ""
 	case "verana.de.v1.MsgGrantSponsorship.sponsored_corporation_id":
 		return x.SponsoredCorporationId != uint64(0)
 	case "verana.de.v1.MsgGrantSponsorship.msg_types":
@@ -3702,8 +2847,8 @@ func (x *fastReflection_MsgGrantSponsorship) Has(fd protoreflect.FieldDescriptor
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGrantSponsorship) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantSponsorship.corporation":
-		x.Corporation = ""
+	case "verana.de.v1.MsgGrantSponsorship.signer":
+		x.Signer = ""
 	case "verana.de.v1.MsgGrantSponsorship.sponsored_corporation_id":
 		x.SponsoredCorporationId = uint64(0)
 	case "verana.de.v1.MsgGrantSponsorship.msg_types":
@@ -3734,8 +2879,8 @@ func (x *fastReflection_MsgGrantSponsorship) Clear(fd protoreflect.FieldDescript
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGrantSponsorship) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.de.v1.MsgGrantSponsorship.corporation":
-		value := x.Corporation
+	case "verana.de.v1.MsgGrantSponsorship.signer":
+		value := x.Signer
 		return protoreflect.ValueOfString(value)
 	case "verana.de.v1.MsgGrantSponsorship.sponsored_corporation_id":
 		value := x.SponsoredCorporationId
@@ -3787,8 +2932,8 @@ func (x *fastReflection_MsgGrantSponsorship) Get(descriptor protoreflect.FieldDe
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGrantSponsorship) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantSponsorship.corporation":
-		x.Corporation = value.Interface().(string)
+	case "verana.de.v1.MsgGrantSponsorship.signer":
+		x.Signer = value.Interface().(string)
 	case "verana.de.v1.MsgGrantSponsorship.sponsored_corporation_id":
 		x.SponsoredCorporationId = value.Uint()
 	case "verana.de.v1.MsgGrantSponsorship.msg_types":
@@ -3857,8 +3002,8 @@ func (x *fastReflection_MsgGrantSponsorship) Mutable(fd protoreflect.FieldDescri
 		}
 		value := &_MsgGrantSponsorship_8_list{list: &x.FeeSpendLimit}
 		return protoreflect.ValueOfList(value)
-	case "verana.de.v1.MsgGrantSponsorship.corporation":
-		panic(fmt.Errorf("field corporation of message verana.de.v1.MsgGrantSponsorship is not mutable"))
+	case "verana.de.v1.MsgGrantSponsorship.signer":
+		panic(fmt.Errorf("field signer of message verana.de.v1.MsgGrantSponsorship is not mutable"))
 	case "verana.de.v1.MsgGrantSponsorship.sponsored_corporation_id":
 		panic(fmt.Errorf("field sponsored_corporation_id of message verana.de.v1.MsgGrantSponsorship is not mutable"))
 	case "verana.de.v1.MsgGrantSponsorship.covers_fees":
@@ -3876,7 +3021,7 @@ func (x *fastReflection_MsgGrantSponsorship) Mutable(fd protoreflect.FieldDescri
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGrantSponsorship) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.de.v1.MsgGrantSponsorship.corporation":
+	case "verana.de.v1.MsgGrantSponsorship.signer":
 		return protoreflect.ValueOfString("")
 	case "verana.de.v1.MsgGrantSponsorship.sponsored_corporation_id":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -3966,7 +3111,7 @@ func (x *fastReflection_MsgGrantSponsorship) ProtoMethods() *protoiface.Methods 
 		var n int
 		var l int
 		_ = l
-		l = len(x.Corporation)
+		l = len(x.Signer)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -4128,10 +3273,10 @@ func (x *fastReflection_MsgGrantSponsorship) ProtoMethods() *protoiface.Methods 
 			i--
 			dAtA[i] = 0x10
 		}
-		if len(x.Corporation) > 0 {
-			i -= len(x.Corporation)
-			copy(dAtA[i:], x.Corporation)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Corporation)))
+		if len(x.Signer) > 0 {
+			i -= len(x.Signer)
+			copy(dAtA[i:], x.Signer)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Signer)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -4186,7 +3331,7 @@ func (x *fastReflection_MsgGrantSponsorship) ProtoMethods() *protoiface.Methods 
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Corporation", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -4214,7 +3359,7 @@ func (x *fastReflection_MsgGrantSponsorship) ProtoMethods() *protoiface.Methods 
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Corporation = string(dAtA[iNdEx:postIndex])
+				x.Signer = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 0 {
@@ -4517,7 +3662,7 @@ func (x *MsgGrantSponsorshipResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgGrantSponsorshipResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[7]
+	mi := &file_verana_de_v1_tx_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4858,7 +4003,7 @@ func (x *fastReflection_MsgGrantSponsorshipResponse) ProtoMethods() *protoiface.
 var (
 	md_MsgRevokeSponsorship                          protoreflect.MessageDescriptor
 	fd_MsgRevokeSponsorship_corporation              protoreflect.FieldDescriptor
-	fd_MsgRevokeSponsorship_delegate                 protoreflect.FieldDescriptor
+	fd_MsgRevokeSponsorship_signer                   protoreflect.FieldDescriptor
 	fd_MsgRevokeSponsorship_sponsored_corporation_id protoreflect.FieldDescriptor
 )
 
@@ -4866,7 +4011,7 @@ func init() {
 	file_verana_de_v1_tx_proto_init()
 	md_MsgRevokeSponsorship = File_verana_de_v1_tx_proto.Messages().ByName("MsgRevokeSponsorship")
 	fd_MsgRevokeSponsorship_corporation = md_MsgRevokeSponsorship.Fields().ByName("corporation")
-	fd_MsgRevokeSponsorship_delegate = md_MsgRevokeSponsorship.Fields().ByName("delegate")
+	fd_MsgRevokeSponsorship_signer = md_MsgRevokeSponsorship.Fields().ByName("signer")
 	fd_MsgRevokeSponsorship_sponsored_corporation_id = md_MsgRevokeSponsorship.Fields().ByName("sponsored_corporation_id")
 }
 
@@ -4879,7 +4024,7 @@ func (x *MsgRevokeSponsorship) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgRevokeSponsorship) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[8]
+	mi := &file_verana_de_v1_tx_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4941,9 +4086,9 @@ func (x *fastReflection_MsgRevokeSponsorship) Range(f func(protoreflect.FieldDes
 			return
 		}
 	}
-	if x.Delegate != "" {
-		value := protoreflect.ValueOfString(x.Delegate)
-		if !f(fd_MsgRevokeSponsorship_delegate, value) {
+	if x.Signer != "" {
+		value := protoreflect.ValueOfString(x.Signer)
+		if !f(fd_MsgRevokeSponsorship_signer, value) {
 			return
 		}
 	}
@@ -4970,8 +4115,8 @@ func (x *fastReflection_MsgRevokeSponsorship) Has(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeSponsorship.corporation":
 		return x.Corporation != ""
-	case "verana.de.v1.MsgRevokeSponsorship.delegate":
-		return x.Delegate != ""
+	case "verana.de.v1.MsgRevokeSponsorship.signer":
+		return x.Signer != ""
 	case "verana.de.v1.MsgRevokeSponsorship.sponsored_corporation_id":
 		return x.SponsoredCorporationId != uint64(0)
 	default:
@@ -4992,8 +4137,8 @@ func (x *fastReflection_MsgRevokeSponsorship) Clear(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeSponsorship.corporation":
 		x.Corporation = ""
-	case "verana.de.v1.MsgRevokeSponsorship.delegate":
-		x.Delegate = ""
+	case "verana.de.v1.MsgRevokeSponsorship.signer":
+		x.Signer = ""
 	case "verana.de.v1.MsgRevokeSponsorship.sponsored_corporation_id":
 		x.SponsoredCorporationId = uint64(0)
 	default:
@@ -5015,8 +4160,8 @@ func (x *fastReflection_MsgRevokeSponsorship) Get(descriptor protoreflect.FieldD
 	case "verana.de.v1.MsgRevokeSponsorship.corporation":
 		value := x.Corporation
 		return protoreflect.ValueOfString(value)
-	case "verana.de.v1.MsgRevokeSponsorship.delegate":
-		value := x.Delegate
+	case "verana.de.v1.MsgRevokeSponsorship.signer":
+		value := x.Signer
 		return protoreflect.ValueOfString(value)
 	case "verana.de.v1.MsgRevokeSponsorship.sponsored_corporation_id":
 		value := x.SponsoredCorporationId
@@ -5043,8 +4188,8 @@ func (x *fastReflection_MsgRevokeSponsorship) Set(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeSponsorship.corporation":
 		x.Corporation = value.Interface().(string)
-	case "verana.de.v1.MsgRevokeSponsorship.delegate":
-		x.Delegate = value.Interface().(string)
+	case "verana.de.v1.MsgRevokeSponsorship.signer":
+		x.Signer = value.Interface().(string)
 	case "verana.de.v1.MsgRevokeSponsorship.sponsored_corporation_id":
 		x.SponsoredCorporationId = value.Uint()
 	default:
@@ -5069,8 +4214,8 @@ func (x *fastReflection_MsgRevokeSponsorship) Mutable(fd protoreflect.FieldDescr
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeSponsorship.corporation":
 		panic(fmt.Errorf("field corporation of message verana.de.v1.MsgRevokeSponsorship is not mutable"))
-	case "verana.de.v1.MsgRevokeSponsorship.delegate":
-		panic(fmt.Errorf("field delegate of message verana.de.v1.MsgRevokeSponsorship is not mutable"))
+	case "verana.de.v1.MsgRevokeSponsorship.signer":
+		panic(fmt.Errorf("field signer of message verana.de.v1.MsgRevokeSponsorship is not mutable"))
 	case "verana.de.v1.MsgRevokeSponsorship.sponsored_corporation_id":
 		panic(fmt.Errorf("field sponsored_corporation_id of message verana.de.v1.MsgRevokeSponsorship is not mutable"))
 	default:
@@ -5088,7 +4233,7 @@ func (x *fastReflection_MsgRevokeSponsorship) NewField(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	case "verana.de.v1.MsgRevokeSponsorship.corporation":
 		return protoreflect.ValueOfString("")
-	case "verana.de.v1.MsgRevokeSponsorship.delegate":
+	case "verana.de.v1.MsgRevokeSponsorship.signer":
 		return protoreflect.ValueOfString("")
 	case "verana.de.v1.MsgRevokeSponsorship.sponsored_corporation_id":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -5165,7 +4310,7 @@ func (x *fastReflection_MsgRevokeSponsorship) ProtoMethods() *protoiface.Methods
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Delegate)
+		l = len(x.Signer)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -5206,10 +4351,10 @@ func (x *fastReflection_MsgRevokeSponsorship) ProtoMethods() *protoiface.Methods
 			i--
 			dAtA[i] = 0x18
 		}
-		if len(x.Delegate) > 0 {
-			i -= len(x.Delegate)
-			copy(dAtA[i:], x.Delegate)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Delegate)))
+		if len(x.Signer) > 0 {
+			i -= len(x.Signer)
+			copy(dAtA[i:], x.Signer)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Signer)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -5303,7 +4448,7 @@ func (x *fastReflection_MsgRevokeSponsorship) ProtoMethods() *protoiface.Methods
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Delegate", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -5331,7 +4476,7 @@ func (x *fastReflection_MsgRevokeSponsorship) ProtoMethods() *protoiface.Methods
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Delegate = string(dAtA[iNdEx:postIndex])
+				x.Signer = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 0 {
@@ -5405,7 +4550,7 @@ func (x *MsgRevokeSponsorshipResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgRevokeSponsorshipResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_verana_de_v1_tx_proto_msgTypes[9]
+	mi := &file_verana_de_v1_tx_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5756,88 +4901,11 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// MsgUpdateParams is the Msg/UpdateParams request type.
-type MsgUpdateParams struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// authority is the address that controls the module (defaults to x/gov unless overwritten).
-	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
-	// params defines the module parameters to update.
-	//
-	// NOTE: All parameters must be supplied.
-	Params *Params `protobuf:"bytes,2,opt,name=params,proto3" json:"params,omitempty"`
-}
-
-func (x *MsgUpdateParams) Reset() {
-	*x = MsgUpdateParams{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[0]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MsgUpdateParams) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MsgUpdateParams) ProtoMessage() {}
-
-// Deprecated: Use MsgUpdateParams.ProtoReflect.Descriptor instead.
-func (*MsgUpdateParams) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *MsgUpdateParams) GetAuthority() string {
-	if x != nil {
-		return x.Authority
-	}
-	return ""
-}
-
-func (x *MsgUpdateParams) GetParams() *Params {
-	if x != nil {
-		return x.Params
-	}
-	return nil
-}
-
-// MsgUpdateParamsResponse defines the response structure for executing a
-// MsgUpdateParams message.
-type MsgUpdateParamsResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *MsgUpdateParamsResponse) Reset() {
-	*x = MsgUpdateParamsResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MsgUpdateParamsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MsgUpdateParamsResponse) ProtoMessage() {}
-
-// Deprecated: Use MsgUpdateParamsResponse.ProtoReflect.Descriptor instead.
-func (*MsgUpdateParamsResponse) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{1}
-}
-
 // [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
 // to a grantee on behalf of a corporation.
 //
-// The signer is `delegate`. On the group-proposal path the corporation's
-// policy account executes the message and `delegate` equals `corporation`;
-// only AUTHZ-CHECK-5 then applies.
+// On the group-proposal path the corporation's policy account executes the
+// message and `signer` equals `corporation`; only AUTHZ-CHECK-5 then applies.
 type MsgGrantDelegateAuthorization struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5845,9 +4913,9 @@ type MsgGrantDelegateAuthorization struct {
 
 	// corporation is the policy_address of the corporation granting the authorization.
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// delegate is the signer: an authorized delegate, or the corporation's
-	// policy_address itself on the group-proposal path.
-	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// signer is a delegate authorized by corporation, or corporation itself
+	// on the group-proposal path.
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 	// grantee is the account that receives the authorization from corporation.
 	Grantee string `protobuf:"bytes,3,opt,name=grantee,proto3" json:"grantee,omitempty"`
 	// msg_types is the list of VPR delegable message types for which
@@ -5875,7 +4943,7 @@ type MsgGrantDelegateAuthorization struct {
 func (x *MsgGrantDelegateAuthorization) Reset() {
 	*x = MsgGrantDelegateAuthorization{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[2]
+		mi := &file_verana_de_v1_tx_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5889,7 +4957,7 @@ func (*MsgGrantDelegateAuthorization) ProtoMessage() {}
 
 // Deprecated: Use MsgGrantDelegateAuthorization.ProtoReflect.Descriptor instead.
 func (*MsgGrantDelegateAuthorization) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{2}
+	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *MsgGrantDelegateAuthorization) GetCorporation() string {
@@ -5899,9 +4967,9 @@ func (x *MsgGrantDelegateAuthorization) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgGrantDelegateAuthorization) GetDelegate() string {
+func (x *MsgGrantDelegateAuthorization) GetSigner() string {
 	if x != nil {
-		return x.Delegate
+		return x.Signer
 	}
 	return ""
 }
@@ -5966,7 +5034,7 @@ type MsgGrantDelegateAuthorizationResponse struct {
 func (x *MsgGrantDelegateAuthorizationResponse) Reset() {
 	*x = MsgGrantDelegateAuthorizationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[3]
+		mi := &file_verana_de_v1_tx_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5980,7 +5048,7 @@ func (*MsgGrantDelegateAuthorizationResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgGrantDelegateAuthorizationResponse.ProtoReflect.Descriptor instead.
 func (*MsgGrantDelegateAuthorizationResponse) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{3}
+	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{1}
 }
 
 // [MOD-DE-MSG-4] MsgRevokeDelegateAuthorization revokes a delegate
@@ -5993,9 +5061,9 @@ type MsgRevokeDelegateAuthorization struct {
 
 	// corporation is the policy_address of the corporation revoking the authorization.
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// delegate is the signer: an authorized delegate, or the corporation's
-	// policy_address itself on the group-proposal path.
-	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// signer is a delegate authorized by corporation, or corporation itself
+	// on the group-proposal path.
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 	// grantee is the account whose authorization is being revoked.
 	Grantee string `protobuf:"bytes,3,opt,name=grantee,proto3" json:"grantee,omitempty"`
 }
@@ -6003,7 +5071,7 @@ type MsgRevokeDelegateAuthorization struct {
 func (x *MsgRevokeDelegateAuthorization) Reset() {
 	*x = MsgRevokeDelegateAuthorization{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[4]
+		mi := &file_verana_de_v1_tx_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6017,7 +5085,7 @@ func (*MsgRevokeDelegateAuthorization) ProtoMessage() {}
 
 // Deprecated: Use MsgRevokeDelegateAuthorization.ProtoReflect.Descriptor instead.
 func (*MsgRevokeDelegateAuthorization) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{4}
+	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *MsgRevokeDelegateAuthorization) GetCorporation() string {
@@ -6027,9 +5095,9 @@ func (x *MsgRevokeDelegateAuthorization) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgRevokeDelegateAuthorization) GetDelegate() string {
+func (x *MsgRevokeDelegateAuthorization) GetSigner() string {
 	if x != nil {
-		return x.Delegate
+		return x.Signer
 	}
 	return ""
 }
@@ -6052,7 +5120,7 @@ type MsgRevokeDelegateAuthorizationResponse struct {
 func (x *MsgRevokeDelegateAuthorizationResponse) Reset() {
 	*x = MsgRevokeDelegateAuthorizationResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[5]
+		mi := &file_verana_de_v1_tx_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6066,7 +5134,7 @@ func (*MsgRevokeDelegateAuthorizationResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgRevokeDelegateAuthorizationResponse.ProtoReflect.Descriptor instead.
 func (*MsgRevokeDelegateAuthorizationResponse) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{5}
+	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{3}
 }
 
 // [MOD-DE-MSG-10] MsgGrantSponsorship declares the budget a sponsor corporation
@@ -6077,8 +5145,8 @@ type MsgGrantSponsorship struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// corporation is the policy_address of the sponsor corporation.
-	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
+	// signer is the policy_address of the sponsor corporation.
+	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
 	// sponsored_corporation_id is the id of the corporation to sponsor.
 	SponsoredCorporationId uint64 `protobuf:"varint,2,opt,name=sponsored_corporation_id,json=sponsoredCorporationId,proto3" json:"sponsored_corporation_id,omitempty"`
 	// msg_types are the covered paying message types; empty means all of them.
@@ -6101,7 +5169,7 @@ type MsgGrantSponsorship struct {
 func (x *MsgGrantSponsorship) Reset() {
 	*x = MsgGrantSponsorship{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[6]
+		mi := &file_verana_de_v1_tx_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6115,12 +5183,12 @@ func (*MsgGrantSponsorship) ProtoMessage() {}
 
 // Deprecated: Use MsgGrantSponsorship.ProtoReflect.Descriptor instead.
 func (*MsgGrantSponsorship) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{6}
+	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *MsgGrantSponsorship) GetCorporation() string {
+func (x *MsgGrantSponsorship) GetSigner() string {
 	if x != nil {
-		return x.Corporation
+		return x.Signer
 	}
 	return ""
 }
@@ -6184,7 +5252,7 @@ type MsgGrantSponsorshipResponse struct {
 func (x *MsgGrantSponsorshipResponse) Reset() {
 	*x = MsgGrantSponsorshipResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[7]
+		mi := &file_verana_de_v1_tx_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6198,11 +5266,11 @@ func (*MsgGrantSponsorshipResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgGrantSponsorshipResponse.ProtoReflect.Descriptor instead.
 func (*MsgGrantSponsorshipResponse) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{7}
+	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{5}
 }
 
 // [MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the
-// sponsor corporation. On the group-proposal path `delegate` equals
+// sponsor corporation. On the group-proposal path `signer` equals
 // `corporation`.
 type MsgRevokeSponsorship struct {
 	state         protoimpl.MessageState
@@ -6211,9 +5279,9 @@ type MsgRevokeSponsorship struct {
 
 	// corporation is the policy_address of the sponsor corporation.
 	Corporation string `protobuf:"bytes,1,opt,name=corporation,proto3" json:"corporation,omitempty"`
-	// delegate is the signer: an authorized delegate, or the corporation's
-	// policy_address itself on the group-proposal path.
-	Delegate string `protobuf:"bytes,2,opt,name=delegate,proto3" json:"delegate,omitempty"`
+	// signer is a delegate authorized by corporation, or corporation itself
+	// on the group-proposal path.
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 	// sponsored_corporation_id is the id of the sponsored corporation.
 	SponsoredCorporationId uint64 `protobuf:"varint,3,opt,name=sponsored_corporation_id,json=sponsoredCorporationId,proto3" json:"sponsored_corporation_id,omitempty"`
 }
@@ -6221,7 +5289,7 @@ type MsgRevokeSponsorship struct {
 func (x *MsgRevokeSponsorship) Reset() {
 	*x = MsgRevokeSponsorship{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[8]
+		mi := &file_verana_de_v1_tx_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6235,7 +5303,7 @@ func (*MsgRevokeSponsorship) ProtoMessage() {}
 
 // Deprecated: Use MsgRevokeSponsorship.ProtoReflect.Descriptor instead.
 func (*MsgRevokeSponsorship) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{8}
+	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MsgRevokeSponsorship) GetCorporation() string {
@@ -6245,9 +5313,9 @@ func (x *MsgRevokeSponsorship) GetCorporation() string {
 	return ""
 }
 
-func (x *MsgRevokeSponsorship) GetDelegate() string {
+func (x *MsgRevokeSponsorship) GetSigner() string {
 	if x != nil {
-		return x.Delegate
+		return x.Signer
 	}
 	return ""
 }
@@ -6269,7 +5337,7 @@ type MsgRevokeSponsorshipResponse struct {
 func (x *MsgRevokeSponsorshipResponse) Reset() {
 	*x = MsgRevokeSponsorshipResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_verana_de_v1_tx_proto_msgTypes[9]
+		mi := &file_verana_de_v1_tx_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6283,7 +5351,7 @@ func (*MsgRevokeSponsorshipResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgRevokeSponsorshipResponse.ProtoReflect.Descriptor instead.
 func (*MsgRevokeSponsorshipResponse) Descriptor() ([]byte, []int) {
-	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{9}
+	return file_verana_de_v1_tx_proto_rawDescGZIP(), []int{7}
 }
 
 var File_verana_de_v1_tx_proto protoreflect.FileDescriptor
@@ -6305,199 +5373,177 @@ var file_verana_de_v1_tx_proto_rawDesc = []byte{
 	0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76,
 	0x31, 0x2f, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x19, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x70,
-	0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb2, 0x01, 0x0a, 0x0f,
-	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12,
-	0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x61, 0x75,
-	0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x37, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d,
-	0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
-	0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8,
-	0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x3a, 0x2e, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79,
-	0x8a, 0xe7, 0xb0, 0x2a, 0x1b, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65,
-	0x2f, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x22, 0x19, 0x0a, 0x17, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72,
-	0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xae, 0x06, 0x0a, 0x1d,
-	0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65,
-	0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3a, 0x0a,
-	0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f,
-	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c,
-	0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d,
-	0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53,
-	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12,
-	0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
-	0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x67, 0x72, 0x61, 0x6e,
-	0x74, 0x65, 0x65, 0x12, 0x32, 0x0a, 0x09, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73,
-	0x18, 0x04, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x15, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
-	0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x52, 0x08, 0x6d,
-	0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x44, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
-	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x90, 0xdf, 0x1f,
-	0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x77, 0x0a,
-	0x11, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d,
-	0x69, 0x74, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43,
-	0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e,
-	0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0f, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x53, 0x70, 0x65, 0x6e,
-	0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x5c, 0x0a, 0x18, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x5f,
-	0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x5f, 0x70, 0x65, 0x72, 0x69,
-	0x6f, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x15, 0x61,
-	0x75, 0x74, 0x68, 0x7a, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x50, 0x65,
-	0x72, 0x69, 0x6f, 0x64, 0x12, 0x7d, 0x0a, 0x14, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74,
-	0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x09, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
-	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8,
-	0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d,
-	0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52,
-	0x12, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69,
-	0x6d, 0x69, 0x74, 0x12, 0x62, 0x0a, 0x1b, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x5f,
-	0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x5f, 0x70, 0x65, 0x72, 0x69,
-	0x6f, 0x64, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x18, 0x66,
-	0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69,
-	0x74, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x3a, 0x33, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65,
-	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x8a, 0xe7, 0xb0, 0x2a, 0x21, 0x76, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44,
-	0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x22, 0x27, 0x0a, 0x25,
-	0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65,
-	0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xfc, 0x01, 0x0a, 0x1e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76,
-	0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f,
-	0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70,
-	0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2,
-	0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67,
-	0x52, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x32, 0x0a, 0x07, 0x67, 0x72,
-	0x61, 0x6e, 0x74, 0x65, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d,
-	0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53,
-	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x3a, 0x34,
-	0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x8a, 0xe7, 0xb0,
-	0x2a, 0x22, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73,
-	0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41,
-	0x75, 0x74, 0x68, 0x7a, 0x22, 0x28, 0x0a, 0x26, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b,
-	0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
-	0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xfc,
-	0x04, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73,
-	0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d,
-	0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53,
-	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x12, 0x38, 0x0a, 0x18, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x65, 0x64, 0x5f,
-	0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x65, 0x64, 0x43,
-	0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x09,
-	0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0e, 0x32,
-	0x15, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x52, 0x08, 0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73,
-	0x12, 0x6c, 0x0a, 0x0b, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18,
-	0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62,
-	0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e,
-	0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69,
-	0x6e, 0x73, 0x52, 0x0a, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x3b,
-	0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
-	0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98,
-	0xdf, 0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x44, 0x0a, 0x0a, 0x65,
-	0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f,
-	0x01, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x73, 0x5f, 0x66, 0x65, 0x65, 0x73,
-	0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x73, 0x46, 0x65,
-	0x65, 0x73, 0x12, 0x73, 0x0a, 0x0f, 0x66, 0x65, 0x65, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f,
-	0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0d, 0x66, 0x65, 0x65, 0x53, 0x70, 0x65,
-	0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x3a, 0x34, 0x82, 0xe7, 0xb0, 0x2a, 0x0b, 0x63, 0x6f,
-	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x8a, 0xe7, 0xb0, 0x2a, 0x1f, 0x76, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61,
-	0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x22, 0x1d, 0x0a,
-	0x1b, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72,
-	0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xf6, 0x01, 0x0a,
-	0x14, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f,
-	0x72, 0x73, 0x68, 0x69, 0x70, 0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74,
-	0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x34, 0x0a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20,
+	0x22, 0xa8, 0x06, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c,
+	0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e,
+	0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x30,
+	0x0a, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18,
+	0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72,
+	0x12, 0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x67, 0x72, 0x61,
+	0x6e, 0x74, 0x65, 0x65, 0x12, 0x32, 0x0a, 0x09, 0x6d, 0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65,
+	0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x15, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x52, 0x08,
+	0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x44, 0x0a, 0x0a, 0x65, 0x78, 0x70, 0x69,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x90, 0xdf,
+	0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x77,
+	0x0a, 0x11, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69,
+	0x6d, 0x69, 0x74, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69,
+	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73,
+	0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0f, 0x61, 0x75, 0x74, 0x68, 0x7a, 0x53, 0x70, 0x65,
+	0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x5c, 0x0a, 0x18, 0x61, 0x75, 0x74, 0x68, 0x7a,
+	0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x5f, 0x70, 0x65, 0x72,
+	0x69, 0x6f, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x15,
+	0x61, 0x75, 0x74, 0x68, 0x7a, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x50,
+	0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x7d, 0x0a, 0x14, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e,
+	0x74, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x09, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
+	0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30,
+	0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73,
+	0x52, 0x12, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c,
+	0x69, 0x6d, 0x69, 0x74, 0x12, 0x62, 0x0a, 0x1b, 0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74,
+	0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x5f, 0x70, 0x65, 0x72,
+	0x69, 0x6f, 0x64, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98, 0xdf, 0x1f, 0x01, 0x52, 0x18,
+	0x66, 0x65, 0x65, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d,
+	0x69, 0x74, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x3a, 0x31, 0x82, 0xe7, 0xb0, 0x2a, 0x06, 0x73,
+	0x69, 0x67, 0x6e, 0x65, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x21, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61,
+	0x2f, 0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65,
+	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x22, 0x27, 0x0a, 0x25, 0x4d,
+	0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41,
+	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0xf6, 0x01, 0x0a, 0x1e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f,
+	0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72,
+	0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4,
+	0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x12, 0x30, 0x0a, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x64,
-	0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x12, 0x38, 0x0a, 0x18, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x6f, 0x72, 0x65, 0x64, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x6f, 0x72, 0x65, 0x64, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x3a, 0x32, 0x82, 0xe7, 0xb0, 0x2a, 0x08, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65,
-	0x8a, 0xe7, 0xb0, 0x2a, 0x20, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65,
-	0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f,
-	0x72, 0x73, 0x68, 0x69, 0x70, 0x22, 0x1e, 0x0a, 0x1c, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f,
-	0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xad, 0x04, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x54, 0x0a,
-	0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x1d, 0x2e,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a, 0x25, 0x2e, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x7e, 0x0a, 0x1a, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65,
-	0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x2b, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74,
-	0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x33,
-	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75,
-	0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x1b, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65,
-	0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x2c, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65,
-	0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x1a, 0x34, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x06, 0x73,
+	0x69, 0x67, 0x6e, 0x65, 0x72, 0x12, 0x32, 0x0a, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67,
+	0x52, 0x07, 0x67, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x3a, 0x32, 0x82, 0xe7, 0xb0, 0x2a, 0x06,
+	0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x22, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2f, 0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65,
+	0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x22, 0x28, 0x0a,
+	0x26, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61,
 	0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x10, 0x47, 0x72, 0x61, 0x6e, 0x74,
-	0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x12, 0x21, 0x2e, 0x76, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x72,
-	0x61, 0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x1a, 0x29,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xed, 0x04, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x47,
+	0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x12,
+	0x30, 0x0a, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65,
+	0x72, 0x12, 0x38, 0x0a, 0x18, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x65, 0x64, 0x5f, 0x63,
+	0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x16, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x65, 0x64, 0x43, 0x6f,
+	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x09, 0x6d,
+	0x73, 0x67, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x15,
 	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69,
-	0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x11, 0x52, 0x65, 0x76,
-	0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x12, 0x22,
-	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68,
-	0x69, 0x70, 0x1a, 0x2a, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76,
-	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73,
-	0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05,
-	0x80, 0xe7, 0xb0, 0x2a, 0x01, 0x42, 0xa7, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72,
-	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x65, 0x76, 0x31, 0xa2,
-	0x02, 0x03, 0x56, 0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x44,
-	0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65,
-	0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c,
-	0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
-	0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x44, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x67, 0x54, 0x79, 0x70, 0x65, 0x52, 0x08, 0x6d, 0x73, 0x67, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12,
+	0x6c, 0x0a, 0x0b, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x04,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
+	0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42,
+	0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e,
+	0x73, 0x52, 0x0a, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x3b, 0x0a,
+	0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01, 0x98, 0xdf,
+	0x1f, 0x01, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x44, 0x0a, 0x0a, 0x65, 0x78,
+	0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x01,
+	0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x73, 0x5f, 0x66, 0x65, 0x65, 0x73, 0x18,
+	0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x73, 0x46, 0x65, 0x65,
+	0x73, 0x12, 0x73, 0x0a, 0x0f, 0x66, 0x65, 0x65, 0x5f, 0x73, 0x70, 0x65, 0x6e, 0x64, 0x5f, 0x6c,
+	0x69, 0x6d, 0x69, 0x74, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x30, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x74, 0x79, 0x70, 0x65,
+	0x73, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x73, 0x52, 0x0d, 0x66, 0x65, 0x65, 0x53, 0x70, 0x65, 0x6e,
+	0x64, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x3a, 0x2f, 0x82, 0xe7, 0xb0, 0x2a, 0x06, 0x73, 0x69, 0x67,
+	0x6e, 0x65, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x1f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x78,
+	0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e,
+	0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x22, 0x1d, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x47, 0x72,
+	0x61, 0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xf0, 0x01, 0x0a, 0x14, 0x4d, 0x73, 0x67, 0x52, 0x65,
+	0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x12,
+	0x3a, 0x0a, 0x0b, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0b,
+	0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x30, 0x0a, 0x06, 0x73,
+	0x69, 0x67, 0x6e, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d,
+	0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53,
+	0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x12, 0x38, 0x0a,
+	0x18, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x65, 0x64, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x6f,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x16, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x65, 0x64, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x30, 0x82, 0xe7, 0xb0, 0x2a, 0x06, 0x73, 0x69,
+	0x67, 0x6e, 0x65, 0x72, 0x8a, 0xe7, 0xb0, 0x2a, 0x20, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f,
+	0x78, 0x2f, 0x64, 0x65, 0x2f, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70,
+	0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x22, 0x1e, 0x0a, 0x1c, 0x4d, 0x73, 0x67,
+	0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69,
+	0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xd7, 0x03, 0x0a, 0x03, 0x4d, 0x73,
+	0x67, 0x12, 0x7e, 0x0a, 0x1a, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x2b, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x73, 0x67, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41,
+	0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x33, 0x2e, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x47,
+	0x72, 0x61, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68,
+	0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x81, 0x01, 0x0a, 0x1b, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65,
+	0x67, 0x61, 0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x2c, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31,
+	0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61,
+	0x74, 0x65, 0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a,
+	0x34, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x44, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x65,
+	0x41, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x10, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x53, 0x70,
+	0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x12, 0x21, 0x2e, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x72, 0x61, 0x6e,
+	0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x1a, 0x29, 0x2e, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x47,
+	0x72, 0x61, 0x6e, 0x74, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x11, 0x52, 0x65, 0x76, 0x6f, 0x6b,
+	0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70, 0x12, 0x22, 0x2e, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52,
+	0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72, 0x73, 0x68, 0x69, 0x70,
+	0x1a, 0x2a, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x73, 0x67, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x53, 0x70, 0x6f, 0x6e, 0x73, 0x6f, 0x72,
+	0x73, 0x68, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7,
+	0xb0, 0x2a, 0x01, 0x42, 0xa7, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2e, 0x64, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2f, 0x64, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03,
+	0x56, 0x44, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x44, 0x65, 0x2e,
+	0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56,
+	0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x44, 0x65, 0x5c, 0x56, 0x31,
+	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x44, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -6512,52 +5558,46 @@ func file_verana_de_v1_tx_proto_rawDescGZIP() []byte {
 	return file_verana_de_v1_tx_proto_rawDescData
 }
 
-var file_verana_de_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_verana_de_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_verana_de_v1_tx_proto_goTypes = []interface{}{
-	(*MsgUpdateParams)(nil),                        // 0: verana.de.v1.MsgUpdateParams
-	(*MsgUpdateParamsResponse)(nil),                // 1: verana.de.v1.MsgUpdateParamsResponse
-	(*MsgGrantDelegateAuthorization)(nil),          // 2: verana.de.v1.MsgGrantDelegateAuthorization
-	(*MsgGrantDelegateAuthorizationResponse)(nil),  // 3: verana.de.v1.MsgGrantDelegateAuthorizationResponse
-	(*MsgRevokeDelegateAuthorization)(nil),         // 4: verana.de.v1.MsgRevokeDelegateAuthorization
-	(*MsgRevokeDelegateAuthorizationResponse)(nil), // 5: verana.de.v1.MsgRevokeDelegateAuthorizationResponse
-	(*MsgGrantSponsorship)(nil),                    // 6: verana.de.v1.MsgGrantSponsorship
-	(*MsgGrantSponsorshipResponse)(nil),            // 7: verana.de.v1.MsgGrantSponsorshipResponse
-	(*MsgRevokeSponsorship)(nil),                   // 8: verana.de.v1.MsgRevokeSponsorship
-	(*MsgRevokeSponsorshipResponse)(nil),           // 9: verana.de.v1.MsgRevokeSponsorshipResponse
-	(*Params)(nil),                                 // 10: verana.de.v1.Params
-	(MsgType)(0),                                   // 11: verana.de.v1.MsgType
-	(*timestamppb.Timestamp)(nil),                  // 12: google.protobuf.Timestamp
-	(*v1beta1.Coin)(nil),                           // 13: cosmos.base.v1beta1.Coin
-	(*durationpb.Duration)(nil),                    // 14: google.protobuf.Duration
+	(*MsgGrantDelegateAuthorization)(nil),          // 0: verana.de.v1.MsgGrantDelegateAuthorization
+	(*MsgGrantDelegateAuthorizationResponse)(nil),  // 1: verana.de.v1.MsgGrantDelegateAuthorizationResponse
+	(*MsgRevokeDelegateAuthorization)(nil),         // 2: verana.de.v1.MsgRevokeDelegateAuthorization
+	(*MsgRevokeDelegateAuthorizationResponse)(nil), // 3: verana.de.v1.MsgRevokeDelegateAuthorizationResponse
+	(*MsgGrantSponsorship)(nil),                    // 4: verana.de.v1.MsgGrantSponsorship
+	(*MsgGrantSponsorshipResponse)(nil),            // 5: verana.de.v1.MsgGrantSponsorshipResponse
+	(*MsgRevokeSponsorship)(nil),                   // 6: verana.de.v1.MsgRevokeSponsorship
+	(*MsgRevokeSponsorshipResponse)(nil),           // 7: verana.de.v1.MsgRevokeSponsorshipResponse
+	(MsgType)(0),                                   // 8: verana.de.v1.MsgType
+	(*timestamppb.Timestamp)(nil),                  // 9: google.protobuf.Timestamp
+	(*v1beta1.Coin)(nil),                           // 10: cosmos.base.v1beta1.Coin
+	(*durationpb.Duration)(nil),                    // 11: google.protobuf.Duration
 }
 var file_verana_de_v1_tx_proto_depIdxs = []int32{
-	10, // 0: verana.de.v1.MsgUpdateParams.params:type_name -> verana.de.v1.Params
-	11, // 1: verana.de.v1.MsgGrantDelegateAuthorization.msg_types:type_name -> verana.de.v1.MsgType
-	12, // 2: verana.de.v1.MsgGrantDelegateAuthorization.expiration:type_name -> google.protobuf.Timestamp
-	13, // 3: verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	14, // 4: verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period:type_name -> google.protobuf.Duration
-	13, // 5: verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	14, // 6: verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period:type_name -> google.protobuf.Duration
-	11, // 7: verana.de.v1.MsgGrantSponsorship.msg_types:type_name -> verana.de.v1.MsgType
-	13, // 8: verana.de.v1.MsgGrantSponsorship.spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	14, // 9: verana.de.v1.MsgGrantSponsorship.period:type_name -> google.protobuf.Duration
-	12, // 10: verana.de.v1.MsgGrantSponsorship.expiration:type_name -> google.protobuf.Timestamp
-	13, // 11: verana.de.v1.MsgGrantSponsorship.fee_spend_limit:type_name -> cosmos.base.v1beta1.Coin
-	0,  // 12: verana.de.v1.Msg.UpdateParams:input_type -> verana.de.v1.MsgUpdateParams
-	2,  // 13: verana.de.v1.Msg.GrantDelegateAuthorization:input_type -> verana.de.v1.MsgGrantDelegateAuthorization
-	4,  // 14: verana.de.v1.Msg.RevokeDelegateAuthorization:input_type -> verana.de.v1.MsgRevokeDelegateAuthorization
-	6,  // 15: verana.de.v1.Msg.GrantSponsorship:input_type -> verana.de.v1.MsgGrantSponsorship
-	8,  // 16: verana.de.v1.Msg.RevokeSponsorship:input_type -> verana.de.v1.MsgRevokeSponsorship
-	1,  // 17: verana.de.v1.Msg.UpdateParams:output_type -> verana.de.v1.MsgUpdateParamsResponse
-	3,  // 18: verana.de.v1.Msg.GrantDelegateAuthorization:output_type -> verana.de.v1.MsgGrantDelegateAuthorizationResponse
-	5,  // 19: verana.de.v1.Msg.RevokeDelegateAuthorization:output_type -> verana.de.v1.MsgRevokeDelegateAuthorizationResponse
-	7,  // 20: verana.de.v1.Msg.GrantSponsorship:output_type -> verana.de.v1.MsgGrantSponsorshipResponse
-	9,  // 21: verana.de.v1.Msg.RevokeSponsorship:output_type -> verana.de.v1.MsgRevokeSponsorshipResponse
-	17, // [17:22] is the sub-list for method output_type
-	12, // [12:17] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	8,  // 0: verana.de.v1.MsgGrantDelegateAuthorization.msg_types:type_name -> verana.de.v1.MsgType
+	9,  // 1: verana.de.v1.MsgGrantDelegateAuthorization.expiration:type_name -> google.protobuf.Timestamp
+	10, // 2: verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	11, // 3: verana.de.v1.MsgGrantDelegateAuthorization.authz_spend_limit_period:type_name -> google.protobuf.Duration
+	10, // 4: verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	11, // 5: verana.de.v1.MsgGrantDelegateAuthorization.feegrant_spend_limit_period:type_name -> google.protobuf.Duration
+	8,  // 6: verana.de.v1.MsgGrantSponsorship.msg_types:type_name -> verana.de.v1.MsgType
+	10, // 7: verana.de.v1.MsgGrantSponsorship.spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	11, // 8: verana.de.v1.MsgGrantSponsorship.period:type_name -> google.protobuf.Duration
+	9,  // 9: verana.de.v1.MsgGrantSponsorship.expiration:type_name -> google.protobuf.Timestamp
+	10, // 10: verana.de.v1.MsgGrantSponsorship.fee_spend_limit:type_name -> cosmos.base.v1beta1.Coin
+	0,  // 11: verana.de.v1.Msg.GrantDelegateAuthorization:input_type -> verana.de.v1.MsgGrantDelegateAuthorization
+	2,  // 12: verana.de.v1.Msg.RevokeDelegateAuthorization:input_type -> verana.de.v1.MsgRevokeDelegateAuthorization
+	4,  // 13: verana.de.v1.Msg.GrantSponsorship:input_type -> verana.de.v1.MsgGrantSponsorship
+	6,  // 14: verana.de.v1.Msg.RevokeSponsorship:input_type -> verana.de.v1.MsgRevokeSponsorship
+	1,  // 15: verana.de.v1.Msg.GrantDelegateAuthorization:output_type -> verana.de.v1.MsgGrantDelegateAuthorizationResponse
+	3,  // 16: verana.de.v1.Msg.RevokeDelegateAuthorization:output_type -> verana.de.v1.MsgRevokeDelegateAuthorizationResponse
+	5,  // 17: verana.de.v1.Msg.GrantSponsorship:output_type -> verana.de.v1.MsgGrantSponsorshipResponse
+	7,  // 18: verana.de.v1.Msg.RevokeSponsorship:output_type -> verana.de.v1.MsgRevokeSponsorshipResponse
+	15, // [15:19] is the sub-list for method output_type
+	11, // [11:15] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_verana_de_v1_tx_proto_init() }
@@ -6566,33 +5606,8 @@ func file_verana_de_v1_tx_proto_init() {
 		return
 	}
 	file_verana_de_v1_msg_type_proto_init()
-	file_verana_de_v1_params_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_verana_de_v1_tx_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgUpdateParams); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_verana_de_v1_tx_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgUpdateParamsResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_verana_de_v1_tx_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgGrantDelegateAuthorization); i {
 			case 0:
 				return &v.state
@@ -6604,7 +5619,7 @@ func file_verana_de_v1_tx_proto_init() {
 				return nil
 			}
 		}
-		file_verana_de_v1_tx_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_de_v1_tx_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgGrantDelegateAuthorizationResponse); i {
 			case 0:
 				return &v.state
@@ -6616,7 +5631,7 @@ func file_verana_de_v1_tx_proto_init() {
 				return nil
 			}
 		}
-		file_verana_de_v1_tx_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_de_v1_tx_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgRevokeDelegateAuthorization); i {
 			case 0:
 				return &v.state
@@ -6628,7 +5643,7 @@ func file_verana_de_v1_tx_proto_init() {
 				return nil
 			}
 		}
-		file_verana_de_v1_tx_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_de_v1_tx_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgRevokeDelegateAuthorizationResponse); i {
 			case 0:
 				return &v.state
@@ -6640,7 +5655,7 @@ func file_verana_de_v1_tx_proto_init() {
 				return nil
 			}
 		}
-		file_verana_de_v1_tx_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_de_v1_tx_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgGrantSponsorship); i {
 			case 0:
 				return &v.state
@@ -6652,7 +5667,7 @@ func file_verana_de_v1_tx_proto_init() {
 				return nil
 			}
 		}
-		file_verana_de_v1_tx_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_de_v1_tx_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgGrantSponsorshipResponse); i {
 			case 0:
 				return &v.state
@@ -6664,7 +5679,7 @@ func file_verana_de_v1_tx_proto_init() {
 				return nil
 			}
 		}
-		file_verana_de_v1_tx_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_de_v1_tx_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgRevokeSponsorship); i {
 			case 0:
 				return &v.state
@@ -6676,7 +5691,7 @@ func file_verana_de_v1_tx_proto_init() {
 				return nil
 			}
 		}
-		file_verana_de_v1_tx_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_verana_de_v1_tx_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgRevokeSponsorshipResponse); i {
 			case 0:
 				return &v.state
@@ -6695,7 +5710,7 @@ func file_verana_de_v1_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_verana_de_v1_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

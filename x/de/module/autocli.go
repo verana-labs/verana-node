@@ -14,11 +14,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			EnhanceCustomCommand: true,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
-					RpcMethod: "Params",
-					Use:       "params",
-					Short:     "Shows the parameters of the module",
-				},
-				{
 					// Skip autocli for this RPC -- custom command provided in cli_query.go
 					// to work around gogo/pulsar proto codec mismatch in autocli JSON rendering.
 					RpcMethod: "ListDelegateAuthorizations",
@@ -39,14 +34,10 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			EnhanceCustomCommand: true, // only required if you want to use the custom command
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
-					RpcMethod: "UpdateParams",
-					Skip:      true, // skipped because authority gated
-				},
-				{
 					RpcMethod: "GrantDelegateAuthorization",
 					Use:       "grant-delegate-authz [grantee]",
 					Short:     "Grant delegate authorization to a grantee on behalf of a corporation",
-					Long:      "[MOD-DE-MSG-3] Grant delegate authorization. The signer (--from) is the delegate: the corporation's policy_address on the group-proposal path, or an authorized delegate. The grantee receives authorization to execute specified message types on behalf of the corporation and cannot be the corporation's own policy_address. A fee allowance is granted when --feegrant-spend-limit is set.",
+					Long:      "[MOD-DE-MSG-3] Grant delegate authorization. The signer (--from) is an authorized delegate, or the corporation's policy_address on the group-proposal path. The grantee receives authorization to execute specified message types on behalf of the corporation and cannot be the corporation's own policy_address or the signer. A fee allowance is granted when --feegrant-spend-limit is set.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "grantee"},
 					},
@@ -85,7 +76,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "RevokeDelegateAuthorization",
 					Use:       "revoke-delegate-authz [grantee]",
 					Short:     "Revoke delegate authorization for a grantee",
-					Long:      "[MOD-DE-MSG-4] Revoke delegate authorization. The signer (--from) is the delegate: the corporation's policy_address on the group-proposal path, or an authorized delegate. Removes the authorization entry and any associated fee grant for the given corporation/grantee pair.",
+					Long:      "[MOD-DE-MSG-4] Revoke delegate authorization. The signer (--from) is an authorized delegate, or the corporation's policy_address on the group-proposal path. Removes the authorization entry and any associated fee grant for the given corporation/grantee pair.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "grantee"},
 					},
@@ -105,7 +96,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 						{ProtoField: "sponsored_corporation_id"},
 					},
 					FlagOptions: map[string]*autocliv1.FlagOptions{
-						"corporation":     {Name: "corporation", Usage: "policy_address of the sponsor corporation"},
 						"msg_types":       {Name: "msg-types", Usage: "covered paying MsgType values, one per flag; all of them when absent"},
 						"spend_limit":     {Name: "spend-limit", Usage: "maximum operation funds paid per cycle (e.g. 1000uvna)"},
 						"period":          {Name: "period", Usage: "cycle length for spend-limit"},
@@ -118,7 +108,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "RevokeSponsorship",
 					Use:       "revoke-sponsorship [sponsored-corporation-id]",
 					Short:     "Revoke a sponsorship",
-					Long:      "[MOD-DE-MSG-11] Revoke a sponsorship and clear the sponsored corporation's election of this sponsor. The signer (--from) is the delegate: the sponsor's policy_address on the group-proposal path, or an authorized delegate.",
+					Long:      "[MOD-DE-MSG-11] Revoke a sponsorship and clear the sponsored corporation's election of this sponsor. The signer (--from) is an authorized delegate, or the sponsor's policy_address on the group-proposal path.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{ProtoField: "sponsored_corporation_id"},
 					},

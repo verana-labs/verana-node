@@ -20,24 +20,15 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 		return nil, err
 	}
 
-	// Load and check params
-	params, err := ms.Params.Get(ctx)
-	if err != nil {
-		return nil, errorsmod.Wrap(err, "failed to load params")
-	}
-	if msg.ValidityDuration > params.MaxValidityDuration {
-		return nil, errorsmod.Wrapf(types.ErrInvalidRequest, "validity_duration %s exceeds max_validity_duration %s", msg.ValidityDuration, params.MaxValidityDuration)
-	}
-
 	// Governance authority check
-	authority, err := ms.addressCodec.StringToBytes(msg.Authority)
+	authority, err := ms.addressCodec.StringToBytes(msg.Signer)
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "invalid authority address")
 	}
 
 	if !bytes.Equal(ms.GetAuthority(), authority) {
 		expectedAuthorityStr, _ := ms.addressCodec.BytesToString(ms.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expectedAuthorityStr, msg.Authority)
+		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid signer; expected %s, got %s", expectedAuthorityStr, msg.Signer)
 	}
 
 	// [MOD-XR-MSG-1-2-1] COIN assets MUST exist on-chain.
@@ -95,7 +86,7 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 		sdk.NewEvent(
 			types.EventTypeCreateExchangeRate,
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-			sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority),
+			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 			sdk.NewAttribute(types.AttributeKeyBaseAssetType, msg.BaseAssetType.String()),
 			sdk.NewAttribute(types.AttributeKeyBaseAsset, msg.BaseAsset),
 			sdk.NewAttribute(types.AttributeKeyQuoteAssetType, msg.QuoteAssetType.String()),

@@ -9,17 +9,12 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "verana/de/v1/msg_type.proto";
-import "verana/de/v1/params.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/de/types";
 
 // Msg defines the Msg service.
 service Msg {
   option (cosmos.msg.v1.service) = true;
-
-  // UpdateParams defines a (governance) operation for updating the module
-  // parameters. The authority defaults to the x/gov module account.
-  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 
   // [MOD-DE-MSG-3] Grant Delegate Authorization
   rpc GrantDelegateAuthorization(MsgGrantDelegateAuthorization) returns (MsgGrantDelegateAuthorizationResponse);
@@ -34,42 +29,20 @@ service Msg {
   rpc RevokeSponsorship(MsgRevokeSponsorship) returns (MsgRevokeSponsorshipResponse);
 }
 
-// MsgUpdateParams is the Msg/UpdateParams request type.
-message MsgUpdateParams {
-  option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name) = "verana/x/de/MsgUpdateParams";
-
-  // authority is the address that controls the module (defaults to x/gov unless overwritten).
-  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
-  // params defines the module parameters to update.
-  //
-  // NOTE: All parameters must be supplied.
-  Params params = 2 [
-    (gogoproto.nullable) = false,
-    (amino.dont_omitempty) = true
-  ];
-}
-
-// MsgUpdateParamsResponse defines the response structure for executing a
-// MsgUpdateParams message.
-message MsgUpdateParamsResponse {}
-
 // [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
 // to a grantee on behalf of a corporation.
 //
-// The signer is `delegate`. On the group-proposal path the corporation's
-// policy account executes the message and `delegate` equals `corporation`;
-// only AUTHZ-CHECK-5 then applies.
+// On the group-proposal path the corporation's policy account executes the
+// message and `signer` equals `corporation`; only AUTHZ-CHECK-5 then applies.
 message MsgGrantDelegateAuthorization {
-  option (cosmos.msg.v1.signer) = "delegate";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/de/MsgGrantDelegateAuthz";
 
   // corporation is the policy_address of the corporation granting the authorization.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // delegate is the signer: an authorized delegate, or the corporation's
-  // policy_address itself on the group-proposal path.
-  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is a delegate authorized by corporation, or corporation itself
+  // on the group-proposal path.
+  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // grantee is the account that receives the authorization from corporation.
   string grantee = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // msg_types is the list of VPR delegable message types for which
@@ -117,14 +90,14 @@ message MsgGrantDelegateAuthorizationResponse {}
 // authorization for a grantee on behalf of a corporation. Same signer
 // semantics as MsgGrantDelegateAuthorization (see above).
 message MsgRevokeDelegateAuthorization {
-  option (cosmos.msg.v1.signer) = "delegate";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/de/MsgRevokeDelegateAuthz";
 
   // corporation is the policy_address of the corporation revoking the authorization.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // delegate is the signer: an authorized delegate, or the corporation's
-  // policy_address itself on the group-proposal path.
-  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is a delegate authorized by corporation, or corporation itself
+  // on the group-proposal path.
+  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // grantee is the account whose authorization is being revoked.
   string grantee = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
@@ -137,11 +110,11 @@ message MsgRevokeDelegateAuthorizationResponse {}
 // pays for another corporation. Executed by the sponsor's policy account
 // through a group proposal.
 message MsgGrantSponsorship {
-  option (cosmos.msg.v1.signer) = "corporation";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/de/MsgGrantSponsorship";
 
-  // corporation is the policy_address of the sponsor corporation.
-  string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is the policy_address of the sponsor corporation.
+  string signer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // sponsored_corporation_id is the id of the corporation to sponsor.
   uint64 sponsored_corporation_id = 2;
   // msg_types are the covered paying message types; empty means all of them.
@@ -177,17 +150,17 @@ message MsgGrantSponsorship {
 message MsgGrantSponsorshipResponse {}
 
 // [MOD-DE-MSG-11] MsgRevokeSponsorship ends a sponsorship on behalf of the
-// sponsor corporation. On the group-proposal path `delegate` equals
+// sponsor corporation. On the group-proposal path `signer` equals
 // `corporation`.
 message MsgRevokeSponsorship {
-  option (cosmos.msg.v1.signer) = "delegate";
+  option (cosmos.msg.v1.signer) = "signer";
   option (amino.name) = "verana/x/de/MsgRevokeSponsorship";
 
   // corporation is the policy_address of the sponsor corporation.
   string corporation = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  // delegate is the signer: an authorized delegate, or the corporation's
-  // policy_address itself on the group-proposal path.
-  string delegate = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // signer is a delegate authorized by corporation, or corporation itself
+  // on the group-proposal path.
+  string signer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // sponsored_corporation_id is the id of the sponsored corporation.
   uint64 sponsored_corporation_id = 3;
 }

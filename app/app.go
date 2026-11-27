@@ -14,12 +14,14 @@ import (
 	_ "github.com/verana-labs/verana-node/x/cs/module" // import for side-effects
 	demodulekeeper "github.com/verana-labs/verana-node/x/de/keeper"
 	dimodulekeeper "github.com/verana-labs/verana-node/x/di/keeper"
+	dsmodulekeeper "github.com/verana-labs/verana-node/x/ds/keeper"
 	_ "github.com/verana-labs/verana-node/x/ec/module" // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/gf/module" // import for side-effects
 	poamodulekeeper "github.com/verana-labs/verana-node/x/poa/keeper"
 	_ "github.com/verana-labs/verana-node/x/poa/module" // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/pp/module"  // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/td/module"  // import for side-effects
+	vsmodulekeeper "github.com/verana-labs/verana-node/x/vs/keeper"
 	xrmodulekeeper "github.com/verana-labs/verana-node/x/xr/keeper"
 
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -61,16 +63,12 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/consensus" // import for side-effects
 	consensuskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
-	_ "github.com/cosmos/cosmos-sdk/x/distribution" // import for side-effects
-	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/evidence" // import for side-effects
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/feegrant/module" // import for side-effects
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	_ "github.com/cosmos/cosmos-sdk/x/mint" // import for side-effects
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	_ "github.com/cosmos/cosmos-sdk/x/params" // import for side-effects
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -133,11 +131,9 @@ type App struct {
 	AccountKeeper         authkeeper.AccountKeeper
 	BankKeeper            bankkeeper.Keeper
 	StakingKeeper         *stakingkeeper.Keeper
-	DistrKeeper           distrkeeper.Keeper
 	ConsensusParamsKeeper consensuskeeper.Keeper
 
 	SlashingKeeper       slashingkeeper.Keeper
-	MintKeeper           mintkeeper.Keeper
 	CrisisKeeper         *crisiskeeper.Keeper
 	UpgradeKeeper        *upgradekeeper.Keeper
 	ParamsKeeper         paramskeeper.Keeper
@@ -164,8 +160,9 @@ type App struct {
 	DeKeeper               demodulekeeper.Keeper
 	DiKeeper               dimodulekeeper.Keeper
 	XrKeeper               xrmodulekeeper.Keeper
+	VsKeeper               vsmodulekeeper.Keeper
+	DsKeeper               dsmodulekeeper.Keeper
 	PoaKeeper              poamodulekeeper.Keeper
-	inGenesis              bool
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// simulation manager
@@ -263,10 +260,8 @@ func New(
 		&app.AccountKeeper,
 		&app.BankKeeper,
 		&app.StakingKeeper,
-		&app.DistrKeeper,
 		&app.ConsensusParamsKeeper,
 		&app.SlashingKeeper,
-		&app.MintKeeper,
 		&app.CrisisKeeper,
 		&app.UpgradeKeeper,
 		&app.ParamsKeeper,
@@ -286,6 +281,8 @@ func New(
 		&app.DeKeeper,
 		&app.DiKeeper,
 		&app.XrKeeper,
+		&app.VsKeeper,
+		&app.DsKeeper,
 		&app.PoaKeeper,
 
 		// this line is used by starport scaffolding # stargate/app/keeperDefinition
@@ -299,6 +296,10 @@ func New(
 	app.DeKeeper.SetParticipantKeeper(ppkeeper.NewPpAsDeParticipantKeeper(app.ParticipantKeeper))
 	// Wire MOD-GF into MOD-DE for GF-CHECK-2 (AUTHZ-CHECK-1 step 4).
 	app.DeKeeper.SetGovernanceFrameworkKeeper(app.GfKeeper)
+	// Wire MOD-VS into MOD-DE (vs_account_fee_period, MOD-DE-MSG-5-5).
+	app.DeKeeper.SetVerifiableServiceKeeper(app.VsKeeper)
+	// Wire MOD-TD into MOD-DE (max_gas_per_msg_type, the sponsorship fee allowance filter).
+	app.DeKeeper.SetNetworkFeeKeeper(app.TrustdepositKeeper)
 
 	// add to default baseapp options
 	// enable optimistic execution
@@ -343,8 +344,6 @@ func New(
 		if err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.ModuleManager.GetVersionMap()); err != nil {
 			return nil, err
 		}
-		app.inGenesis = true
-		defer func() { app.inGenesis = false }()
 		res, err := app.App.InitChainer(ctx, req)
 		if err != nil {
 			return nil, err

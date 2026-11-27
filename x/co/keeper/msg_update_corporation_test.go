@@ -24,7 +24,7 @@ func TestUpdateCorporation_Happy(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:rotated",
 	})
 	require.NoError(t, err)
@@ -46,7 +46,7 @@ func TestUpdateCorporation_UnregisteredAccount(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkCorp, // valid bech32 but not registered
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:rotated",
 	})
 	require.ErrorIs(t, err, types.ErrCorporationNotRegistered)
@@ -63,10 +63,27 @@ func TestUpdateCorporation_DEDenies(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:rotated",
 	})
 	require.ErrorIs(t, err, errAuthDenied)
+}
+
+// On the group-proposal path the corporation acts alone: no AUTHZ-CHECK-1.
+func TestUpdateCorporation_GroupPath(t *testing.T) {
+	del := &mockDelegation{err: errAuthDenied}
+	k, ctx := keepertest.CoKeeper(t, del, &mockGroup{policy: tkPolicy}, &mockGF{})
+	ms := keeper.NewMsgServerImpl(k)
+	_, err := ms.CreateCorporation(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+
+	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
+		Corporation: tkPolicy,
+		Signer:      tkPolicy,
+		Did:         "did:example:rotated",
+	})
+	require.NoError(t, err)
+	require.Zero(t, del.calls)
 }
 
 func TestUpdateCorporation_GFCheck1BeforeAuthzCheck1(t *testing.T) {
@@ -80,7 +97,7 @@ func TestUpdateCorporation_GFCheck1BeforeAuthzCheck1(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:rotated",
 	})
 	require.ErrorIs(t, err, errAuthDenied)
@@ -96,7 +113,7 @@ func TestUpdateCorporation_AuthzCheck1GetsResolvedID(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:rotated",
 	})
 	require.NoError(t, err)
@@ -115,7 +132,7 @@ func TestUpdateCorporation_NoopOnSameDID(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:1", // unchanged
 	})
 	require.NoError(t, err)
@@ -149,7 +166,7 @@ func TestUpdateCorporation_RejectsDIDAlreadyBoundElsewhere(t *testing.T) {
 	// Try to rotate corp_a → corp_b's DID.
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:2",
 	})
 	require.ErrorIs(t, err, types.ErrDIDAlreadyExists)

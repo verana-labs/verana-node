@@ -49,40 +49,6 @@
           "Msg"
         ]
       }
-    },
-    "/verana.di.v1.Msg/UpdateParams": {
-      "post": {
-        "summary": "UpdateParams defines a (governance) operation for updating the module\nparameters. The authority defaults to the x/gov module account.",
-        "operationId": "Msg_UpdateParams",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/verana.di.v1.MsgUpdateParamsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/google.rpc.Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": "MsgUpdateParams is the Msg/UpdateParams request type.",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/verana.di.v1.MsgUpdateParams"
-            }
-          }
-        ],
-        "tags": [
-          "Msg"
-        ]
-      }
     }
   },
   "definitions": {
@@ -117,13 +83,13 @@
     "verana.di.v1.MsgStoreDigest": {
       "type": "object",
       "properties": {
-        "authority": {
+        "corporation": {
           "type": "string",
-          "description": "authority is the corporation (group account) on whose behalf this message\nis executed."
+          "description": "corporation is the policy_address of the corporation on whose behalf\nthis message is executed."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by the corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "digest": {
           "type": "string",
@@ -135,28 +101,6 @@
     "verana.di.v1.MsgStoreDigestResponse": {
       "type": "object",
       "description": "MsgStoreDigestResponse defines the response for MsgStoreDigest."
-    },
-    "verana.di.v1.MsgUpdateParams": {
-      "type": "object",
-      "properties": {
-        "authority": {
-          "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov unless overwritten)."
-        },
-        "params": {
-          "$ref": "#/definitions/verana.di.v1.Params",
-          "description": "params defines the module parameters to update.\n\nNOTE: All parameters must be supplied."
-        }
-      },
-      "description": "MsgUpdateParams is the Msg/UpdateParams request type."
-    },
-    "verana.di.v1.MsgUpdateParamsResponse": {
-      "type": "object",
-      "description": "MsgUpdateParamsResponse defines the response structure for executing a\nMsgUpdateParams message."
-    },
-    "verana.di.v1.Params": {
-      "type": "object",
-      "description": "Params defines the parameters for the module."
     }
   }
 }

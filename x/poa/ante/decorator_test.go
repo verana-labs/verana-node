@@ -21,31 +21,29 @@ func (t stubTx) GetMsgs() []sdk.Msg                    { return t.msgs }
 func (t stubTx) GetMsgsV2() ([]protov2.Message, error) { return nil, nil }
 
 type stubFence struct {
-	seen      []sdk.Msg
-	inGenesis bool
-	err       error
+	seen []sdk.Msg
+	err  error
 }
 
-func (s *stubFence) CheckMessages(_ context.Context, msgs []sdk.Msg, inGenesis bool) error {
-	s.seen, s.inGenesis = msgs, inGenesis
+func (s *stubFence) CheckMessages(_ context.Context, msgs []sdk.Msg) error {
+	s.seen = msgs
 	return s.err
 }
 
-func TestDecorator_ForwardsMessagesAndGenesisFlag(t *testing.T) {
+func TestDecorator_ForwardsMessages(t *testing.T) {
 	fence := &stubFence{}
-	d := ante.NewDecorator(func() bool { return true }, fence)
+	d := ante.NewDecorator(fence)
 	ctx := sdk.NewContext(nil, cmtproto.Header{}, false, log.NewNopLogger())
 	nextCalled := false
 	_, err := d.AnteHandle(ctx, stubTx{[]sdk.Msg{&banktypes.MsgSend{}}}, false, func(ctx sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) { nextCalled = true; return ctx, nil })
 	require.NoError(t, err)
 	require.True(t, nextCalled)
 	require.Len(t, fence.seen, 1)
-	require.True(t, fence.inGenesis)
 }
 
 func TestDecorator_StopsOnFenceError(t *testing.T) {
 	fence := &stubFence{err: errors.New("fenced")}
-	d := ante.NewDecorator(func() bool { return false }, fence)
+	d := ante.NewDecorator(fence)
 	ctx := sdk.NewContext(nil, cmtproto.Header{}, false, log.NewNopLogger())
 	_, err := d.AnteHandle(ctx, stubTx{[]sdk.Msg{&banktypes.MsgSend{}}}, false, func(ctx sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
 		t.Fatal("next must not run")

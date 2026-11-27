@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/v2"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
 	modulev1 "github.com/verana-labs/verana-node/api/verana/gf/module/v1"
@@ -89,7 +88,7 @@ func TestGfKeeperWithDelegation_WiresEcosystemKeeper(t *testing.T) {
 	require.NotNil(t, k)
 }
 
-func TestProvideModule_DefaultAuthority(t *testing.T) {
+func TestProvideModule_RequiresAuthority(t *testing.T) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 	db := dbm.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
@@ -102,13 +101,11 @@ func TestProvideModule_DefaultAuthority(t *testing.T) {
 	in := gf.ModuleInputs{
 		StoreService:     runtime.NewKVStoreService(storeKey),
 		Cdc:              cdc,
-		Config:           &modulev1.Module{}, // empty Authority → falls back to gov module addr
+		Config:           &modulev1.Module{},
 		Logger:           log.NewNopLogger(),
 		DelegationKeeper: stubDelegationKeeper{},
 	}
-	out := gf.ProvideModule(in)
-	require.NotNil(t, out.Module)
-	require.Equal(t, authtypes.NewModuleAddress(govtypes.ModuleName).String(), out.GfKeeper.GetAuthority())
+	require.PanicsWithValue(t, "x/gf requires an explicit authority", func() { gf.ProvideModule(in) })
 }
 
 func TestProvideModule_CustomAuthority(t *testing.T) {

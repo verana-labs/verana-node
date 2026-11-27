@@ -22,7 +22,7 @@ func validCreateMsg(t *testing.T) *types.MsgCreateEcosystem {
 	t.Helper()
 	return &types.MsgCreateEcosystem{
 		Corporation:  tkCorp,
-		Delegate:     tkOp,
+		Signer:       tkOp,
 		Did:          "did:example:ec1",
 		Language:     "en",
 		DocUrl:       "https://example.com/ec.pdf",
@@ -94,6 +94,20 @@ func TestCreateEcosystem_AuthzDenied(t *testing.T) {
 	_, err := ms.CreateEcosystem(ctx, validCreateMsg(t))
 	require.ErrorIs(t, err, errAuthDenied)
 	require.Equal(t, 1, del.calls)
+}
+
+// On the group-proposal path the corporation acts alone: no AUTHZ-CHECK-1.
+func TestCreateEcosystem_GroupPath(t *testing.T) {
+	del := &mockDelegation{err: errAuthDenied}
+	co := newMockCorporation()
+	co.register(tkCorp, 1)
+	k, ctx := ecKeeper(t, del, co, &mockGF{})
+	msg := validCreateMsg(t)
+	msg.Signer = tkCorp
+
+	_, err := keeper.NewMsgServerImpl(k).CreateEcosystem(ctx, msg)
+	require.NoError(t, err)
+	require.Zero(t, del.calls)
 }
 
 // TestCreateEcosystem_CorporationNotRegistered pins AUTHZ-CHECK-5: signer must

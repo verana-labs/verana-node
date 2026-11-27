@@ -1,0 +1,124 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "verana/vs/v1/tx.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Msg"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/verana.vs.v1.Msg/UpdateParams": {
+      "post": {
+        "summary": "[MOD-VS-MSG-4] Update Module Parameters, executed through a council proposal.",
+        "operationId": "Msg_UpdateParams",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/verana.vs.v1.MsgUpdateParamsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/google.rpc.Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "MsgUpdateParams is the Msg/UpdateParams request type.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/verana.vs.v1.MsgUpdateParams"
+            }
+          }
+        ],
+        "tags": [
+          "Msg"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "google.protobuf.Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "google.rpc.Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/google.protobuf.Any"
+          }
+        }
+      }
+    },
+    "verana.vs.v1.MsgUpdateParams": {
+      "type": "object",
+      "properties": {
+        "signer": {
+          "type": "string",
+          "description": "signer is the council account."
+        },
+        "params": {
+          "$ref": "#/definitions/verana.vs.v1.Params",
+          "description": "NOTE: All parameters must be supplied."
+        }
+      },
+      "description": "MsgUpdateParams is the Msg/UpdateParams request type."
+    },
+    "verana.vs.v1.MsgUpdateParamsResponse": {
+      "type": "object",
+      "description": "MsgUpdateParamsResponse defines the response structure for executing a\nMsgUpdateParams message."
+    },
+    "verana.vs.v1.Params": {
+      "type": "object",
+      "properties": {
+        "vs_registration_deposit": {
+          "type": "string",
+          "format": "uint64",
+          "title": "in minor units of the main fiat currency"
+        },
+        "ecosystem_creation_deposit": {
+          "type": "string",
+          "format": "uint64",
+          "title": "in minor units of the main fiat currency"
+        },
+        "vid_rotation_max_transition": {
+          "type": "string"
+        },
+        "vs_account_fee_period": {
+          "type": "string"
+        }
+      },
+      "description": "Params holds the Verifiable Service and Delegation groups of GlobalVariables."
+    }
+  }
+}

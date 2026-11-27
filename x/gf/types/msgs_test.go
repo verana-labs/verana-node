@@ -18,11 +18,11 @@ const (
 
 func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 	t.Run("missing authority", func(t *testing.T) {
-		m := &types.MsgUpdateParams{Authority: "", Params: types.DefaultParams()}
+		m := &types.MsgUpdateParams{Signer: "", Params: types.DefaultParams()}
 		require.Error(t, m.ValidateBasic())
 	})
 	t.Run("happy path", func(t *testing.T) {
-		m := &types.MsgUpdateParams{Authority: tAuth, Params: types.DefaultParams()}
+		m := &types.MsgUpdateParams{Signer: tAuth, Params: types.DefaultParams()}
 		require.NoError(t, m.ValidateBasic())
 	})
 }
@@ -30,7 +30,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 	valid := types.MsgAddGovernanceFrameworkDocument{
 		Corporation:  tCorp,
-		Delegate:     tOp,
+		Signer:       tOp,
 		DocLanguage:  "en",
 		DocUrl:       tURL,
 		DocDigestSri: tDigest,
@@ -53,7 +53,7 @@ func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 	})
 	t.Run("missing delegate", func(t *testing.T) {
 		m := valid
-		m.Delegate = ""
+		m.Signer = ""
 		require.Error(t, m.ValidateBasic())
 	})
 	t.Run("missing doc_language", func(t *testing.T) {
@@ -94,10 +94,9 @@ func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 	// Negative version is unrepresentable now that Version is uint32 — the
 	// type system enforces it at compile time, so no runtime test is needed.
 
-	// [MOD-GF-MSG-1-1] network path: authority alone, corporation, delegate and
-	// ecosystem_id absent.
+	// [MOD-GF-MSG-1-1] network path: corporation and ecosystem_id absent.
 	network := valid
-	network.Corporation, network.Delegate, network.Authority = "", "", tAuth
+	network.Corporation, network.Signer, network.Network = "", tAuth, true
 	t.Run("network path", func(t *testing.T) {
 		m := network
 		require.NoError(t, m.ValidateBasic())
@@ -107,19 +106,14 @@ func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 		m.Corporation = tCorp
 		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
 	})
-	t.Run("network path with delegate", func(t *testing.T) {
-		m := network
-		m.Delegate = tOp
-		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
-	})
 	t.Run("network path with ecosystem_id", func(t *testing.T) {
 		m := network
 		m.EcosystemId = 42
 		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
 	})
-	t.Run("invalid authority", func(t *testing.T) {
+	t.Run("invalid signer", func(t *testing.T) {
 		m := network
-		m.Authority = "bad"
+		m.Signer = "bad"
 		require.Error(t, m.ValidateBasic())
 	})
 }
@@ -127,7 +121,7 @@ func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 func TestMsgIncreaseActiveGovernanceFrameworkVersion_ValidateBasic(t *testing.T) {
 	valid := types.MsgIncreaseActiveGovernanceFrameworkVersion{
 		Corporation: tCorp,
-		Delegate:    tOp,
+		Signer:      tOp,
 	}
 
 	t.Run("happy path (corporation-targeted)", func(t *testing.T) {
@@ -144,22 +138,27 @@ func TestMsgIncreaseActiveGovernanceFrameworkVersion_ValidateBasic(t *testing.T)
 		m.Corporation = ""
 		require.Error(t, m.ValidateBasic())
 	})
-	t.Run("missing delegate", func(t *testing.T) {
+	t.Run("missing signer", func(t *testing.T) {
 		m := valid
-		m.Delegate = ""
+		m.Signer = ""
 		require.Error(t, m.ValidateBasic())
 	})
 
 	// [MOD-GF-MSG-2-1] network path.
-	network := types.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: tAuth}
+	network := types.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: tAuth, Network: true}
 	t.Run("network path", func(t *testing.T) {
 		m := network
 		require.NoError(t, m.ValidateBasic())
 	})
-	t.Run("network path with corporation and delegate", func(t *testing.T) {
+	t.Run("network path with corporation", func(t *testing.T) {
 		m := network
-		m.Corporation, m.Delegate = tCorp, tOp
+		m.Corporation = tCorp
 		require.ErrorIs(t, m.ValidateBasic(), types.ErrInvalidSubject)
+	})
+	t.Run("network path without signer", func(t *testing.T) {
+		m := network
+		m.Signer = ""
+		require.Error(t, m.ValidateBasic())
 	})
 	t.Run("network path with ecosystem_id", func(t *testing.T) {
 		m := network

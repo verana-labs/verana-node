@@ -25,20 +25,21 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
-// delegate, and returns the resolved corporation id.
-func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (uint64, error) {
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for a
+// delegate signer, and returns the resolved corporation id and whether the
+// signer is on the group-proposal path.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, signer string, msgType detypes.MsgType) (uint64, bool, error) {
 	if ms.Keeper.delegationKeeper == nil {
-		return 0, fmt.Errorf("delegation keeper is required for delegate authorization")
+		return 0, false, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	co, err := ms.Keeper.coKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
-	if err != nil {
-		return 0, err
+	co, group, err := ms.Keeper.coKeeper.ResolveSigner(ctx, corporation, signer)
+	if err != nil || group {
+		return co.Id, group, err
 	}
-	if err := ms.Keeper.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, delegate, msgType, ctx.BlockTime()); err != nil {
-		return 0, fmt.Errorf("authorization check failed: %w", err)
+	if err := ms.Keeper.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, signer, msgType, ctx.BlockTime()); err != nil {
+		return 0, false, fmt.Errorf("authorization check failed: %w", err)
 	}
-	return co.Id, nil
+	return co.Id, false, nil
 }
 
 // ReclaimTrustDepositYield is refused: [MOD-TD-MSG-2] is void in v5, so the
@@ -66,8 +67,8 @@ func (ms msgServer) SlashTrustDeposit(goCtx context.Context, msg *types.MsgSlash
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// [CRITICAL] Authority check - only governance can call this
-	if ms.Keeper.authority != msg.Authority {
-		return nil, fmt.Errorf("invalid authority; expected %s, got %s", ms.Keeper.authority, msg.Authority)
+	if ms.Keeper.authority != msg.Signer {
+		return nil, fmt.Errorf("invalid signer; expected %s, got %s", ms.Keeper.authority, msg.Signer)
 	}
 
 	// [MOD-TD-MSG-5-2-1] Basic checks
@@ -94,9 +95,7 @@ func (ms msgServer) SlashTrustDeposit(goCtx context.Context, msg *types.MsgSlash
 	// [MOD-TD-MSG-5-3] Execute the slash
 	now := ctx.BlockTime()
 
-	// Get global variables for share calculation
-	params := ms.Keeper.GetParams(ctx)
-	shareValue := params.TrustDepositShareValue
+	shareValue := ms.Keeper.GetTrustDepositShareValue(ctx)
 	if !shareValue.IsPositive() {
 		return nil, fmt.Errorf("trust_deposit_share_value must be positive")
 	}
@@ -155,7 +154,7 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	account := msg.Corporation
 
 	// [MOD-TD-MSG-6-2-1] [AUTHZ-CHECK]
-	corpID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_REPAY_SLASH)
+	corpID, group, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_REPAY_SLASH)
 	if err != nil {
 		return nil, err
 	}
@@ -183,14 +182,13 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	}
 
 	// [MOD-TD-MSG-6-3] Execution
-	params := ms.Keeper.GetParams(ctx)
 	now := ctx.BlockTime()
 
 	// Update trust deposit fields
 	td.Deposit += msg.Deposit
 
 	// td.share = td.share + deposit / GlobalVariables.trust_deposit_share_value
-	shareIncrease := ms.Keeper.AmountToShare(msg.Deposit, params.TrustDepositShareValue)
+	shareIncrease := ms.Keeper.AmountToShare(msg.Deposit, ms.Keeper.GetTrustDepositShareValue(ctx))
 	td.Share = td.Share.Add(shareIncrease)
 
 	// [MOD-TD-MSG-6-3] slashed_deposit stays cumulative (only MOD-TD-MSG-5 increments it);
@@ -212,12 +210,14 @@ func (ms msgServer) RepaySlashedTrustDeposit(goCtx context.Context, msg *types.M
 	// [MOD-TD-MSG-6-3] add amount to the TrustDeposit account (slashed coins were
 	// already burned at slash time per MOD-TD-MSG-5-3).
 	transferCoins := sdk.NewCoins(sdk.NewInt64Coin(types.BondDenom, int64(msg.Deposit)))
-	// AUTHZ-CHECK-1 step 3: debit the delegate's spend limit for the committed funds.
-	if err := ms.Keeper.delegationKeeper.ConsumeDelegateSpend(
-		ctx, corpID, msg.Delegate,
-		detypes.MsgType_MSG_TYPE_REPAY_SLASH, now, transferCoins,
-	); err != nil {
-		return nil, fmt.Errorf("failed to consume delegate spend: %w", err)
+	// AUTHZ-CHECK-1 step 3: the repayment is the consumed amount of a delegate.
+	if !group {
+		if err := ms.Keeper.delegationKeeper.ConsumeDelegateSpend(
+			ctx, corpID, msg.Signer,
+			detypes.MsgType_MSG_TYPE_REPAY_SLASH, now, transferCoins,
+		); err != nil {
+			return nil, fmt.Errorf("failed to consume delegate spend: %w", err)
+		}
 	}
 	if err := ms.Keeper.bankKeeper.SendCoinsFromAccountToModule(
 		ctx,

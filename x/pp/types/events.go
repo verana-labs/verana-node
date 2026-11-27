@@ -1,6 +1,7 @@
 package types
 
 const (
+	EventTypeUpdateParams                        = "update_params"
 	EventTypeCreateRootParticipant               = "create_root_participant"
 	AttributeKeyRootParticipantID                = "root_participant_id"
 	AttributeKeySchemaID                         = "schema_id"
@@ -8,11 +9,9 @@ const (
 	EventTypeStartParticipantOP                  = "start_participant_op"
 	AttributeKeyParticipantID                    = "participant_id"
 	AttributeKeyCreator                          = "creator"
-	AttributeKeyAuthority                        = "authority"
+	AttributeKeySigner                           = "signer"
 	AttributeKeyCorporation                      = "corporation"
 	AttributeKeyCorporationID                    = "corporation_id"
-	AttributeKeyDelegate                         = "delegate"
-	AttributeKeyVsAccount                        = "vs_account"
 	AttributeKeyFees                             = "fees"
 	AttributeKeyDeposit                          = "deposit"
 	EventTypeCreateOrUpdateParticipantSession    = "create_update_csps"

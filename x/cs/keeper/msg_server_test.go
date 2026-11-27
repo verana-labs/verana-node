@@ -596,7 +596,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "valid archive",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Delegate:    delegate,
+				Signer:      delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
@@ -607,7 +607,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "unarchive succeeds",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Delegate:    delegate,
+				Signer:      delegate,
 				Id:          schemaID.Id,
 				Archive:     false,
 			},
@@ -618,7 +618,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "unarchive not archived",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Delegate:    delegate,
+				Signer:      delegate,
 				Id:          schemaID.Id,
 				Archive:     false,
 			},
@@ -630,7 +630,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "re-archive for next case",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Delegate:    delegate,
+				Signer:      delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
@@ -641,7 +641,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "already archived",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Delegate:    delegate,
+				Signer:      delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
@@ -652,7 +652,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "non-existent schema",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Delegate:    delegate,
+				Signer:      delegate,
 				Id:          999,
 				Archive:     true,
 			},
@@ -663,7 +663,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "unauthorized archive - not controller",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: sdk.AccAddress([]byte("wrong_authority_____")).String(),
-				Delegate:    delegate,
+				Signer:      delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},
@@ -675,7 +675,7 @@ func TestArchiveCredentialSchema(t *testing.T) {
 			name: "already archived again",
 			msg: &types.MsgArchiveCredentialSchema{
 				Corporation: authority,
-				Delegate:    delegate,
+				Signer:      delegate,
 				Id:          schemaID.Id,
 				Archive:     true,
 			},

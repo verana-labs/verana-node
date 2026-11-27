@@ -94,8 +94,8 @@ async function main() {
     typeUrl: typeUrls.MsgGrantDelegateAuthorization,
     value: MsgGrantDelegateAuthorization.fromPartial({
       corporation: account.address,
-      // self-grant (delegate == corporation): AUTHZ-CHECK-1 skipped, AUTHZ-CHECK-5 is the gate
-      delegate: account.address,
+      // self-grant (signer == corporation): AUTHZ-CHECK-1 skipped, AUTHZ-CHECK-5 is the gate
+      signer: account.address,
       grantee: account.address,
       msgTypes: [MsgType.MSG_TYPE_STORE_DIGEST],
     }),

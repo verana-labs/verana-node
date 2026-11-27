@@ -16,6 +16,7 @@ import (
 
 	"github.com/verana-labs/verana-node/x/de/keeper"
 	"github.com/verana-labs/verana-node/x/de/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 func setupMsgServer(t *testing.T) (*fixture, types.MsgServer, sdk.Context) {
@@ -132,7 +133,7 @@ func TestGrantDelegateAuthorization_NewAndUpdate(t *testing.T) {
 	spend := uvna(100)
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 		AuthzSpendLimit: spend,
 	})
 	require.NoError(t, err)
@@ -152,7 +153,7 @@ func TestGrantDelegateAuthorization_NewAndUpdate(t *testing.T) {
 	require.NoError(t, f.keeper.DelegateAuthorizations.Set(ctx, key, stored))
 
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: strings.ToUpper(grantee), MsgTypes: []types.MsgType{mtSchema},
+		Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(grantee), MsgTypes: []types.MsgType{mtSchema},
 		AuthzSpendLimit: spend,
 	})
 	require.NoError(t, err)
@@ -174,7 +175,7 @@ func TestGrantDelegateAuthorization_PeriodWithoutLimit(t *testing.T) {
 	period := time.Hour
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 		Expiration: &exp, AuthzSpendLimitPeriod: &period,
 	})
 	require.NoError(t, err)
@@ -194,7 +195,7 @@ func TestGrantDelegateAuthorization_FeeAllowance(t *testing.T) {
 	exp := ctx.BlockTime().Add(time.Hour)
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 		Expiration: &exp, FeegrantSpendLimit: uvna(10),
 	})
 	require.NoError(t, err)
@@ -210,7 +211,7 @@ func TestGrantDelegateAuthorization_FeeAllowance(t *testing.T) {
 	require.Len(t, f.feegrants.grants, 1)
 
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 	has, err := f.keeper.FeeGrants.Has(ctx, collections.Join(testCorpID, grantee))
@@ -240,29 +241,11 @@ func TestGrantDelegateAuthorization_MutualExclusivity(t *testing.T) {
 				types.ParticipantAuthorizationRecord{ParticipantId: 1, MsgTypes: []types.MsgType{mtValidated}}))
 
 			_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-				Corporation: corporation, Delegate: corporation, Grantee: tc.grant(grantee), MsgTypes: []types.MsgType{mtEcosystem},
+				Corporation: corporation, Signer: corporation, Grantee: tc.grant(grantee), MsgTypes: []types.MsgType{mtEcosystem},
 			})
 			require.ErrorIs(t, err, types.ErrVSOperatorAuthzExists)
 		})
 	}
-}
-
-// [MOD-DE-MSG-3-1] / [MOD-DE-MSG-4-1] the group-proposal path is the policy
-// account in either bech32 spelling.
-func TestGrantDelegateAuthorization_GroupPathSpelling(t *testing.T) {
-	_, ms, ctx := setupMsgServer(t)
-	corporation := acc("corp________________")
-	grantee := acc("grantee_____________")
-
-	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: strings.ToUpper(corporation), Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
-	})
-	require.NoError(t, err)
-
-	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
-		Corporation: corporation, Delegate: strings.ToUpper(corporation), Grantee: grantee,
-	})
-	require.NoError(t, err)
 }
 
 // [MOD-DE-MSG-3] The delegate path: a delegate authorized for the de grant
@@ -275,37 +258,39 @@ func TestGrantDelegateAuthorization_DelegatePath(t *testing.T) {
 
 	// Corp authorizes the delegate for the de grant message (group-proposal path).
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: delegate,
+		Corporation: corporation, Signer: corporation, Grantee: delegate,
 		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION},
 	})
 	require.NoError(t, err)
 
 	// The authorized delegate grants to a third party on the corporation's behalf.
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: delegate, Grantee: grantee,
+		Corporation: corporation, Signer: delegate, Grantee: grantee,
 		MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
-	// The delegate may grant itself: the spec sets no such limit.
-	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: delegate, Grantee: delegate,
-		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION, mtEcosystem},
-	})
-	require.NoError(t, err)
+	// A delegate does not grant to itself, in either bech32 spelling.
+	for _, self := range []string{delegate, strings.ToUpper(delegate)} {
+		_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
+			Corporation: corporation, Signer: delegate, Grantee: self,
+			MsgTypes: []types.MsgType{mtEcosystem},
+		})
+		require.ErrorContains(t, err, "grantee must not be the signer")
+	}
 
 	// An unauthorized delegate is rejected by AUTHZ-CHECK-1.
 	stranger := acc("stranger____________")
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: stranger, Grantee: grantee,
+		Corporation: corporation, Signer: stranger, Grantee: grantee,
 		MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.Error(t, err)
 }
 
-// [MOD-DE-MSG-3-2] / [MOD-DE-MSG-4-2] the group-proposal path is delegate ==
-// corporation; an empty delegate is not a path.
-func TestGrantDelegateAuthorization_EmptyDelegate(t *testing.T) {
+// [MOD-DE-MSG-3-2] / [MOD-DE-MSG-4-2] the group-proposal path is signer ==
+// corporation; an empty signer is not a path.
+func TestGrantDelegateAuthorization_EmptySigner(t *testing.T) {
 	_, ms, ctx := setupMsgServer(t)
 	corporation := acc("corp________________")
 	grantee := acc("grantee_____________")
@@ -316,7 +301,7 @@ func TestGrantDelegateAuthorization_EmptyDelegate(t *testing.T) {
 	require.ErrorIs(t, err, types.ErrAuthzNotFound)
 
 	_, err = ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
@@ -333,16 +318,16 @@ func TestGrantDelegateAuthorization_OwnPolicyAddress(t *testing.T) {
 	delegate := acc("delegate____________")
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: delegate,
+		Corporation: corporation, Signer: corporation, Grantee: delegate,
 		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION},
 	})
 	require.NoError(t, err)
 
 	for name, msg := range map[string]*types.MsgGrantDelegateAuthorization{
-		"group proposal": {Corporation: corporation, Delegate: corporation, Grantee: corporation},
-		"with feegrant":  {Corporation: corporation, Delegate: corporation, Grantee: corporation, FeegrantSpendLimit: uvna(10)},
-		"delegate path":  {Corporation: corporation, Delegate: delegate, Grantee: corporation},
-		"upper case":     {Corporation: corporation, Delegate: corporation, Grantee: strings.ToUpper(corporation), FeegrantSpendLimit: uvna(10)},
+		"group proposal": {Corporation: corporation, Signer: corporation, Grantee: corporation},
+		"with feegrant":  {Corporation: corporation, Signer: corporation, Grantee: corporation, FeegrantSpendLimit: uvna(10)},
+		"delegate path":  {Corporation: corporation, Signer: delegate, Grantee: corporation},
+		"upper case":     {Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(corporation), FeegrantSpendLimit: uvna(10)},
 	} {
 		t.Run(name, func(t *testing.T) {
 			msg.MsgTypes = []types.MsgType{mtEcosystem}
@@ -365,7 +350,7 @@ func TestGrantDelegateAuthorization_SponsoredPolicyAddress(t *testing.T) {
 	corporation := acc("corp________________")
 	grant := func(grantee string) error {
 		_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-			Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+			Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 		})
 		return err
 	}
@@ -387,13 +372,13 @@ func TestRevokeDelegateAuthorization(t *testing.T) {
 	grantee := acc("grantee_____________")
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 		FeegrantSpendLimit: uvna(10),
 	})
 	require.NoError(t, err)
 
 	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: strings.ToUpper(grantee),
+		Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(grantee),
 	})
 	require.NoError(t, err)
 	list, err := qs.ListDelegateAuthorizations(ctx, &types.QueryListDelegateAuthorizationsRequest{CorporationId: testCorpID})
@@ -406,7 +391,7 @@ func TestRevokeDelegateAuthorization(t *testing.T) {
 
 	// Revoking a missing entry aborts.
 	_, err = ms.RevokeDelegateAuthorization(ctx, &types.MsgRevokeDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee,
+		Corporation: corporation, Signer: corporation, Grantee: grantee,
 	})
 	require.ErrorIs(t, err, types.ErrDelegateAuthzNotFound)
 }
@@ -433,7 +418,7 @@ func TestDelegateAuthorization_Events(t *testing.T) {
 
 	c := fresh()
 	_, err := ms.GrantDelegateAuthorization(c, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: strings.ToUpper(delegate),
+		Corporation: corporation, Signer: corporation, Grantee: strings.ToUpper(delegate),
 		MsgTypes: []types.MsgType{types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION, types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION},
 	})
 	require.NoError(t, err)
@@ -445,7 +430,7 @@ func TestDelegateAuthorization_Events(t *testing.T) {
 
 	c = fresh()
 	_, err = ms.GrantDelegateAuthorization(c, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: delegate, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: delegate, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 	got = attrs(c, types.EventTypeGrantDelegateAuthorization)
@@ -454,18 +439,18 @@ func TestDelegateAuthorization_Events(t *testing.T) {
 
 	c = fresh()
 	_, err = ms.RevokeDelegateAuthorization(c, &types.MsgRevokeDelegateAuthorization{
-		Corporation: corporation, Delegate: delegate, Grantee: grantee,
+		Corporation: corporation, Signer: delegate, Grantee: grantee,
 	})
 	require.NoError(t, err)
 	got = attrs(c, types.EventTypeRevokeDelegateAuthorization)
 	require.Equal(t, types.ModuleName, got["module"])
 	require.Equal(t, "1", got["corporation_id"])
 	require.Equal(t, grantee, got["delegate"])
-	require.Contains(t, got["msg"], `"delegate":"`+delegate+`"`)
+	require.Contains(t, got["msg"], `"signer":"`+delegate+`"`)
 
 	c = fresh()
 	_, err = ms.RevokeDelegateAuthorization(c, &types.MsgRevokeDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: delegate,
+		Corporation: corporation, Signer: corporation, Grantee: delegate,
 	})
 	require.NoError(t, err)
 	got = attrs(c, types.EventTypeRevokeDelegateAuthorization)
@@ -746,9 +731,9 @@ func TestRecomputeFeeAllowance_Sum(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, fee(10), fg.SpendLimit)
 	require.NotNil(t, fg.Period)
-	require.Equal(t, types.DefaultVsOperatorFeePeriod, *fg.Period)
+	require.Equal(t, vstypes.DefaultVsAccountFeePeriod, *fg.Period)
 	require.NotNil(t, fg.Expiration)
-	require.True(t, fg.Expiration.Equal(now.Add(types.DefaultVsOperatorFeePeriod)))
+	require.True(t, fg.Expiration.Equal(now.Add(vstypes.DefaultVsAccountFeePeriod)))
 	require.ElementsMatch(t, []types.MsgType{mtIssuance, mtValidated}, fg.MsgTypes)
 
 	// Pending entries contribute nothing: with only 12 left, the allowance goes.

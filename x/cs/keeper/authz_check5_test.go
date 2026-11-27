@@ -17,17 +17,18 @@ import (
 func TestAuthzCheck5_CredentialSchema(t *testing.T) {
 	corporation := sdk.AccAddress([]byte("cs_corporation______")).String()
 	delegate := sdk.AccAddress([]byte("cs_operator_________")).String()
+	signer := delegate
 	msgs := map[string]func(ms types.MsgServer, ctx sdk.Context) error{
 		"create": func(ms types.MsgServer, ctx sdk.Context) error {
-			_, err := ms.CreateCredentialSchema(ctx, &types.MsgCreateCredentialSchema{Corporation: corporation, Delegate: delegate, EcosystemId: 1})
+			_, err := ms.CreateCredentialSchema(ctx, &types.MsgCreateCredentialSchema{Corporation: corporation, Signer: signer, EcosystemId: 1})
 			return err
 		},
 		"update": func(ms types.MsgServer, ctx sdk.Context) error {
-			_, err := ms.UpdateCredentialSchema(ctx, &types.MsgUpdateCredentialSchema{Corporation: corporation, Delegate: delegate, Id: 1})
+			_, err := ms.UpdateCredentialSchema(ctx, &types.MsgUpdateCredentialSchema{Corporation: corporation, Signer: signer, Id: 1})
 			return err
 		},
 		"archive": func(ms types.MsgServer, ctx sdk.Context) error {
-			_, err := ms.ArchiveCredentialSchema(ctx, &types.MsgArchiveCredentialSchema{Corporation: corporation, Delegate: delegate, Id: 1})
+			_, err := ms.ArchiveCredentialSchema(ctx, &types.MsgArchiveCredentialSchema{Corporation: corporation, Signer: signer, Id: 1})
 			return err
 		},
 	}
@@ -43,6 +44,14 @@ func TestAuthzCheck5_CredentialSchema(t *testing.T) {
 			corpID := ec.CreateMockEcosystem(corporation, "did:example:cs") // corporation id == ecosystem id
 			_ = run(keeper.NewMsgServerImpl(k), ctx)
 			require.Equal(t, []uint64{corpID}, del.DelegateAuthCorpIDs)
+		})
+		t.Run(name+": group-proposal path skips AUTHZ-CHECK-1", func(t *testing.T) {
+			k, ec, _, del, ctx := keepertest.CredentialschemaKeeperWithMocks(t)
+			ec.CreateMockEcosystem(corporation, "did:example:cs")
+			signer = corporation
+			defer func() { signer = delegate }()
+			_ = run(keeper.NewMsgServerImpl(k), ctx)
+			require.Empty(t, del.DelegateAuthCorpIDs)
 		})
 	}
 }

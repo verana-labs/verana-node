@@ -23,21 +23,22 @@ func TestMsgUpdateParams(t *testing.T) {
 		expErrMsg string
 	}{
 		{
-			name: "invalid authority",
+			name: "invalid signer",
 			input: &types.MsgUpdateParams{
-				Authority: "invalid",
-				Params:    params,
+				Signer: "invalid",
+				Params: params,
 			},
 			expErr:    true,
-			expErrMsg: "invalid authority",
+			expErrMsg: "invalid signer",
 		},
 		{
-			name: "all good",
+			name: "aborts for the authority: the module owns no parameter",
 			input: &types.MsgUpdateParams{
-				Authority: k.GetAuthority(),
-				Params:    params,
+				Signer: k.GetAuthority(),
+				Params: params,
 			},
-			expErr: false,
+			expErr:    true,
+			expErrMsg: types.ErrNoParams.Error(),
 		},
 	}
 

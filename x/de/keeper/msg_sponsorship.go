@@ -20,7 +20,7 @@ func (ms msgServer) GrantSponsorship(goCtx context.Context, msg *types.MsgGrantS
 	now := ctx.BlockTime()
 
 	// [MOD-DE-MSG-10-2] Basic checks.
-	co, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+	co, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, msg.Signer)
 	if err != nil {
 		return nil, err
 	}
@@ -100,13 +100,12 @@ func (ms msgServer) RevokeSponsorship(goCtx context.Context, msg *types.MsgRevok
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// [MOD-DE-MSG-11-2] Basic checks.
-	co, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+	co, group, err := ms.corporationKeeper().ResolveSigner(ctx, msg.Corporation, msg.Signer)
 	if err != nil {
 		return nil, err
 	}
-	groupPath := msg.Delegate == msg.Corporation
-	if !groupPath {
-		if err := ms.CheckDelegateAuthorization(ctx, co.Id, msg.Delegate, types.MsgType_MSG_TYPE_REVOKE_SPONSORSHIP, ctx.BlockTime()); err != nil {
+	if !group {
+		if err := ms.CheckDelegateAuthorization(ctx, co.Id, msg.Signer, types.MsgType_MSG_TYPE_REVOKE_SPONSORSHIP, ctx.BlockTime()); err != nil {
 			return nil, err
 		}
 	}
@@ -146,7 +145,7 @@ func (ms msgServer) RevokeSponsorship(goCtx context.Context, msg *types.MsgRevok
 		Uint(types.AttributeKeySponsorCorporationID, co.Id).
 		Uint(types.AttributeKeySponsoredCorporationID, sponsored.Id).
 		Bool(types.AttributeKeySponsorCleared, cleared)
-	if groupPath {
+	if group {
 		if err := ev.Msg(ms.cdc, msg); err != nil {
 			return nil, err
 		}
@@ -309,6 +308,9 @@ func (k Keeper) grantSponsorshipAllowance(ctx context.Context, co, sponsored typ
 	}
 	allowed, err := feegrant.NewAllowedMsgAllowance(inner, urls)
 	if err != nil {
+		return err
+	}
+	if err := allowed.ValidateBasic(); err != nil {
 		return err
 	}
 	granter, grantee, err := policyAddrs(co, sponsored)
