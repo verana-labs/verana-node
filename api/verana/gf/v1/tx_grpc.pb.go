@@ -22,6 +22,8 @@ const (
 	Msg_UpdateParams_FullMethodName                             = "/verana.gf.v1.Msg/UpdateParams"
 	Msg_AddGovernanceFrameworkDocument_FullMethodName           = "/verana.gf.v1.Msg/AddGovernanceFrameworkDocument"
 	Msg_IncreaseActiveGovernanceFrameworkVersion_FullMethodName = "/verana.gf.v1.Msg/IncreaseActiveGovernanceFrameworkVersion"
+	Msg_AcceptGovernanceFrameworkVersion_FullMethodName         = "/verana.gf.v1.Msg/AcceptGovernanceFrameworkVersion"
+	Msg_AcceptCorporationGovernanceFramework_FullMethodName     = "/verana.gf.v1.Msg/AcceptCorporationGovernanceFramework"
 )
 
 // MsgClient is the client API for Msg service.
@@ -37,6 +39,10 @@ type MsgClient interface {
 	AddGovernanceFrameworkDocument(ctx context.Context, in *MsgAddGovernanceFrameworkDocument, opts ...grpc.CallOption) (*MsgAddGovernanceFrameworkDocumentResponse, error)
 	// [MOD-GF-MSG-2] Increase Active Governance Framework Version
 	IncreaseActiveGovernanceFrameworkVersion(ctx context.Context, in *MsgIncreaseActiveGovernanceFrameworkVersion, opts ...grpc.CallOption) (*MsgIncreaseActiveGovernanceFrameworkVersionResponse, error)
+	// [MOD-GF-MSG-3] Accept Governance Framework Version
+	AcceptGovernanceFrameworkVersion(ctx context.Context, in *MsgAcceptGovernanceFrameworkVersion, opts ...grpc.CallOption) (*MsgAcceptGovernanceFrameworkVersionResponse, error)
+	// [MOD-GF-MSG-4] Accept Corporation Governance Framework
+	AcceptCorporationGovernanceFramework(ctx context.Context, in *MsgAcceptCorporationGovernanceFramework, opts ...grpc.CallOption) (*MsgAcceptCorporationGovernanceFrameworkResponse, error)
 }
 
 type msgClient struct {
@@ -77,6 +83,26 @@ func (c *msgClient) IncreaseActiveGovernanceFrameworkVersion(ctx context.Context
 	return out, nil
 }
 
+func (c *msgClient) AcceptGovernanceFrameworkVersion(ctx context.Context, in *MsgAcceptGovernanceFrameworkVersion, opts ...grpc.CallOption) (*MsgAcceptGovernanceFrameworkVersionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgAcceptGovernanceFrameworkVersionResponse)
+	err := c.cc.Invoke(ctx, Msg_AcceptGovernanceFrameworkVersion_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) AcceptCorporationGovernanceFramework(ctx context.Context, in *MsgAcceptCorporationGovernanceFramework, opts ...grpc.CallOption) (*MsgAcceptCorporationGovernanceFrameworkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgAcceptCorporationGovernanceFrameworkResponse)
+	err := c.cc.Invoke(ctx, Msg_AcceptCorporationGovernanceFramework_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility.
@@ -90,6 +116,10 @@ type MsgServer interface {
 	AddGovernanceFrameworkDocument(context.Context, *MsgAddGovernanceFrameworkDocument) (*MsgAddGovernanceFrameworkDocumentResponse, error)
 	// [MOD-GF-MSG-2] Increase Active Governance Framework Version
 	IncreaseActiveGovernanceFrameworkVersion(context.Context, *MsgIncreaseActiveGovernanceFrameworkVersion) (*MsgIncreaseActiveGovernanceFrameworkVersionResponse, error)
+	// [MOD-GF-MSG-3] Accept Governance Framework Version
+	AcceptGovernanceFrameworkVersion(context.Context, *MsgAcceptGovernanceFrameworkVersion) (*MsgAcceptGovernanceFrameworkVersionResponse, error)
+	// [MOD-GF-MSG-4] Accept Corporation Governance Framework
+	AcceptCorporationGovernanceFramework(context.Context, *MsgAcceptCorporationGovernanceFramework) (*MsgAcceptCorporationGovernanceFrameworkResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -108,6 +138,12 @@ func (UnimplementedMsgServer) AddGovernanceFrameworkDocument(context.Context, *M
 }
 func (UnimplementedMsgServer) IncreaseActiveGovernanceFrameworkVersion(context.Context, *MsgIncreaseActiveGovernanceFrameworkVersion) (*MsgIncreaseActiveGovernanceFrameworkVersionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IncreaseActiveGovernanceFrameworkVersion not implemented")
+}
+func (UnimplementedMsgServer) AcceptGovernanceFrameworkVersion(context.Context, *MsgAcceptGovernanceFrameworkVersion) (*MsgAcceptGovernanceFrameworkVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AcceptGovernanceFrameworkVersion not implemented")
+}
+func (UnimplementedMsgServer) AcceptCorporationGovernanceFramework(context.Context, *MsgAcceptCorporationGovernanceFramework) (*MsgAcceptCorporationGovernanceFrameworkResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AcceptCorporationGovernanceFramework not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 func (UnimplementedMsgServer) testEmbeddedByValue()             {}
@@ -184,6 +220,42 @@ func _Msg_IncreaseActiveGovernanceFrameworkVersion_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_AcceptGovernanceFrameworkVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAcceptGovernanceFrameworkVersion)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AcceptGovernanceFrameworkVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AcceptGovernanceFrameworkVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AcceptGovernanceFrameworkVersion(ctx, req.(*MsgAcceptGovernanceFrameworkVersion))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_AcceptCorporationGovernanceFramework_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAcceptCorporationGovernanceFramework)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AcceptCorporationGovernanceFramework(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AcceptCorporationGovernanceFramework_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AcceptCorporationGovernanceFramework(ctx, req.(*MsgAcceptCorporationGovernanceFramework))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,6 +274,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IncreaseActiveGovernanceFrameworkVersion",
 			Handler:    _Msg_IncreaseActiveGovernanceFrameworkVersion_Handler,
+		},
+		{
+			MethodName: "AcceptGovernanceFrameworkVersion",
+			Handler:    _Msg_AcceptGovernanceFrameworkVersion_Handler,
+		},
+		{
+			MethodName: "AcceptCorporationGovernanceFramework",
+			Handler:    _Msg_AcceptCorporationGovernanceFramework_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

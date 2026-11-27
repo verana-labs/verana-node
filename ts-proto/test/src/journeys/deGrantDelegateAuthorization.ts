@@ -30,6 +30,7 @@ import {
   signAndBroadcastWithRetry,
   fundAccount,
   config,
+  acceptCorporationGovernanceFramework,
 } from "../helpers/client";
 import { typeUrls } from "../helpers/registry";
 import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
@@ -248,6 +249,11 @@ async function main() {
     console.log("=".repeat(60));
     console.log(`  Proposal Tx: ${proposalResult.transactionHash}`);
     console.log(`  Vote Tx:     ${voteResult.transactionHash}`);
+
+    // Step 5: the delegate accepts the corporation's governance framework (MOD-GF-MSG-4).
+    console.log("Step 5: Delegate accepts the corporation's governance framework...");
+    await acceptCorporationGovernanceFramework(delegateWallet, corp.corporationId);
+    console.log("✅ Step 5: Delegate accepted the corporation's governance framework");
 
     saveEcAuthzSetup(corp.policyAddress, delegateAccount.address);
     console.log("  💾 Saved EC authz setup (corporation + delegate) for EC/GF journeys");

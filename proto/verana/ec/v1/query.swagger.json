@@ -209,6 +209,10 @@
             "type": "object",
             "$ref": "#/definitions/verana.gf.v1.GovernanceFrameworkVersionWithDocs"
           }
+        },
+        "acceptance_deadline": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "description": "EcosystemWithVersions is the query response shape (MOD-ES-QRY-1 /\nMOD-ES-QRY-2) including nested governance framework versions and documents\npulled from the x/gf module."

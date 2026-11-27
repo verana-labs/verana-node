@@ -38,7 +38,7 @@ func TestMsgUpdateParams(t *testing.T) {
 		require.ErrorIs(t, err, types.ErrInvalidParams)
 	})
 
-	t.Run("stores the value and emits it", func(t *testing.T) {
+	t.Run("stores the value and emits the message", func(t *testing.T) {
 		k, ctx := keepertest.GfKeeperWithDelegation(t, mockDelegation{}, &mockEcosystem{}, &mockCorporation{})
 		ms := keeper.NewMsgServerImpl(k)
 
@@ -49,18 +49,9 @@ func TestMsgUpdateParams(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, types.NewParams(7*24*time.Hour), k.GetParams(ctx))
 
-		attrs := map[string]string{}
-		for _, ev := range ctx.EventManager().Events() {
-			if ev.Type == types.EventTypeUpdateParams {
-				for _, a := range ev.Attributes {
-					attrs[a.Key] = a.Value
-				}
-			}
-		}
-		require.Equal(t, map[string]string{
-			types.AttributeKeySigner:  govAuthority,
-			"gf_acceptance_grace_min": "168h0m0s",
-		}, attrs)
+		attrs := eventAttrs(ctx, types.EventTypeUpdateModuleParameters)
+		require.Equal(t, types.ModuleName, attrs["module"])
+		require.JSONEq(t, `{"signer":"`+govAuthority+`","params":{"gf_acceptance_grace_min":"604800s"}}`, attrs["msg"])
 	})
 
 	t.Run("rejects non-authority signer", func(t *testing.T) {

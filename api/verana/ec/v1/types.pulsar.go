@@ -18,15 +18,16 @@ import (
 )
 
 var (
-	md_Ecosystem                protoreflect.MessageDescriptor
-	fd_Ecosystem_id             protoreflect.FieldDescriptor
-	fd_Ecosystem_did            protoreflect.FieldDescriptor
-	fd_Ecosystem_corporation_id protoreflect.FieldDescriptor
-	fd_Ecosystem_created        protoreflect.FieldDescriptor
-	fd_Ecosystem_modified       protoreflect.FieldDescriptor
-	fd_Ecosystem_archived       protoreflect.FieldDescriptor
-	fd_Ecosystem_language       protoreflect.FieldDescriptor
-	fd_Ecosystem_active_version protoreflect.FieldDescriptor
+	md_Ecosystem                     protoreflect.MessageDescriptor
+	fd_Ecosystem_id                  protoreflect.FieldDescriptor
+	fd_Ecosystem_did                 protoreflect.FieldDescriptor
+	fd_Ecosystem_corporation_id      protoreflect.FieldDescriptor
+	fd_Ecosystem_created             protoreflect.FieldDescriptor
+	fd_Ecosystem_modified            protoreflect.FieldDescriptor
+	fd_Ecosystem_archived            protoreflect.FieldDescriptor
+	fd_Ecosystem_language            protoreflect.FieldDescriptor
+	fd_Ecosystem_active_version      protoreflect.FieldDescriptor
+	fd_Ecosystem_acceptance_deadline protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -40,6 +41,7 @@ func init() {
 	fd_Ecosystem_archived = md_Ecosystem.Fields().ByName("archived")
 	fd_Ecosystem_language = md_Ecosystem.Fields().ByName("language")
 	fd_Ecosystem_active_version = md_Ecosystem.Fields().ByName("active_version")
+	fd_Ecosystem_acceptance_deadline = md_Ecosystem.Fields().ByName("acceptance_deadline")
 }
 
 var _ protoreflect.Message = (*fastReflection_Ecosystem)(nil)
@@ -155,6 +157,12 @@ func (x *fastReflection_Ecosystem) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
+	if x.AcceptanceDeadline != nil {
+		value := protoreflect.ValueOfMessage(x.AcceptanceDeadline.ProtoReflect())
+		if !f(fd_Ecosystem_acceptance_deadline, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -186,6 +194,8 @@ func (x *fastReflection_Ecosystem) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Language != ""
 	case "verana.ec.v1.Ecosystem.active_version":
 		return x.ActiveVersion != uint32(0)
+	case "verana.ec.v1.Ecosystem.acceptance_deadline":
+		return x.AcceptanceDeadline != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.Ecosystem"))
@@ -218,6 +228,8 @@ func (x *fastReflection_Ecosystem) Clear(fd protoreflect.FieldDescriptor) {
 		x.Language = ""
 	case "verana.ec.v1.Ecosystem.active_version":
 		x.ActiveVersion = uint32(0)
+	case "verana.ec.v1.Ecosystem.acceptance_deadline":
+		x.AcceptanceDeadline = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.Ecosystem"))
@@ -258,6 +270,9 @@ func (x *fastReflection_Ecosystem) Get(descriptor protoreflect.FieldDescriptor) 
 	case "verana.ec.v1.Ecosystem.active_version":
 		value := x.ActiveVersion
 		return protoreflect.ValueOfUint32(value)
+	case "verana.ec.v1.Ecosystem.acceptance_deadline":
+		value := x.AcceptanceDeadline
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.Ecosystem"))
@@ -294,6 +309,8 @@ func (x *fastReflection_Ecosystem) Set(fd protoreflect.FieldDescriptor, value pr
 		x.Language = value.Interface().(string)
 	case "verana.ec.v1.Ecosystem.active_version":
 		x.ActiveVersion = uint32(value.Uint())
+	case "verana.ec.v1.Ecosystem.acceptance_deadline":
+		x.AcceptanceDeadline = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.Ecosystem"))
@@ -324,6 +341,11 @@ func (x *fastReflection_Ecosystem) Mutable(fd protoreflect.FieldDescriptor) prot
 			x.Modified = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Modified.ProtoReflect())
+	case "verana.ec.v1.Ecosystem.acceptance_deadline":
+		if x.AcceptanceDeadline == nil {
+			x.AcceptanceDeadline = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.AcceptanceDeadline.ProtoReflect())
 	case "verana.ec.v1.Ecosystem.id":
 		panic(fmt.Errorf("field id of message verana.ec.v1.Ecosystem is not mutable"))
 	case "verana.ec.v1.Ecosystem.did":
@@ -367,6 +389,9 @@ func (x *fastReflection_Ecosystem) NewField(fd protoreflect.FieldDescriptor) pro
 		return protoreflect.ValueOfString("")
 	case "verana.ec.v1.Ecosystem.active_version":
 		return protoreflect.ValueOfUint32(uint32(0))
+	case "verana.ec.v1.Ecosystem.acceptance_deadline":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.Ecosystem"))
@@ -464,6 +489,10 @@ func (x *fastReflection_Ecosystem) ProtoMethods() *protoiface.Methods {
 		if x.ActiveVersion != 0 {
 			n += 1 + runtime.Sov(uint64(x.ActiveVersion))
 		}
+		if x.AcceptanceDeadline != nil {
+			l = options.Size(x.AcceptanceDeadline)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -492,6 +521,20 @@ func (x *fastReflection_Ecosystem) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.AcceptanceDeadline != nil {
+			encoded, err := options.Marshal(x.AcceptanceDeadline)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x4a
 		}
 		if x.ActiveVersion != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.ActiveVersion))
@@ -822,6 +865,42 @@ func (x *fastReflection_Ecosystem) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 9:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AcceptanceDeadline", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.AcceptanceDeadline == nil {
+					x.AcceptanceDeadline = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AcceptanceDeadline); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -909,16 +988,17 @@ func (x *_EcosystemWithVersions_9_list) IsValid() bool {
 }
 
 var (
-	md_EcosystemWithVersions                protoreflect.MessageDescriptor
-	fd_EcosystemWithVersions_id             protoreflect.FieldDescriptor
-	fd_EcosystemWithVersions_did            protoreflect.FieldDescriptor
-	fd_EcosystemWithVersions_corporation_id protoreflect.FieldDescriptor
-	fd_EcosystemWithVersions_created        protoreflect.FieldDescriptor
-	fd_EcosystemWithVersions_modified       protoreflect.FieldDescriptor
-	fd_EcosystemWithVersions_archived       protoreflect.FieldDescriptor
-	fd_EcosystemWithVersions_language       protoreflect.FieldDescriptor
-	fd_EcosystemWithVersions_active_version protoreflect.FieldDescriptor
-	fd_EcosystemWithVersions_versions       protoreflect.FieldDescriptor
+	md_EcosystemWithVersions                     protoreflect.MessageDescriptor
+	fd_EcosystemWithVersions_id                  protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_did                 protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_corporation_id      protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_created             protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_modified            protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_archived            protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_language            protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_active_version      protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_versions            protoreflect.FieldDescriptor
+	fd_EcosystemWithVersions_acceptance_deadline protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -933,6 +1013,7 @@ func init() {
 	fd_EcosystemWithVersions_language = md_EcosystemWithVersions.Fields().ByName("language")
 	fd_EcosystemWithVersions_active_version = md_EcosystemWithVersions.Fields().ByName("active_version")
 	fd_EcosystemWithVersions_versions = md_EcosystemWithVersions.Fields().ByName("versions")
+	fd_EcosystemWithVersions_acceptance_deadline = md_EcosystemWithVersions.Fields().ByName("acceptance_deadline")
 }
 
 var _ protoreflect.Message = (*fastReflection_EcosystemWithVersions)(nil)
@@ -1054,6 +1135,12 @@ func (x *fastReflection_EcosystemWithVersions) Range(f func(protoreflect.FieldDe
 			return
 		}
 	}
+	if x.AcceptanceDeadline != nil {
+		value := protoreflect.ValueOfMessage(x.AcceptanceDeadline.ProtoReflect())
+		if !f(fd_EcosystemWithVersions_acceptance_deadline, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -1087,6 +1174,8 @@ func (x *fastReflection_EcosystemWithVersions) Has(fd protoreflect.FieldDescript
 		return x.ActiveVersion != uint32(0)
 	case "verana.ec.v1.EcosystemWithVersions.versions":
 		return len(x.Versions) != 0
+	case "verana.ec.v1.EcosystemWithVersions.acceptance_deadline":
+		return x.AcceptanceDeadline != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.EcosystemWithVersions"))
@@ -1121,6 +1210,8 @@ func (x *fastReflection_EcosystemWithVersions) Clear(fd protoreflect.FieldDescri
 		x.ActiveVersion = uint32(0)
 	case "verana.ec.v1.EcosystemWithVersions.versions":
 		x.Versions = nil
+	case "verana.ec.v1.EcosystemWithVersions.acceptance_deadline":
+		x.AcceptanceDeadline = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.EcosystemWithVersions"))
@@ -1167,6 +1258,9 @@ func (x *fastReflection_EcosystemWithVersions) Get(descriptor protoreflect.Field
 		}
 		listValue := &_EcosystemWithVersions_9_list{list: &x.Versions}
 		return protoreflect.ValueOfList(listValue)
+	case "verana.ec.v1.EcosystemWithVersions.acceptance_deadline":
+		value := x.AcceptanceDeadline
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.EcosystemWithVersions"))
@@ -1207,6 +1301,8 @@ func (x *fastReflection_EcosystemWithVersions) Set(fd protoreflect.FieldDescript
 		lv := value.List()
 		clv := lv.(*_EcosystemWithVersions_9_list)
 		x.Versions = *clv.list
+	case "verana.ec.v1.EcosystemWithVersions.acceptance_deadline":
+		x.AcceptanceDeadline = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.EcosystemWithVersions"))
@@ -1243,6 +1339,11 @@ func (x *fastReflection_EcosystemWithVersions) Mutable(fd protoreflect.FieldDesc
 		}
 		value := &_EcosystemWithVersions_9_list{list: &x.Versions}
 		return protoreflect.ValueOfList(value)
+	case "verana.ec.v1.EcosystemWithVersions.acceptance_deadline":
+		if x.AcceptanceDeadline == nil {
+			x.AcceptanceDeadline = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.AcceptanceDeadline.ProtoReflect())
 	case "verana.ec.v1.EcosystemWithVersions.id":
 		panic(fmt.Errorf("field id of message verana.ec.v1.EcosystemWithVersions is not mutable"))
 	case "verana.ec.v1.EcosystemWithVersions.did":
@@ -1289,6 +1390,9 @@ func (x *fastReflection_EcosystemWithVersions) NewField(fd protoreflect.FieldDes
 	case "verana.ec.v1.EcosystemWithVersions.versions":
 		list := []*v1.GovernanceFrameworkVersionWithDocs{}
 		return protoreflect.ValueOfList(&_EcosystemWithVersions_9_list{list: &list})
+	case "verana.ec.v1.EcosystemWithVersions.acceptance_deadline":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.ec.v1.EcosystemWithVersions"))
@@ -1392,6 +1496,10 @@ func (x *fastReflection_EcosystemWithVersions) ProtoMethods() *protoiface.Method
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
+		if x.AcceptanceDeadline != nil {
+			l = options.Size(x.AcceptanceDeadline)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -1420,6 +1528,20 @@ func (x *fastReflection_EcosystemWithVersions) ProtoMethods() *protoiface.Method
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.AcceptanceDeadline != nil {
+			encoded, err := options.Marshal(x.AcceptanceDeadline)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x52
 		}
 		if len(x.Versions) > 0 {
 			for iNdEx := len(x.Versions) - 1; iNdEx >= 0; iNdEx-- {
@@ -1800,6 +1922,42 @@ func (x *fastReflection_EcosystemWithVersions) ProtoMethods() *protoiface.Method
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 10:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AcceptanceDeadline", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.AcceptanceDeadline == nil {
+					x.AcceptanceDeadline = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AcceptanceDeadline); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1870,6 +2028,9 @@ type Ecosystem struct {
 	Archived      bool                   `protobuf:"varint,6,opt,name=archived,proto3" json:"archived,omitempty"`
 	Language      string                 `protobuf:"bytes,7,opt,name=language,proto3" json:"language,omitempty"`
 	ActiveVersion uint32                 `protobuf:"varint,8,opt,name=active_version,json=activeVersion,proto3" json:"active_version,omitempty"`
+	// acceptance_deadline ends the grace period of the last activation of the
+	// ecosystem's governance framework.
+	AcceptanceDeadline *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=acceptance_deadline,json=acceptanceDeadline,proto3" json:"acceptance_deadline,omitempty"`
 }
 
 func (x *Ecosystem) Reset() {
@@ -1948,6 +2109,13 @@ func (x *Ecosystem) GetActiveVersion() uint32 {
 	return 0
 }
 
+func (x *Ecosystem) GetAcceptanceDeadline() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AcceptanceDeadline
+	}
+	return nil
+}
+
 // EcosystemWithVersions is the query response shape (MOD-ES-QRY-1 /
 // MOD-ES-QRY-2) including nested governance framework versions and documents
 // pulled from the x/gf module.
@@ -1956,15 +2124,16 @@ type EcosystemWithVersions struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id            uint64                                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Did           string                                   `protobuf:"bytes,2,opt,name=did,proto3" json:"did,omitempty"`
-	CorporationId uint64                                   `protobuf:"varint,3,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
-	Created       *timestamppb.Timestamp                   `protobuf:"bytes,4,opt,name=created,proto3" json:"created,omitempty"`
-	Modified      *timestamppb.Timestamp                   `protobuf:"bytes,5,opt,name=modified,proto3" json:"modified,omitempty"`
-	Archived      bool                                     `protobuf:"varint,6,opt,name=archived,proto3" json:"archived,omitempty"`
-	Language      string                                   `protobuf:"bytes,7,opt,name=language,proto3" json:"language,omitempty"`
-	ActiveVersion uint32                                   `protobuf:"varint,8,opt,name=active_version,json=activeVersion,proto3" json:"active_version,omitempty"`
-	Versions      []*v1.GovernanceFrameworkVersionWithDocs `protobuf:"bytes,9,rep,name=versions,proto3" json:"versions,omitempty"`
+	Id                 uint64                                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Did                string                                   `protobuf:"bytes,2,opt,name=did,proto3" json:"did,omitempty"`
+	CorporationId      uint64                                   `protobuf:"varint,3,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
+	Created            *timestamppb.Timestamp                   `protobuf:"bytes,4,opt,name=created,proto3" json:"created,omitempty"`
+	Modified           *timestamppb.Timestamp                   `protobuf:"bytes,5,opt,name=modified,proto3" json:"modified,omitempty"`
+	Archived           bool                                     `protobuf:"varint,6,opt,name=archived,proto3" json:"archived,omitempty"`
+	Language           string                                   `protobuf:"bytes,7,opt,name=language,proto3" json:"language,omitempty"`
+	ActiveVersion      uint32                                   `protobuf:"varint,8,opt,name=active_version,json=activeVersion,proto3" json:"active_version,omitempty"`
+	Versions           []*v1.GovernanceFrameworkVersionWithDocs `protobuf:"bytes,9,rep,name=versions,proto3" json:"versions,omitempty"`
+	AcceptanceDeadline *timestamppb.Timestamp                   `protobuf:"bytes,10,opt,name=acceptance_deadline,json=acceptanceDeadline,proto3" json:"acceptance_deadline,omitempty"`
 }
 
 func (x *EcosystemWithVersions) Reset() {
@@ -2050,6 +2219,13 @@ func (x *EcosystemWithVersions) GetVersions() []*v1.GovernanceFrameworkVersionWi
 	return nil
 }
 
+func (x *EcosystemWithVersions) GetAcceptanceDeadline() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AcceptanceDeadline
+	}
+	return nil
+}
+
 var File_verana_ec_v1_types_proto protoreflect.FileDescriptor
 
 var file_verana_ec_v1_types_proto_rawDesc = []byte{
@@ -2063,7 +2239,7 @@ var file_verana_ec_v1_types_proto_rawDesc = []byte{
 	0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69,
 	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18, 0x76,
 	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65,
-	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb5, 0x02, 0x0a, 0x09, 0x45, 0x63, 0x6f, 0x73,
+	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x88, 0x03, 0x0a, 0x09, 0x45, 0x63, 0x6f, 0x73,
 	0x79, 0x73, 0x74, 0x65, 0x6d, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x64, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x03, 0x64, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x72, 0x70, 0x6f,
@@ -2082,45 +2258,55 @@ var file_verana_ec_v1_types_proto_rawDesc = []byte{
 	0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
 	0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x12, 0x25, 0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69,
 	0x76, 0x65, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0d,
-	0x52, 0x0d, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22,
-	0x9a, 0x03, 0x0a, 0x15, 0x45, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x57, 0x69, 0x74,
-	0x68, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x64, 0x69, 0x64,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x64, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63,
-	0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x64, 0x12, 0x3e, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42,
-	0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x64, 0x12, 0x40, 0x0a, 0x08, 0x6d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x18, 0x05,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
-	0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x08, 0x6d, 0x6f, 0x64, 0x69,
-	0x66, 0x69, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x64,
-	0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x61, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x64,
-	0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18, 0x07, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x12, 0x25, 0x0a, 0x0e,
-	0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x08,
-	0x20, 0x01, 0x28, 0x0d, 0x52, 0x0d, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x56, 0x65, 0x72, 0x73,
-	0x69, 0x6f, 0x6e, 0x12, 0x57, 0x0a, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18,
-	0x09, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67,
-	0x66, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46,
-	0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x57,
-	0x69, 0x74, 0x68, 0x44, 0x6f, 0x63, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0,
-	0x2a, 0x01, 0x52, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x42, 0xaa, 0x01, 0x0a,
-	0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x65, 0x63, 0x2e, 0x76,
-	0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
-	0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e,
-	0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x65,
-	0x63, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x56, 0x45, 0x58, 0xaa,
-	0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x45, 0x63, 0x2e, 0x56, 0x31, 0xca, 0x02,
-	0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x45, 0x63, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18,
-	0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x45, 0x63, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
-	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e,
-	0x61, 0x3a, 0x3a, 0x45, 0x63, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x52, 0x0d, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12,
+	0x51, 0x0a, 0x13, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f, 0x64, 0x65,
+	0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x12,
+	0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x44, 0x65, 0x61, 0x64, 0x6c, 0x69,
+	0x6e, 0x65, 0x22, 0xed, 0x03, 0x0a, 0x15, 0x45, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d,
+	0x57, 0x69, 0x74, 0x68, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x0e, 0x0a, 0x02,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03,
+	0x64, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x64, 0x69, 0x64, 0x12, 0x25,
+	0x0a, 0x0e, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x3e, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x07, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x40, 0x0a, 0x08, 0x6d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65,
+	0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x42, 0x08, 0xc8, 0xde, 0x1f, 0x00, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x08, 0x6d,
+	0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x72, 0x63, 0x68, 0x69,
+	0x76, 0x65, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x61, 0x72, 0x63, 0x68, 0x69,
+	0x76, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18,
+	0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x12,
+	0x25, 0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0d, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x56,
+	0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x57, 0x0a, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x73, 0x18, 0x09, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e,
+	0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69,
+	0x6f, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x44, 0x6f, 0x63, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00,
+	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12,
+	0x51, 0x0a, 0x13, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f, 0x64, 0x65,
+	0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x12,
+	0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x44, 0x65, 0x61, 0x64, 0x6c, 0x69,
+	0x6e, 0x65, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e,
+	0x61, 0x2e, 0x65, 0x63, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65,
+	0x72, 0x61, 0x6e, 0x61, 0x2f, 0x65, 0x63, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x76, 0x31, 0xa2,
+	0x02, 0x03, 0x56, 0x45, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x45,
+	0x63, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x45, 0x63,
+	0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x45, 0x63, 0x5c,
+	0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
+	0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x45, 0x63, 0x3a, 0x3a, 0x56, 0x31, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2145,14 +2331,16 @@ var file_verana_ec_v1_types_proto_goTypes = []interface{}{
 var file_verana_ec_v1_types_proto_depIdxs = []int32{
 	2, // 0: verana.ec.v1.Ecosystem.created:type_name -> google.protobuf.Timestamp
 	2, // 1: verana.ec.v1.Ecosystem.modified:type_name -> google.protobuf.Timestamp
-	2, // 2: verana.ec.v1.EcosystemWithVersions.created:type_name -> google.protobuf.Timestamp
-	2, // 3: verana.ec.v1.EcosystemWithVersions.modified:type_name -> google.protobuf.Timestamp
-	3, // 4: verana.ec.v1.EcosystemWithVersions.versions:type_name -> verana.gf.v1.GovernanceFrameworkVersionWithDocs
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	2, // 2: verana.ec.v1.Ecosystem.acceptance_deadline:type_name -> google.protobuf.Timestamp
+	2, // 3: verana.ec.v1.EcosystemWithVersions.created:type_name -> google.protobuf.Timestamp
+	2, // 4: verana.ec.v1.EcosystemWithVersions.modified:type_name -> google.protobuf.Timestamp
+	3, // 5: verana.ec.v1.EcosystemWithVersions.versions:type_name -> verana.gf.v1.GovernanceFrameworkVersionWithDocs
+	2, // 6: verana.ec.v1.EcosystemWithVersions.acceptance_deadline:type_name -> google.protobuf.Timestamp
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_verana_ec_v1_types_proto_init() }

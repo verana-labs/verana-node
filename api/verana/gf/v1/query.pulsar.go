@@ -11,6 +11,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	reflect "reflect"
 	sync "sync"
@@ -372,15 +373,69 @@ func (x *fastReflection_QueryParamsRequest) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var _ protoreflect.List = (*_QueryParamsResponse_3_list)(nil)
+
+type _QueryParamsResponse_3_list struct {
+	list *[]uint64
+}
+
+func (x *_QueryParamsResponse_3_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueryParamsResponse_3_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfUint64((*x.list)[i])
+}
+
+func (x *_QueryParamsResponse_3_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Uint()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueryParamsResponse_3_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Uint()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueryParamsResponse_3_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message QueryParamsResponse at list field NetworkGovernanceFrameworkVersions as it is not of Message kind"))
+}
+
+func (x *_QueryParamsResponse_3_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueryParamsResponse_3_list) NewElement() protoreflect.Value {
+	v := uint64(0)
+	return protoreflect.ValueOfUint64(v)
+}
+
+func (x *_QueryParamsResponse_3_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
-	md_QueryParamsResponse        protoreflect.MessageDescriptor
-	fd_QueryParamsResponse_params protoreflect.FieldDescriptor
+	md_QueryParamsResponse                                       protoreflect.MessageDescriptor
+	fd_QueryParamsResponse_params                                protoreflect.FieldDescriptor
+	fd_QueryParamsResponse_council_account                       protoreflect.FieldDescriptor
+	fd_QueryParamsResponse_network_governance_framework_versions protoreflect.FieldDescriptor
+	fd_QueryParamsResponse_ngf_acceptance_deadline               protoreflect.FieldDescriptor
+	fd_QueryParamsResponse_ngf_version                           protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_gf_v1_query_proto_init()
 	md_QueryParamsResponse = File_verana_gf_v1_query_proto.Messages().ByName("QueryParamsResponse")
 	fd_QueryParamsResponse_params = md_QueryParamsResponse.Fields().ByName("params")
+	fd_QueryParamsResponse_council_account = md_QueryParamsResponse.Fields().ByName("council_account")
+	fd_QueryParamsResponse_network_governance_framework_versions = md_QueryParamsResponse.Fields().ByName("network_governance_framework_versions")
+	fd_QueryParamsResponse_ngf_acceptance_deadline = md_QueryParamsResponse.Fields().ByName("ngf_acceptance_deadline")
+	fd_QueryParamsResponse_ngf_version = md_QueryParamsResponse.Fields().ByName("ngf_version")
 }
 
 var _ protoreflect.Message = (*fastReflection_QueryParamsResponse)(nil)
@@ -454,6 +509,30 @@ func (x *fastReflection_QueryParamsResponse) Range(f func(protoreflect.FieldDesc
 			return
 		}
 	}
+	if x.CouncilAccount != "" {
+		value := protoreflect.ValueOfString(x.CouncilAccount)
+		if !f(fd_QueryParamsResponse_council_account, value) {
+			return
+		}
+	}
+	if len(x.NetworkGovernanceFrameworkVersions) != 0 {
+		value := protoreflect.ValueOfList(&_QueryParamsResponse_3_list{list: &x.NetworkGovernanceFrameworkVersions})
+		if !f(fd_QueryParamsResponse_network_governance_framework_versions, value) {
+			return
+		}
+	}
+	if x.NgfAcceptanceDeadline != nil {
+		value := protoreflect.ValueOfMessage(x.NgfAcceptanceDeadline.ProtoReflect())
+		if !f(fd_QueryParamsResponse_ngf_acceptance_deadline, value) {
+			return
+		}
+	}
+	if x.NgfVersion != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.NgfVersion)
+		if !f(fd_QueryParamsResponse_ngf_version, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -471,6 +550,14 @@ func (x *fastReflection_QueryParamsResponse) Has(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	case "verana.gf.v1.QueryParamsResponse.params":
 		return x.Params != nil
+	case "verana.gf.v1.QueryParamsResponse.council_account":
+		return x.CouncilAccount != ""
+	case "verana.gf.v1.QueryParamsResponse.network_governance_framework_versions":
+		return len(x.NetworkGovernanceFrameworkVersions) != 0
+	case "verana.gf.v1.QueryParamsResponse.ngf_acceptance_deadline":
+		return x.NgfAcceptanceDeadline != nil
+	case "verana.gf.v1.QueryParamsResponse.ngf_version":
+		return x.NgfVersion != uint32(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryParamsResponse"))
@@ -489,6 +576,14 @@ func (x *fastReflection_QueryParamsResponse) Clear(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	case "verana.gf.v1.QueryParamsResponse.params":
 		x.Params = nil
+	case "verana.gf.v1.QueryParamsResponse.council_account":
+		x.CouncilAccount = ""
+	case "verana.gf.v1.QueryParamsResponse.network_governance_framework_versions":
+		x.NetworkGovernanceFrameworkVersions = nil
+	case "verana.gf.v1.QueryParamsResponse.ngf_acceptance_deadline":
+		x.NgfAcceptanceDeadline = nil
+	case "verana.gf.v1.QueryParamsResponse.ngf_version":
+		x.NgfVersion = uint32(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryParamsResponse"))
@@ -508,6 +603,21 @@ func (x *fastReflection_QueryParamsResponse) Get(descriptor protoreflect.FieldDe
 	case "verana.gf.v1.QueryParamsResponse.params":
 		value := x.Params
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "verana.gf.v1.QueryParamsResponse.council_account":
+		value := x.CouncilAccount
+		return protoreflect.ValueOfString(value)
+	case "verana.gf.v1.QueryParamsResponse.network_governance_framework_versions":
+		if len(x.NetworkGovernanceFrameworkVersions) == 0 {
+			return protoreflect.ValueOfList(&_QueryParamsResponse_3_list{})
+		}
+		listValue := &_QueryParamsResponse_3_list{list: &x.NetworkGovernanceFrameworkVersions}
+		return protoreflect.ValueOfList(listValue)
+	case "verana.gf.v1.QueryParamsResponse.ngf_acceptance_deadline":
+		value := x.NgfAcceptanceDeadline
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "verana.gf.v1.QueryParamsResponse.ngf_version":
+		value := x.NgfVersion
+		return protoreflect.ValueOfUint32(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryParamsResponse"))
@@ -530,6 +640,16 @@ func (x *fastReflection_QueryParamsResponse) Set(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	case "verana.gf.v1.QueryParamsResponse.params":
 		x.Params = value.Message().Interface().(*Params)
+	case "verana.gf.v1.QueryParamsResponse.council_account":
+		x.CouncilAccount = value.Interface().(string)
+	case "verana.gf.v1.QueryParamsResponse.network_governance_framework_versions":
+		lv := value.List()
+		clv := lv.(*_QueryParamsResponse_3_list)
+		x.NetworkGovernanceFrameworkVersions = *clv.list
+	case "verana.gf.v1.QueryParamsResponse.ngf_acceptance_deadline":
+		x.NgfAcceptanceDeadline = value.Message().Interface().(*timestamppb.Timestamp)
+	case "verana.gf.v1.QueryParamsResponse.ngf_version":
+		x.NgfVersion = uint32(value.Uint())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryParamsResponse"))
@@ -555,6 +675,21 @@ func (x *fastReflection_QueryParamsResponse) Mutable(fd protoreflect.FieldDescri
 			x.Params = new(Params)
 		}
 		return protoreflect.ValueOfMessage(x.Params.ProtoReflect())
+	case "verana.gf.v1.QueryParamsResponse.network_governance_framework_versions":
+		if x.NetworkGovernanceFrameworkVersions == nil {
+			x.NetworkGovernanceFrameworkVersions = []uint64{}
+		}
+		value := &_QueryParamsResponse_3_list{list: &x.NetworkGovernanceFrameworkVersions}
+		return protoreflect.ValueOfList(value)
+	case "verana.gf.v1.QueryParamsResponse.ngf_acceptance_deadline":
+		if x.NgfAcceptanceDeadline == nil {
+			x.NgfAcceptanceDeadline = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.NgfAcceptanceDeadline.ProtoReflect())
+	case "verana.gf.v1.QueryParamsResponse.council_account":
+		panic(fmt.Errorf("field council_account of message verana.gf.v1.QueryParamsResponse is not mutable"))
+	case "verana.gf.v1.QueryParamsResponse.ngf_version":
+		panic(fmt.Errorf("field ngf_version of message verana.gf.v1.QueryParamsResponse is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryParamsResponse"))
@@ -571,6 +706,16 @@ func (x *fastReflection_QueryParamsResponse) NewField(fd protoreflect.FieldDescr
 	case "verana.gf.v1.QueryParamsResponse.params":
 		m := new(Params)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "verana.gf.v1.QueryParamsResponse.council_account":
+		return protoreflect.ValueOfString("")
+	case "verana.gf.v1.QueryParamsResponse.network_governance_framework_versions":
+		list := []uint64{}
+		return protoreflect.ValueOfList(&_QueryParamsResponse_3_list{list: &list})
+	case "verana.gf.v1.QueryParamsResponse.ngf_acceptance_deadline":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "verana.gf.v1.QueryParamsResponse.ngf_version":
+		return protoreflect.ValueOfUint32(uint32(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryParamsResponse"))
@@ -644,6 +789,24 @@ func (x *fastReflection_QueryParamsResponse) ProtoMethods() *protoiface.Methods 
 			l = options.Size(x.Params)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		l = len(x.CouncilAccount)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if len(x.NetworkGovernanceFrameworkVersions) > 0 {
+			l = 0
+			for _, e := range x.NetworkGovernanceFrameworkVersions {
+				l += runtime.Sov(uint64(e))
+			}
+			n += 1 + runtime.Sov(uint64(l)) + l
+		}
+		if x.NgfAcceptanceDeadline != nil {
+			l = options.Size(x.NgfAcceptanceDeadline)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.NgfVersion != 0 {
+			n += 1 + runtime.Sov(uint64(x.NgfVersion))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -672,6 +835,52 @@ func (x *fastReflection_QueryParamsResponse) ProtoMethods() *protoiface.Methods 
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.NgfVersion != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.NgfVersion))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.NgfAcceptanceDeadline != nil {
+			encoded, err := options.Marshal(x.NgfAcceptanceDeadline)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.NetworkGovernanceFrameworkVersions) > 0 {
+			var pksize2 int
+			for _, num := range x.NetworkGovernanceFrameworkVersions {
+				pksize2 += runtime.Sov(uint64(num))
+			}
+			i -= pksize2
+			j1 := i
+			for _, num := range x.NetworkGovernanceFrameworkVersions {
+				for num >= 1<<7 {
+					dAtA[j1] = uint8(uint64(num)&0x7f | 0x80)
+					num >>= 7
+					j1++
+				}
+				dAtA[j1] = uint8(num)
+				j1++
+			}
+			i = runtime.EncodeVarint(dAtA, i, uint64(pksize2))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.CouncilAccount) > 0 {
+			i -= len(x.CouncilAccount)
+			copy(dAtA[i:], x.CouncilAccount)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CouncilAccount)))
+			i--
+			dAtA[i] = 0x12
 		}
 		if x.Params != nil {
 			encoded, err := options.Marshal(x.Params)
@@ -772,6 +981,169 @@ func (x *fastReflection_QueryParamsResponse) ProtoMethods() *protoiface.Methods 
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CouncilAccount", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.CouncilAccount = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType == 0 {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					x.NetworkGovernanceFrameworkVersions = append(x.NetworkGovernanceFrameworkVersions, v)
+				} else if wireType == 2 {
+					var packedLen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						packedLen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if packedLen < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					postIndex := iNdEx + packedLen
+					if postIndex < 0 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+					}
+					if postIndex > l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					var elementCount int
+					var count int
+					for _, integer := range dAtA[iNdEx:postIndex] {
+						if integer < 128 {
+							count++
+						}
+					}
+					elementCount = count
+					if elementCount != 0 && len(x.NetworkGovernanceFrameworkVersions) == 0 {
+						x.NetworkGovernanceFrameworkVersions = make([]uint64, 0, elementCount)
+					}
+					for iNdEx < postIndex {
+						var v uint64
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							v |= uint64(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						x.NetworkGovernanceFrameworkVersions = append(x.NetworkGovernanceFrameworkVersions, v)
+					}
+				} else {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NetworkGovernanceFrameworkVersions", wireType)
+				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NgfAcceptanceDeadline", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.NgfAcceptanceDeadline == nil {
+					x.NgfAcceptanceDeadline = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.NgfAcceptanceDeadline); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NgfVersion", wireType)
+				}
+				x.NgfVersion = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.NgfVersion |= uint32(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1711,33 +2083,27 @@ func (x *fastReflection_QueryGetGovernanceFrameworkVersionResponse) ProtoMethods
 }
 
 var (
-	md_QueryListGovernanceFrameworkVersionsRequest                    protoreflect.MessageDescriptor
-	fd_QueryListGovernanceFrameworkVersionsRequest_ecosystem_id       protoreflect.FieldDescriptor
-	fd_QueryListGovernanceFrameworkVersionsRequest_corporation_id     protoreflect.FieldDescriptor
-	fd_QueryListGovernanceFrameworkVersionsRequest_active_only        protoreflect.FieldDescriptor
-	fd_QueryListGovernanceFrameworkVersionsRequest_preferred_language protoreflect.FieldDescriptor
-	fd_QueryListGovernanceFrameworkVersionsRequest_response_max_size  protoreflect.FieldDescriptor
+	md_QueryGetEcosystemAcceptanceRequest                protoreflect.MessageDescriptor
+	fd_QueryGetEcosystemAcceptanceRequest_ecosystem_id   protoreflect.FieldDescriptor
+	fd_QueryGetEcosystemAcceptanceRequest_corporation_id protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_gf_v1_query_proto_init()
-	md_QueryListGovernanceFrameworkVersionsRequest = File_verana_gf_v1_query_proto.Messages().ByName("QueryListGovernanceFrameworkVersionsRequest")
-	fd_QueryListGovernanceFrameworkVersionsRequest_ecosystem_id = md_QueryListGovernanceFrameworkVersionsRequest.Fields().ByName("ecosystem_id")
-	fd_QueryListGovernanceFrameworkVersionsRequest_corporation_id = md_QueryListGovernanceFrameworkVersionsRequest.Fields().ByName("corporation_id")
-	fd_QueryListGovernanceFrameworkVersionsRequest_active_only = md_QueryListGovernanceFrameworkVersionsRequest.Fields().ByName("active_only")
-	fd_QueryListGovernanceFrameworkVersionsRequest_preferred_language = md_QueryListGovernanceFrameworkVersionsRequest.Fields().ByName("preferred_language")
-	fd_QueryListGovernanceFrameworkVersionsRequest_response_max_size = md_QueryListGovernanceFrameworkVersionsRequest.Fields().ByName("response_max_size")
+	md_QueryGetEcosystemAcceptanceRequest = File_verana_gf_v1_query_proto.Messages().ByName("QueryGetEcosystemAcceptanceRequest")
+	fd_QueryGetEcosystemAcceptanceRequest_ecosystem_id = md_QueryGetEcosystemAcceptanceRequest.Fields().ByName("ecosystem_id")
+	fd_QueryGetEcosystemAcceptanceRequest_corporation_id = md_QueryGetEcosystemAcceptanceRequest.Fields().ByName("corporation_id")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryListGovernanceFrameworkVersionsRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryGetEcosystemAcceptanceRequest)(nil)
 
-type fastReflection_QueryListGovernanceFrameworkVersionsRequest QueryListGovernanceFrameworkVersionsRequest
+type fastReflection_QueryGetEcosystemAcceptanceRequest QueryGetEcosystemAcceptanceRequest
 
-func (x *QueryListGovernanceFrameworkVersionsRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryListGovernanceFrameworkVersionsRequest)(x)
+func (x *QueryGetEcosystemAcceptanceRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryGetEcosystemAcceptanceRequest)(x)
 }
 
-func (x *QueryListGovernanceFrameworkVersionsRequest) slowProtoReflect() protoreflect.Message {
+func (x *QueryGetEcosystemAcceptanceRequest) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_gf_v1_query_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1749,43 +2115,43 @@ func (x *QueryListGovernanceFrameworkVersionsRequest) slowProtoReflect() protore
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryListGovernanceFrameworkVersionsRequest_messageType fastReflection_QueryListGovernanceFrameworkVersionsRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QueryListGovernanceFrameworkVersionsRequest_messageType{}
+var _fastReflection_QueryGetEcosystemAcceptanceRequest_messageType fastReflection_QueryGetEcosystemAcceptanceRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryGetEcosystemAcceptanceRequest_messageType{}
 
-type fastReflection_QueryListGovernanceFrameworkVersionsRequest_messageType struct{}
+type fastReflection_QueryGetEcosystemAcceptanceRequest_messageType struct{}
 
-func (x fastReflection_QueryListGovernanceFrameworkVersionsRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryListGovernanceFrameworkVersionsRequest)(nil)
+func (x fastReflection_QueryGetEcosystemAcceptanceRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryGetEcosystemAcceptanceRequest)(nil)
 }
-func (x fastReflection_QueryListGovernanceFrameworkVersionsRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryListGovernanceFrameworkVersionsRequest)
+func (x fastReflection_QueryGetEcosystemAcceptanceRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryGetEcosystemAcceptanceRequest)
 }
-func (x fastReflection_QueryListGovernanceFrameworkVersionsRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListGovernanceFrameworkVersionsRequest
+func (x fastReflection_QueryGetEcosystemAcceptanceRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetEcosystemAcceptanceRequest
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListGovernanceFrameworkVersionsRequest
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetEcosystemAcceptanceRequest
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QueryListGovernanceFrameworkVersionsRequest_messageType
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryGetEcosystemAcceptanceRequest_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) New() protoreflect.Message {
-	return new(fastReflection_QueryListGovernanceFrameworkVersionsRequest)
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryGetEcosystemAcceptanceRequest)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Interface() protoreflect.ProtoMessage {
-	return (*QueryListGovernanceFrameworkVersionsRequest)(x)
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryGetEcosystemAcceptanceRequest)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1793,34 +2159,16 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Interface()
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.EcosystemId != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.EcosystemId)
-		if !f(fd_QueryListGovernanceFrameworkVersionsRequest_ecosystem_id, value) {
+		if !f(fd_QueryGetEcosystemAcceptanceRequest_ecosystem_id, value) {
 			return
 		}
 	}
 	if x.CorporationId != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.CorporationId)
-		if !f(fd_QueryListGovernanceFrameworkVersionsRequest_corporation_id, value) {
-			return
-		}
-	}
-	if x.ActiveOnly != false {
-		value := protoreflect.ValueOfBool(x.ActiveOnly)
-		if !f(fd_QueryListGovernanceFrameworkVersionsRequest_active_only, value) {
-			return
-		}
-	}
-	if x.PreferredLanguage != "" {
-		value := protoreflect.ValueOfString(x.PreferredLanguage)
-		if !f(fd_QueryListGovernanceFrameworkVersionsRequest_preferred_language, value) {
-			return
-		}
-	}
-	if x.ResponseMaxSize != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.ResponseMaxSize)
-		if !f(fd_QueryListGovernanceFrameworkVersionsRequest_response_max_size, value) {
+		if !f(fd_QueryGetEcosystemAcceptanceRequest_corporation_id, value) {
 			return
 		}
 	}
@@ -1837,23 +2185,17 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Range(f fun
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.ecosystem_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.ecosystem_id":
 		return x.EcosystemId != uint64(0)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.corporation_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.corporation_id":
 		return x.CorporationId != uint64(0)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.active_only":
-		return x.ActiveOnly != false
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.preferred_language":
-		return x.PreferredLanguage != ""
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.response_max_size":
-		return x.ResponseMaxSize != uint32(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceRequest"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1863,23 +2205,17 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Has(fd prot
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.ecosystem_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.ecosystem_id":
 		x.EcosystemId = uint64(0)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.corporation_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.corporation_id":
 		x.CorporationId = uint64(0)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.active_only":
-		x.ActiveOnly = false
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.preferred_language":
-		x.PreferredLanguage = ""
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.response_max_size":
-		x.ResponseMaxSize = uint32(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceRequest"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1889,28 +2225,19 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Clear(fd pr
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.ecosystem_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.ecosystem_id":
 		value := x.EcosystemId
 		return protoreflect.ValueOfUint64(value)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.corporation_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.corporation_id":
 		value := x.CorporationId
 		return protoreflect.ValueOfUint64(value)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.active_only":
-		value := x.ActiveOnly
-		return protoreflect.ValueOfBool(value)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.preferred_language":
-		value := x.PreferredLanguage
-		return protoreflect.ValueOfString(value)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.response_max_size":
-		value := x.ResponseMaxSize
-		return protoreflect.ValueOfUint32(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceRequest"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1924,23 +2251,17 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Get(descrip
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.ecosystem_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.ecosystem_id":
 		x.EcosystemId = value.Uint()
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.corporation_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.corporation_id":
 		x.CorporationId = value.Uint()
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.active_only":
-		x.ActiveOnly = value.Bool()
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.preferred_language":
-		x.PreferredLanguage = value.Interface().(string)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.response_max_size":
-		x.ResponseMaxSize = uint32(value.Uint())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceRequest"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1954,56 +2275,44 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Set(fd prot
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.ecosystem_id":
-		panic(fmt.Errorf("field ecosystem_id of message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest is not mutable"))
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.corporation_id":
-		panic(fmt.Errorf("field corporation_id of message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest is not mutable"))
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.active_only":
-		panic(fmt.Errorf("field active_only of message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest is not mutable"))
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.preferred_language":
-		panic(fmt.Errorf("field preferred_language of message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest is not mutable"))
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.response_max_size":
-		panic(fmt.Errorf("field response_max_size of message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest is not mutable"))
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.ecosystem_id":
+		panic(fmt.Errorf("field ecosystem_id of message verana.gf.v1.QueryGetEcosystemAcceptanceRequest is not mutable"))
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.corporation_id":
+		panic(fmt.Errorf("field corporation_id of message verana.gf.v1.QueryGetEcosystemAcceptanceRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceRequest"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.ecosystem_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.ecosystem_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.corporation_id":
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceRequest.corporation_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.active_only":
-		return protoreflect.ValueOfBool(false)
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.preferred_language":
-		return protoreflect.ValueOfString("")
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest.response_max_size":
-		return protoreflect.ValueOfUint32(uint32(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceRequest"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.gf.v1.QueryGetEcosystemAcceptanceRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2011,7 +2320,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) WhichOneof(
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2022,7 +2331,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) GetUnknown(
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2034,7 +2343,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) SetUnknown(
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) IsValid() bool {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) IsValid() bool {
 	return x != nil
 }
 
@@ -2044,9 +2353,9 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) IsValid() b
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryGetEcosystemAcceptanceRequest) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryListGovernanceFrameworkVersionsRequest)
+		x := input.Message.Interface().(*QueryGetEcosystemAcceptanceRequest)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2064,16 +2373,6 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) ProtoMethod
 		if x.CorporationId != 0 {
 			n += 1 + runtime.Sov(uint64(x.CorporationId))
 		}
-		if x.ActiveOnly {
-			n += 2
-		}
-		l = len(x.PreferredLanguage)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.ResponseMaxSize != 0 {
-			n += 1 + runtime.Sov(uint64(x.ResponseMaxSize))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -2084,7 +2383,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) ProtoMethod
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListGovernanceFrameworkVersionsRequest)
+		x := input.Message.Interface().(*QueryGetEcosystemAcceptanceRequest)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2102,28 +2401,6 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) ProtoMethod
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.ResponseMaxSize != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ResponseMaxSize))
-			i--
-			dAtA[i] = 0x28
-		}
-		if len(x.PreferredLanguage) > 0 {
-			i -= len(x.PreferredLanguage)
-			copy(dAtA[i:], x.PreferredLanguage)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PreferredLanguage)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if x.ActiveOnly {
-			i--
-			if x.ActiveOnly {
-				dAtA[i] = 1
-			} else {
-				dAtA[i] = 0
-			}
-			i--
-			dAtA[i] = 0x18
 		}
 		if x.CorporationId != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.CorporationId))
@@ -2146,7 +2423,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) ProtoMethod
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListGovernanceFrameworkVersionsRequest)
+		x := input.Message.Interface().(*QueryGetEcosystemAcceptanceRequest)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2178,10 +2455,10 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) ProtoMethod
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListGovernanceFrameworkVersionsRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetEcosystemAcceptanceRequest: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListGovernanceFrameworkVersionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetEcosystemAcceptanceRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -2222,77 +2499,6 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) ProtoMethod
 						break
 					}
 				}
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ActiveOnly", wireType)
-				}
-				var v int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				x.ActiveOnly = bool(v != 0)
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PreferredLanguage", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.PreferredLanguage = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 5:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ResponseMaxSize", wireType)
-				}
-				x.ResponseMaxSize = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.ResponseMaxSize |= uint32(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -2328,77 +2534,26 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsRequest) ProtoMethod
 	}
 }
 
-var _ protoreflect.List = (*_QueryListGovernanceFrameworkVersionsResponse_1_list)(nil)
-
-type _QueryListGovernanceFrameworkVersionsResponse_1_list struct {
-	list *[]*GovernanceFrameworkVersionWithDocs
-}
-
-func (x *_QueryListGovernanceFrameworkVersionsResponse_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_QueryListGovernanceFrameworkVersionsResponse_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_QueryListGovernanceFrameworkVersionsResponse_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*GovernanceFrameworkVersionWithDocs)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_QueryListGovernanceFrameworkVersionsResponse_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*GovernanceFrameworkVersionWithDocs)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_QueryListGovernanceFrameworkVersionsResponse_1_list) AppendMutable() protoreflect.Value {
-	v := new(GovernanceFrameworkVersionWithDocs)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_QueryListGovernanceFrameworkVersionsResponse_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_QueryListGovernanceFrameworkVersionsResponse_1_list) NewElement() protoreflect.Value {
-	v := new(GovernanceFrameworkVersionWithDocs)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_QueryListGovernanceFrameworkVersionsResponse_1_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
-	md_QueryListGovernanceFrameworkVersionsResponse          protoreflect.MessageDescriptor
-	fd_QueryListGovernanceFrameworkVersionsResponse_versions protoreflect.FieldDescriptor
+	md_QueryGetEcosystemAcceptanceResponse            protoreflect.MessageDescriptor
+	fd_QueryGetEcosystemAcceptanceResponse_acceptance protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_verana_gf_v1_query_proto_init()
-	md_QueryListGovernanceFrameworkVersionsResponse = File_verana_gf_v1_query_proto.Messages().ByName("QueryListGovernanceFrameworkVersionsResponse")
-	fd_QueryListGovernanceFrameworkVersionsResponse_versions = md_QueryListGovernanceFrameworkVersionsResponse.Fields().ByName("versions")
+	md_QueryGetEcosystemAcceptanceResponse = File_verana_gf_v1_query_proto.Messages().ByName("QueryGetEcosystemAcceptanceResponse")
+	fd_QueryGetEcosystemAcceptanceResponse_acceptance = md_QueryGetEcosystemAcceptanceResponse.Fields().ByName("acceptance")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryListGovernanceFrameworkVersionsResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryGetEcosystemAcceptanceResponse)(nil)
 
-type fastReflection_QueryListGovernanceFrameworkVersionsResponse QueryListGovernanceFrameworkVersionsResponse
+type fastReflection_QueryGetEcosystemAcceptanceResponse QueryGetEcosystemAcceptanceResponse
 
-func (x *QueryListGovernanceFrameworkVersionsResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryListGovernanceFrameworkVersionsResponse)(x)
+func (x *QueryGetEcosystemAcceptanceResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryGetEcosystemAcceptanceResponse)(x)
 }
 
-func (x *QueryListGovernanceFrameworkVersionsResponse) slowProtoReflect() protoreflect.Message {
+func (x *QueryGetEcosystemAcceptanceResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_verana_gf_v1_query_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2410,43 +2565,43 @@ func (x *QueryListGovernanceFrameworkVersionsResponse) slowProtoReflect() protor
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryListGovernanceFrameworkVersionsResponse_messageType fastReflection_QueryListGovernanceFrameworkVersionsResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QueryListGovernanceFrameworkVersionsResponse_messageType{}
+var _fastReflection_QueryGetEcosystemAcceptanceResponse_messageType fastReflection_QueryGetEcosystemAcceptanceResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryGetEcosystemAcceptanceResponse_messageType{}
 
-type fastReflection_QueryListGovernanceFrameworkVersionsResponse_messageType struct{}
+type fastReflection_QueryGetEcosystemAcceptanceResponse_messageType struct{}
 
-func (x fastReflection_QueryListGovernanceFrameworkVersionsResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryListGovernanceFrameworkVersionsResponse)(nil)
+func (x fastReflection_QueryGetEcosystemAcceptanceResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryGetEcosystemAcceptanceResponse)(nil)
 }
-func (x fastReflection_QueryListGovernanceFrameworkVersionsResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryListGovernanceFrameworkVersionsResponse)
+func (x fastReflection_QueryGetEcosystemAcceptanceResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryGetEcosystemAcceptanceResponse)
 }
-func (x fastReflection_QueryListGovernanceFrameworkVersionsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListGovernanceFrameworkVersionsResponse
+func (x fastReflection_QueryGetEcosystemAcceptanceResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetEcosystemAcceptanceResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryListGovernanceFrameworkVersionsResponse
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryGetEcosystemAcceptanceResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QueryListGovernanceFrameworkVersionsResponse_messageType
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryGetEcosystemAcceptanceResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) New() protoreflect.Message {
-	return new(fastReflection_QueryListGovernanceFrameworkVersionsResponse)
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryGetEcosystemAcceptanceResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Interface() protoreflect.ProtoMessage {
-	return (*QueryListGovernanceFrameworkVersionsResponse)(x)
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryGetEcosystemAcceptanceResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -2454,10 +2609,10 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Interface(
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Versions) != 0 {
-		value := protoreflect.ValueOfList(&_QueryListGovernanceFrameworkVersionsResponse_1_list{list: &x.Versions})
-		if !f(fd_QueryListGovernanceFrameworkVersionsResponse_versions, value) {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Acceptance != nil {
+		value := protoreflect.ValueOfMessage(x.Acceptance.ProtoReflect())
+		if !f(fd_QueryGetEcosystemAcceptanceResponse_acceptance, value) {
 			return
 		}
 	}
@@ -2474,15 +2629,15 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Range(f fu
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse.versions":
-		return len(x.Versions) != 0
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceResponse.acceptance":
+		return x.Acceptance != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceResponse"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2492,15 +2647,15 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Has(fd pro
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse.versions":
-		x.Versions = nil
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceResponse.acceptance":
+		x.Acceptance = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceResponse"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2510,19 +2665,16 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Clear(fd p
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse.versions":
-		if len(x.Versions) == 0 {
-			return protoreflect.ValueOfList(&_QueryListGovernanceFrameworkVersionsResponse_1_list{})
-		}
-		listValue := &_QueryListGovernanceFrameworkVersionsResponse_1_list{list: &x.Versions}
-		return protoreflect.ValueOfList(listValue)
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceResponse.acceptance":
+		value := x.Acceptance
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceResponse"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2536,17 +2688,15 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Get(descri
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse.versions":
-		lv := value.List()
-		clv := lv.(*_QueryListGovernanceFrameworkVersionsResponse_1_list)
-		x.Versions = *clv.list
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceResponse.acceptance":
+		x.Acceptance = value.Message().Interface().(*EcosystemAcceptance)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceResponse"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2560,45 +2710,44 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Set(fd pro
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse.versions":
-		if x.Versions == nil {
-			x.Versions = []*GovernanceFrameworkVersionWithDocs{}
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceResponse.acceptance":
+		if x.Acceptance == nil {
+			x.Acceptance = new(EcosystemAcceptance)
 		}
-		value := &_QueryListGovernanceFrameworkVersionsResponse_1_list{list: &x.Versions}
-		return protoreflect.ValueOfList(value)
+		return protoreflect.ValueOfMessage(x.Acceptance.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceResponse"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse.versions":
-		list := []*GovernanceFrameworkVersionWithDocs{}
-		return protoreflect.ValueOfList(&_QueryListGovernanceFrameworkVersionsResponse_1_list{list: &list})
+	case "verana.gf.v1.QueryGetEcosystemAcceptanceResponse.acceptance":
+		m := new(EcosystemAcceptance)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: verana.gf.v1.QueryGetEcosystemAcceptanceResponse"))
 		}
-		panic(fmt.Errorf("message verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message verana.gf.v1.QueryGetEcosystemAcceptanceResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in verana.gf.v1.QueryGetEcosystemAcceptanceResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2606,7 +2755,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) WhichOneof
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2617,7 +2766,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) GetUnknown
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2629,7 +2778,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) SetUnknown
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) IsValid() bool {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -2639,9 +2788,9 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) IsValid() 
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryGetEcosystemAcceptanceResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryListGovernanceFrameworkVersionsResponse)
+		x := input.Message.Interface().(*QueryGetEcosystemAcceptanceResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2653,11 +2802,9 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) ProtoMetho
 		var n int
 		var l int
 		_ = l
-		if len(x.Versions) > 0 {
-			for _, e := range x.Versions {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
+		if x.Acceptance != nil {
+			l = options.Size(x.Acceptance)
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -2669,7 +2816,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) ProtoMetho
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListGovernanceFrameworkVersionsResponse)
+		x := input.Message.Interface().(*QueryGetEcosystemAcceptanceResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2688,21 +2835,19 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) ProtoMetho
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Versions) > 0 {
-			for iNdEx := len(x.Versions) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Versions[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
+		if x.Acceptance != nil {
+			encoded, err := options.Marshal(x.Acceptance)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
 			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -2715,7 +2860,7 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) ProtoMetho
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryListGovernanceFrameworkVersionsResponse)
+		x := input.Message.Interface().(*QueryGetEcosystemAcceptanceResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2747,15 +2892,15 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) ProtoMetho
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListGovernanceFrameworkVersionsResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetEcosystemAcceptanceResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryListGovernanceFrameworkVersionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryGetEcosystemAcceptanceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Versions", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Acceptance", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -2782,8 +2927,10 @@ func (x *fastReflection_QueryListGovernanceFrameworkVersionsResponse) ProtoMetho
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Versions = append(x.Versions, &GovernanceFrameworkVersionWithDocs{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Versions[len(x.Versions)-1]); err != nil {
+				if x.Acceptance == nil {
+					x.Acceptance = &EcosystemAcceptance{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Acceptance); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -2867,6 +3014,15 @@ type QueryParamsResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	Params *Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
+	// council_account is the council's group policy account.
+	CouncilAccount string `protobuf:"bytes,2,opt,name=council_account,json=councilAccount,proto3" json:"council_account,omitempty"`
+	// network_governance_framework_versions lists the network framework versions
+	// in version order.
+	NetworkGovernanceFrameworkVersions []uint64 `protobuf:"varint,3,rep,packed,name=network_governance_framework_versions,json=networkGovernanceFrameworkVersions,proto3" json:"network_governance_framework_versions,omitempty"`
+	// ngf_acceptance_deadline ends the grace period of the last activation.
+	NgfAcceptanceDeadline *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=ngf_acceptance_deadline,json=ngfAcceptanceDeadline,proto3" json:"ngf_acceptance_deadline,omitempty"`
+	// ngf_version is the version of the network framework in force.
+	NgfVersion uint32 `protobuf:"varint,5,opt,name=ngf_version,json=ngfVersion,proto3" json:"ngf_version,omitempty"`
 }
 
 func (x *QueryParamsResponse) Reset() {
@@ -2894,6 +3050,34 @@ func (x *QueryParamsResponse) GetParams() *Params {
 		return x.Params
 	}
 	return nil
+}
+
+func (x *QueryParamsResponse) GetCouncilAccount() string {
+	if x != nil {
+		return x.CouncilAccount
+	}
+	return ""
+}
+
+func (x *QueryParamsResponse) GetNetworkGovernanceFrameworkVersions() []uint64 {
+	if x != nil {
+		return x.NetworkGovernanceFrameworkVersions
+	}
+	return nil
+}
+
+func (x *QueryParamsResponse) GetNgfAcceptanceDeadline() *timestamppb.Timestamp {
+	if x != nil {
+		return x.NgfAcceptanceDeadline
+	}
+	return nil
+}
+
+func (x *QueryParamsResponse) GetNgfVersion() uint32 {
+	if x != nil {
+		return x.NgfVersion
+	}
+	return 0
 }
 
 type QueryGetGovernanceFrameworkVersionRequest struct {
@@ -2974,20 +3158,17 @@ func (x *QueryGetGovernanceFrameworkVersionResponse) GetVersion() *GovernanceFra
 	return nil
 }
 
-type QueryListGovernanceFrameworkVersionsRequest struct {
+type QueryGetEcosystemAcceptanceRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	EcosystemId       uint64 `protobuf:"varint,1,opt,name=ecosystem_id,json=ecosystemId,proto3" json:"ecosystem_id,omitempty"`
-	CorporationId     uint64 `protobuf:"varint,2,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
-	ActiveOnly        bool   `protobuf:"varint,3,opt,name=active_only,json=activeOnly,proto3" json:"active_only,omitempty"`
-	PreferredLanguage string `protobuf:"bytes,4,opt,name=preferred_language,json=preferredLanguage,proto3" json:"preferred_language,omitempty"`
-	ResponseMaxSize   uint32 `protobuf:"varint,5,opt,name=response_max_size,json=responseMaxSize,proto3" json:"response_max_size,omitempty"`
+	EcosystemId   uint64 `protobuf:"varint,1,opt,name=ecosystem_id,json=ecosystemId,proto3" json:"ecosystem_id,omitempty"`
+	CorporationId uint64 `protobuf:"varint,2,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
 }
 
-func (x *QueryListGovernanceFrameworkVersionsRequest) Reset() {
-	*x = QueryListGovernanceFrameworkVersionsRequest{}
+func (x *QueryGetEcosystemAcceptanceRequest) Reset() {
+	*x = QueryGetEcosystemAcceptanceRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_gf_v1_query_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2995,62 +3176,41 @@ func (x *QueryListGovernanceFrameworkVersionsRequest) Reset() {
 	}
 }
 
-func (x *QueryListGovernanceFrameworkVersionsRequest) String() string {
+func (x *QueryGetEcosystemAcceptanceRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryListGovernanceFrameworkVersionsRequest) ProtoMessage() {}
+func (*QueryGetEcosystemAcceptanceRequest) ProtoMessage() {}
 
-// Deprecated: Use QueryListGovernanceFrameworkVersionsRequest.ProtoReflect.Descriptor instead.
-func (*QueryListGovernanceFrameworkVersionsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryGetEcosystemAcceptanceRequest.ProtoReflect.Descriptor instead.
+func (*QueryGetEcosystemAcceptanceRequest) Descriptor() ([]byte, []int) {
 	return file_verana_gf_v1_query_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *QueryListGovernanceFrameworkVersionsRequest) GetEcosystemId() uint64 {
+func (x *QueryGetEcosystemAcceptanceRequest) GetEcosystemId() uint64 {
 	if x != nil {
 		return x.EcosystemId
 	}
 	return 0
 }
 
-func (x *QueryListGovernanceFrameworkVersionsRequest) GetCorporationId() uint64 {
+func (x *QueryGetEcosystemAcceptanceRequest) GetCorporationId() uint64 {
 	if x != nil {
 		return x.CorporationId
 	}
 	return 0
 }
 
-func (x *QueryListGovernanceFrameworkVersionsRequest) GetActiveOnly() bool {
-	if x != nil {
-		return x.ActiveOnly
-	}
-	return false
-}
-
-func (x *QueryListGovernanceFrameworkVersionsRequest) GetPreferredLanguage() string {
-	if x != nil {
-		return x.PreferredLanguage
-	}
-	return ""
-}
-
-func (x *QueryListGovernanceFrameworkVersionsRequest) GetResponseMaxSize() uint32 {
-	if x != nil {
-		return x.ResponseMaxSize
-	}
-	return 0
-}
-
-type QueryListGovernanceFrameworkVersionsResponse struct {
+type QueryGetEcosystemAcceptanceResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Versions []*GovernanceFrameworkVersionWithDocs `protobuf:"bytes,1,rep,name=versions,proto3" json:"versions,omitempty"`
+	Acceptance *EcosystemAcceptance `protobuf:"bytes,1,opt,name=acceptance,proto3" json:"acceptance,omitempty"`
 }
 
-func (x *QueryListGovernanceFrameworkVersionsResponse) Reset() {
-	*x = QueryListGovernanceFrameworkVersionsResponse{}
+func (x *QueryGetEcosystemAcceptanceResponse) Reset() {
+	*x = QueryGetEcosystemAcceptanceResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_verana_gf_v1_query_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3058,20 +3218,20 @@ func (x *QueryListGovernanceFrameworkVersionsResponse) Reset() {
 	}
 }
 
-func (x *QueryListGovernanceFrameworkVersionsResponse) String() string {
+func (x *QueryGetEcosystemAcceptanceResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryListGovernanceFrameworkVersionsResponse) ProtoMessage() {}
+func (*QueryGetEcosystemAcceptanceResponse) ProtoMessage() {}
 
-// Deprecated: Use QueryListGovernanceFrameworkVersionsResponse.ProtoReflect.Descriptor instead.
-func (*QueryListGovernanceFrameworkVersionsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryGetEcosystemAcceptanceResponse.ProtoReflect.Descriptor instead.
+func (*QueryGetEcosystemAcceptanceResponse) Descriptor() ([]byte, []int) {
 	return file_verana_gf_v1_query_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *QueryListGovernanceFrameworkVersionsResponse) GetVersions() []*GovernanceFrameworkVersionWithDocs {
+func (x *QueryGetEcosystemAcceptanceResponse) GetAcceptance() *EcosystemAcceptance {
 	if x != nil {
-		return x.Versions
+		return x.Acceptance
 	}
 	return nil
 }
@@ -3087,96 +3247,104 @@ var file_verana_gf_v1_query_proto_rawDesc = []byte{
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x76, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66,
-	0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
-	0x14, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x4e, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61,
-	0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x06,
-	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x76,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x72, 0x61,
-	0x6d, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x70,
-	0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0x6a, 0x0a, 0x29, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
+	0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x76, 0x65, 0x72,
+	0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x18, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67,
+	0x66, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x22, 0x14, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0xdf, 0x02, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37,
+	0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14,
+	0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61,
+	0x72, 0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x41, 0x0a, 0x0f, 0x63, 0x6f, 0x75, 0x6e, 0x63,
+	0x69, 0x6c, 0x5f, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x0e, 0x63, 0x6f, 0x75, 0x6e,
+	0x63, 0x69, 0x6c, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x51, 0x0a, 0x25, 0x6e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x5f, 0x67, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65,
+	0x5f, 0x66, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69,
+	0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x04, 0x52, 0x22, 0x6e, 0x65, 0x74, 0x77, 0x6f,
+	0x72, 0x6b, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d,
+	0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x58, 0x0a,
+	0x17, 0x6e, 0x67, 0x66, 0x5f, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f,
+	0x64, 0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01,
+	0x52, 0x15, 0x6e, 0x67, 0x66, 0x41, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x44,
+	0x65, 0x61, 0x64, 0x6c, 0x69, 0x6e, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x6e, 0x67, 0x66, 0x5f, 0x76,
+	0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0a, 0x6e, 0x67,
+	0x66, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x6a, 0x0a, 0x29, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x47, 0x65, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72,
+	0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x2d, 0x0a, 0x12, 0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x72,
+	0x65, 0x64, 0x5f, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x11, 0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x72, 0x65, 0x64, 0x4c, 0x61, 0x6e, 0x67,
+	0x75, 0x61, 0x67, 0x65, 0x22, 0x83, 0x01, 0x0a, 0x2a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
 	0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65,
-	0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02,
-	0x69, 0x64, 0x12, 0x2d, 0x0a, 0x12, 0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x72, 0x65, 0x64, 0x5f,
-	0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11,
-	0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x72, 0x65, 0x64, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67,
-	0x65, 0x22, 0x83, 0x01, 0x0a, 0x2a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47, 0x6f,
-	0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72,
-	0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x55, 0x0a, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31,
-	0x2e, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65,
-	0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x44,
-	0x6f, 0x63, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x07,
-	0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0xf3, 0x01, 0x0a, 0x2b, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x4c, 0x69, 0x73, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46,
-	0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x65, 0x63, 0x6f, 0x73, 0x79,
-	0x73, 0x74, 0x65, 0x6d, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x65,
-	0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x49, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f,
-	0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x6f, 0x6e, 0x6c, 0x79,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x4f, 0x6e,
-	0x6c, 0x79, 0x12, 0x2d, 0x0a, 0x12, 0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x72, 0x65, 0x64, 0x5f,
-	0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11,
-	0x70, 0x72, 0x65, 0x66, 0x65, 0x72, 0x72, 0x65, 0x64, 0x4c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67,
-	0x65, 0x12, 0x2a, 0x0a, 0x11, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x5f, 0x6d, 0x61,
-	0x78, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0f, 0x72, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x4d, 0x61, 0x78, 0x53, 0x69, 0x7a, 0x65, 0x22, 0x87, 0x01,
-	0x0a, 0x2c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72,
-	0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65,
-	0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57,
-	0x0a, 0x08, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e,
-	0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77,
-	0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x57, 0x69, 0x74, 0x68, 0x44, 0x6f,
-	0x63, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x08, 0x76,
-	0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x32, 0xc6, 0x03, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x12, 0x64, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x20, 0x2e, 0x76, 0x65,
-	0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x15, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0f, 0x12, 0x0d, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31,
-	0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0xa6, 0x01, 0x0a, 0x1d, 0x47, 0x65, 0x74, 0x47,
-	0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f,
-	0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x37, 0x2e, 0x76, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
-	0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65,
-	0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x38, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76,
-	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e,
-	0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72,
-	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x12, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x0c, 0x12, 0x0a, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x74,
-	0x12, 0xad, 0x01, 0x0a, 0x1f, 0x4c, 0x69, 0x73, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61,
+	0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x55, 0x0a, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72,
+	0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x57, 0x69,
+	0x74, 0x68, 0x44, 0x6f, 0x63, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x6e, 0x0a, 0x22, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x41,
+	0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x21, 0x0a, 0x0c, 0x65, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x65, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65,
+	0x6d, 0x49, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x72,
+	0x70, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0x73, 0x0a, 0x23, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x41,
+	0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x4c, 0x0a, 0x0a, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67,
+	0x66, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x41, 0x63,
+	0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7,
+	0xb0, 0x2a, 0x01, 0x52, 0x0a, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x32,
+	0xb1, 0x03, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x64, 0x0a, 0x06, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x73, 0x12, 0x20, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e,
+	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67,
+	0x66, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x15, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0f,
+	0x12, 0x0d, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12,
+	0xa6, 0x01, 0x0a, 0x1d, 0x47, 0x65, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63,
+	0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f,
+	0x6e, 0x12, 0x37, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61,
 	0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73,
-	0x69, 0x6f, 0x6e, 0x73, 0x12, 0x39, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x47, 0x6f, 0x76,
-	0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b,
-	0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x3a, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e,
-	0x63, 0x65, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69,
-	0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x13, 0x82, 0xd3, 0xe4,
-	0x93, 0x02, 0x0d, 0x12, 0x0b, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x6c, 0x69, 0x73, 0x74,
-	0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
-	0x67, 0x66, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x65, 0x72, 0x61,
-	0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x3b, 0x67, 0x66, 0x76, 0x31, 0xa2, 0x02, 0x03,
-	0x56, 0x47, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x47, 0x66, 0x2e,
-	0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x47, 0x66, 0x5c, 0x56,
-	0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x47, 0x66, 0x5c, 0x56, 0x31,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0e, 0x56,
-	0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x47, 0x66, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x38, 0x2e, 0x76, 0x65, 0x72,
+	0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47,
+	0x65, 0x74, 0x47, 0x6f, 0x76, 0x65, 0x72, 0x6e, 0x61, 0x6e, 0x63, 0x65, 0x46, 0x72, 0x61, 0x6d,
+	0x65, 0x77, 0x6f, 0x72, 0x6b, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x12, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0c, 0x12, 0x0a, 0x2f, 0x67,
+	0x66, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x74, 0x12, 0x98, 0x01, 0x0a, 0x16, 0x47, 0x65, 0x74,
+	0x45, 0x63, 0x6f, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x41, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61,
+	0x6e, 0x63, 0x65, 0x12, 0x30, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e,
+	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45, 0x63, 0x6f, 0x73, 0x79,
+	0x73, 0x74, 0x65, 0x6d, 0x41, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e, 0x67,
+	0x66, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x45, 0x63, 0x6f,
+	0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x41, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61, 0x6e, 0x63, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x19, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x13,
+	0x12, 0x11, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x63, 0x63, 0x65, 0x70, 0x74, 0x61,
+	0x6e, 0x63, 0x65, 0x42, 0xaa, 0x01, 0x0a, 0x10, 0x63, 0x6f, 0x6d, 0x2e, 0x76, 0x65, 0x72, 0x61,
+	0x6e, 0x61, 0x2e, 0x67, 0x66, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x38, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x76, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6c, 0x61, 0x62, 0x73, 0x2f, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2d, 0x6e, 0x6f, 0x64, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76,
+	0x65, 0x72, 0x61, 0x6e, 0x61, 0x2f, 0x67, 0x66, 0x2f, 0x76, 0x31, 0x3b, 0x67, 0x66, 0x76, 0x31,
+	0xa2, 0x02, 0x03, 0x56, 0x47, 0x58, 0xaa, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x2e,
+	0x47, 0x66, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0c, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x47,
+	0x66, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x18, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x5c, 0x47, 0x66,
+	0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x0e, 0x56, 0x65, 0x72, 0x61, 0x6e, 0x61, 0x3a, 0x3a, 0x47, 0x66, 0x3a, 0x3a, 0x56, 0x31,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3193,30 +3361,33 @@ func file_verana_gf_v1_query_proto_rawDescGZIP() []byte {
 
 var file_verana_gf_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_verana_gf_v1_query_proto_goTypes = []interface{}{
-	(*QueryParamsRequest)(nil),                           // 0: verana.gf.v1.QueryParamsRequest
-	(*QueryParamsResponse)(nil),                          // 1: verana.gf.v1.QueryParamsResponse
-	(*QueryGetGovernanceFrameworkVersionRequest)(nil),    // 2: verana.gf.v1.QueryGetGovernanceFrameworkVersionRequest
-	(*QueryGetGovernanceFrameworkVersionResponse)(nil),   // 3: verana.gf.v1.QueryGetGovernanceFrameworkVersionResponse
-	(*QueryListGovernanceFrameworkVersionsRequest)(nil),  // 4: verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest
-	(*QueryListGovernanceFrameworkVersionsResponse)(nil), // 5: verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse
-	(*Params)(nil), // 6: verana.gf.v1.Params
-	(*GovernanceFrameworkVersionWithDocs)(nil), // 7: verana.gf.v1.GovernanceFrameworkVersionWithDocs
+	(*QueryParamsRequest)(nil),                         // 0: verana.gf.v1.QueryParamsRequest
+	(*QueryParamsResponse)(nil),                        // 1: verana.gf.v1.QueryParamsResponse
+	(*QueryGetGovernanceFrameworkVersionRequest)(nil),  // 2: verana.gf.v1.QueryGetGovernanceFrameworkVersionRequest
+	(*QueryGetGovernanceFrameworkVersionResponse)(nil), // 3: verana.gf.v1.QueryGetGovernanceFrameworkVersionResponse
+	(*QueryGetEcosystemAcceptanceRequest)(nil),         // 4: verana.gf.v1.QueryGetEcosystemAcceptanceRequest
+	(*QueryGetEcosystemAcceptanceResponse)(nil),        // 5: verana.gf.v1.QueryGetEcosystemAcceptanceResponse
+	(*Params)(nil),                             // 6: verana.gf.v1.Params
+	(*timestamppb.Timestamp)(nil),              // 7: google.protobuf.Timestamp
+	(*GovernanceFrameworkVersionWithDocs)(nil), // 8: verana.gf.v1.GovernanceFrameworkVersionWithDocs
+	(*EcosystemAcceptance)(nil),                // 9: verana.gf.v1.EcosystemAcceptance
 }
 var file_verana_gf_v1_query_proto_depIdxs = []int32{
 	6, // 0: verana.gf.v1.QueryParamsResponse.params:type_name -> verana.gf.v1.Params
-	7, // 1: verana.gf.v1.QueryGetGovernanceFrameworkVersionResponse.version:type_name -> verana.gf.v1.GovernanceFrameworkVersionWithDocs
-	7, // 2: verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse.versions:type_name -> verana.gf.v1.GovernanceFrameworkVersionWithDocs
-	0, // 3: verana.gf.v1.Query.Params:input_type -> verana.gf.v1.QueryParamsRequest
-	2, // 4: verana.gf.v1.Query.GetGovernanceFrameworkVersion:input_type -> verana.gf.v1.QueryGetGovernanceFrameworkVersionRequest
-	4, // 5: verana.gf.v1.Query.ListGovernanceFrameworkVersions:input_type -> verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest
-	1, // 6: verana.gf.v1.Query.Params:output_type -> verana.gf.v1.QueryParamsResponse
-	3, // 7: verana.gf.v1.Query.GetGovernanceFrameworkVersion:output_type -> verana.gf.v1.QueryGetGovernanceFrameworkVersionResponse
-	5, // 8: verana.gf.v1.Query.ListGovernanceFrameworkVersions:output_type -> verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	7, // 1: verana.gf.v1.QueryParamsResponse.ngf_acceptance_deadline:type_name -> google.protobuf.Timestamp
+	8, // 2: verana.gf.v1.QueryGetGovernanceFrameworkVersionResponse.version:type_name -> verana.gf.v1.GovernanceFrameworkVersionWithDocs
+	9, // 3: verana.gf.v1.QueryGetEcosystemAcceptanceResponse.acceptance:type_name -> verana.gf.v1.EcosystemAcceptance
+	0, // 4: verana.gf.v1.Query.Params:input_type -> verana.gf.v1.QueryParamsRequest
+	2, // 5: verana.gf.v1.Query.GetGovernanceFrameworkVersion:input_type -> verana.gf.v1.QueryGetGovernanceFrameworkVersionRequest
+	4, // 6: verana.gf.v1.Query.GetEcosystemAcceptance:input_type -> verana.gf.v1.QueryGetEcosystemAcceptanceRequest
+	1, // 7: verana.gf.v1.Query.Params:output_type -> verana.gf.v1.QueryParamsResponse
+	3, // 8: verana.gf.v1.Query.GetGovernanceFrameworkVersion:output_type -> verana.gf.v1.QueryGetGovernanceFrameworkVersionResponse
+	5, // 9: verana.gf.v1.Query.GetEcosystemAcceptance:output_type -> verana.gf.v1.QueryGetEcosystemAcceptanceResponse
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_verana_gf_v1_query_proto_init() }
@@ -3276,7 +3447,7 @@ func file_verana_gf_v1_query_proto_init() {
 			}
 		}
 		file_verana_gf_v1_query_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryListGovernanceFrameworkVersionsRequest); i {
+			switch v := v.(*QueryGetEcosystemAcceptanceRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3288,7 +3459,7 @@ func file_verana_gf_v1_query_proto_init() {
 			}
 		}
 		file_verana_gf_v1_query_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryListGovernanceFrameworkVersionsResponse); i {
+			switch v := v.(*QueryGetEcosystemAcceptanceResponse); i {
 			case 0:
 				return &v.state
 			case 1:

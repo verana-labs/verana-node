@@ -54,7 +54,7 @@ func (app *App) assertGenesisCouncil(ctx sdk.Context) error {
 		if m.Member.Weight != "1" {
 			return fmt.Errorf("council member %s has weight %s, want 1", m.Member.Address, m.Member.Weight)
 		}
-		if _, err := app.CoKeeper.ResolveCorporationByPolicyAddress(ctx, m.Member.Address); err != nil {
+		if _, err := app.CoKeeper.GetCorporationByPolicyAddress(ctx, m.Member.Address); err != nil {
 			return fmt.Errorf("council member %s is not a corporation: %w", m.Member.Address, err)
 		}
 		corp, err := app.GroupKeeper.GroupPolicyInfo(ctx, &group.QueryGroupPolicyInfoRequest{Address: m.Member.Address})

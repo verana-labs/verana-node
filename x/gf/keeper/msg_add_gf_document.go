@@ -9,6 +9,7 @@ import (
 	cerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/verana-labs/verana-node/util/events"
 	detypes "github.com/verana-labs/verana-node/x/de/types"
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
@@ -19,6 +20,7 @@ type subjectKind int
 const (
 	subjectEcosystem subjectKind = iota
 	subjectCorporation
+	subjectNetwork
 )
 
 // resolvedSubject holds the validated owner of a GF operation.
@@ -31,16 +33,17 @@ type resolvedSubject struct {
 }
 
 // authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for a
-// delegate signer, and returns the resolved corporation.
-func (ms msgServer) authorize(ctx sdk.Context, corporation, signer string, msgType detypes.MsgType) (types.CorporationView, error) {
+// delegate signer, and returns the resolved corporation and whether the
+// signer is on the group-proposal path.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, signer string, msgType detypes.MsgType) (types.CorporationView, bool, error) {
 	coView, group, err := ms.corporationKeeper().ResolveSigner(ctx, corporation, signer)
 	if err != nil || group {
-		return coView, err
+		return coView, group, err
 	}
 	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, coView.Id, signer, msgType, ctx.BlockTime()); err != nil {
-		return types.CorporationView{}, err
+		return types.CorporationView{}, false, err
 	}
-	return coView, nil
+	return coView, false, nil
 }
 
 // resolveSubject implements the spec's "Define subject as ..." block for
@@ -138,42 +141,55 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	if msg.Network {
-		return nil, ms.checkNetworkPath(msg.Signer)
-	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	coView, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT)
-	if err != nil {
-		return nil, err
-	}
-
-	// Resolve subject (Ecosystem or Corporation).
-	sub, err := ms.resolveSubject(ctx, coView, msg.EcosystemId)
-	if err != nil {
-		return nil, err
-	}
-
-	// Version checks per MOD-GF-MSG-1-2-1.
-	maxV, hasTarget, existingGfvID, err := ms.maxVersionFor(ctx, sub, msg.Version)
-	if err != nil {
-		return nil, err
-	}
-	if !hasTarget && msg.Version != maxV+1 {
-		return nil, cerrors.Wrapf(types.ErrInvalidVersion, "version must be %d", maxV+1)
-	}
-	if msg.Version <= sub.activeVersion {
-		return nil, cerrors.Wrapf(types.ErrInvalidVersion, "must be greater than active_version %d", sub.activeVersion)
-	}
-
-	// Execute per MOD-GF-MSG-1-3.
-	var gfv types.GovernanceFrameworkVersion
-	if hasTarget {
-		gfv, err = ms.GFVersion.Get(ctx, existingGfvID)
+	var (
+		gfv    types.GovernanceFrameworkVersion
+		exists bool
+		ng     types.NetworkGovernance
+		coView types.CorporationView
+		group  bool
+		sub    resolvedSubject
+		err    error
+	)
+	if msg.Network {
+		if err := ms.checkNetworkPath(msg.Signer); err != nil {
+			return nil, err
+		}
+		sub.kind = subjectNetwork
+		gfv, exists, ng, err = ms.networkTarget(ctx, msg.Version)
 		if err != nil {
-			return nil, fmt.Errorf("fetch gfv %d: %w", existingGfvID, err)
+			return nil, err
 		}
 	} else {
+		coView, group, err = ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT)
+		if err != nil {
+			return nil, err
+		}
+		sub, err = ms.resolveSubject(ctx, coView, msg.EcosystemId)
+		if err != nil {
+			return nil, err
+		}
+		maxV, hasTarget, existingGfvID, err := ms.maxVersionFor(ctx, sub, msg.Version)
+		if err != nil {
+			return nil, err
+		}
+		if !hasTarget && msg.Version != maxV+1 {
+			return nil, cerrors.Wrapf(types.ErrInvalidVersion, "version must be %d", maxV+1)
+		}
+		if msg.Version <= sub.activeVersion {
+			return nil, cerrors.Wrapf(types.ErrInvalidVersion, "must be greater than active_version %d", sub.activeVersion)
+		}
+		if hasTarget {
+			gfv, err = ms.GFVersion.Get(ctx, existingGfvID)
+			if err != nil {
+				return nil, fmt.Errorf("fetch gfv %d: %w", existingGfvID, err)
+			}
+			exists = true
+		}
+	}
+
+	if !exists {
 		nextID, err := ms.GetNextID(ctx, "gfv")
 		if err != nil {
 			return nil, err
@@ -183,23 +199,27 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 			Created: ctx.BlockTime(),
 			Version: msg.Version,
 		}
-		if sub.kind == subjectEcosystem {
+		switch sub.kind {
+		case subjectEcosystem:
 			gfv.EcosystemId = sub.ecosystemID
-		} else {
+		case subjectCorporation:
 			gfv.CorporationId = sub.corporationID
 		}
 		if err := ms.GFVersion.Set(ctx, gfv.Id, gfv); err != nil {
 			return nil, fmt.Errorf("persist gfv: %w", err)
 		}
-		// Maintain secondary index.
-		if sub.kind == subjectEcosystem {
-			if err := ms.GFVersionByEcosystem.Set(ctx, collections.Join(sub.ecosystemID, msg.Version), gfv.Id); err != nil {
-				return nil, fmt.Errorf("persist gfv eco index: %w", err)
-			}
-		} else {
-			if err := ms.GFVersionByCorporation.Set(ctx, collections.Join(sub.corporationID, msg.Version), gfv.Id); err != nil {
-				return nil, fmt.Errorf("persist gfv corp index: %w", err)
-			}
+		// Index by owner; network versions are listed in NetworkGovernance.
+		switch sub.kind {
+		case subjectEcosystem:
+			err = ms.GFVersionByEcosystem.Set(ctx, collections.Join(sub.ecosystemID, msg.Version), gfv.Id)
+		case subjectCorporation:
+			err = ms.GFVersionByCorporation.Set(ctx, collections.Join(sub.corporationID, msg.Version), gfv.Id)
+		case subjectNetwork:
+			ng.NetworkGovernanceFrameworkVersions = append(ng.NetworkGovernanceFrameworkVersions, gfv.Id)
+			err = ms.NetworkGovernance.Set(ctx, ng)
+		}
+		if err != nil {
+			return nil, fmt.Errorf("index gfv: %w", err)
 		}
 	}
 
@@ -238,18 +258,37 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 		return nil, fmt.Errorf("persist gfd: %w", err)
 	}
 
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddGFDocument,
-		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-		sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", msg.EcosystemId)),
-		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
-		sdk.NewAttribute(types.AttributeKeyGFDocID, fmt.Sprintf("%d", gfd.Id)),
-		sdk.NewAttribute(types.AttributeKeyVersion, fmt.Sprintf("%d", msg.Version)),
-		sdk.NewAttribute(types.AttributeKeyLanguage, msg.DocLanguage),
-		sdk.NewAttribute(types.AttributeKeyDocURL, msg.DocUrl),
-		sdk.NewAttribute(types.AttributeKeyDocDigestSRI, msg.DocDigestSri),
-	))
+	ev := events.New(types.ModuleName, types.EventTypeAddGovernanceFrameworkDocument).
+		Uint(types.AttributeKeyGFVersionID, gfv.Id).
+		Uint(types.AttributeKeyGFDocID, gfd.Id)
+	if sub.kind != subjectNetwork {
+		ev.Uint(events.AttrCorporationID, coView.Id)
+	}
+	if sub.kind == subjectNetwork || group {
+		if err := ev.Msg(ms.cdc, msg); err != nil {
+			return nil, err
+		}
+	}
+	ev.Emit(ctx)
 
 	return &types.MsgAddGovernanceFrameworkDocumentResponse{}, nil
+}
+
+// networkTarget returns the network version a document for version goes to:
+// the last listed version while it is a draft, else a new one after it.
+func (k Keeper) networkTarget(ctx context.Context, version uint32) (types.GovernanceFrameworkVersion, bool, types.NetworkGovernance, error) {
+	last, ng, err := k.lastNetworkVersion(ctx)
+	if err != nil {
+		return types.GovernanceFrameworkVersion{}, false, ng, err
+	}
+	if last.ActiveSince == nil {
+		if version != last.Version {
+			return types.GovernanceFrameworkVersion{}, false, ng, cerrors.Wrapf(types.ErrInvalidVersion, "version must be %d, the draft of the network governance framework", last.Version)
+		}
+		return last, true, ng, nil
+	}
+	if version != last.Version+1 {
+		return types.GovernanceFrameworkVersion{}, false, ng, cerrors.Wrapf(types.ErrInvalidVersion, "version must be %d", last.Version+1)
+	}
+	return types.GovernanceFrameworkVersion{}, false, ng, nil
 }

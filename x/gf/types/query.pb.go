@@ -11,19 +11,23 @@ import (
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -69,6 +73,15 @@ var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
 type QueryParamsResponse struct {
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	// council_account is the council's group policy account.
+	CouncilAccount string `protobuf:"bytes,2,opt,name=council_account,json=councilAccount,proto3" json:"council_account,omitempty"`
+	// network_governance_framework_versions lists the network framework versions
+	// in version order.
+	NetworkGovernanceFrameworkVersions []uint64 `protobuf:"varint,3,rep,packed,name=network_governance_framework_versions,json=networkGovernanceFrameworkVersions,proto3" json:"network_governance_framework_versions,omitempty"`
+	// ngf_acceptance_deadline ends the grace period of the last activation.
+	NgfAcceptanceDeadline *time.Time `protobuf:"bytes,4,opt,name=ngf_acceptance_deadline,json=ngfAcceptanceDeadline,proto3,stdtime" json:"ngf_acceptance_deadline,omitempty"`
+	// ngf_version is the version of the network framework in force.
+	NgfVersion uint32 `protobuf:"varint,5,opt,name=ngf_version,json=ngfVersion,proto3" json:"ngf_version,omitempty"`
 }
 
 func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
@@ -109,6 +122,34 @@ func (m *QueryParamsResponse) GetParams() Params {
 		return m.Params
 	}
 	return Params{}
+}
+
+func (m *QueryParamsResponse) GetCouncilAccount() string {
+	if m != nil {
+		return m.CouncilAccount
+	}
+	return ""
+}
+
+func (m *QueryParamsResponse) GetNetworkGovernanceFrameworkVersions() []uint64 {
+	if m != nil {
+		return m.NetworkGovernanceFrameworkVersions
+	}
+	return nil
+}
+
+func (m *QueryParamsResponse) GetNgfAcceptanceDeadline() *time.Time {
+	if m != nil {
+		return m.NgfAcceptanceDeadline
+	}
+	return nil
+}
+
+func (m *QueryParamsResponse) GetNgfVersion() uint32 {
+	if m != nil {
+		return m.NgfVersion
+	}
+	return 0
 }
 
 type QueryGetGovernanceFrameworkVersionRequest struct {
@@ -215,30 +256,23 @@ func (m *QueryGetGovernanceFrameworkVersionResponse) GetVersion() GovernanceFram
 	return GovernanceFrameworkVersionWithDocs{}
 }
 
-type QueryListGovernanceFrameworkVersionsRequest struct {
-	EcosystemId       uint64 `protobuf:"varint,1,opt,name=ecosystem_id,json=ecosystemId,proto3" json:"ecosystem_id,omitempty"`
-	CorporationId     uint64 `protobuf:"varint,2,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
-	ActiveOnly        bool   `protobuf:"varint,3,opt,name=active_only,json=activeOnly,proto3" json:"active_only,omitempty"`
-	PreferredLanguage string `protobuf:"bytes,4,opt,name=preferred_language,json=preferredLanguage,proto3" json:"preferred_language,omitempty"`
-	ResponseMaxSize   uint32 `protobuf:"varint,5,opt,name=response_max_size,json=responseMaxSize,proto3" json:"response_max_size,omitempty"`
+type QueryGetEcosystemAcceptanceRequest struct {
+	EcosystemId   uint64 `protobuf:"varint,1,opt,name=ecosystem_id,json=ecosystemId,proto3" json:"ecosystem_id,omitempty"`
+	CorporationId uint64 `protobuf:"varint,2,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
 }
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) Reset() {
-	*m = QueryListGovernanceFrameworkVersionsRequest{}
-}
-func (m *QueryListGovernanceFrameworkVersionsRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryListGovernanceFrameworkVersionsRequest) ProtoMessage() {}
-func (*QueryListGovernanceFrameworkVersionsRequest) Descriptor() ([]byte, []int) {
+func (m *QueryGetEcosystemAcceptanceRequest) Reset()         { *m = QueryGetEcosystemAcceptanceRequest{} }
+func (m *QueryGetEcosystemAcceptanceRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetEcosystemAcceptanceRequest) ProtoMessage()    {}
+func (*QueryGetEcosystemAcceptanceRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96cb949f092bf58f, []int{4}
 }
-func (m *QueryListGovernanceFrameworkVersionsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryGetEcosystemAcceptanceRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListGovernanceFrameworkVersionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryGetEcosystemAcceptanceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListGovernanceFrameworkVersionsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryGetEcosystemAcceptanceRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -248,73 +282,48 @@ func (m *QueryListGovernanceFrameworkVersionsRequest) XXX_Marshal(b []byte, dete
 		return b[:n], nil
 	}
 }
-func (m *QueryListGovernanceFrameworkVersionsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListGovernanceFrameworkVersionsRequest.Merge(m, src)
+func (m *QueryGetEcosystemAcceptanceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetEcosystemAcceptanceRequest.Merge(m, src)
 }
-func (m *QueryListGovernanceFrameworkVersionsRequest) XXX_Size() int {
+func (m *QueryGetEcosystemAcceptanceRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListGovernanceFrameworkVersionsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListGovernanceFrameworkVersionsRequest.DiscardUnknown(m)
+func (m *QueryGetEcosystemAcceptanceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetEcosystemAcceptanceRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListGovernanceFrameworkVersionsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryGetEcosystemAcceptanceRequest proto.InternalMessageInfo
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) GetEcosystemId() uint64 {
+func (m *QueryGetEcosystemAcceptanceRequest) GetEcosystemId() uint64 {
 	if m != nil {
 		return m.EcosystemId
 	}
 	return 0
 }
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) GetCorporationId() uint64 {
+func (m *QueryGetEcosystemAcceptanceRequest) GetCorporationId() uint64 {
 	if m != nil {
 		return m.CorporationId
 	}
 	return 0
 }
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) GetActiveOnly() bool {
-	if m != nil {
-		return m.ActiveOnly
-	}
-	return false
+type QueryGetEcosystemAcceptanceResponse struct {
+	Acceptance EcosystemAcceptance `protobuf:"bytes,1,opt,name=acceptance,proto3" json:"acceptance"`
 }
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) GetPreferredLanguage() string {
-	if m != nil {
-		return m.PreferredLanguage
-	}
-	return ""
-}
-
-func (m *QueryListGovernanceFrameworkVersionsRequest) GetResponseMaxSize() uint32 {
-	if m != nil {
-		return m.ResponseMaxSize
-	}
-	return 0
-}
-
-type QueryListGovernanceFrameworkVersionsResponse struct {
-	Versions []GovernanceFrameworkVersionWithDocs `protobuf:"bytes,1,rep,name=versions,proto3" json:"versions"`
-}
-
-func (m *QueryListGovernanceFrameworkVersionsResponse) Reset() {
-	*m = QueryListGovernanceFrameworkVersionsResponse{}
-}
-func (m *QueryListGovernanceFrameworkVersionsResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryListGovernanceFrameworkVersionsResponse) ProtoMessage() {}
-func (*QueryListGovernanceFrameworkVersionsResponse) Descriptor() ([]byte, []int) {
+func (m *QueryGetEcosystemAcceptanceResponse) Reset()         { *m = QueryGetEcosystemAcceptanceResponse{} }
+func (m *QueryGetEcosystemAcceptanceResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetEcosystemAcceptanceResponse) ProtoMessage()    {}
+func (*QueryGetEcosystemAcceptanceResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96cb949f092bf58f, []int{5}
 }
-func (m *QueryListGovernanceFrameworkVersionsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryGetEcosystemAcceptanceResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListGovernanceFrameworkVersionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryGetEcosystemAcceptanceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListGovernanceFrameworkVersionsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryGetEcosystemAcceptanceResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -324,23 +333,23 @@ func (m *QueryListGovernanceFrameworkVersionsResponse) XXX_Marshal(b []byte, det
 		return b[:n], nil
 	}
 }
-func (m *QueryListGovernanceFrameworkVersionsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListGovernanceFrameworkVersionsResponse.Merge(m, src)
+func (m *QueryGetEcosystemAcceptanceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetEcosystemAcceptanceResponse.Merge(m, src)
 }
-func (m *QueryListGovernanceFrameworkVersionsResponse) XXX_Size() int {
+func (m *QueryGetEcosystemAcceptanceResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListGovernanceFrameworkVersionsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListGovernanceFrameworkVersionsResponse.DiscardUnknown(m)
+func (m *QueryGetEcosystemAcceptanceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetEcosystemAcceptanceResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListGovernanceFrameworkVersionsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryGetEcosystemAcceptanceResponse proto.InternalMessageInfo
 
-func (m *QueryListGovernanceFrameworkVersionsResponse) GetVersions() []GovernanceFrameworkVersionWithDocs {
+func (m *QueryGetEcosystemAcceptanceResponse) GetAcceptance() EcosystemAcceptance {
 	if m != nil {
-		return m.Versions
+		return m.Acceptance
 	}
-	return nil
+	return EcosystemAcceptance{}
 }
 
 func init() {
@@ -348,53 +357,59 @@ func init() {
 	proto.RegisterType((*QueryParamsResponse)(nil), "verana.gf.v1.QueryParamsResponse")
 	proto.RegisterType((*QueryGetGovernanceFrameworkVersionRequest)(nil), "verana.gf.v1.QueryGetGovernanceFrameworkVersionRequest")
 	proto.RegisterType((*QueryGetGovernanceFrameworkVersionResponse)(nil), "verana.gf.v1.QueryGetGovernanceFrameworkVersionResponse")
-	proto.RegisterType((*QueryListGovernanceFrameworkVersionsRequest)(nil), "verana.gf.v1.QueryListGovernanceFrameworkVersionsRequest")
-	proto.RegisterType((*QueryListGovernanceFrameworkVersionsResponse)(nil), "verana.gf.v1.QueryListGovernanceFrameworkVersionsResponse")
+	proto.RegisterType((*QueryGetEcosystemAcceptanceRequest)(nil), "verana.gf.v1.QueryGetEcosystemAcceptanceRequest")
+	proto.RegisterType((*QueryGetEcosystemAcceptanceResponse)(nil), "verana.gf.v1.QueryGetEcosystemAcceptanceResponse")
 }
 
 func init() { proto.RegisterFile("verana/gf/v1/query.proto", fileDescriptor_96cb949f092bf58f) }
 
 var fileDescriptor_96cb949f092bf58f = []byte{
-	// 624 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x54, 0x4d, 0x4f, 0x14, 0x31,
-	0x18, 0xde, 0x2e, 0x1f, 0x42, 0x97, 0x85, 0x50, 0x30, 0x59, 0x36, 0xba, 0x2c, 0x93, 0x98, 0xac,
-	0x28, 0x33, 0x82, 0x07, 0xd4, 0x23, 0x31, 0x12, 0x12, 0xfc, 0x1a, 0xa3, 0x24, 0x5e, 0x26, 0x65,
-	0xa6, 0x0c, 0xd5, 0x99, 0x76, 0x68, 0xbb, 0x23, 0xcb, 0x51, 0x0f, 0x5e, 0x4d, 0xfc, 0x0f, 0xc6,
-	0x8b, 0x89, 0xbf, 0xc2, 0x70, 0x24, 0xf1, 0xe2, 0xc9, 0x18, 0x30, 0xf1, 0x07, 0xf8, 0x07, 0xcc,
-	0x76, 0x3a, 0x1b, 0x26, 0x02, 0xae, 0x7a, 0x99, 0x4c, 0xdf, 0xf7, 0xed, 0xf3, 0x3e, 0xcf, 0xd3,
-	0xb7, 0x85, 0xb5, 0x94, 0x08, 0xcc, 0xb0, 0x13, 0x6e, 0x39, 0xe9, 0xa2, 0xb3, 0xd3, 0x26, 0xa2,
-	0x63, 0x27, 0x82, 0x2b, 0x8e, 0xc6, 0xb2, 0x8c, 0x1d, 0x6e, 0xd9, 0xe9, 0x62, 0x7d, 0x12, 0xc7,
-	0x94, 0x71, 0x47, 0x7f, 0xb3, 0x82, 0xfa, 0x8c, 0xcf, 0x65, 0xcc, 0xa5, 0xa7, 0x57, 0x4e, 0xb6,
-	0x30, 0xa9, 0xe9, 0x90, 0x87, 0x3c, 0x8b, 0x77, 0xff, 0x4c, 0xf4, 0x42, 0xc8, 0x79, 0x18, 0x11,
-	0x07, 0x27, 0xd4, 0xc1, 0x8c, 0x71, 0x85, 0x15, 0xe5, 0x2c, 0xdf, 0x33, 0x53, 0x60, 0x92, 0x60,
-	0x81, 0xe3, 0x3c, 0x55, 0x24, 0xa9, 0x3a, 0x09, 0x31, 0x19, 0x6b, 0x1a, 0xa2, 0x87, 0x5d, 0xce,
-	0x0f, 0x74, 0xb9, 0x4b, 0x76, 0xda, 0x44, 0x2a, 0xeb, 0x1e, 0x9c, 0x2a, 0x44, 0x65, 0xc2, 0x99,
-	0x24, 0x68, 0x19, 0x0e, 0x67, 0xb0, 0x35, 0xd0, 0x04, 0xad, 0xca, 0xd2, 0xb4, 0x7d, 0x5c, 0xa2,
-	0x9d, 0x55, 0xaf, 0x8c, 0xee, 0x7f, 0x9d, 0x2d, 0xbd, 0xff, 0xf1, 0x71, 0x1e, 0xb8, 0xa6, 0xdc,
-	0x7a, 0x06, 0x2f, 0x6b, 0xbc, 0x55, 0xa2, 0x56, 0x79, 0x4a, 0x04, 0xc3, 0xcc, 0x27, 0x77, 0x04,
-	0x8e, 0xc9, 0x0b, 0x2e, 0x9e, 0x3f, 0x21, 0x42, 0x52, 0xce, 0x4c, 0x73, 0x34, 0x0e, 0xcb, 0x34,
-	0xd0, 0x1d, 0x06, 0xdd, 0x32, 0x0d, 0xd0, 0x02, 0x44, 0x89, 0x20, 0x5b, 0x44, 0x08, 0x12, 0x78,
-	0x11, 0x66, 0x61, 0x1b, 0x87, 0xa4, 0x56, 0x6e, 0x82, 0xd6, 0xa8, 0x3b, 0xd9, 0xcb, 0xac, 0x9b,
-	0x84, 0xf5, 0x0a, 0xc0, 0xf9, 0x7e, 0x9a, 0x19, 0x4d, 0x8f, 0xe1, 0xb9, 0x34, 0x0b, 0x19, 0x51,
-	0xd7, 0x8a, 0xa2, 0x4e, 0x87, 0xd8, 0xa0, 0x6a, 0xfb, 0x36, 0xf7, 0x0b, 0x82, 0x73, 0x2c, 0xeb,
-	0x27, 0x80, 0x57, 0x34, 0x8b, 0x75, 0x2a, 0xcf, 0xa0, 0x91, 0x3b, 0x8e, 0xe6, 0xe0, 0x18, 0xf1,
-	0xb9, 0xec, 0x48, 0x45, 0x62, 0xaf, 0x27, 0xbf, 0xd2, 0x8b, 0xad, 0x05, 0xe8, 0x12, 0x1c, 0xf7,
-	0xb9, 0x48, 0xb8, 0xd0, 0xa7, 0xde, 0x2d, 0x2a, 0xeb, 0xa2, 0xea, 0xb1, 0xe8, 0x5a, 0x80, 0x66,
-	0x61, 0x05, 0xfb, 0x8a, 0xa6, 0xc4, 0xe3, 0x2c, 0xea, 0xd4, 0x06, 0x9a, 0xa0, 0x35, 0xe2, 0xc2,
-	0x2c, 0x74, 0x9f, 0x45, 0x9d, 0x53, 0xfc, 0x1c, 0x3c, 0xc5, 0x4f, 0x34, 0x0f, 0x27, 0x85, 0x31,
-	0xcb, 0x8b, 0xf1, 0xae, 0x27, 0xe9, 0x1e, 0xa9, 0x0d, 0x35, 0x41, 0xab, 0xea, 0x4e, 0xe4, 0x89,
-	0xbb, 0x78, 0xf7, 0x11, 0xdd, 0x23, 0xd6, 0x6b, 0x00, 0xaf, 0xf6, 0xa7, 0xda, 0xb8, 0xbf, 0x01,
-	0x47, 0x8c, 0x63, 0xdd, 0x99, 0x1a, 0xf8, 0x5f, 0xfb, 0x7b, 0x60, 0x4b, 0x9f, 0x06, 0xe0, 0x90,
-	0x66, 0x82, 0x02, 0x38, 0x9c, 0x0d, 0x26, 0x6a, 0x16, 0xa1, 0x7f, 0x9f, 0xfb, 0xfa, 0xdc, 0x19,
-	0x15, 0x19, 0x63, 0xeb, 0xfc, 0xcb, 0xcf, 0xdf, 0xdf, 0x96, 0x27, 0x50, 0xb5, 0x70, 0xcf, 0xd0,
-	0x3b, 0x00, 0x2f, 0x9e, 0x39, 0x70, 0x68, 0xf9, 0x04, 0xec, 0x7e, 0xee, 0x43, 0xfd, 0xc6, 0xdf,
-	0x6f, 0x34, 0x5c, 0x91, 0xe6, 0x3a, 0x86, 0xa0, 0xe1, 0x1a, 0x12, 0x85, 0x3e, 0x00, 0x38, 0xfb,
-	0x87, 0xd3, 0x41, 0x37, 0x4f, 0xe8, 0xd8, 0xdf, 0x1c, 0xd7, 0x6f, 0xfd, 0xcb, 0x56, 0x43, 0x77,
-	0x4a, 0xd3, 0xad, 0xa2, 0x8a, 0xa1, 0x1b, 0x51, 0xa9, 0x56, 0x56, 0xf7, 0x0f, 0x1b, 0xe0, 0xe0,
-	0xb0, 0x01, 0xbe, 0x1d, 0x36, 0xc0, 0x9b, 0xa3, 0x46, 0xe9, 0xe0, 0xa8, 0x51, 0xfa, 0x72, 0xd4,
-	0x28, 0x3d, 0x5d, 0x08, 0xa9, 0xda, 0x6e, 0x6f, 0xda, 0x3e, 0x8f, 0x9d, 0xac, 0xe9, 0x42, 0x84,
-	0x37, 0x65, 0xfe, 0xcf, 0x78, 0x40, 0x9c, 0xdd, 0x2e, 0x94, 0x7e, 0xef, 0x36, 0x87, 0xf5, 0x83,
-	0x77, 0xfd, 0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0x86, 0xac, 0x54, 0x29, 0xb1, 0x05, 0x00, 0x00,
+	// 710 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0xcf, 0x6e, 0xd3, 0x4e,
+	0x10, 0x8e, 0xd3, 0xb4, 0x3f, 0x75, 0xfb, 0x4f, 0xdd, 0xa6, 0x3f, 0xdc, 0x08, 0x92, 0xd4, 0xa8,
+	0x52, 0xa8, 0x14, 0xbb, 0x2d, 0x87, 0x72, 0x4d, 0x54, 0xa8, 0x2a, 0xf5, 0x40, 0xcd, 0x5f, 0x71,
+	0x89, 0x36, 0xf6, 0x7a, 0x6b, 0x88, 0x77, 0xdd, 0xf5, 0x26, 0xd0, 0x2b, 0xbc, 0x40, 0x25, 0x2e,
+	0x3c, 0x01, 0xe2, 0x08, 0x12, 0x0f, 0xd1, 0x63, 0x05, 0x17, 0x4e, 0x14, 0xb5, 0x48, 0xbc, 0x06,
+	0xf2, 0x7a, 0x9d, 0xc6, 0x22, 0x8d, 0xda, 0x8b, 0xb5, 0x3b, 0xf3, 0xcd, 0xcc, 0x37, 0xdf, 0xec,
+	0x18, 0xe8, 0x3d, 0xcc, 0x11, 0x45, 0x16, 0xf1, 0xac, 0xde, 0xba, 0x75, 0xd0, 0xc5, 0xfc, 0xd0,
+	0x0c, 0x39, 0x13, 0x0c, 0x4e, 0x27, 0x1e, 0x93, 0x78, 0x66, 0x6f, 0xbd, 0x34, 0x8f, 0x02, 0x9f,
+	0x32, 0x4b, 0x7e, 0x13, 0x40, 0x69, 0xc9, 0x61, 0x51, 0xc0, 0xa2, 0x96, 0xbc, 0x59, 0xc9, 0x45,
+	0xb9, 0x8a, 0x84, 0x11, 0x96, 0xd8, 0xe3, 0x93, 0xb2, 0xde, 0x24, 0x8c, 0x91, 0x0e, 0xb6, 0x50,
+	0xe8, 0x5b, 0x88, 0x52, 0x26, 0x90, 0xf0, 0x19, 0x4d, 0x63, 0x2a, 0xca, 0x2b, 0x6f, 0xed, 0xae,
+	0x67, 0x09, 0x3f, 0xc0, 0x91, 0x40, 0x41, 0x98, 0xd6, 0xcb, 0x50, 0x0d, 0x11, 0x47, 0x41, 0x1a,
+	0x9b, 0xed, 0x42, 0x1c, 0x86, 0x58, 0x79, 0x8c, 0x22, 0x80, 0x7b, 0x71, 0x53, 0x0f, 0x25, 0xdc,
+	0xc6, 0x07, 0x5d, 0x1c, 0x09, 0xe3, 0x34, 0x0f, 0x16, 0x32, 0xe6, 0x28, 0x64, 0x34, 0xc2, 0x70,
+	0x13, 0x4c, 0x24, 0x79, 0x75, 0xad, 0xaa, 0xd5, 0xa6, 0x36, 0x8a, 0xe6, 0xa0, 0x08, 0x66, 0x82,
+	0x6e, 0x4e, 0x1e, 0xff, 0xac, 0xe4, 0x3e, 0xfd, 0xf9, 0xbc, 0xaa, 0xd9, 0x0a, 0x0e, 0x1b, 0x60,
+	0xce, 0x61, 0x5d, 0xea, 0xf8, 0x9d, 0x16, 0x72, 0xe2, 0x93, 0xd0, 0xf3, 0x55, 0xad, 0x36, 0xd9,
+	0xd4, 0xbf, 0x7d, 0xad, 0x17, 0x95, 0x36, 0x0d, 0xd7, 0xe5, 0x38, 0x8a, 0x1e, 0x09, 0xee, 0x53,
+	0x62, 0xcf, 0xaa, 0x80, 0x46, 0x82, 0x87, 0x7b, 0x60, 0x85, 0x62, 0xf1, 0x9a, 0xf1, 0x57, 0x2d,
+	0xc2, 0x7a, 0x98, 0x53, 0x44, 0x1d, 0xdc, 0xf2, 0x38, 0x0a, 0xb0, 0x34, 0xf6, 0x30, 0x8f, 0x62,
+	0xb9, 0xf4, 0xb1, 0xea, 0x58, 0xad, 0x60, 0x1b, 0x0a, 0xbc, 0xdd, 0xc7, 0x3e, 0x48, 0xa1, 0x4f,
+	0x15, 0x12, 0x3e, 0x07, 0x37, 0x28, 0xf1, 0x62, 0x46, 0x38, 0x14, 0x32, 0x9d, 0x8b, 0x91, 0xdb,
+	0xf1, 0x29, 0xd6, 0x0b, 0xb2, 0xbf, 0x92, 0x99, 0x88, 0x6e, 0xa6, 0xa2, 0x9b, 0x8f, 0x53, 0xd1,
+	0x9b, 0x85, 0xa3, 0xd3, 0x8a, 0x66, 0x2f, 0x52, 0xe2, 0x35, 0xfa, 0xf1, 0x5b, 0x2a, 0x1c, 0x56,
+	0xc0, 0x54, 0x9c, 0x59, 0x71, 0xd2, 0xc7, 0xab, 0x5a, 0x6d, 0xc6, 0x06, 0x94, 0x78, 0xaa, 0xb6,
+	0xf1, 0x12, 0xdc, 0x91, 0x02, 0x6f, 0x63, 0x71, 0x39, 0x43, 0x35, 0x0e, 0x38, 0x0b, 0xf2, 0xbe,
+	0x2b, 0x25, 0x2f, 0xd8, 0x79, 0xdf, 0x85, 0x75, 0x00, 0x43, 0x8e, 0x3d, 0xcc, 0x39, 0x76, 0x5b,
+	0x1d, 0x44, 0x49, 0x17, 0x11, 0x9c, 0x08, 0x6a, 0xcf, 0xf7, 0x3d, 0xbb, 0xca, 0x61, 0xbc, 0xd3,
+	0xc0, 0xea, 0x55, 0x8a, 0xa9, 0x21, 0x3f, 0x01, 0xff, 0xa5, 0xbc, 0x93, 0x29, 0xaf, 0x65, 0xa7,
+	0x7c, 0x79, 0x8a, 0x67, 0xbe, 0xd8, 0xdf, 0x62, 0x4e, 0xe6, 0x05, 0xa4, 0xb9, 0x0c, 0x0a, 0x8c,
+	0x94, 0xc4, 0x7d, 0x87, 0x45, 0x87, 0x91, 0xc0, 0xc1, 0x85, 0x72, 0x69, 0xab, 0xcb, 0x60, 0x1a,
+	0xa7, 0xde, 0x56, 0xbf, 0xe9, 0xa9, 0xbe, 0x6d, 0xc7, 0x85, 0x2b, 0x60, 0xd6, 0x61, 0x3c, 0x64,
+	0x5c, 0xae, 0x47, 0x0c, 0xca, 0x4b, 0xd0, 0xcc, 0x80, 0x75, 0xc7, 0x35, 0x22, 0x70, 0x7b, 0x64,
+	0x3d, 0xd5, 0xed, 0x2e, 0x00, 0x17, 0xf3, 0x57, 0x0d, 0x2f, 0x67, 0x1b, 0x1e, 0x12, 0x3e, 0xd8,
+	0xe1, 0x40, 0xfc, 0xc6, 0x97, 0x31, 0x30, 0x2e, 0xab, 0x42, 0x17, 0x4c, 0x24, 0xeb, 0x00, 0xab,
+	0xd9, 0x6c, 0xff, 0xae, 0x5b, 0x69, 0x79, 0x04, 0x22, 0xa1, 0x69, 0x2c, 0xbe, 0xfd, 0xfe, 0xfb,
+	0x7d, 0x7e, 0x0e, 0xce, 0x64, 0xd6, 0x1b, 0x7e, 0xd4, 0xc0, 0xad, 0x91, 0x53, 0x85, 0x9b, 0x43,
+	0x72, 0x5f, 0xe5, 0xd1, 0x95, 0xee, 0x5d, 0x3f, 0x50, 0x71, 0x85, 0x92, 0xeb, 0x34, 0x04, 0x8a,
+	0x2b, 0xc1, 0x02, 0x7e, 0xd0, 0xc0, 0xff, 0xc3, 0x27, 0x01, 0xd7, 0x86, 0x17, 0xba, 0xfc, 0x91,
+	0x94, 0xd6, 0xaf, 0x11, 0xa1, 0x38, 0x2d, 0x49, 0x4e, 0x0b, 0x70, 0x5e, 0x71, 0xba, 0x98, 0x59,
+	0x73, 0xfb, 0xf8, 0xac, 0xac, 0x9d, 0x9c, 0x95, 0xb5, 0x5f, 0x67, 0x65, 0xed, 0xe8, 0xbc, 0x9c,
+	0x3b, 0x39, 0x2f, 0xe7, 0x7e, 0x9c, 0x97, 0x73, 0x2f, 0xea, 0xc4, 0x17, 0xfb, 0xdd, 0xb6, 0xe9,
+	0xb0, 0xc0, 0x4a, 0x2a, 0xd6, 0x3b, 0xa8, 0x1d, 0xa5, 0x67, 0xca, 0x5c, 0x6c, 0xbd, 0x89, 0x13,
+	0xca, 0x3f, 0x6a, 0x7b, 0x42, 0xfe, 0x25, 0xee, 0xfe, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x1c, 0xbd,
+	0x43, 0xdf, 0x34, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -409,12 +424,12 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Params returns the total set of module parameters.
+	// [MOD-GF-QRY-3] List Module Parameters.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// [MOD-GF-QRY-1] Get Governance Framework Version
 	GetGovernanceFrameworkVersion(ctx context.Context, in *QueryGetGovernanceFrameworkVersionRequest, opts ...grpc.CallOption) (*QueryGetGovernanceFrameworkVersionResponse, error)
-	// [MOD-GF-QRY-2] List Governance Framework Versions
-	ListGovernanceFrameworkVersions(ctx context.Context, in *QueryListGovernanceFrameworkVersionsRequest, opts ...grpc.CallOption) (*QueryListGovernanceFrameworkVersionsResponse, error)
+	// [MOD-GF-QRY-2] Get Ecosystem Acceptance
+	GetEcosystemAcceptance(ctx context.Context, in *QueryGetEcosystemAcceptanceRequest, opts ...grpc.CallOption) (*QueryGetEcosystemAcceptanceResponse, error)
 }
 
 type queryClient struct {
@@ -443,9 +458,9 @@ func (c *queryClient) GetGovernanceFrameworkVersion(ctx context.Context, in *Que
 	return out, nil
 }
 
-func (c *queryClient) ListGovernanceFrameworkVersions(ctx context.Context, in *QueryListGovernanceFrameworkVersionsRequest, opts ...grpc.CallOption) (*QueryListGovernanceFrameworkVersionsResponse, error) {
-	out := new(QueryListGovernanceFrameworkVersionsResponse)
-	err := c.cc.Invoke(ctx, "/verana.gf.v1.Query/ListGovernanceFrameworkVersions", in, out, opts...)
+func (c *queryClient) GetEcosystemAcceptance(ctx context.Context, in *QueryGetEcosystemAcceptanceRequest, opts ...grpc.CallOption) (*QueryGetEcosystemAcceptanceResponse, error) {
+	out := new(QueryGetEcosystemAcceptanceResponse)
+	err := c.cc.Invoke(ctx, "/verana.gf.v1.Query/GetEcosystemAcceptance", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -454,12 +469,12 @@ func (c *queryClient) ListGovernanceFrameworkVersions(ctx context.Context, in *Q
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Params returns the total set of module parameters.
+	// [MOD-GF-QRY-3] List Module Parameters.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// [MOD-GF-QRY-1] Get Governance Framework Version
 	GetGovernanceFrameworkVersion(context.Context, *QueryGetGovernanceFrameworkVersionRequest) (*QueryGetGovernanceFrameworkVersionResponse, error)
-	// [MOD-GF-QRY-2] List Governance Framework Versions
-	ListGovernanceFrameworkVersions(context.Context, *QueryListGovernanceFrameworkVersionsRequest) (*QueryListGovernanceFrameworkVersionsResponse, error)
+	// [MOD-GF-QRY-2] Get Ecosystem Acceptance
+	GetEcosystemAcceptance(context.Context, *QueryGetEcosystemAcceptanceRequest) (*QueryGetEcosystemAcceptanceResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -472,8 +487,8 @@ func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsReq
 func (*UnimplementedQueryServer) GetGovernanceFrameworkVersion(ctx context.Context, req *QueryGetGovernanceFrameworkVersionRequest) (*QueryGetGovernanceFrameworkVersionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGovernanceFrameworkVersion not implemented")
 }
-func (*UnimplementedQueryServer) ListGovernanceFrameworkVersions(ctx context.Context, req *QueryListGovernanceFrameworkVersionsRequest) (*QueryListGovernanceFrameworkVersionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListGovernanceFrameworkVersions not implemented")
+func (*UnimplementedQueryServer) GetEcosystemAcceptance(ctx context.Context, req *QueryGetEcosystemAcceptanceRequest) (*QueryGetEcosystemAcceptanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEcosystemAcceptance not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -516,20 +531,20 @@ func _Query_GetGovernanceFrameworkVersion_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ListGovernanceFrameworkVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryListGovernanceFrameworkVersionsRequest)
+func _Query_GetEcosystemAcceptance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetEcosystemAcceptanceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ListGovernanceFrameworkVersions(ctx, in)
+		return srv.(QueryServer).GetEcosystemAcceptance(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/verana.gf.v1.Query/ListGovernanceFrameworkVersions",
+		FullMethod: "/verana.gf.v1.Query/GetEcosystemAcceptance",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListGovernanceFrameworkVersions(ctx, req.(*QueryListGovernanceFrameworkVersionsRequest))
+		return srv.(QueryServer).GetEcosystemAcceptance(ctx, req.(*QueryGetEcosystemAcceptanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -548,8 +563,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_GetGovernanceFrameworkVersion_Handler,
 		},
 		{
-			MethodName: "ListGovernanceFrameworkVersions",
-			Handler:    _Query_ListGovernanceFrameworkVersions_Handler,
+			MethodName: "GetEcosystemAcceptance",
+			Handler:    _Query_GetEcosystemAcceptance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -599,6 +614,46 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.NgfVersion != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.NgfVersion))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.NgfAcceptanceDeadline != nil {
+		n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.NgfAcceptanceDeadline, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.NgfAcceptanceDeadline):])
+		if err1 != nil {
+			return 0, err1
+		}
+		i -= n1
+		i = encodeVarintQuery(dAtA, i, uint64(n1))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.NetworkGovernanceFrameworkVersions) > 0 {
+		dAtA3 := make([]byte, len(m.NetworkGovernanceFrameworkVersions)*10)
+		var j2 int
+		for _, num := range m.NetworkGovernanceFrameworkVersions {
+			for num >= 1<<7 {
+				dAtA3[j2] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j2++
+			}
+			dAtA3[j2] = uint8(num)
+			j2++
+		}
+		i -= j2
+		copy(dAtA[i:], dAtA3[:j2])
+		i = encodeVarintQuery(dAtA, i, uint64(j2))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.CouncilAccount) > 0 {
+		i -= len(m.CouncilAccount)
+		copy(dAtA[i:], m.CouncilAccount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.CouncilAccount)))
+		i--
+		dAtA[i] = 0x12
+	}
 	{
 		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
@@ -680,7 +735,7 @@ func (m *QueryGetGovernanceFrameworkVersionResponse) MarshalToSizedBuffer(dAtA [
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryGetEcosystemAcceptanceRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -690,38 +745,16 @@ func (m *QueryListGovernanceFrameworkVersionsRequest) Marshal() (dAtA []byte, er
 	return dAtA[:n], nil
 }
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryGetEcosystemAcceptanceRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryGetEcosystemAcceptanceRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.ResponseMaxSize != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.ResponseMaxSize))
-		i--
-		dAtA[i] = 0x28
-	}
-	if len(m.PreferredLanguage) > 0 {
-		i -= len(m.PreferredLanguage)
-		copy(dAtA[i:], m.PreferredLanguage)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.PreferredLanguage)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if m.ActiveOnly {
-		i--
-		if m.ActiveOnly {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x18
-	}
 	if m.CorporationId != 0 {
 		i = encodeVarintQuery(dAtA, i, uint64(m.CorporationId))
 		i--
@@ -735,7 +768,7 @@ func (m *QueryListGovernanceFrameworkVersionsRequest) MarshalToSizedBuffer(dAtA 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListGovernanceFrameworkVersionsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryGetEcosystemAcceptanceResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -745,30 +778,26 @@ func (m *QueryListGovernanceFrameworkVersionsResponse) Marshal() (dAtA []byte, e
 	return dAtA[:n], nil
 }
 
-func (m *QueryListGovernanceFrameworkVersionsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryGetEcosystemAcceptanceResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListGovernanceFrameworkVersionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryGetEcosystemAcceptanceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Versions) > 0 {
-		for iNdEx := len(m.Versions) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Versions[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
+	{
+		size, err := m.Acceptance.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
 		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
 	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -800,6 +829,24 @@ func (m *QueryParamsResponse) Size() (n int) {
 	_ = l
 	l = m.Params.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	l = len(m.CouncilAccount)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if len(m.NetworkGovernanceFrameworkVersions) > 0 {
+		l = 0
+		for _, e := range m.NetworkGovernanceFrameworkVersions {
+			l += sovQuery(uint64(e))
+		}
+		n += 1 + sovQuery(uint64(l)) + l
+	}
+	if m.NgfAcceptanceDeadline != nil {
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.NgfAcceptanceDeadline)
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.NgfVersion != 0 {
+		n += 1 + sovQuery(uint64(m.NgfVersion))
+	}
 	return n
 }
 
@@ -830,7 +877,7 @@ func (m *QueryGetGovernanceFrameworkVersionResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryListGovernanceFrameworkVersionsRequest) Size() (n int) {
+func (m *QueryGetEcosystemAcceptanceRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -842,31 +889,17 @@ func (m *QueryListGovernanceFrameworkVersionsRequest) Size() (n int) {
 	if m.CorporationId != 0 {
 		n += 1 + sovQuery(uint64(m.CorporationId))
 	}
-	if m.ActiveOnly {
-		n += 2
-	}
-	l = len(m.PreferredLanguage)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	if m.ResponseMaxSize != 0 {
-		n += 1 + sovQuery(uint64(m.ResponseMaxSize))
-	}
 	return n
 }
 
-func (m *QueryListGovernanceFrameworkVersionsResponse) Size() (n int) {
+func (m *QueryGetEcosystemAcceptanceResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.Versions) > 0 {
-		for _, e := range m.Versions {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
+	l = m.Acceptance.Size()
+	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
@@ -988,6 +1021,169 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CouncilAccount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CouncilAccount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuery
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.NetworkGovernanceFrameworkVersions = append(m.NetworkGovernanceFrameworkVersions, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuery
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthQuery
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthQuery
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.NetworkGovernanceFrameworkVersions) == 0 {
+					m.NetworkGovernanceFrameworkVersions = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowQuery
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.NetworkGovernanceFrameworkVersions = append(m.NetworkGovernanceFrameworkVersions, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field NetworkGovernanceFrameworkVersions", wireType)
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NgfAcceptanceDeadline", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.NgfAcceptanceDeadline == nil {
+				m.NgfAcceptanceDeadline = new(time.Time)
+			}
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.NgfAcceptanceDeadline, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NgfVersion", wireType)
+			}
+			m.NgfVersion = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.NgfVersion |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1193,7 +1389,7 @@ func (m *QueryGetGovernanceFrameworkVersionResponse) Unmarshal(dAtA []byte) erro
 	}
 	return nil
 }
-func (m *QueryListGovernanceFrameworkVersionsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryGetEcosystemAcceptanceRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1216,10 +1412,10 @@ func (m *QueryListGovernanceFrameworkVersionsRequest) Unmarshal(dAtA []byte) err
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListGovernanceFrameworkVersionsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryGetEcosystemAcceptanceRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListGovernanceFrameworkVersionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryGetEcosystemAcceptanceRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1260,77 +1456,6 @@ func (m *QueryListGovernanceFrameworkVersionsRequest) Unmarshal(dAtA []byte) err
 					break
 				}
 			}
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ActiveOnly", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.ActiveOnly = bool(v != 0)
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PreferredLanguage", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PreferredLanguage = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ResponseMaxSize", wireType)
-			}
-			m.ResponseMaxSize = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ResponseMaxSize |= uint32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1352,7 +1477,7 @@ func (m *QueryListGovernanceFrameworkVersionsRequest) Unmarshal(dAtA []byte) err
 	}
 	return nil
 }
-func (m *QueryListGovernanceFrameworkVersionsResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryGetEcosystemAcceptanceResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1375,15 +1500,15 @@ func (m *QueryListGovernanceFrameworkVersionsResponse) Unmarshal(dAtA []byte) er
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListGovernanceFrameworkVersionsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryGetEcosystemAcceptanceResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListGovernanceFrameworkVersionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryGetEcosystemAcceptanceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Versions", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Acceptance", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1410,8 +1535,7 @@ func (m *QueryListGovernanceFrameworkVersionsResponse) Unmarshal(dAtA []byte) er
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Versions = append(m.Versions, GovernanceFrameworkVersionWithDocs{})
-			if err := m.Versions[len(m.Versions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Acceptance.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

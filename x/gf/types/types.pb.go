@@ -30,8 +30,8 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GovernanceFrameworkVersion represents a versioned governance framework owned
-// by either an Ecosystem (ecosystem_id set, corporation empty) or a Corporation
-// (corporation set, ecosystem_id zero). Exactly one of the two owner fields is set.
+// by an Ecosystem (ecosystem_id set), a Corporation (corporation_id set), or the
+// network when neither is set.
 type GovernanceFrameworkVersion struct {
 	Id            uint64     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	EcosystemId   uint64     `protobuf:"varint,2,opt,name=ecosystem_id,json=ecosystemId,proto3" json:"ecosystem_id,omitempty"`
@@ -296,48 +296,184 @@ func (m *GovernanceFrameworkVersionWithDocs) GetDocuments() []GovernanceFramewor
 	return nil
 }
 
+// EcosystemAcceptance is the last version of an ecosystem's governance
+// framework a corporation accepted, keyed by (ecosystem_id, corporation_id).
+type EcosystemAcceptance struct {
+	EcosystemId   uint64    `protobuf:"varint,1,opt,name=ecosystem_id,json=ecosystemId,proto3" json:"ecosystem_id,omitempty"`
+	CorporationId uint64    `protobuf:"varint,2,opt,name=corporation_id,json=corporationId,proto3" json:"corporation_id,omitempty"`
+	Version       uint32    `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
+	Accepted      time.Time `protobuf:"bytes,4,opt,name=accepted,proto3,stdtime" json:"accepted"`
+}
+
+func (m *EcosystemAcceptance) Reset()         { *m = EcosystemAcceptance{} }
+func (m *EcosystemAcceptance) String() string { return proto.CompactTextString(m) }
+func (*EcosystemAcceptance) ProtoMessage()    {}
+func (*EcosystemAcceptance) Descriptor() ([]byte, []int) {
+	return fileDescriptor_79a6e591b2dc9054, []int{3}
+}
+func (m *EcosystemAcceptance) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EcosystemAcceptance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EcosystemAcceptance.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EcosystemAcceptance) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EcosystemAcceptance.Merge(m, src)
+}
+func (m *EcosystemAcceptance) XXX_Size() int {
+	return m.Size()
+}
+func (m *EcosystemAcceptance) XXX_DiscardUnknown() {
+	xxx_messageInfo_EcosystemAcceptance.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EcosystemAcceptance proto.InternalMessageInfo
+
+func (m *EcosystemAcceptance) GetEcosystemId() uint64 {
+	if m != nil {
+		return m.EcosystemId
+	}
+	return 0
+}
+
+func (m *EcosystemAcceptance) GetCorporationId() uint64 {
+	if m != nil {
+		return m.CorporationId
+	}
+	return 0
+}
+
+func (m *EcosystemAcceptance) GetVersion() uint32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+func (m *EcosystemAcceptance) GetAccepted() time.Time {
+	if m != nil {
+		return m.Accepted
+	}
+	return time.Time{}
+}
+
+// NetworkGovernance is the network governance group of GlobalVariables the
+// module maintains.
+type NetworkGovernance struct {
+	// network_governance_framework_versions lists the network framework versions
+	// in version order.
+	NetworkGovernanceFrameworkVersions []uint64 `protobuf:"varint,1,rep,packed,name=network_governance_framework_versions,json=networkGovernanceFrameworkVersions,proto3" json:"network_governance_framework_versions,omitempty"`
+	// ngf_acceptance_deadline ends the grace period of the last activation.
+	NgfAcceptanceDeadline *time.Time `protobuf:"bytes,2,opt,name=ngf_acceptance_deadline,json=ngfAcceptanceDeadline,proto3,stdtime" json:"ngf_acceptance_deadline,omitempty"`
+}
+
+func (m *NetworkGovernance) Reset()         { *m = NetworkGovernance{} }
+func (m *NetworkGovernance) String() string { return proto.CompactTextString(m) }
+func (*NetworkGovernance) ProtoMessage()    {}
+func (*NetworkGovernance) Descriptor() ([]byte, []int) {
+	return fileDescriptor_79a6e591b2dc9054, []int{4}
+}
+func (m *NetworkGovernance) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *NetworkGovernance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_NetworkGovernance.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *NetworkGovernance) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NetworkGovernance.Merge(m, src)
+}
+func (m *NetworkGovernance) XXX_Size() int {
+	return m.Size()
+}
+func (m *NetworkGovernance) XXX_DiscardUnknown() {
+	xxx_messageInfo_NetworkGovernance.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NetworkGovernance proto.InternalMessageInfo
+
+func (m *NetworkGovernance) GetNetworkGovernanceFrameworkVersions() []uint64 {
+	if m != nil {
+		return m.NetworkGovernanceFrameworkVersions
+	}
+	return nil
+}
+
+func (m *NetworkGovernance) GetNgfAcceptanceDeadline() *time.Time {
+	if m != nil {
+		return m.NgfAcceptanceDeadline
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*GovernanceFrameworkVersion)(nil), "verana.gf.v1.GovernanceFrameworkVersion")
 	proto.RegisterType((*GovernanceFrameworkDocument)(nil), "verana.gf.v1.GovernanceFrameworkDocument")
 	proto.RegisterType((*GovernanceFrameworkVersionWithDocs)(nil), "verana.gf.v1.GovernanceFrameworkVersionWithDocs")
+	proto.RegisterType((*EcosystemAcceptance)(nil), "verana.gf.v1.EcosystemAcceptance")
+	proto.RegisterType((*NetworkGovernance)(nil), "verana.gf.v1.NetworkGovernance")
 }
 
 func init() { proto.RegisterFile("verana/gf/v1/types.proto", fileDescriptor_79a6e591b2dc9054) }
 
 var fileDescriptor_79a6e591b2dc9054 = []byte{
-	// 502 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x54, 0xcd, 0x6e, 0x13, 0x31,
-	0x10, 0x8e, 0x93, 0x36, 0xe9, 0x3a, 0x49, 0x05, 0x2b, 0x90, 0x96, 0x20, 0x36, 0x21, 0x12, 0x52,
-	0x40, 0xea, 0xae, 0x5a, 0xde, 0x20, 0x54, 0x44, 0xbd, 0x6e, 0x11, 0x48, 0x5c, 0x22, 0xc7, 0xeb,
-	0xb8, 0x16, 0x59, 0x4f, 0x64, 0x3b, 0x0b, 0x7d, 0x8b, 0x3e, 0x01, 0x67, 0x8e, 0x3c, 0x46, 0x8e,
-	0x3d, 0x21, 0x4e, 0x05, 0x25, 0x07, 0xde, 0x81, 0x13, 0x5a, 0x3b, 0xdb, 0x16, 0xf1, 0x27, 0x71,
-	0xee, 0x25, 0x9a, 0xef, 0x9b, 0x99, 0xcc, 0x37, 0x9f, 0xbd, 0xc6, 0x41, 0xce, 0x14, 0x91, 0x24,
-	0xe6, 0xd3, 0x38, 0xdf, 0x8f, 0xcd, 0xe9, 0x9c, 0xe9, 0x68, 0xae, 0xc0, 0x80, 0xdf, 0x72, 0x99,
-	0x88, 0x4f, 0xa3, 0x7c, 0xbf, 0x73, 0x9b, 0x64, 0x42, 0x42, 0x6c, 0x7f, 0x5d, 0x41, 0xe7, 0x1e,
-	0x05, 0x9d, 0x81, 0x1e, 0x5b, 0x14, 0x3b, 0xb0, 0x49, 0xdd, 0xe1, 0xc0, 0xc1, 0xf1, 0x45, 0xb4,
-	0x61, 0xbb, 0x1c, 0x80, 0xcf, 0x58, 0x6c, 0xd1, 0x64, 0x31, 0x8d, 0x8d, 0xc8, 0x98, 0x36, 0x24,
-	0x9b, 0xbb, 0x82, 0xfe, 0xfb, 0x2a, 0xee, 0x8c, 0x20, 0x67, 0x4a, 0x12, 0x49, 0xd9, 0x73, 0x45,
-	0x32, 0xf6, 0x16, 0xd4, 0x9b, 0x97, 0x4c, 0x69, 0x01, 0xd2, 0xdf, 0xc5, 0x55, 0x91, 0x06, 0xa8,
-	0x87, 0x06, 0x5b, 0x49, 0x55, 0xa4, 0xfe, 0x43, 0xdc, 0x62, 0x14, 0xf4, 0xa9, 0x36, 0x2c, 0x1b,
-	0x8b, 0x34, 0xa8, 0xda, 0x4c, 0xf3, 0x92, 0x3b, 0x4a, 0xfd, 0x47, 0x78, 0x97, 0x82, 0x9a, 0x83,
-	0x22, 0x46, 0x80, 0x2c, 0x8a, 0x6a, 0xb6, 0xa8, 0x7d, 0x8d, 0x3d, 0x4a, 0xfd, 0x67, 0xb8, 0x41,
-	0x15, 0x23, 0x86, 0xa5, 0xc1, 0x56, 0x0f, 0x0d, 0x9a, 0x07, 0x9d, 0xc8, 0x69, 0x8d, 0x4a, 0xad,
-	0xd1, 0x8b, 0x52, 0xeb, 0xb0, 0xbd, 0xbc, 0xe8, 0x56, 0xce, 0xbe, 0x74, 0xd1, 0x87, 0x6f, 0x1f,
-	0x9f, 0xa0, 0xa4, 0xec, 0xf4, 0x03, 0xdc, 0xc8, 0x9d, 0xd2, 0x60, 0xbb, 0x87, 0x06, 0xed, 0xa4,
-	0x84, 0xfe, 0x08, 0xb7, 0x08, 0x35, 0x22, 0x67, 0x63, 0x2d, 0x24, 0x65, 0x41, 0xfd, 0x9f, 0x33,
-	0x76, 0x96, 0x17, 0x5d, 0x54, 0xcc, 0x48, 0x9a, 0xae, 0xf3, 0xb8, 0x68, 0xec, 0x7f, 0x42, 0xf8,
-	0xfe, 0x6f, 0x0c, 0x3a, 0x04, 0xba, 0xc8, 0x98, 0x34, 0xbf, 0x38, 0x74, 0x17, 0xd7, 0xf9, 0x34,
-	0xbf, 0xf2, 0x66, 0x9b, 0x4f, 0xf3, 0x9f, 0xd7, 0xad, 0xfd, 0xf7, 0xba, 0x1d, 0xbc, 0x33, 0x23,
-	0x92, 0x2f, 0x08, 0x67, 0xd6, 0x34, 0x2f, 0xb9, 0xc4, 0xfe, 0x2d, 0x5c, 0x5b, 0xa8, 0x99, 0xb5,
-	0xc1, 0x4b, 0x8a, 0xd0, 0x7f, 0x80, 0x71, 0x2a, 0x38, 0xd3, 0x66, 0xac, 0x95, 0xb0, 0x06, 0x78,
-	0x89, 0xe7, 0x98, 0x63, 0x25, 0xfa, 0xdf, 0xab, 0xb8, 0xff, 0xe7, 0x93, 0x7f, 0x25, 0xcc, 0xc9,
-	0x21, 0x50, 0x7d, 0x73, 0x03, 0xfc, 0x04, 0x7b, 0xe9, 0xe6, 0xb4, 0x75, 0xd0, 0xe8, 0xd5, 0x06,
-	0xcd, 0x83, 0xc7, 0xd1, 0xf5, 0x2f, 0x35, 0xfa, 0xcb, 0xfd, 0x18, 0x7a, 0x85, 0x70, 0x27, 0xfa,
-	0xea, 0x6f, 0x86, 0xa3, 0xe5, 0x2a, 0x44, 0xe7, 0xab, 0x10, 0x7d, 0x5d, 0x85, 0xe8, 0x6c, 0x1d,
-	0x56, 0xce, 0xd7, 0x61, 0xe5, 0xf3, 0x3a, 0xac, 0xbc, 0xde, 0xe3, 0xc2, 0x9c, 0x2c, 0x26, 0x11,
-	0x85, 0x2c, 0x76, 0x43, 0xf6, 0x66, 0x64, 0xa2, 0xcb, 0x58, 0x42, 0xca, 0xe2, 0x77, 0xc5, 0xdb,
-	0x61, 0x1f, 0x8e, 0x49, 0xdd, 0xee, 0xf1, 0xf4, 0x47, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5e, 0x08,
-	0x1d, 0xdb, 0x55, 0x04, 0x00, 0x00,
+	// 615 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x94, 0xcf, 0x6e, 0x13, 0x3f,
+	0x10, 0xc7, 0xe3, 0x24, 0xfd, 0x13, 0xa7, 0xad, 0x7e, 0xf5, 0x8f, 0x8a, 0x25, 0x88, 0x24, 0x44,
+	0xaa, 0x14, 0x90, 0xba, 0xab, 0x96, 0x27, 0xa0, 0xb4, 0x54, 0xbd, 0x20, 0xb1, 0x45, 0x80, 0xb8,
+	0xac, 0x1c, 0xaf, 0xd7, 0xb5, 0xc8, 0xda, 0x91, 0xed, 0x2c, 0xf4, 0x2d, 0xfa, 0x04, 0x9c, 0x39,
+	0xf2, 0x08, 0x1c, 0x7b, 0xec, 0x09, 0x71, 0x2a, 0xa8, 0x3d, 0xf0, 0x0e, 0x9c, 0xd0, 0xda, 0xd9,
+	0x24, 0xfd, 0x43, 0x41, 0x3d, 0x73, 0x59, 0x79, 0xc6, 0x33, 0x9e, 0xef, 0x7c, 0xc6, 0x6b, 0xe8,
+	0x65, 0x54, 0x61, 0x81, 0x03, 0x96, 0x04, 0xd9, 0x7a, 0x60, 0x0e, 0x06, 0x54, 0xfb, 0x03, 0x25,
+	0x8d, 0x44, 0x0b, 0x6e, 0xc7, 0x67, 0x89, 0x9f, 0xad, 0x37, 0x96, 0x71, 0xca, 0x85, 0x0c, 0xec,
+	0xd7, 0x05, 0x34, 0xee, 0x10, 0xa9, 0x53, 0xa9, 0x23, 0x6b, 0x05, 0xce, 0x18, 0x6d, 0xdd, 0x62,
+	0x92, 0x49, 0xe7, 0xcf, 0x57, 0x23, 0x6f, 0x8b, 0x49, 0xc9, 0xfa, 0x34, 0xb0, 0x56, 0x6f, 0x98,
+	0x04, 0x86, 0xa7, 0x54, 0x1b, 0x9c, 0x0e, 0x5c, 0x40, 0xe7, 0x43, 0x19, 0x36, 0x76, 0x64, 0x46,
+	0x95, 0xc0, 0x82, 0xd0, 0xa7, 0x0a, 0xa7, 0xf4, 0x9d, 0x54, 0x6f, 0x5f, 0x52, 0xa5, 0xb9, 0x14,
+	0x68, 0x09, 0x96, 0x79, 0xec, 0x81, 0x36, 0xe8, 0x56, 0xc3, 0x32, 0x8f, 0xd1, 0x7d, 0xb8, 0x40,
+	0x89, 0xd4, 0x07, 0xda, 0xd0, 0x34, 0xe2, 0xb1, 0x57, 0xb6, 0x3b, 0xf5, 0xb1, 0x6f, 0x37, 0x46,
+	0xab, 0x70, 0x89, 0x48, 0x35, 0x90, 0x0a, 0x1b, 0x2e, 0x45, 0x1e, 0x54, 0xb1, 0x41, 0x8b, 0x53,
+	0xde, 0xdd, 0x18, 0x3d, 0x81, 0x73, 0x44, 0x51, 0x6c, 0x68, 0xec, 0x55, 0xdb, 0xa0, 0x5b, 0xdf,
+	0x68, 0xf8, 0x4e, 0xab, 0x5f, 0x68, 0xf5, 0x5f, 0x14, 0x5a, 0x37, 0x17, 0x8f, 0x4e, 0x5a, 0xa5,
+	0xc3, 0x6f, 0x2d, 0xf0, 0xf1, 0xc7, 0xa7, 0x87, 0x20, 0x2c, 0x32, 0x91, 0x07, 0xe7, 0x32, 0xa7,
+	0xd4, 0x9b, 0x69, 0x83, 0xee, 0x62, 0x58, 0x98, 0x68, 0x07, 0x2e, 0x60, 0x62, 0x78, 0x46, 0x23,
+	0xcd, 0x05, 0xa1, 0xde, 0xec, 0x1f, 0x6b, 0xcc, 0x1f, 0x9d, 0xb4, 0x40, 0x5e, 0x23, 0xac, 0xbb,
+	0xcc, 0xbd, 0x3c, 0xb1, 0xf3, 0x05, 0xc0, 0xbb, 0x57, 0x00, 0xda, 0x92, 0x64, 0x98, 0x52, 0x61,
+	0x2e, 0x11, 0x5a, 0x81, 0xb3, 0x2c, 0xc9, 0x26, 0x6c, 0x66, 0x58, 0x92, 0x9d, 0x6f, 0xb7, 0x72,
+	0xe3, 0x76, 0x1b, 0x70, 0xbe, 0x8f, 0x05, 0x1b, 0x62, 0x46, 0x2d, 0xb4, 0x5a, 0x38, 0xb6, 0xd1,
+	0x7f, 0xb0, 0x32, 0x54, 0x7d, 0x8b, 0xa1, 0x16, 0xe6, 0x4b, 0x74, 0x0f, 0xc2, 0x98, 0x33, 0xaa,
+	0x4d, 0xa4, 0x15, 0xb7, 0x00, 0x6a, 0x61, 0xcd, 0x79, 0xf6, 0x14, 0xef, 0xfc, 0x2c, 0xc3, 0xce,
+	0xef, 0x27, 0xff, 0x8a, 0x9b, 0xfd, 0x2d, 0x49, 0xf4, 0xbf, 0x1b, 0x80, 0x42, 0x58, 0x8b, 0x47,
+	0xd3, 0xd6, 0xde, 0x5c, 0xbb, 0xd2, 0xad, 0x6f, 0x3c, 0xf0, 0xa7, 0xff, 0x54, 0xff, 0x9a, 0xfb,
+	0xb1, 0x59, 0xcb, 0x85, 0x3b, 0xd1, 0x93, 0x63, 0x3a, 0x9f, 0x01, 0xfc, 0x7f, 0xbb, 0x40, 0xf6,
+	0x98, 0x10, 0x3a, 0x30, 0x79, 0xfa, 0x25, 0xba, 0xe0, 0x6f, 0xe8, 0x96, 0xaf, 0xa2, 0x3b, 0x05,
+	0xa6, 0x72, 0x1e, 0xcc, 0x36, 0x9c, 0xc7, 0xb6, 0xe2, 0x4d, 0xc0, 0x8f, 0x53, 0xf3, 0x16, 0x96,
+	0x9f, 0x51, 0x93, 0x37, 0x3b, 0xe9, 0x1f, 0x3d, 0x87, 0xab, 0xc2, 0x39, 0x23, 0x36, 0xf6, 0x46,
+	0x49, 0x81, 0x25, 0x1a, 0x89, 0xd0, 0x1e, 0x68, 0x57, 0xba, 0xd5, 0xb0, 0x23, 0x2e, 0x9e, 0x70,
+	0xf1, 0x22, 0x6a, 0xf4, 0x1a, 0xde, 0x16, 0x2c, 0x89, 0xf0, 0x98, 0x52, 0x14, 0x53, 0x1c, 0xf7,
+	0xb9, 0xa0, 0xb6, 0xf3, 0xeb, 0xe5, 0x57, 0xed, 0x3c, 0x57, 0x04, 0x4b, 0x26, 0x94, 0xb7, 0x46,
+	0xe9, 0x9b, 0x3b, 0x47, 0xa7, 0x4d, 0x70, 0x7c, 0xda, 0x04, 0xdf, 0x4f, 0x9b, 0xe0, 0xf0, 0xac,
+	0x59, 0x3a, 0x3e, 0x6b, 0x96, 0xbe, 0x9e, 0x35, 0x4b, 0x6f, 0xd6, 0x18, 0x37, 0xfb, 0xc3, 0x9e,
+	0x4f, 0x64, 0x1a, 0xb8, 0x51, 0xaf, 0xf5, 0x71, 0x4f, 0x17, 0x6b, 0x21, 0x63, 0x1a, 0xbc, 0xcf,
+	0x5f, 0x70, 0xfb, 0x7c, 0xf7, 0x66, 0x6d, 0xe5, 0x47, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x0b,
+	0xc1, 0x24, 0xab, 0xdb, 0x05, 0x00, 0x00,
 }
 
 func (m *GovernanceFrameworkVersion) Marshal() (dAtA []byte, err error) {
@@ -538,6 +674,103 @@ func (m *GovernanceFrameworkVersionWithDocs) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
+func (m *EcosystemAcceptance) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EcosystemAcceptance) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EcosystemAcceptance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.Accepted, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Accepted):])
+	if err6 != nil {
+		return 0, err6
+	}
+	i -= n6
+	i = encodeVarintTypes(dAtA, i, uint64(n6))
+	i--
+	dAtA[i] = 0x22
+	if m.Version != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.Version))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.CorporationId != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.CorporationId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.EcosystemId != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.EcosystemId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *NetworkGovernance) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *NetworkGovernance) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *NetworkGovernance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.NgfAcceptanceDeadline != nil {
+		n7, err7 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(*m.NgfAcceptanceDeadline, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.NgfAcceptanceDeadline):])
+		if err7 != nil {
+			return 0, err7
+		}
+		i -= n7
+		i = encodeVarintTypes(dAtA, i, uint64(n7))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.NetworkGovernanceFrameworkVersions) > 0 {
+		dAtA9 := make([]byte, len(m.NetworkGovernanceFrameworkVersions)*10)
+		var j8 int
+		for _, num := range m.NetworkGovernanceFrameworkVersions {
+			for num >= 1<<7 {
+				dAtA9[j8] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j8++
+			}
+			dAtA9[j8] = uint8(num)
+			j8++
+		}
+		i -= j8
+		copy(dAtA[i:], dAtA9[:j8])
+		i = encodeVarintTypes(dAtA, i, uint64(j8))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTypes(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTypes(v)
 	base := offset
@@ -634,6 +867,46 @@ func (m *GovernanceFrameworkVersionWithDocs) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovTypes(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *EcosystemAcceptance) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.EcosystemId != 0 {
+		n += 1 + sovTypes(uint64(m.EcosystemId))
+	}
+	if m.CorporationId != 0 {
+		n += 1 + sovTypes(uint64(m.CorporationId))
+	}
+	if m.Version != 0 {
+		n += 1 + sovTypes(uint64(m.Version))
+	}
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.Accepted)
+	n += 1 + l + sovTypes(uint64(l))
+	return n
+}
+
+func (m *NetworkGovernance) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.NetworkGovernanceFrameworkVersions) > 0 {
+		l = 0
+		for _, e := range m.NetworkGovernanceFrameworkVersions {
+			l += sovTypes(uint64(e))
+		}
+		n += 1 + sovTypes(uint64(l)) + l
+	}
+	if m.NgfAcceptanceDeadline != nil {
+		l = github_com_cosmos_gogoproto_types.SizeOfStdTime(*m.NgfAcceptanceDeadline)
+		n += 1 + l + sovTypes(uint64(l))
 	}
 	return n
 }
@@ -1261,6 +1534,308 @@ func (m *GovernanceFrameworkVersionWithDocs) Unmarshal(dAtA []byte) error {
 			}
 			m.Documents = append(m.Documents, GovernanceFrameworkDocument{})
 			if err := m.Documents[len(m.Documents)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EcosystemAcceptance) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EcosystemAcceptance: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EcosystemAcceptance: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EcosystemId", wireType)
+			}
+			m.EcosystemId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.EcosystemId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CorporationId", wireType)
+			}
+			m.CorporationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CorporationId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
+			}
+			m.Version = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Version |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Accepted", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.Accepted, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *NetworkGovernance) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: NetworkGovernance: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: NetworkGovernance: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowTypes
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.NetworkGovernanceFrameworkVersions = append(m.NetworkGovernanceFrameworkVersions, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowTypes
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthTypes
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthTypes
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.NetworkGovernanceFrameworkVersions) == 0 {
+					m.NetworkGovernanceFrameworkVersions = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowTypes
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.NetworkGovernanceFrameworkVersions = append(m.NetworkGovernanceFrameworkVersions, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field NetworkGovernanceFrameworkVersions", wireType)
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NgfAcceptanceDeadline", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.NgfAcceptanceDeadline == nil {
+				m.NgfAcceptanceDeadline = new(time.Time)
+			}
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(m.NgfAcceptanceDeadline, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

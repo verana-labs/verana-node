@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -40,6 +41,15 @@ func (a CoAsGFCorporationKeeper) ResolveSigner(ctx context.Context, corporation,
 	return gfCorporationView(&co), group, nil
 }
 
+// GetCorporationByPolicyAddress backs AUTHZ-CHECK-5 without GF-CHECK-1.
+func (a CoAsGFCorporationKeeper) GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (gftypes.CorporationView, error) {
+	co, err := a.k.GetCorporationByPolicyAddress(ctx, policyAddress)
+	if err != nil {
+		return gftypes.CorporationView{}, err
+	}
+	return gfCorporationView(&co), nil
+}
+
 func (a CoAsGFCorporationKeeper) GetByID(ctx context.Context, corporationID uint64) (gftypes.CorporationView, bool) {
 	co, err := a.k.Corporation.Get(ctx, corporationID)
 	if err != nil {
@@ -50,10 +60,12 @@ func (a CoAsGFCorporationKeeper) GetByID(ctx context.Context, corporationID uint
 
 func gfCorporationView(co *types.Corporation) gftypes.CorporationView {
 	return gftypes.CorporationView{
-		Id:            co.Id,
-		PolicyAddress: co.PolicyAddress,
-		Language:      co.Language,
-		ActiveVersion: co.ActiveVersion,
+		Id:                 co.Id,
+		PolicyAddress:      co.PolicyAddress,
+		Language:           co.Language,
+		ActiveVersion:      co.ActiveVersion,
+		AcceptedNgfVersion: co.AcceptedNgfVersion,
+		AcceptanceDeadline: co.AcceptanceDeadline,
 	}
 }
 
@@ -100,12 +112,23 @@ func (a CoAsDeCorporationKeeper) ResolveCorporationByID(ctx context.Context, id 
 }
 
 // SetActiveVersion is called by MOD-GF MSG-2 (IncreaseActiveGovernanceFrameworkVersion).
-func (a CoAsGFCorporationKeeper) SetActiveVersion(ctx context.Context, corporationID uint64, newVersion uint32) error {
+func (a CoAsGFCorporationKeeper) SetActiveVersion(ctx context.Context, corporationID uint64, newVersion uint32, acceptanceDeadline time.Time) error {
 	co, err := a.k.Corporation.Get(ctx, corporationID)
 	if err != nil {
 		return fmt.Errorf("corporation %d not found: %w", corporationID, err)
 	}
 	co.ActiveVersion = newVersion
+	co.AcceptanceDeadline = &acceptanceDeadline
 	co.Modified = sdk.UnwrapSDKContext(ctx).BlockTime()
+	return a.k.Corporation.Set(ctx, co.Id, co)
+}
+
+// SetAcceptedNgfVersion is called by MOD-GF MSG-3 (AcceptGovernanceFrameworkVersion).
+func (a CoAsGFCorporationKeeper) SetAcceptedNgfVersion(ctx context.Context, corporationID uint64, version uint32) error {
+	co, err := a.k.Corporation.Get(ctx, corporationID)
+	if err != nil {
+		return fmt.Errorf("corporation %d not found: %w", corporationID, err)
+	}
+	co.AcceptedNgfVersion = version
 	return a.k.Corporation.Set(ctx, co.Id, co)
 }

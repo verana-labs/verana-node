@@ -105,19 +105,20 @@ func (qs queryServer) Params(ctx context.Context, _ *types.QueryParamsRequest) (
 // buildWithVersions assembles the EcosystemWithVersions response shape.
 // Nested GFV+GFD come from x/gf via gfKeeper.ListVersionsByEcosystem.
 func (qs queryServer) buildWithVersions(ctx context.Context, ec types.Ecosystem, activeOnly bool, preferredLang string) (*types.EcosystemWithVersions, error) {
-	versions, err := qs.k.gfKeeper.ListVersionsByEcosystem(ctx, ec.Id, ec.ActiveVersion, activeOnly, preferredLang)
+	versions, err := qs.k.gfKeeper.ListVersionsByEcosystem(ctx, ec.Id, ec.Language, ec.ActiveVersion, activeOnly, preferredLang)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &types.EcosystemWithVersions{
-		Id:            ec.Id,
-		Did:           ec.Did,
-		CorporationId: ec.CorporationId,
-		Created:       ec.Created,
-		Modified:      ec.Modified,
-		Archived:      ec.Archived,
-		Language:      ec.Language,
-		ActiveVersion: ec.ActiveVersion,
-		Versions:      versions,
+		Id:                 ec.Id,
+		Did:                ec.Did,
+		CorporationId:      ec.CorporationId,
+		Created:            ec.Created,
+		Modified:           ec.Modified,
+		Archived:           ec.Archived,
+		Language:           ec.Language,
+		ActiveVersion:      ec.ActiveVersion,
+		Versions:           versions,
+		AcceptanceDeadline: ec.AcceptanceDeadline,
 	}, nil
 }

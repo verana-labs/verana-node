@@ -26,7 +26,7 @@ type StakingKeeper interface {
 
 // CorporationKeeper resolves a policy address through the AUTHZ-CHECK-5 index.
 type CorporationKeeper interface {
-	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (cotypes.Corporation, error)
+	GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (cotypes.Corporation, error)
 }
 
 type GroupKeeper interface {

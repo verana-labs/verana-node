@@ -38,7 +38,7 @@ func TestCreateInitialGFVersionForCorporation_SetsActiveSince(t *testing.T) {
 	require.Equal(t, 1, count)
 
 	// ListVersionsByCorporation propagates the same value to the response shape.
-	versions, err := k.ListVersionsByCorporation(ctx, 42, 1, false, "")
+	versions, err := k.ListVersionsByCorporation(ctx, 42, "en", 1, false, "")
 	require.NoError(t, err)
 	require.Len(t, versions, 1)
 	require.NotNil(t, versions[0].ActiveSince)
@@ -93,7 +93,7 @@ func TestCreateInitialGFVersionForEcosystem_SetsActiveSince(t *testing.T) {
 	require.Equal(t, 1, count)
 
 	// ListVersionsByEcosystem propagates the same value to the response shape.
-	versions, err := k.ListVersionsByEcosystem(ctx, 7, 1, false, "")
+	versions, err := k.ListVersionsByEcosystem(ctx, 7, "en", 1, false, "")
 	require.NoError(t, err)
 	require.Len(t, versions, 1)
 	require.NotNil(t, versions[0].ActiveSince)

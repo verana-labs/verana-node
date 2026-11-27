@@ -112,6 +112,8 @@ func TestMsgTypeURL(t *testing.T) {
 		types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION:                 {"/verana.de.v1.MsgGrantDelegateAuthorization"},
 		types.MsgType_MSG_TYPE_REVOKE_DELEGATE_AUTHORIZATION:                {"/verana.de.v1.MsgRevokeDelegateAuthorization"},
 		types.MsgType_MSG_TYPE_STORE_DIGEST:                                 {"/verana.di.v1.MsgStoreDigest"},
+		types.MsgType_MSG_TYPE_ACCEPT_GOVERNANCE_FRAMEWORK_VERSION:          {"/verana.gf.v1.MsgAcceptGovernanceFrameworkVersion"},
+		types.MsgType_MSG_TYPE_ACCEPT_CORPORATION_GOVERNANCE_FRAMEWORK:      {"/verana.gf.v1.MsgAcceptCorporationGovernanceFramework"},
 		types.MsgType_MSG_TYPE_RECORD_CREDENTIAL_PRESENTATION:               {"/verana.pp.v1.MsgCreateOrUpdateParticipantSession"},
 	}
 	for n := range types.MsgType_name {
@@ -155,7 +157,8 @@ func TestValidateMsgTypes(t *testing.T) {
 		{"sponsorship ok", msgTypes(2, 10, 11, 17, 21, 32), types.SponsorshipMsgTypes, true},
 		{"sponsorship other value", msgTypes(12), types.SponsorshipMsgTypes, false},
 		{"permitted but no message yet", msgTypes(25), types.VerifiableServiceMsgTypes, false},
-		{"cgf acceptance has no message yet", msgTypes(31), types.FeeGrantMsgTypes, false},
+		{"cgf acceptance in a fee grant", msgTypes(31), types.FeeGrantMsgTypes, true},
+		{"gf acceptance delegable", msgTypes(30), types.DelegateAuthorizationMsgTypes, true},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

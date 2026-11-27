@@ -9,4 +9,6 @@ const (
 	AttributeKeyPolicyAddress = "policy_address"
 	AttributeKeyDID           = "did"
 	AttributeKeyAuthority     = "authority"
+
+	AttributeKeyAcceptedNgfVersion = "accepted_ngf_version"
 )

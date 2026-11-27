@@ -1,19 +1,17 @@
 package types
 
 const (
-	EventTypeAddGFDocument    = "add_gf_document"
-	EventTypeIncreaseGFActive = "increase_active_gf_version"
-	EventTypeUpdateParams     = "update_params"
+	EventTypeAddGovernanceFrameworkDocument           = "add_governance_framework_document"
+	EventTypeIncreaseActiveGovernanceFrameworkVersion = "increase_active_governance_framework_version"
+	EventTypeAcceptGovernanceFrameworkVersion         = "accept_governance_framework_version"
+	EventTypeAcceptCorporationGovernanceFramework     = "accept_corporation_governance_framework"
+	EventTypeUpdateModuleParameters                   = "update_module_parameters"
 
-	AttributeKeyCorporation   = "corporation"
-	AttributeKeyCorporationID = "corporation_id"
-	AttributeKeyEcosystemID   = "ecosystem_id"
-	AttributeKeyGFVersionID   = "gfv_id"
-	AttributeKeyGFDocID       = "gfd_id"
-	AttributeKeyVersion       = "version"
-	AttributeKeyLanguage      = "language"
-	AttributeKeySigner        = "signer"
-	AttributeKeyDocURL        = "doc_url"
-	AttributeKeyDocDigestSRI  = "doc_digest_sri"
-	AttributeKeyActiveSince   = "active_since"
+	AttributeKeyGFVersionID        = "gfv_id"
+	AttributeKeyGFDocID            = "gfd_id"
+	AttributeKeyVersion            = "version"
+	AttributeKeyNetwork            = "network"
+	AttributeKeySigner             = "signer"
+	AttributeKeyActiveSince        = "active_since"
+	AttributeKeyAcceptanceDeadline = "acceptance_deadline"
 )

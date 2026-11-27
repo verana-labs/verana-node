@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"errors"
+	"time"
 
 	gftypes "github.com/verana-labs/verana-node/x/gf/types"
 )
@@ -26,11 +27,19 @@ func (StubCorporationKeeper) ResolveSigner(_ context.Context, corporation, _ str
 	return gftypes.CorporationView{}, false, errors.New("corporation keeper not wired: cannot resolve " + corporation)
 }
 
+func (StubCorporationKeeper) GetCorporationByPolicyAddress(_ context.Context, policyAddress string) (gftypes.CorporationView, error) {
+	return gftypes.CorporationView{}, errors.New("corporation keeper not wired: cannot resolve " + policyAddress)
+}
+
 func (StubCorporationKeeper) GetByID(_ context.Context, _ uint64) (gftypes.CorporationView, bool) {
 	return gftypes.CorporationView{}, false
 }
 
-func (StubCorporationKeeper) SetActiveVersion(_ context.Context, _ uint64, _ uint32) error {
+func (StubCorporationKeeper) SetActiveVersion(_ context.Context, _ uint64, _ uint32, _ time.Time) error {
+	return errors.New("corporation keeper not wired")
+}
+
+func (StubCorporationKeeper) SetAcceptedNgfVersion(_ context.Context, _ uint64, _ uint32) error {
 	return errors.New("corporation keeper not wired")
 }
 
@@ -53,6 +62,6 @@ func (StubEcosystemKeeper) GetEcosystemView(_ context.Context, _ uint64) (gftype
 	return gftypes.EcosystemView{}, false
 }
 
-func (StubEcosystemKeeper) SetEcosystemActiveVersion(_ context.Context, _ uint64, _ uint32) error {
+func (StubEcosystemKeeper) SetEcosystemActiveVersion(_ context.Context, _ uint64, _ uint32, _ time.Time) error {
 	return errors.New("ecosystem keeper not wired")
 }

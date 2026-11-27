@@ -88,6 +88,7 @@ type mockGF struct {
 	listCalls int
 	listArgs  struct {
 		ecID          uint64
+		language      string
 		activeVersion uint32
 		activeOnly    bool
 		preferredLang string
@@ -103,9 +104,10 @@ func (m *mockGF) CreateInitialGFVersionForEcosystem(_ context.Context, ecID uint
 	return m.createErr
 }
 
-func (m *mockGF) ListVersionsByEcosystem(_ context.Context, ecID uint64, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
+func (m *mockGF) ListVersionsByEcosystem(_ context.Context, ecID uint64, language string, activeVersion uint32, activeOnly bool, preferredLang string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
 	m.listCalls++
 	m.listArgs.ecID = ecID
+	m.listArgs.language = language
 	m.listArgs.activeVersion = activeVersion
 	m.listArgs.activeOnly = activeOnly
 	m.listArgs.preferredLang = preferredLang

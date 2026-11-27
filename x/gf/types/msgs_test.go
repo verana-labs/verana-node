@@ -120,8 +120,9 @@ func TestMsgAddGovernanceFrameworkDocument_ValidateBasic(t *testing.T) {
 
 func TestMsgIncreaseActiveGovernanceFrameworkVersion_ValidateBasic(t *testing.T) {
 	valid := types.MsgIncreaseActiveGovernanceFrameworkVersion{
-		Corporation: tCorp,
-		Signer:      tOp,
+		Corporation:     tCorp,
+		Signer:          tOp,
+		AcceptanceGrace: types.DefaultGfAcceptanceGraceMin,
 	}
 
 	t.Run("happy path (corporation-targeted)", func(t *testing.T) {
@@ -143,9 +144,14 @@ func TestMsgIncreaseActiveGovernanceFrameworkVersion_ValidateBasic(t *testing.T)
 		m.Signer = ""
 		require.Error(t, m.ValidateBasic())
 	})
+	t.Run("missing acceptance_grace", func(t *testing.T) {
+		m := valid
+		m.AcceptanceGrace = 0
+		require.ErrorIs(t, m.ValidateBasic(), types.ErrAcceptanceGraceTooShort)
+	})
 
 	// [MOD-GF-MSG-2-1] network path.
-	network := types.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: tAuth, Network: true}
+	network := types.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: tAuth, Network: true, AcceptanceGrace: types.DefaultGfAcceptanceGraceMin}
 	t.Run("network path", func(t *testing.T) {
 		m := network
 		require.NoError(t, m.ValidateBasic())

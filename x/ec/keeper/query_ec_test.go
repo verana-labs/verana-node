@@ -22,7 +22,7 @@ func TestGetEcosystem_Happy(t *testing.T) {
 	_, err := ms.CreateEcosystem(ctx, validCreateMsg(t))
 	require.NoError(t, err)
 
-	resp, err := qs.GetEcosystem(ctx, &types.QueryGetEcosystemRequest{Id: 1, ActiveGfOnly: true, PreferredLanguage: "en"})
+	resp, err := qs.GetEcosystem(ctx, &types.QueryGetEcosystemRequest{Id: 1, ActiveGfOnly: true, PreferredLanguage: "fr"})
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), resp.Ecosystem.Id)
 	require.Equal(t, "did:example:ec1", resp.Ecosystem.Did)
@@ -34,7 +34,16 @@ func TestGetEcosystem_Happy(t *testing.T) {
 	require.Equal(t, uint64(1), gf.listArgs.ecID)
 	require.Equal(t, uint32(1), gf.listArgs.activeVersion)
 	require.True(t, gf.listArgs.activeOnly)
-	require.Equal(t, "en", gf.listArgs.preferredLang)
+	require.Equal(t, "fr", gf.listArgs.preferredLang)
+	require.Equal(t, "en", gf.listArgs.language)
+	require.Nil(t, resp.Ecosystem.AcceptanceDeadline)
+
+	// An activation's deadline is returned.
+	deadline := time.Date(2026, 7, 1, 0, 0, 0, 0, time.UTC)
+	require.NoError(t, keeper.NewEcAsGFEcosystemKeeper(k).SetEcosystemActiveVersion(ctx, 1, 2, deadline))
+	resp, err = qs.GetEcosystem(ctx, &types.QueryGetEcosystemRequest{Id: 1})
+	require.NoError(t, err)
+	require.Equal(t, deadline, *resp.Ecosystem.AcceptanceDeadline)
 }
 
 func TestGetEcosystem_NotFound(t *testing.T) {

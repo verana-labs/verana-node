@@ -86,7 +86,7 @@ func (m *mockStaking) ValidatorAddressCodec() address.Codec {
 
 type mockCorporations struct{ policies map[string]bool }
 
-func (c *mockCorporations) ResolveCorporationByPolicyAddress(_ context.Context, addr string) (cotypes.Corporation, error) {
+func (c *mockCorporations) GetCorporationByPolicyAddress(_ context.Context, addr string) (cotypes.Corporation, error) {
 	if !c.policies[addr] {
 		return cotypes.Corporation{}, cotypes.ErrCorporationNotRegistered
 	}

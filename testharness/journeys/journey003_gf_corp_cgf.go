@@ -13,7 +13,7 @@ import (
 // RunCorpCGFJourney implements Journey 003: Corp CGF lifecycle (AddGFD + IncreaseGFV + GF queries).
 // ecosystemID=0 targets the corporation's own CGF (Corp A from Journey 001).
 // [MOD-GF-MSG-1] AddGovernanceFrameworkDocument, [MOD-GF-MSG-2] IncreaseActiveGovernanceFrameworkVersion,
-// [MOD-GF-QUERY-1/2] GetGovernanceFrameworkVersion / ListGovernanceFrameworkVersions.
+// [MOD-GF-QUERY-1] GetGovernanceFrameworkVersion; versions nested in Get Corporation.
 // Depends on Journey 001.
 func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	fmt.Println("Starting Journey 003: Corp A CGF — AddGFD + IncreaseGFV + GF Queries")
@@ -131,50 +131,41 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 	waitForTx("IncreaseGFV v3 corp CGF")
 
 	// =========================================================================
-	// Step 4: ListGovernanceFrameworkVersions for Corp A [MOD-GF-QUERY-2]
+	// Step 4: Corp A's versions, nested in Get Corporation [MOD-CO-QRY-1]
 	// =========================================================================
-	fmt.Println("\n--- Step 4: ListGFVs for Corp A ---")
-	listResp, err := lib.ListGFVs(client, ctx, corpID, 0, false, 100)
+	fmt.Println("\n--- Step 4: GFVs of Corp A ---")
+	versions, err := lib.ListGFVs(client, ctx, corpID, 0, false)
 	if err != nil {
 		return fmt.Errorf("step 4 ListGFVs failed: %w", err)
 	}
-	if len(listResp.Versions) == 0 {
+	if len(versions) == 0 {
 		return fmt.Errorf("step 4 failed: expected at least one GFV")
 	}
-	fmt.Printf("✅ Step 4: ListGFVs returned %d GFV(s) for Corp A\n", len(listResp.Versions))
-	for _, gfv := range listResp.Versions {
+	fmt.Printf("✅ Step 4: Corp A has %d GFV(s)\n", len(versions))
+	for _, gfv := range versions {
 		isActive := gfv.ActiveSince != nil
 		fmt.Printf("  GFV ID=%d version=%d active=%v\n", gfv.Id, gfv.Version, isActive)
 	}
 
-	// Step 4b: ListGFVs with activeOnly=true — should return only the active one
-	fmt.Println("\n--- Step 4b: ListGFVs activeOnly=true ---")
-	listActiveResp, err := lib.ListGFVs(client, ctx, corpID, 0, true, 100)
+	// Step 4b: active_gf_only=true — only the active version
+	fmt.Println("\n--- Step 4b: GFVs of Corp A, active only ---")
+	activeVersions, err := lib.ListGFVs(client, ctx, corpID, 0, true)
 	if err != nil {
 		return fmt.Errorf("step 4b ListGFVs activeOnly failed: %w", err)
 	}
-	for _, gfv := range listActiveResp.Versions {
+	for _, gfv := range activeVersions {
 		if gfv.ActiveSince == nil {
 			return fmt.Errorf("step 4b failed: inactive GFV returned with activeOnly=true")
 		}
 	}
-	fmt.Printf("✅ Step 4b: activeOnly=true returned %d GFV(s), all active\n", len(listActiveResp.Versions))
-
-	// Step 4c: ListGFVs with both corporationID and ecosystemID set (expect error)
-	fmt.Println("\n--- Step 4c: ListGFVs with both corp+ecosystem ID set (expect error) ---")
-	_, err = lib.ListGFVs(client, ctx, corpID, 1, false, 100)
-	if err == nil {
-		fmt.Println("  (chain accepted both IDs — server may not validate; continuing)")
-	} else {
-		fmt.Printf("✅ Step 4c: Correctly rejected both-set query: %v\n", err)
-	}
+	fmt.Printf("✅ Step 4b: activeOnly=true returned %d GFV(s), all active\n", len(activeVersions))
 
 	// =========================================================================
 	// Step 5: GetGovernanceFrameworkVersion [MOD-GF-QUERY-1]
 	// =========================================================================
 	fmt.Println("\n--- Step 5: GetGovernanceFrameworkVersion ---")
-	if len(listResp.Versions) > 0 {
-		gfvID := listResp.Versions[0].Id
+	if len(versions) > 0 {
+		gfvID := versions[0].Id
 		gfvResp, err := lib.QueryGFV(client, ctx, gfvID)
 		if err != nil {
 			return fmt.Errorf("step 5 GetGFV failed: %w", err)
@@ -186,7 +177,7 @@ func RunCorpCGFJourney(ctx context.Context, client cosmosclient.Client) error {
 
 	// Save the v3 GFV id for use in downstream journeys
 	var gfv3ID uint64
-	for _, gfv := range listResp.Versions {
+	for _, gfv := range versions {
 		if gfv.Version == 3 {
 			gfv3ID = gfv.Id
 		}

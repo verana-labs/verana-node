@@ -69,16 +69,22 @@ func QueryGFV(client cosmosclient.Client, ctx context.Context, gfvID uint64) (*g
 	return qc.GetGovernanceFrameworkVersion(ctx, &gftypes.QueryGetGovernanceFrameworkVersionRequest{Id: gfvID})
 }
 
-// ListGFVs lists GovernanceFrameworkVersions for a corporation or ecosystem.
-// Exactly one of corporationID / ecosystemID must be non-zero.
-func ListGFVs(client cosmosclient.Client, ctx context.Context, corporationID, ecosystemID uint64, activeOnly bool, responseMaxSize uint32) (*gftypes.QueryListGovernanceFrameworkVersionsResponse, error) {
-	qc := gftypes.NewQueryClient(client.Context())
-	return qc.ListGovernanceFrameworkVersions(ctx, &gftypes.QueryListGovernanceFrameworkVersionsRequest{
-		CorporationId:   corporationID,
-		EcosystemId:     ecosystemID,
-		ActiveOnly:      activeOnly,
-		ResponseMaxSize: responseMaxSize,
-	})
+// ListGFVs lists the GovernanceFrameworkVersions of a corporation or an
+// ecosystem through its Get query. Exactly one of corporationID / ecosystemID
+// must be non-zero.
+func ListGFVs(client cosmosclient.Client, ctx context.Context, corporationID, ecosystemID uint64, activeOnly bool) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
+	if ecosystemID != 0 {
+		resp, err := ectypes.NewQueryClient(client.Context()).GetEcosystem(ctx, &ectypes.QueryGetEcosystemRequest{Id: ecosystemID, ActiveGfOnly: activeOnly})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Ecosystem.Versions, nil
+	}
+	resp, err := cotypes.NewQueryClient(client.Context()).GetCorporation(ctx, &cotypes.QueryGetCorporationRequest{CorporationId: corporationID, ActiveGfOnly: activeOnly})
+	if err != nil {
+		return nil, err
+	}
+	return resp.Corporation.Versions, nil
 }
 
 // ListCredentialSchemas lists credential schemas

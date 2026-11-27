@@ -39,6 +39,9 @@ message DelegateAuthorization {
   google.protobuf.Timestamp expiration = 9 [(gogoproto.stdtime) = true];
   // period is the reset period for spend_limit. If set, expiration MUST also be set.
   google.protobuf.Duration period = 10 [(gogoproto.stdduration) = true];
+  // accepted_cgf_version is the last version of the corporation's governance
+  // framework the delegate accepted; 0 until it accepts.
+  uint32 accepted_cgf_version = 11;
 }
 
 // FeeGrant is the chain-level fee allowance, keyed by the composite

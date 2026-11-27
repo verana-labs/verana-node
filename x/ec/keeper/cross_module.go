@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"cosmossdk.io/collections"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -32,14 +33,15 @@ func (a EcAsGFEcosystemKeeper) GetEcosystemView(ctx context.Context, ecosystemID
 		return gftypes.EcosystemView{}, false
 	}
 	return gftypes.EcosystemView{
-		Id:            ec.Id,
-		CorporationID: ec.CorporationId,
-		Language:      ec.Language,
-		ActiveVersion: ec.ActiveVersion,
+		Id:                 ec.Id,
+		CorporationID:      ec.CorporationId,
+		Language:           ec.Language,
+		ActiveVersion:      ec.ActiveVersion,
+		AcceptanceDeadline: ec.AcceptanceDeadline,
 	}, true
 }
 
-func (a EcAsGFEcosystemKeeper) SetEcosystemActiveVersion(ctx context.Context, ecosystemID uint64, newVersion uint32) error {
+func (a EcAsGFEcosystemKeeper) SetEcosystemActiveVersion(ctx context.Context, ecosystemID uint64, newVersion uint32, acceptanceDeadline time.Time) error {
 	ec, err := a.k.Ecosystem.Get(ctx, ecosystemID)
 	if err != nil {
 		if cerrIsNotFound(err) {
@@ -48,6 +50,7 @@ func (a EcAsGFEcosystemKeeper) SetEcosystemActiveVersion(ctx context.Context, ec
 		return fmt.Errorf("get ecosystem %d: %w", ecosystemID, err)
 	}
 	ec.ActiveVersion = newVersion
+	ec.AcceptanceDeadline = &acceptanceDeadline
 	ec.Modified = sdk.UnwrapSDKContext(ctx).BlockTime()
 	return a.k.Ecosystem.Set(ctx, ec.Id, ec)
 }

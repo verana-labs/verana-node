@@ -6,8 +6,9 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import { Timestamp } from "../../../google/protobuf/timestamp";
 import { Params } from "./params";
-import { GovernanceFrameworkVersionWithDocs } from "./types";
+import { EcosystemAcceptance, GovernanceFrameworkVersionWithDocs } from "./types";
 import Long = require("long");
 
 export const protobufPackage = "verana.gf.v1";
@@ -16,7 +17,22 @@ export interface QueryParamsRequest {
 }
 
 export interface QueryParamsResponse {
-  params: Params | undefined;
+  params:
+    | Params
+    | undefined;
+  /** council_account is the council's group policy account. */
+  councilAccount: string;
+  /**
+   * network_governance_framework_versions lists the network framework versions
+   * in version order.
+   */
+  networkGovernanceFrameworkVersions: number[];
+  /** ngf_acceptance_deadline ends the grace period of the last activation. */
+  ngfAcceptanceDeadline:
+    | Date
+    | undefined;
+  /** ngf_version is the version of the network framework in force. */
+  ngfVersion: number;
 }
 
 export interface QueryGetGovernanceFrameworkVersionRequest {
@@ -28,16 +44,13 @@ export interface QueryGetGovernanceFrameworkVersionResponse {
   version: GovernanceFrameworkVersionWithDocs | undefined;
 }
 
-export interface QueryListGovernanceFrameworkVersionsRequest {
+export interface QueryGetEcosystemAcceptanceRequest {
   ecosystemId: number;
   corporationId: number;
-  activeOnly: boolean;
-  preferredLanguage: string;
-  responseMaxSize: number;
 }
 
-export interface QueryListGovernanceFrameworkVersionsResponse {
-  versions: GovernanceFrameworkVersionWithDocs[];
+export interface QueryGetEcosystemAcceptanceResponse {
+  acceptance: EcosystemAcceptance | undefined;
 }
 
 function createBaseQueryParamsRequest(): QueryParamsRequest {
@@ -84,13 +97,33 @@ export const QueryParamsRequest = {
 };
 
 function createBaseQueryParamsResponse(): QueryParamsResponse {
-  return { params: undefined };
+  return {
+    params: undefined,
+    councilAccount: "",
+    networkGovernanceFrameworkVersions: [],
+    ngfAcceptanceDeadline: undefined,
+    ngfVersion: 0,
+  };
 }
 
 export const QueryParamsResponse = {
   encode(message: QueryParamsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.councilAccount !== "") {
+      writer.uint32(18).string(message.councilAccount);
+    }
+    writer.uint32(26).fork();
+    for (const v of message.networkGovernanceFrameworkVersions) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
+    if (message.ngfAcceptanceDeadline !== undefined) {
+      Timestamp.encode(toTimestamp(message.ngfAcceptanceDeadline), writer.uint32(34).fork()).ldelim();
+    }
+    if (message.ngfVersion !== 0) {
+      writer.uint32(40).uint32(message.ngfVersion);
     }
     return writer;
   },
@@ -109,6 +142,44 @@ export const QueryParamsResponse = {
 
           message.params = Params.decode(reader, reader.uint32());
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.councilAccount = reader.string();
+          continue;
+        case 3:
+          if (tag === 24) {
+            message.networkGovernanceFrameworkVersions.push(longToNumber(reader.uint64() as Long));
+
+            continue;
+          }
+
+          if (tag === 26) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.networkGovernanceFrameworkVersions.push(longToNumber(reader.uint64() as Long));
+            }
+
+            continue;
+          }
+
+          break;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.ngfAcceptanceDeadline = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.ngfVersion = reader.uint32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -119,13 +190,35 @@ export const QueryParamsResponse = {
   },
 
   fromJSON(object: any): QueryParamsResponse {
-    return { params: isSet(object.params) ? Params.fromJSON(object.params) : undefined };
+    return {
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+      councilAccount: isSet(object.councilAccount) ? globalThis.String(object.councilAccount) : "",
+      networkGovernanceFrameworkVersions: globalThis.Array.isArray(object?.networkGovernanceFrameworkVersions)
+        ? object.networkGovernanceFrameworkVersions.map((e: any) => globalThis.Number(e))
+        : [],
+      ngfAcceptanceDeadline: isSet(object.ngfAcceptanceDeadline)
+        ? fromJsonTimestamp(object.ngfAcceptanceDeadline)
+        : undefined,
+      ngfVersion: isSet(object.ngfVersion) ? globalThis.Number(object.ngfVersion) : 0,
+    };
   },
 
   toJSON(message: QueryParamsResponse): unknown {
     const obj: any = {};
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
+    }
+    if (message.councilAccount !== "") {
+      obj.councilAccount = message.councilAccount;
+    }
+    if (message.networkGovernanceFrameworkVersions?.length) {
+      obj.networkGovernanceFrameworkVersions = message.networkGovernanceFrameworkVersions.map((e) => Math.round(e));
+    }
+    if (message.ngfAcceptanceDeadline !== undefined) {
+      obj.ngfAcceptanceDeadline = message.ngfAcceptanceDeadline.toISOString();
+    }
+    if (message.ngfVersion !== 0) {
+      obj.ngfVersion = Math.round(message.ngfVersion);
     }
     return obj;
   },
@@ -138,6 +231,10 @@ export const QueryParamsResponse = {
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
+    message.councilAccount = object.councilAccount ?? "";
+    message.networkGovernanceFrameworkVersions = object.networkGovernanceFrameworkVersions?.map((e) => e) || [];
+    message.ngfAcceptanceDeadline = object.ngfAcceptanceDeadline ?? undefined;
+    message.ngfVersion = object.ngfVersion ?? 0;
     return message;
   },
 };
@@ -283,34 +380,25 @@ export const QueryGetGovernanceFrameworkVersionResponse = {
   },
 };
 
-function createBaseQueryListGovernanceFrameworkVersionsRequest(): QueryListGovernanceFrameworkVersionsRequest {
-  return { ecosystemId: 0, corporationId: 0, activeOnly: false, preferredLanguage: "", responseMaxSize: 0 };
+function createBaseQueryGetEcosystemAcceptanceRequest(): QueryGetEcosystemAcceptanceRequest {
+  return { ecosystemId: 0, corporationId: 0 };
 }
 
-export const QueryListGovernanceFrameworkVersionsRequest = {
-  encode(message: QueryListGovernanceFrameworkVersionsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryGetEcosystemAcceptanceRequest = {
+  encode(message: QueryGetEcosystemAcceptanceRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.ecosystemId !== 0) {
       writer.uint32(8).uint64(message.ecosystemId);
     }
     if (message.corporationId !== 0) {
       writer.uint32(16).uint64(message.corporationId);
     }
-    if (message.activeOnly !== false) {
-      writer.uint32(24).bool(message.activeOnly);
-    }
-    if (message.preferredLanguage !== "") {
-      writer.uint32(34).string(message.preferredLanguage);
-    }
-    if (message.responseMaxSize !== 0) {
-      writer.uint32(40).uint32(message.responseMaxSize);
-    }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListGovernanceFrameworkVersionsRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetEcosystemAcceptanceRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryListGovernanceFrameworkVersionsRequest();
+    const message = createBaseQueryGetEcosystemAcceptanceRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -328,27 +416,6 @@ export const QueryListGovernanceFrameworkVersionsRequest = {
 
           message.corporationId = longToNumber(reader.uint64() as Long);
           continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.activeOnly = reader.bool();
-          continue;
-        case 4:
-          if (tag !== 34) {
-            break;
-          }
-
-          message.preferredLanguage = reader.string();
-          continue;
-        case 5:
-          if (tag !== 40) {
-            break;
-          }
-
-          message.responseMaxSize = reader.uint32();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -358,17 +425,14 @@ export const QueryListGovernanceFrameworkVersionsRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryListGovernanceFrameworkVersionsRequest {
+  fromJSON(object: any): QueryGetEcosystemAcceptanceRequest {
     return {
       ecosystemId: isSet(object.ecosystemId) ? globalThis.Number(object.ecosystemId) : 0,
       corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
-      activeOnly: isSet(object.activeOnly) ? globalThis.Boolean(object.activeOnly) : false,
-      preferredLanguage: isSet(object.preferredLanguage) ? globalThis.String(object.preferredLanguage) : "",
-      responseMaxSize: isSet(object.responseMaxSize) ? globalThis.Number(object.responseMaxSize) : 0,
     };
   },
 
-  toJSON(message: QueryListGovernanceFrameworkVersionsRequest): unknown {
+  toJSON(message: QueryGetEcosystemAcceptanceRequest): unknown {
     const obj: any = {};
     if (message.ecosystemId !== 0) {
       obj.ecosystemId = Math.round(message.ecosystemId);
@@ -376,52 +440,40 @@ export const QueryListGovernanceFrameworkVersionsRequest = {
     if (message.corporationId !== 0) {
       obj.corporationId = Math.round(message.corporationId);
     }
-    if (message.activeOnly !== false) {
-      obj.activeOnly = message.activeOnly;
-    }
-    if (message.preferredLanguage !== "") {
-      obj.preferredLanguage = message.preferredLanguage;
-    }
-    if (message.responseMaxSize !== 0) {
-      obj.responseMaxSize = Math.round(message.responseMaxSize);
-    }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QueryListGovernanceFrameworkVersionsRequest>, I>>(
+  create<I extends Exact<DeepPartial<QueryGetEcosystemAcceptanceRequest>, I>>(
     base?: I,
-  ): QueryListGovernanceFrameworkVersionsRequest {
-    return QueryListGovernanceFrameworkVersionsRequest.fromPartial(base ?? ({} as any));
+  ): QueryGetEcosystemAcceptanceRequest {
+    return QueryGetEcosystemAcceptanceRequest.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QueryListGovernanceFrameworkVersionsRequest>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryGetEcosystemAcceptanceRequest>, I>>(
     object: I,
-  ): QueryListGovernanceFrameworkVersionsRequest {
-    const message = createBaseQueryListGovernanceFrameworkVersionsRequest();
+  ): QueryGetEcosystemAcceptanceRequest {
+    const message = createBaseQueryGetEcosystemAcceptanceRequest();
     message.ecosystemId = object.ecosystemId ?? 0;
     message.corporationId = object.corporationId ?? 0;
-    message.activeOnly = object.activeOnly ?? false;
-    message.preferredLanguage = object.preferredLanguage ?? "";
-    message.responseMaxSize = object.responseMaxSize ?? 0;
     return message;
   },
 };
 
-function createBaseQueryListGovernanceFrameworkVersionsResponse(): QueryListGovernanceFrameworkVersionsResponse {
-  return { versions: [] };
+function createBaseQueryGetEcosystemAcceptanceResponse(): QueryGetEcosystemAcceptanceResponse {
+  return { acceptance: undefined };
 }
 
-export const QueryListGovernanceFrameworkVersionsResponse = {
-  encode(message: QueryListGovernanceFrameworkVersionsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.versions) {
-      GovernanceFrameworkVersionWithDocs.encode(v!, writer.uint32(10).fork()).ldelim();
+export const QueryGetEcosystemAcceptanceResponse = {
+  encode(message: QueryGetEcosystemAcceptanceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.acceptance !== undefined) {
+      EcosystemAcceptance.encode(message.acceptance, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryListGovernanceFrameworkVersionsResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetEcosystemAcceptanceResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryListGovernanceFrameworkVersionsResponse();
+    const message = createBaseQueryGetEcosystemAcceptanceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -430,7 +482,7 @@ export const QueryListGovernanceFrameworkVersionsResponse = {
             break;
           }
 
-          message.versions.push(GovernanceFrameworkVersionWithDocs.decode(reader, reader.uint32()));
+          message.acceptance = EcosystemAcceptance.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -441,48 +493,44 @@ export const QueryListGovernanceFrameworkVersionsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryListGovernanceFrameworkVersionsResponse {
-    return {
-      versions: globalThis.Array.isArray(object?.versions)
-        ? object.versions.map((e: any) => GovernanceFrameworkVersionWithDocs.fromJSON(e))
-        : [],
-    };
+  fromJSON(object: any): QueryGetEcosystemAcceptanceResponse {
+    return { acceptance: isSet(object.acceptance) ? EcosystemAcceptance.fromJSON(object.acceptance) : undefined };
   },
 
-  toJSON(message: QueryListGovernanceFrameworkVersionsResponse): unknown {
+  toJSON(message: QueryGetEcosystemAcceptanceResponse): unknown {
     const obj: any = {};
-    if (message.versions?.length) {
-      obj.versions = message.versions.map((e) => GovernanceFrameworkVersionWithDocs.toJSON(e));
+    if (message.acceptance !== undefined) {
+      obj.acceptance = EcosystemAcceptance.toJSON(message.acceptance);
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QueryListGovernanceFrameworkVersionsResponse>, I>>(
+  create<I extends Exact<DeepPartial<QueryGetEcosystemAcceptanceResponse>, I>>(
     base?: I,
-  ): QueryListGovernanceFrameworkVersionsResponse {
-    return QueryListGovernanceFrameworkVersionsResponse.fromPartial(base ?? ({} as any));
+  ): QueryGetEcosystemAcceptanceResponse {
+    return QueryGetEcosystemAcceptanceResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QueryListGovernanceFrameworkVersionsResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<QueryGetEcosystemAcceptanceResponse>, I>>(
     object: I,
-  ): QueryListGovernanceFrameworkVersionsResponse {
-    const message = createBaseQueryListGovernanceFrameworkVersionsResponse();
-    message.versions = object.versions?.map((e) => GovernanceFrameworkVersionWithDocs.fromPartial(e)) || [];
+  ): QueryGetEcosystemAcceptanceResponse {
+    const message = createBaseQueryGetEcosystemAcceptanceResponse();
+    message.acceptance = (object.acceptance !== undefined && object.acceptance !== null)
+      ? EcosystemAcceptance.fromPartial(object.acceptance)
+      : undefined;
     return message;
   },
 };
 
 /** Query defines the Query service. */
 export interface Query {
-  /** Params returns the total set of module parameters. */
+  /** [MOD-GF-QRY-3] List Module Parameters. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
   /** [MOD-GF-QRY-1] Get Governance Framework Version */
   GetGovernanceFrameworkVersion(
     request: QueryGetGovernanceFrameworkVersionRequest,
   ): Promise<QueryGetGovernanceFrameworkVersionResponse>;
-  /** [MOD-GF-QRY-2] List Governance Framework Versions */
-  ListGovernanceFrameworkVersions(
-    request: QueryListGovernanceFrameworkVersionsRequest,
-  ): Promise<QueryListGovernanceFrameworkVersionsResponse>;
+  /** [MOD-GF-QRY-2] Get Ecosystem Acceptance */
+  GetEcosystemAcceptance(request: QueryGetEcosystemAcceptanceRequest): Promise<QueryGetEcosystemAcceptanceResponse>;
 }
 
 export const QueryServiceName = "verana.gf.v1.Query";
@@ -494,7 +542,7 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.Params = this.Params.bind(this);
     this.GetGovernanceFrameworkVersion = this.GetGovernanceFrameworkVersion.bind(this);
-    this.ListGovernanceFrameworkVersions = this.ListGovernanceFrameworkVersions.bind(this);
+    this.GetEcosystemAcceptance = this.GetEcosystemAcceptance.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -510,12 +558,10 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryGetGovernanceFrameworkVersionResponse.decode(_m0.Reader.create(data)));
   }
 
-  ListGovernanceFrameworkVersions(
-    request: QueryListGovernanceFrameworkVersionsRequest,
-  ): Promise<QueryListGovernanceFrameworkVersionsResponse> {
-    const data = QueryListGovernanceFrameworkVersionsRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "ListGovernanceFrameworkVersions", data);
-    return promise.then((data) => QueryListGovernanceFrameworkVersionsResponse.decode(_m0.Reader.create(data)));
+  GetEcosystemAcceptance(request: QueryGetEcosystemAcceptanceRequest): Promise<QueryGetEcosystemAcceptanceResponse> {
+    const data = QueryGetEcosystemAcceptanceRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "GetEcosystemAcceptance", data);
+    return promise.then((data) => QueryGetEcosystemAcceptanceResponse.decode(_m0.Reader.create(data)));
   }
 }
 
@@ -534,6 +580,28 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = Math.trunc(date.getTime() / 1_000);
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (t.seconds || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof globalThis.Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new globalThis.Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function longToNumber(long: Long): number {
   if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {

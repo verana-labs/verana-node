@@ -5,10 +5,12 @@
 
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { Secp256k1HdWallet } from "@cosmjs/amino";
-import { SigningStargateClient, StargateClient, GasPrice, calculateFee, DeliverTxResponse } from "@cosmjs/stargate";
+import { SigningStargateClient, StargateClient, GasPrice, calculateFee, DeliverTxResponse, QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
 import { stringToPath } from "@cosmjs/crypto";
 import { Comet38Client } from "@cosmjs/tendermint-rpc";
-import { createVeranaRegistry } from "./registry";
+import { createVeranaRegistry, typeUrls } from "./registry";
+import { QueryClientImpl as CoQueryClient } from "../../../src/codec/verana/co/v1/query";
+import { MsgAcceptCorporationGovernanceFramework } from "../../../src/codec/verana/gf/v1/tx";
 import { createVeranaAminoTypes } from "../../../src/signing";
 
 // Default configuration - can be overridden via environment variables
@@ -646,4 +648,40 @@ export async function waitForSequencePropagation(
 
   console.log(`  ⚠️  Sequence propagation timeout, but continuing with sequence: ${lastSequence}`);
   return lastSequence;
+}
+
+/**
+ * Has a delegate accept the version in force of the governance framework of
+ * the corporation that authorized it (MOD-GF-MSG-4), without which GF-CHECK-2
+ * refuses its authorization.
+ */
+export async function acceptCorporationGovernanceFramework(
+  wallet: Secp256k1HdWallet | DirectSecp256k1HdWallet,
+  corporationId: number,
+): Promise<void> {
+  const account = await getAccountInfo(wallet);
+  const cometClient = await connectRpc();
+  let version: number;
+  try {
+    const co = new CoQueryClient(createProtobufRpcClient(new QueryClient(cometClient as any)));
+    const resp = await co.GetCorporation({ corporationId, activeGfOnly: true, preferredLanguage: "" });
+    version = resp.corporation!.activeVersion;
+  } finally {
+    cometClient.disconnect();
+  }
+  const msg = {
+    typeUrl: typeUrls.MsgAcceptCorporationGovernanceFramework,
+    value: MsgAcceptCorporationGovernanceFramework.fromPartial({ signer: account.address, corporationId, version }),
+  };
+  const client = await createSigningClient(wallet);
+  try {
+    const memo = "Accept corporation governance framework";
+    const fee = await calculateFeeWithSimulation(client, account.address, [msg], memo);
+    const result = await signAndBroadcastWithRetry(client, account.address, [msg], fee, memo);
+    if (result.code !== 0) {
+      throw new Error(`accepting version ${version} of corporation ${corporationId}'s governance framework failed: ${result.rawLog}`);
+    }
+  } finally {
+    client.disconnect();
+  }
 }

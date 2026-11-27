@@ -21,10 +21,11 @@ import {
   signAndBroadcastWithRetry,
   fundAccount,
   config,
+  acceptCorporationGovernanceFramework,
 } from "../helpers/client";
 import { typeUrls } from "../helpers/registry";
 import { MsgGrantDelegateAuthorization } from "../../../src/codec/verana/de/v1/tx";
-import { getEcAuthzSetup, savePermAuthzSetup } from "../helpers/journeyResults";
+import { getActiveCorporation, getEcAuthzSetup, savePermAuthzSetup } from "../helpers/journeyResults";
 import { MsgSubmitProposal, MsgVote, Exec } from "cosmjs-types/cosmos/group/v1/tx";
 import { VoteOption } from "cosmjs-types/cosmos/group/v1/types";
 import { MsgType } from "../../../src/codec/verana/de/v1/msg_type";
@@ -208,6 +209,11 @@ async function main() {
     const qc3 = await createQueryClient();
     for (let i = 0; i < 30; i++) { try { if (await qc3.getTx(voteResult.transactionHash)) break; } catch {} await new Promise((r) => setTimeout(r, 1000)); }
     qc3.disconnect();
+
+    const corp = getActiveCorporation();
+    if (!corp) { console.log("No active corporation found. Run test:co-create first."); process.exit(1); }
+    await acceptCorporationGovernanceFramework(delegateWallet, corp.corporationId);
+    console.log("  Delegate accepted the corporation's governance framework");
 
     savePermAuthzSetup(authorityAddress, delegateAccount.address);
     console.log("  Saved perm-authz-setup");

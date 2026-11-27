@@ -33,6 +33,9 @@ message Ecosystem {
   bool archived = 6;
   string language = 7;
   uint32 active_version = 8;
+  // acceptance_deadline ends the grace period of the last activation of the
+  // ecosystem's governance framework.
+  google.protobuf.Timestamp acceptance_deadline = 9 [(gogoproto.stdtime) = true];
 }
 
 // EcosystemWithVersions is the query response shape (MOD-ES-QRY-1 /
@@ -57,4 +60,5 @@ message EcosystemWithVersions {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+  google.protobuf.Timestamp acceptance_deadline = 10 [(gogoproto.stdtime) = true];
 }

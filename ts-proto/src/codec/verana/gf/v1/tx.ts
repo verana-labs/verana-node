@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import { Duration } from "../../../google/protobuf/duration";
 import { Params } from "./params";
 import Long = require("long");
 
@@ -27,7 +28,7 @@ export interface MsgUpdateParamsResponse {
 
 /**
  * [MOD-GF-MSG-1] Adds (or replaces) a GovernanceFrameworkDocument for a draft
- * version owned by an Ecosystem or a Corporation.
+ * version owned by an Ecosystem, a Corporation or the network.
  */
 export interface MsgAddGovernanceFrameworkDocument {
   /**
@@ -61,8 +62,8 @@ export interface MsgAddGovernanceFrameworkDocumentResponse {
 }
 
 /**
- * [MOD-GF-MSG-2] Activates the next governance framework version for an
- * Ecosystem or Corporation owned by the signing corporation.
+ * [MOD-GF-MSG-2] Activates the next governance framework version of an
+ * Ecosystem or Corporation owned by the signing corporation, or of the network.
  */
 export interface MsgIncreaseActiveGovernanceFrameworkVersion {
   /**
@@ -82,9 +83,53 @@ export interface MsgIncreaseActiveGovernanceFrameworkVersion {
   ecosystemId: number;
   /** network targets the network governance framework. */
   network: boolean;
+  /**
+   * acceptance_grace is the grace period, from the activation, during which the
+   * parties that accepted a former version keep acting.
+   */
+  acceptanceGrace: Duration | undefined;
 }
 
 export interface MsgIncreaseActiveGovernanceFrameworkVersionResponse {
+}
+
+/**
+ * [MOD-GF-MSG-3] Records the acceptance by a corporation of the version in force
+ * of the network governance framework, or of an ecosystem's.
+ */
+export interface MsgAcceptGovernanceFrameworkVersion {
+  /** corporation is the policy_address of the accepting corporation. */
+  corporation: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
+  /** ecosystem_id is the ecosystem whose framework is accepted; zero when network is true. */
+  ecosystemId: number;
+  /** network accepts the network governance framework. */
+  network: boolean;
+  /** version is the version accepted, the version in force. */
+  version: number;
+}
+
+export interface MsgAcceptGovernanceFrameworkVersionResponse {
+}
+
+/**
+ * [MOD-GF-MSG-4] Records the acceptance by a delegate of the version in force of
+ * the governance framework of the corporation that authorized it.
+ */
+export interface MsgAcceptCorporationGovernanceFramework {
+  /** signer is the delegate, the account that holds the authorization. */
+  signer: string;
+  /** corporation_id is the corporation whose framework is accepted. */
+  corporationId: number;
+  /** version is the version accepted, the version in force. */
+  version: number;
+}
+
+export interface MsgAcceptCorporationGovernanceFrameworkResponse {
 }
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
@@ -431,7 +476,7 @@ export const MsgAddGovernanceFrameworkDocumentResponse = {
 };
 
 function createBaseMsgIncreaseActiveGovernanceFrameworkVersion(): MsgIncreaseActiveGovernanceFrameworkVersion {
-  return { corporation: "", signer: "", ecosystemId: 0, network: false };
+  return { corporation: "", signer: "", ecosystemId: 0, network: false, acceptanceGrace: undefined };
 }
 
 export const MsgIncreaseActiveGovernanceFrameworkVersion = {
@@ -447,6 +492,9 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
     }
     if (message.network !== false) {
       writer.uint32(32).bool(message.network);
+    }
+    if (message.acceptanceGrace !== undefined) {
+      Duration.encode(message.acceptanceGrace, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -486,6 +534,13 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
 
           message.network = reader.bool();
           continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.acceptanceGrace = Duration.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -501,6 +556,7 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
       signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       ecosystemId: isSet(object.ecosystemId) ? globalThis.Number(object.ecosystemId) : 0,
       network: isSet(object.network) ? globalThis.Boolean(object.network) : false,
+      acceptanceGrace: isSet(object.acceptanceGrace) ? Duration.fromJSON(object.acceptanceGrace) : undefined,
     };
   },
 
@@ -518,6 +574,9 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
     if (message.network !== false) {
       obj.network = message.network;
     }
+    if (message.acceptanceGrace !== undefined) {
+      obj.acceptanceGrace = Duration.toJSON(message.acceptanceGrace);
+    }
     return obj;
   },
 
@@ -534,6 +593,9 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
     message.signer = object.signer ?? "";
     message.ecosystemId = object.ecosystemId ?? 0;
     message.network = object.network ?? false;
+    message.acceptanceGrace = (object.acceptanceGrace !== undefined && object.acceptanceGrace !== null)
+      ? Duration.fromPartial(object.acceptanceGrace)
+      : undefined;
     return message;
   },
 };
@@ -585,6 +647,316 @@ export const MsgIncreaseActiveGovernanceFrameworkVersionResponse = {
   },
 };
 
+function createBaseMsgAcceptGovernanceFrameworkVersion(): MsgAcceptGovernanceFrameworkVersion {
+  return { corporation: "", signer: "", ecosystemId: 0, network: false, version: 0 };
+}
+
+export const MsgAcceptGovernanceFrameworkVersion = {
+  encode(message: MsgAcceptGovernanceFrameworkVersion, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.corporation !== "") {
+      writer.uint32(10).string(message.corporation);
+    }
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
+    }
+    if (message.ecosystemId !== 0) {
+      writer.uint32(24).uint64(message.ecosystemId);
+    }
+    if (message.network !== false) {
+      writer.uint32(32).bool(message.network);
+    }
+    if (message.version !== 0) {
+      writer.uint32(40).uint32(message.version);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAcceptGovernanceFrameworkVersion {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAcceptGovernanceFrameworkVersion();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.corporation = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.signer = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.ecosystemId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.network = reader.bool();
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.version = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgAcceptGovernanceFrameworkVersion {
+    return {
+      corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
+      ecosystemId: isSet(object.ecosystemId) ? globalThis.Number(object.ecosystemId) : 0,
+      network: isSet(object.network) ? globalThis.Boolean(object.network) : false,
+      version: isSet(object.version) ? globalThis.Number(object.version) : 0,
+    };
+  },
+
+  toJSON(message: MsgAcceptGovernanceFrameworkVersion): unknown {
+    const obj: any = {};
+    if (message.corporation !== "") {
+      obj.corporation = message.corporation;
+    }
+    if (message.signer !== "") {
+      obj.signer = message.signer;
+    }
+    if (message.ecosystemId !== 0) {
+      obj.ecosystemId = Math.round(message.ecosystemId);
+    }
+    if (message.network !== false) {
+      obj.network = message.network;
+    }
+    if (message.version !== 0) {
+      obj.version = Math.round(message.version);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MsgAcceptGovernanceFrameworkVersion>, I>>(
+    base?: I,
+  ): MsgAcceptGovernanceFrameworkVersion {
+    return MsgAcceptGovernanceFrameworkVersion.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MsgAcceptGovernanceFrameworkVersion>, I>>(
+    object: I,
+  ): MsgAcceptGovernanceFrameworkVersion {
+    const message = createBaseMsgAcceptGovernanceFrameworkVersion();
+    message.corporation = object.corporation ?? "";
+    message.signer = object.signer ?? "";
+    message.ecosystemId = object.ecosystemId ?? 0;
+    message.network = object.network ?? false;
+    message.version = object.version ?? 0;
+    return message;
+  },
+};
+
+function createBaseMsgAcceptGovernanceFrameworkVersionResponse(): MsgAcceptGovernanceFrameworkVersionResponse {
+  return {};
+}
+
+export const MsgAcceptGovernanceFrameworkVersionResponse = {
+  encode(_: MsgAcceptGovernanceFrameworkVersionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAcceptGovernanceFrameworkVersionResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAcceptGovernanceFrameworkVersionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgAcceptGovernanceFrameworkVersionResponse {
+    return {};
+  },
+
+  toJSON(_: MsgAcceptGovernanceFrameworkVersionResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MsgAcceptGovernanceFrameworkVersionResponse>, I>>(
+    base?: I,
+  ): MsgAcceptGovernanceFrameworkVersionResponse {
+    return MsgAcceptGovernanceFrameworkVersionResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MsgAcceptGovernanceFrameworkVersionResponse>, I>>(
+    _: I,
+  ): MsgAcceptGovernanceFrameworkVersionResponse {
+    const message = createBaseMsgAcceptGovernanceFrameworkVersionResponse();
+    return message;
+  },
+};
+
+function createBaseMsgAcceptCorporationGovernanceFramework(): MsgAcceptCorporationGovernanceFramework {
+  return { signer: "", corporationId: 0, version: 0 };
+}
+
+export const MsgAcceptCorporationGovernanceFramework = {
+  encode(message: MsgAcceptCorporationGovernanceFramework, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
+    }
+    if (message.corporationId !== 0) {
+      writer.uint32(16).uint64(message.corporationId);
+    }
+    if (message.version !== 0) {
+      writer.uint32(24).uint32(message.version);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAcceptCorporationGovernanceFramework {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAcceptCorporationGovernanceFramework();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.signer = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.corporationId = longToNumber(reader.uint64() as Long);
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.version = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgAcceptCorporationGovernanceFramework {
+    return {
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
+      corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
+      version: isSet(object.version) ? globalThis.Number(object.version) : 0,
+    };
+  },
+
+  toJSON(message: MsgAcceptCorporationGovernanceFramework): unknown {
+    const obj: any = {};
+    if (message.signer !== "") {
+      obj.signer = message.signer;
+    }
+    if (message.corporationId !== 0) {
+      obj.corporationId = Math.round(message.corporationId);
+    }
+    if (message.version !== 0) {
+      obj.version = Math.round(message.version);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MsgAcceptCorporationGovernanceFramework>, I>>(
+    base?: I,
+  ): MsgAcceptCorporationGovernanceFramework {
+    return MsgAcceptCorporationGovernanceFramework.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MsgAcceptCorporationGovernanceFramework>, I>>(
+    object: I,
+  ): MsgAcceptCorporationGovernanceFramework {
+    const message = createBaseMsgAcceptCorporationGovernanceFramework();
+    message.signer = object.signer ?? "";
+    message.corporationId = object.corporationId ?? 0;
+    message.version = object.version ?? 0;
+    return message;
+  },
+};
+
+function createBaseMsgAcceptCorporationGovernanceFrameworkResponse(): MsgAcceptCorporationGovernanceFrameworkResponse {
+  return {};
+}
+
+export const MsgAcceptCorporationGovernanceFrameworkResponse = {
+  encode(_: MsgAcceptCorporationGovernanceFrameworkResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAcceptCorporationGovernanceFrameworkResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAcceptCorporationGovernanceFrameworkResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgAcceptCorporationGovernanceFrameworkResponse {
+    return {};
+  },
+
+  toJSON(_: MsgAcceptCorporationGovernanceFrameworkResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<MsgAcceptCorporationGovernanceFrameworkResponse>, I>>(
+    base?: I,
+  ): MsgAcceptCorporationGovernanceFrameworkResponse {
+    return MsgAcceptCorporationGovernanceFrameworkResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<MsgAcceptCorporationGovernanceFrameworkResponse>, I>>(
+    _: I,
+  ): MsgAcceptCorporationGovernanceFrameworkResponse {
+    const message = createBaseMsgAcceptCorporationGovernanceFrameworkResponse();
+    return message;
+  },
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   /**
@@ -600,6 +972,14 @@ export interface Msg {
   IncreaseActiveGovernanceFrameworkVersion(
     request: MsgIncreaseActiveGovernanceFrameworkVersion,
   ): Promise<MsgIncreaseActiveGovernanceFrameworkVersionResponse>;
+  /** [MOD-GF-MSG-3] Accept Governance Framework Version */
+  AcceptGovernanceFrameworkVersion(
+    request: MsgAcceptGovernanceFrameworkVersion,
+  ): Promise<MsgAcceptGovernanceFrameworkVersionResponse>;
+  /** [MOD-GF-MSG-4] Accept Corporation Governance Framework */
+  AcceptCorporationGovernanceFramework(
+    request: MsgAcceptCorporationGovernanceFramework,
+  ): Promise<MsgAcceptCorporationGovernanceFrameworkResponse>;
 }
 
 export const MsgServiceName = "verana.gf.v1.Msg";
@@ -612,6 +992,8 @@ export class MsgClientImpl implements Msg {
     this.UpdateParams = this.UpdateParams.bind(this);
     this.AddGovernanceFrameworkDocument = this.AddGovernanceFrameworkDocument.bind(this);
     this.IncreaseActiveGovernanceFrameworkVersion = this.IncreaseActiveGovernanceFrameworkVersion.bind(this);
+    this.AcceptGovernanceFrameworkVersion = this.AcceptGovernanceFrameworkVersion.bind(this);
+    this.AcceptCorporationGovernanceFramework = this.AcceptCorporationGovernanceFramework.bind(this);
   }
   UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
@@ -633,6 +1015,22 @@ export class MsgClientImpl implements Msg {
     const data = MsgIncreaseActiveGovernanceFrameworkVersion.encode(request).finish();
     const promise = this.rpc.request(this.service, "IncreaseActiveGovernanceFrameworkVersion", data);
     return promise.then((data) => MsgIncreaseActiveGovernanceFrameworkVersionResponse.decode(_m0.Reader.create(data)));
+  }
+
+  AcceptGovernanceFrameworkVersion(
+    request: MsgAcceptGovernanceFrameworkVersion,
+  ): Promise<MsgAcceptGovernanceFrameworkVersionResponse> {
+    const data = MsgAcceptGovernanceFrameworkVersion.encode(request).finish();
+    const promise = this.rpc.request(this.service, "AcceptGovernanceFrameworkVersion", data);
+    return promise.then((data) => MsgAcceptGovernanceFrameworkVersionResponse.decode(_m0.Reader.create(data)));
+  }
+
+  AcceptCorporationGovernanceFramework(
+    request: MsgAcceptCorporationGovernanceFramework,
+  ): Promise<MsgAcceptCorporationGovernanceFrameworkResponse> {
+    const data = MsgAcceptCorporationGovernanceFramework.encode(request).finish();
+    const promise = this.rpc.request(this.service, "AcceptCorporationGovernanceFramework", data);
+    return promise.then((data) => MsgAcceptCorporationGovernanceFrameworkResponse.decode(_m0.Reader.create(data)));
   }
 }
 

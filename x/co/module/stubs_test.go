@@ -28,8 +28,11 @@ type stubGF struct{}
 func (stubGF) CreateInitialGFVersionForCorporation(_ context.Context, _ uint64, _, _, _ string) error {
 	return nil
 }
-func (stubGF) ListVersionsByCorporation(_ context.Context, _ uint64, _ uint32, _ bool, _ string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
+func (stubGF) ListVersionsByCorporation(_ context.Context, _ uint64, _ string, _ uint32, _ bool, _ string) ([]gftypes.GovernanceFrameworkVersionWithDocs, error) {
 	return nil, nil
+}
+func (stubGF) NetworkGFVersionInForce(context.Context) (uint32, error) {
+	return 1, nil
 }
 func (stubGF) CheckNetworkGFAcceptance(_ context.Context, _ gftypes.CorporationView, _ time.Time) error {
 	return nil
@@ -42,13 +45,16 @@ type stubGFDelegation struct{}
 func (stubGFDelegation) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string, _ detypes.MsgType, _ time.Time) error {
 	return nil
 }
+func (stubGFDelegation) SetDelegateAcceptedCGFVersion(_ context.Context, _ uint64, _ string, _ uint32) error {
+	return nil
+}
 
 type stubEcosystem struct{}
 
 func (stubEcosystem) GetEcosystemView(_ context.Context, _ uint64) (gftypes.EcosystemView, bool) {
 	return gftypes.EcosystemView{}, false
 }
-func (stubEcosystem) SetEcosystemActiveVersion(_ context.Context, _ uint64, _ uint32) error {
+func (stubEcosystem) SetEcosystemActiveVersion(_ context.Context, _ uint64, _ uint32, _ time.Time) error {
 	return nil
 }
 

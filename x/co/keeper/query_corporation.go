@@ -22,20 +22,22 @@ func (q querier) GetCorporation(goCtx context.Context, req *types.QueryGetCorpor
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "corporation %d not found", req.CorporationId)
 	}
-	versions, err := q.gfKeeper.ListVersionsByCorporation(goCtx, co.Id, co.ActiveVersion, req.ActiveGfOnly, req.PreferredLanguage)
+	versions, err := q.gfKeeper.ListVersionsByCorporation(goCtx, co.Id, co.Language, co.ActiveVersion, req.ActiveGfOnly, req.PreferredLanguage)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "list gf versions: %v", err)
 	}
 	return &types.QueryGetCorporationResponse{
 		Corporation: types.CorporationWithGF{
-			Id:            co.Id,
-			PolicyAddress: co.PolicyAddress,
-			Did:           co.Did,
-			Created:       co.Created,
-			Modified:      co.Modified,
-			Language:      co.Language,
-			ActiveVersion: co.ActiveVersion,
-			Versions:      versions,
+			Id:                 co.Id,
+			PolicyAddress:      co.PolicyAddress,
+			Did:                co.Did,
+			Created:            co.Created,
+			Modified:           co.Modified,
+			Language:           co.Language,
+			ActiveVersion:      co.ActiveVersion,
+			Versions:           versions,
+			AcceptedNgfVersion: co.AcceptedNgfVersion,
+			AcceptanceDeadline: co.AcceptanceDeadline,
 		},
 	}, nil
 }
@@ -70,19 +72,21 @@ func (q querier) ListCorporations(goCtx context.Context, req *types.QueryListCor
 
 	out := make([]types.CorporationWithGF, 0, len(corps))
 	for _, co := range corps {
-		versions, err := q.gfKeeper.ListVersionsByCorporation(goCtx, co.Id, co.ActiveVersion, req.ActiveGfOnly, req.PreferredLanguage)
+		versions, err := q.gfKeeper.ListVersionsByCorporation(goCtx, co.Id, co.Language, co.ActiveVersion, req.ActiveGfOnly, req.PreferredLanguage)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "list gf versions for co %d: %v", co.Id, err)
 		}
 		out = append(out, types.CorporationWithGF{
-			Id:            co.Id,
-			PolicyAddress: co.PolicyAddress,
-			Did:           co.Did,
-			Created:       co.Created,
-			Modified:      co.Modified,
-			Language:      co.Language,
-			ActiveVersion: co.ActiveVersion,
-			Versions:      versions,
+			Id:                 co.Id,
+			PolicyAddress:      co.PolicyAddress,
+			Did:                co.Did,
+			Created:            co.Created,
+			Modified:           co.Modified,
+			Language:           co.Language,
+			ActiveVersion:      co.ActiveVersion,
+			Versions:           versions,
+			AcceptedNgfVersion: co.AcceptedNgfVersion,
+			AcceptanceDeadline: co.AcceptanceDeadline,
 		})
 	}
 	return &types.QueryListCorporationsResponse{Corporations: out}, nil

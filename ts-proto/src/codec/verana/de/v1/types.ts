@@ -45,7 +45,14 @@ export interface DelegateAuthorization {
     | Date
     | undefined;
   /** period is the reset period for spend_limit. If set, expiration MUST also be set. */
-  period: Duration | undefined;
+  period:
+    | Duration
+    | undefined;
+  /**
+   * accepted_cgf_version is the last version of the corporation's governance
+   * framework the delegate accepted; 0 until it accepts.
+   */
+  acceptedCgfVersion: number;
 }
 
 /**
@@ -170,6 +177,7 @@ function createBaseDelegateAuthorization(): DelegateAuthorization {
     remainingSpend: [],
     expiration: undefined,
     period: undefined,
+    acceptedCgfVersion: 0,
   };
 }
 
@@ -200,6 +208,9 @@ export const DelegateAuthorization = {
     }
     if (message.period !== undefined) {
       Duration.encode(message.period, writer.uint32(82).fork()).ldelim();
+    }
+    if (message.acceptedCgfVersion !== 0) {
+      writer.uint32(88).uint32(message.acceptedCgfVersion);
     }
     return writer;
   },
@@ -277,6 +288,13 @@ export const DelegateAuthorization = {
 
           message.period = Duration.decode(reader, reader.uint32());
           continue;
+        case 11:
+          if (tag !== 88) {
+            break;
+          }
+
+          message.acceptedCgfVersion = reader.uint32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -300,6 +318,7 @@ export const DelegateAuthorization = {
         : [],
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
       period: isSet(object.period) ? Duration.fromJSON(object.period) : undefined,
+      acceptedCgfVersion: isSet(object.acceptedCgfVersion) ? globalThis.Number(object.acceptedCgfVersion) : 0,
     };
   },
 
@@ -329,6 +348,9 @@ export const DelegateAuthorization = {
     if (message.period !== undefined) {
       obj.period = Duration.toJSON(message.period);
     }
+    if (message.acceptedCgfVersion !== 0) {
+      obj.acceptedCgfVersion = Math.round(message.acceptedCgfVersion);
+    }
     return obj;
   },
 
@@ -347,6 +369,7 @@ export const DelegateAuthorization = {
     message.period = (object.period !== undefined && object.period !== null)
       ? Duration.fromPartial(object.period)
       : undefined;
+    message.acceptedCgfVersion = object.acceptedCgfVersion ?? 0;
     return message;
   },
 };

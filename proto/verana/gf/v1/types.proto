@@ -9,8 +9,8 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/verana-labs/verana-node/x/gf/types";
 
 // GovernanceFrameworkVersion represents a versioned governance framework owned
-// by either an Ecosystem (ecosystem_id set, corporation empty) or a Corporation
-// (corporation set, ecosystem_id zero). Exactly one of the two owner fields is set.
+// by an Ecosystem (ecosystem_id set), a Corporation (corporation_id set), or the
+// network when neither is set.
 message GovernanceFrameworkVersion {
   uint64 id = 1;
   uint64 ecosystem_id = 2;
@@ -62,4 +62,27 @@ message GovernanceFrameworkVersionWithDocs {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+}
+
+// EcosystemAcceptance is the last version of an ecosystem's governance
+// framework a corporation accepted, keyed by (ecosystem_id, corporation_id).
+message EcosystemAcceptance {
+  uint64 ecosystem_id = 1;
+  uint64 corporation_id = 2;
+  uint32 version = 3;
+  google.protobuf.Timestamp accepted = 4 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// NetworkGovernance is the network governance group of GlobalVariables the
+// module maintains.
+message NetworkGovernance {
+  // network_governance_framework_versions lists the network framework versions
+  // in version order.
+  repeated uint64 network_governance_framework_versions = 1;
+  // ngf_acceptance_deadline ends the grace period of the last activation.
+  google.protobuf.Timestamp ngf_acceptance_deadline = 2 [(gogoproto.stdtime) = true];
 }

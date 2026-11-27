@@ -175,7 +175,7 @@ func (k Keeper) checkCouncilMembers(ctx context.Context, m *group.MsgUpdateGroup
 			}
 			delete(seats, addr)
 		case "1":
-			if _, err := k.corporations.ResolveCorporationByPolicyAddress(ctx, addr); err != nil {
+			if _, err := k.corporations.GetCorporationByPolicyAddress(ctx, addr); err != nil {
 				return errorsmod.Wrap(types.ErrNotACorporation, addr)
 			}
 			seats[addr] = true
