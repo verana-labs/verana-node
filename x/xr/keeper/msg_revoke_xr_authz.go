@@ -16,7 +16,7 @@ func (ms msgServer) RevokeExchangeRateAuthorization(ctx context.Context, msg *ty
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	if err := ms.checkAuthority(msg.Authority); err != nil {
+	if err := ms.checkAuthority(msg.Signer); err != nil {
 		return nil, err
 	}
 	feederBz, err := ms.addressCodec.StringToBytes(msg.Feeder)

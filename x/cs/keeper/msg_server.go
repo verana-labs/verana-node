@@ -24,17 +24,17 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
-// delegate, and returns the resolved corporation id.
-func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (uint64, error) {
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for a
+// delegate signer, and returns the resolved corporation id.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, signer string, msgType detypes.MsgType) (uint64, error) {
 	if ms.delegationKeeper == nil {
 		return 0, fmt.Errorf("delegation keeper is required for delegate authorization")
 	}
-	co, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
-	if err != nil {
-		return 0, err
+	co, group, err := ms.coKeeper.ResolveSigner(ctx, corporation, signer)
+	if err != nil || group {
+		return co.Id, err
 	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, delegate, msgType, ctx.BlockTime()); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, signer, msgType, ctx.BlockTime()); err != nil {
 		return 0, fmt.Errorf("authorization check failed: %w", err)
 	}
 	return co.Id, nil
@@ -44,7 +44,7 @@ func (ms msgServer) CreateCredentialSchema(goCtx context.Context, msg *types.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// [MOD-CS-MSG-1-2-1] [AUTHZ-CHECK]
-	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA)
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_CREATE_CREDENTIAL_SCHEMA)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 	now := ctx.BlockTime()
 
 	// [MOD-CS-MSG-2-2-1] [AUTHZ-CHECK]
-	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA)
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_UPDATE_CREDENTIAL_SCHEMA)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (ms msgServer) UpdateCredentialSchema(goCtx context.Context, msg *types.Msg
 			sdk.NewAttribute(types.AttributeKeyId, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, strconv.FormatUint(cs.EcosystemId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
+			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 			sdk.NewAttribute(types.AttributeKeyIssuerGrantorValidationValidityPeriod, strconv.FormatUint(uint64(cs.IssuerGrantorValidationValidityPeriod), 10)),
 			sdk.NewAttribute(types.AttributeKeyVerifierGrantorValidationValidityPeriod, strconv.FormatUint(uint64(cs.VerifierGrantorValidationValidityPeriod), 10)),
 			sdk.NewAttribute(types.AttributeKeyIssuerValidationValidityPeriod, strconv.FormatUint(uint64(cs.IssuerValidationValidityPeriod), 10)),
@@ -176,7 +176,7 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 	now := ctx.BlockTime()
 
 	// [MOD-CS-MSG-3-2-1] [AUTHZ-CHECK]
-	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA)
+	corporationID, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_ARCHIVE_CREDENTIAL_SCHEMA)
 	if err != nil {
 		return nil, err
 	}
@@ -221,7 +221,7 @@ func (ms msgServer) ArchiveCredentialSchema(goCtx context.Context, msg *types.Ms
 			sdk.NewAttribute(types.AttributeKeyId, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyEcosystemId, strconv.FormatUint(cs.EcosystemId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-			sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
+			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 			sdk.NewAttribute(types.AttributeKeyArchiveStatus, archiveStatus),
 			sdk.NewAttribute(types.AttributeKeyTimestamp, now.Format(time.RFC3339)),
 		),

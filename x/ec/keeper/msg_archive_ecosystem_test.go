@@ -27,7 +27,7 @@ func TestArchiveEcosystem_Happy(t *testing.T) {
 
 	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{
 		Corporation: tkCorp,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Id:          1,
 		Archive:     true,
 	})
@@ -63,10 +63,10 @@ func TestArchiveEcosystem_UnarchiveHappy(t *testing.T) {
 
 	_, err := ms.CreateEcosystem(ctx, validCreateMsg(t))
 	require.NoError(t, err)
-	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Delegate: tkOp, Id: 1, Archive: true})
+	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Signer: tkOp, Id: 1, Archive: true})
 	require.NoError(t, err)
 
-	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Delegate: tkOp, Id: 1, Archive: false})
+	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Signer: tkOp, Id: 1, Archive: false})
 	require.NoError(t, err)
 
 	ec, err := k.Ecosystem.Get(ctx, 1)
@@ -84,10 +84,10 @@ func TestArchiveEcosystem_IdempotencyAbortOnArchived(t *testing.T) {
 
 	_, err := ms.CreateEcosystem(ctx, validCreateMsg(t))
 	require.NoError(t, err)
-	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Delegate: tkOp, Id: 1, Archive: true})
+	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Signer: tkOp, Id: 1, Archive: true})
 	require.NoError(t, err)
 
-	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Delegate: tkOp, Id: 1, Archive: true})
+	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Signer: tkOp, Id: 1, Archive: true})
 	require.ErrorIs(t, err, types.ErrAlreadyInTargetArchiveState)
 }
 
@@ -103,7 +103,7 @@ func TestArchiveEcosystem_IdempotencyAbortOnUnArchived(t *testing.T) {
 	_, err := ms.CreateEcosystem(ctx, validCreateMsg(t))
 	require.NoError(t, err)
 
-	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Delegate: tkOp, Id: 1, Archive: false})
+	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{Corporation: tkCorp, Signer: tkOp, Id: 1, Archive: false})
 	require.ErrorIs(t, err, types.ErrAlreadyInTargetArchiveState)
 }
 
@@ -115,7 +115,7 @@ func TestArchiveEcosystem_AuthzDenied(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{
 		Corporation: tkCorp,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Id:          1,
 		Archive:     true,
 	})
@@ -127,7 +127,7 @@ func TestArchiveEcosystem_CorporationNotRegistered(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{
 		Corporation: tkCorp,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Id:          1,
 		Archive:     true,
 	})
@@ -141,7 +141,7 @@ func TestArchiveEcosystem_EcosystemNotFound(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(k)
 	_, err := ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{
 		Corporation: tkCorp,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Id:          999,
 		Archive:     true,
 	})
@@ -160,7 +160,7 @@ func TestArchiveEcosystem_WrongCorporation(t *testing.T) {
 
 	_, err = ms.ArchiveEcosystem(ctx, &types.MsgArchiveEcosystem{
 		Corporation: tkCorpB, // wrong signer
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Id:          1,
 		Archive:     true,
 	})

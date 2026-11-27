@@ -99,7 +99,7 @@ async function main() {
       typeUrl: typeUrls.MsgTriggerResolver,
       value: MsgTriggerResolver.fromPartial({
         corporation: setup.authorityAddress,
-        delegate: setup.delegateAddress,
+        signer: setup.delegateAddress,
         id: participantId,
       }),
     };

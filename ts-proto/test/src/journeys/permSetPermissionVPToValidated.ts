@@ -62,7 +62,7 @@ async function main() {
       typeUrl: typeUrls.MsgSetParticipantOPToValidated,
       value: MsgSetParticipantOPToValidated.fromPartial({
         corporation: authzSetup.authorityAddress,
-        delegate: authzSetup.delegateAddress,
+        signer: authzSetup.delegateAddress,
         id: vpSetup.vpPermId,
         effectiveUntil,
         validationFees: 5,

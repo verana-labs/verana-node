@@ -9,8 +9,8 @@ import (
 var _ sdk.Msg = &MsgUpdateParams{}
 
 func (m *MsgUpdateParams) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "authority: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "signer: %s", err)
 	}
 	return m.Params.Validate()
 }

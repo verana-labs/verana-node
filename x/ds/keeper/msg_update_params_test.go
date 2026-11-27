@@ -31,32 +31,32 @@ func TestMsgUpdateParams(t *testing.T) {
 		expErr error
 	}{
 		{
-			name:   "invalid authority",
-			input:  &types.MsgUpdateParams{Authority: "invalid", Params: types.DefaultParams()},
+			name:   "invalid signer",
+			input:  &types.MsgUpdateParams{Signer: "invalid", Params: types.DefaultParams()},
 			expErr: types.ErrInvalidSigner,
 		},
 		{
 			name:   "empty params",
-			input:  &types.MsgUpdateParams{Authority: authority, Params: types.Params{}},
+			input:  &types.MsgUpdateParams{Signer: authority, Params: types.Params{}},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name: "resulting min uptime above target",
-			input: &types.MsgUpdateParams{Authority: authority, Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: authority, Params: withEdit(func(p *types.Params) {
 				p.ValidatorMinUptime = math.LegacyMustNewDecFromStr("0.995")
 			})},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name: "foundation account blocked",
-			input: &types.MsgUpdateParams{Authority: authority, Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: authority, Params: withEdit(func(p *types.Params) {
 				p.FoundationAccount = blocked
 			})},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name: "all good",
-			input: &types.MsgUpdateParams{Authority: authority, Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: authority, Params: withEdit(func(p *types.Params) {
 				p.ValidatorNodeBudget = math.LegacyMustNewDecFromStr("5000")
 				p.CouncilBudget = math.LegacyMustNewDecFromStr("100000")
 				p.FoundationBudget = math.LegacyMustNewDecFromStr("200000")
@@ -90,7 +90,7 @@ func TestMsgUpdateParams_EmitsMsg(t *testing.T) {
 
 	p := types.DefaultParams()
 	p.BondingEnabled = true
-	msg := &types.MsgUpdateParams{Authority: f.authority(t), Params: p}
+	msg := &types.MsgUpdateParams{Signer: f.authority(t), Params: p}
 	_, err := ms.UpdateParams(f.ctx, msg)
 	require.NoError(t, err)
 

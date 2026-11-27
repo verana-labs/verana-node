@@ -29,60 +29,60 @@ func TestMsgUpdateParams(t *testing.T) {
 		expErr error
 	}{
 		{
-			name:   "invalid authority",
-			input:  &types.MsgUpdateParams{Authority: "invalid", Params: params},
+			name:   "invalid signer",
+			input:  &types.MsgUpdateParams{Signer: "invalid", Params: params},
 			expErr: types.ErrInvalidSigner,
 		},
 		{
 			name:   "empty params",
-			input:  &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: types.Params{}},
+			input:  &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: types.Params{}},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name: "trust_deposit_rate above 1",
-			input: &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
 				p.TrustDepositRate = math.LegacyMustNewDecFromStr("1.01")
 			})},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name: "tu_decay_rate above 0.01",
-			input: &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
 				p.TuDecayRate = math.LegacyMustNewDecFromStr("0.02")
 			})},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name: "main_fiat_currency is immutable",
-			input: &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
 				p.MainFiatCurrency = "EUR"
 			})},
 			expErr: types.ErrImmutableParam,
 		},
 		{
 			name: "tu_peg_value_genesis is immutable",
-			input: &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
 				p.TuPegValueGenesis = math.LegacyNewDec(1000)
 			})},
 			expErr: types.ErrImmutableParam,
 		},
 		{
 			name: "epoch_length is immutable",
-			input: &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
 				p.EpochLength = time.Hour
 			})},
 			expErr: types.ErrImmutableParam,
 		},
 		{
 			name: "vna_total_supply is immutable",
-			input: &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
 				p.VnaTotalSupply = 1
 			})},
 			expErr: types.ErrImmutableParam,
 		},
 		{
 			name: "mutable values",
-			input: &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: withEdit(func(p *types.Params) {
 				p.TrustDepositRate = math.LegacyMustNewDecFromStr("0.1")
 				p.VuaRewardRate = math.LegacyMustNewDecFromStr("0.02")
 				p.NetworkGasPrice = math.LegacyMustNewDecFromStr("0.5")
@@ -115,7 +115,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 	next.NetworkGasPrice = math.LegacyMustNewDecFromStr("0.5")
 	next.TuDecayRate = math.LegacyMustNewDecFromStr("0.002")
 	next.MaxGasPerMsgType = []types.MaxGasEntry{{MsgTypeUrl: "/cosmos.group.v1.MsgVote", MaxGas: 100000}}
-	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: next})
+	_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: next})
 	require.NoError(t, err)
 
 	ev := lastEvent(t, wctx, types.EventTypeUpdateParams)
@@ -123,7 +123,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 	for _, a := range ev.Attributes {
 		attrs[a.Key] = a.Value
 	}
-	require.Equal(t, k.GetAuthority(), attrs[types.AttributeKeyAuthority])
+	require.Equal(t, k.GetAuthority(), attrs[types.AttributeKeySigner])
 	require.Equal(t, "0.500000000000000000", attrs["network_gas_price"])
 	require.Equal(t, "0.001000000000000000", attrs["tu_decay_rate"])
 	require.Equal(t, "0.002000000000000000", attrs[types.AttributeKeyPendingTuDecayRate])
@@ -143,7 +143,7 @@ func TestMsgUpdateParams_PendingTuDecayRate(t *testing.T) {
 	inForce := types.DefaultParams().TuDecayRate
 
 	send := func(p types.Params) {
-		_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Authority: k.GetAuthority(), Params: p})
+		_, err := ms.UpdateParams(wctx, &types.MsgUpdateParams{Signer: k.GetAuthority(), Params: p})
 		require.NoError(t, err)
 	}
 	withRate := func(rate string) types.Params {

@@ -13,10 +13,10 @@ import (
 
 // [MOD-DS-MSG-1] Update Module Parameters
 func (k msgServer) UpdateParams(ctx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
-	authority, err := k.addressCodec.StringToBytes(req.Authority)
+	authority, err := k.addressCodec.StringToBytes(req.Signer)
 	if err != nil || !bytes.Equal(k.GetAuthority(), authority) {
 		expected, _ := k.addressCodec.BytesToString(k.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expected, req.Authority)
+		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid signer; expected %s, got %s", expected, req.Signer)
 	}
 	if err := k.validateParams(req.Params); err != nil {
 		return nil, err

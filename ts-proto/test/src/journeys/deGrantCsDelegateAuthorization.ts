@@ -162,8 +162,8 @@ async function main() {
     typeUrl: typeUrls.MsgGrantDelegateAuthorization,
     value: MsgGrantDelegateAuthorization.fromPartial({
       corporation: authorityAccount.address,
-      // delegate == corporation policy_address — authority acts alone (AUTHZ-CHECK-1 skipped)
-      delegate: authorityAccount.address,
+      // signer == corporation policy_address — authority acts alone (AUTHZ-CHECK-1 skipped)
+      signer: authorityAccount.address,
       grantee: delegateAccount.address,
       msgTypes: allCsMsgTypes,
       withFeegrant: false,

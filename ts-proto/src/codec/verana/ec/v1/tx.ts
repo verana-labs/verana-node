@@ -13,7 +13,8 @@ export const protobufPackage = "verana.ec.v1";
 
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParams {
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   params: Params | undefined;
 }
 
@@ -21,14 +22,18 @@ export interface MsgUpdateParamsResponse {
 }
 
 /**
- * MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `delegate`;
+ * MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `signer`;
  * AUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the
  * controlling Corporation entry. Seeds v1 of the Ecosystem's Governance
  * Framework via MOD-GF.
  */
 export interface MsgCreateEcosystem {
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   did: string;
   language: string;
   docUrl: string;
@@ -42,7 +47,11 @@ export interface MsgCreateEcosystemResponse {
 /** MsgUpdateEcosystem implements MOD-ES-MSG-2. Only `did` is mutable. */
 export interface MsgUpdateEcosystem {
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   id: number;
   did: string;
 }
@@ -56,7 +65,11 @@ export interface MsgUpdateEcosystemResponse {
  */
 export interface MsgArchiveEcosystem {
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   id: number;
   archive: boolean;
 }
@@ -65,13 +78,13 @@ export interface MsgArchiveEcosystemResponse {
 }
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
+  return { signer: "", params: undefined };
 }
 
 export const MsgUpdateParams = {
   encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -91,7 +104,7 @@ export const MsgUpdateParams = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -111,15 +124,15 @@ export const MsgUpdateParams = {
 
   fromJSON(object: any): MsgUpdateParams {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
     };
   },
 
   toJSON(message: MsgUpdateParams): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
@@ -132,7 +145,7 @@ export const MsgUpdateParams = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
@@ -184,7 +197,7 @@ export const MsgUpdateParamsResponse = {
 };
 
 function createBaseMsgCreateEcosystem(): MsgCreateEcosystem {
-  return { corporation: "", delegate: "", did: "", language: "", docUrl: "", docDigestSri: "" };
+  return { corporation: "", signer: "", did: "", language: "", docUrl: "", docDigestSri: "" };
 }
 
 export const MsgCreateEcosystem = {
@@ -192,8 +205,8 @@ export const MsgCreateEcosystem = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.did !== "") {
       writer.uint32(26).string(message.did);
@@ -229,7 +242,7 @@ export const MsgCreateEcosystem = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -271,7 +284,7 @@ export const MsgCreateEcosystem = {
   fromJSON(object: any): MsgCreateEcosystem {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       did: isSet(object.did) ? globalThis.String(object.did) : "",
       language: isSet(object.language) ? globalThis.String(object.language) : "",
       docUrl: isSet(object.docUrl) ? globalThis.String(object.docUrl) : "",
@@ -284,8 +297,8 @@ export const MsgCreateEcosystem = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.did !== "") {
       obj.did = message.did;
@@ -308,7 +321,7 @@ export const MsgCreateEcosystem = {
   fromPartial<I extends Exact<DeepPartial<MsgCreateEcosystem>, I>>(object: I): MsgCreateEcosystem {
     const message = createBaseMsgCreateEcosystem();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.did = object.did ?? "";
     message.language = object.language ?? "";
     message.docUrl = object.docUrl ?? "";
@@ -375,7 +388,7 @@ export const MsgCreateEcosystemResponse = {
 };
 
 function createBaseMsgUpdateEcosystem(): MsgUpdateEcosystem {
-  return { corporation: "", delegate: "", id: 0, did: "" };
+  return { corporation: "", signer: "", id: 0, did: "" };
 }
 
 export const MsgUpdateEcosystem = {
@@ -383,8 +396,8 @@ export const MsgUpdateEcosystem = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -414,7 +427,7 @@ export const MsgUpdateEcosystem = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -442,7 +455,7 @@ export const MsgUpdateEcosystem = {
   fromJSON(object: any): MsgUpdateEcosystem {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       did: isSet(object.did) ? globalThis.String(object.did) : "",
     };
@@ -453,8 +466,8 @@ export const MsgUpdateEcosystem = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -471,7 +484,7 @@ export const MsgUpdateEcosystem = {
   fromPartial<I extends Exact<DeepPartial<MsgUpdateEcosystem>, I>>(object: I): MsgUpdateEcosystem {
     const message = createBaseMsgUpdateEcosystem();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     message.did = object.did ?? "";
     return message;
@@ -522,7 +535,7 @@ export const MsgUpdateEcosystemResponse = {
 };
 
 function createBaseMsgArchiveEcosystem(): MsgArchiveEcosystem {
-  return { corporation: "", delegate: "", id: 0, archive: false };
+  return { corporation: "", signer: "", id: 0, archive: false };
 }
 
 export const MsgArchiveEcosystem = {
@@ -530,8 +543,8 @@ export const MsgArchiveEcosystem = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -561,7 +574,7 @@ export const MsgArchiveEcosystem = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -589,7 +602,7 @@ export const MsgArchiveEcosystem = {
   fromJSON(object: any): MsgArchiveEcosystem {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       archive: isSet(object.archive) ? globalThis.Boolean(object.archive) : false,
     };
@@ -600,8 +613,8 @@ export const MsgArchiveEcosystem = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -618,7 +631,7 @@ export const MsgArchiveEcosystem = {
   fromPartial<I extends Exact<DeepPartial<MsgArchiveEcosystem>, I>>(object: I): MsgArchiveEcosystem {
     const message = createBaseMsgArchiveEcosystem();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     message.archive = object.archive ?? false;
     return message;

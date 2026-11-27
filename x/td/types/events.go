@@ -38,7 +38,7 @@ const (
 	AttributeKeyOldShareValue         = "old_share_value"
 	AttributeKeyNewShareValue         = "new_share_value"
 	AttributeKeyReason                = "reason"
-	AttributeKeyAuthority             = "authority"
+	AttributeKeySigner                = "signer"
 	AttributeKeyPendingTuDecayRate    = "pending_tu_decay_rate"
 	AttributeKeyEpoch                 = "epoch"
 	AttributeKeyTuPegValue            = "tu_peg_value"

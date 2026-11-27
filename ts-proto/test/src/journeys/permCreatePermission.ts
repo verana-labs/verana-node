@@ -92,7 +92,7 @@ async function main() {
       typeUrl: typeUrls.MsgSelfCreateParticipant,
       value: MsgSelfCreateParticipant.fromPartial({
         corporation: setup.authorityAddress,
-        delegate: setup.delegateAddress,
+        signer: setup.delegateAddress,
         role: ParticipantRole.ISSUER,
         validatorParticipantId: rootPermId,
         did,

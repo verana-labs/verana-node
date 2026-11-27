@@ -26,7 +26,7 @@ func TestAuthzCheck5_DelegateAuthorization(t *testing.T) {
 	t.Run("GrantDelegateAuthorization: unregistered corporation aborts", func(t *testing.T) {
 		_, err := ms.GrantDelegateAuthorization(f.ctx, &types.MsgGrantDelegateAuthorization{
 			Corporation: corp,
-			Delegate:    corp, // group-proposal path: delegate == corporation
+			Signer:      corp, // group-proposal path: signer == corporation
 			Grantee:     grantee,
 			MsgTypes:    []types.MsgType{mtEcosystem},
 		})
@@ -36,7 +36,7 @@ func TestAuthzCheck5_DelegateAuthorization(t *testing.T) {
 	t.Run("RevokeDelegateAuthorization: unregistered corporation aborts", func(t *testing.T) {
 		_, err := ms.RevokeDelegateAuthorization(f.ctx, &types.MsgRevokeDelegateAuthorization{
 			Corporation: corp,
-			Delegate:    corp, // group-proposal path: delegate == corporation
+			Signer:      corp, // group-proposal path: signer == corporation
 			Grantee:     grantee,
 		})
 		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)

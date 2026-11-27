@@ -12,7 +12,7 @@ const (
 	AttributeKeyId                                      = "credential_schema_id"
 	AttributeKeyEcosystemId                             = "ecosystem_id"
 	AttributeKeyCorporation                             = "corporation"
-	AttributeKeyDelegate                                = "delegate"
+	AttributeKeySigner                                  = "signer"
 	AttributeKeyTimestamp                               = "timestamp"
 	AttributeKeyArchiveStatus                           = "archive_status"
 	AttributeKeyIssuerGrantorValidationValidityPeriod   = "issuer_grantor_validation_validity_period"
@@ -23,5 +23,4 @@ const (
 	AttributeKeyPricingAssetType                        = "pricing_asset_type"
 	AttributeKeyPricingAsset                            = "pricing_asset"
 	AttributeKeyDigestAlgorithm                         = "digest_algorithm"
-	AttributeKeyAuthority                               = "authority"
 )

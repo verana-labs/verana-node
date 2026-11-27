@@ -32,6 +32,11 @@ type stubCorporationKeeper struct{}
 func (*stubCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
 	return types.CorporationView{}, types.ErrSubjectNotFound
 }
+
+func (m *stubCorporationKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
 func (*stubCorporationKeeper) GetByID(_ context.Context, _ uint64) (types.CorporationView, bool) {
 	return types.CorporationView{}, false
 }

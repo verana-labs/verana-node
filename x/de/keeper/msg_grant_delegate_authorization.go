@@ -18,28 +18,21 @@ func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types
 
 	// [MOD-DE-MSG-3-2] Basic checks (stateful).
 
-	// [AUTHZ-CHECK-5] Signing corporation account MUST be a registered Corporation;
-	// resolve it to co.id.
-	co, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, msg.Corporation)
+	// [AUTHZ-CHECK-5] Corporation account MUST be a registered Corporation;
+	// resolve it to co.id. AUTHZ-CHECK applies off the group-proposal path.
+	co, group, err := ms.corporationKeeper().ResolveSigner(ctx, msg.Corporation, msg.Signer)
 	if err != nil {
 		return nil, err
 	}
-
-	// Group-proposal path: delegate equals corporation and AUTHZ-CHECK-5 alone
-	// applies. Otherwise AUTHZ-CHECK MUST pass for the delegate.
-	if msg.Delegate != msg.Corporation {
+	if !group {
 		if err := ms.CheckDelegateAuthorization(
 			ctx,
 			co.Id,
-			msg.Delegate,
+			msg.Signer,
 			types.MsgType_MSG_TYPE_GRANT_DELEGATE_AUTHORIZATION,
 			now,
 		); err != nil {
 			return nil, err
-		}
-		// [MOD-DE-MSG-3] A delegate cannot grant itself new msg_types (escalation).
-		if msg.Grantee == msg.Delegate {
-			return nil, fmt.Errorf("delegate cannot grant authorization to itself; use a group proposal")
 		}
 	}
 
@@ -56,6 +49,11 @@ func (ms msgServer) GrantDelegateAuthorization(goCtx context.Context, msg *types
 	// grantee MUST NOT be the corporation's own policy_address.
 	if types.IsOwnPolicyAddress(co.PolicyAddress, msg.Grantee) {
 		return nil, types.ErrOwnPolicyAddress
+	}
+
+	// A delegate does not grant an authorization to itself.
+	if msg.Grantee == msg.Signer {
+		return nil, fmt.Errorf("grantee must not be the signer")
 	}
 
 	// Mutual exclusivity: a VSOperatorAuthorization MUST NOT exist for

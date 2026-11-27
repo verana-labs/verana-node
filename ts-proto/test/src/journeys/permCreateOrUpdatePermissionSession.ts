@@ -103,7 +103,7 @@ async function main() {
       typeUrl: typeUrls.MsgStartParticipantOP,
       value: MsgStartParticipantOP.fromPartial({
         corporation: setup.authorityAddress,
-        delegate: setup.delegateAddress,
+        signer: setup.delegateAddress,
         role: ParticipantRole.ISSUER,
         validatorParticipantId: rootPermId,
         did,
@@ -135,7 +135,7 @@ async function main() {
       typeUrl: typeUrls.MsgSetParticipantOPToValidated,
       value: MsgSetParticipantOPToValidated.fromPartial({
         corporation: setup.authorityAddress,
-        delegate: setup.delegateAddress,
+        signer: setup.delegateAddress,
         id: issuerParticipantId,
         effectiveUntil,
         validationFees: 5,
@@ -180,7 +180,7 @@ async function main() {
       typeUrl: typeUrls.MsgCreateOrUpdateParticipantSession,
       value: MsgCreateOrUpdateParticipantSession.fromPartial({
         corporation: setup.authorityAddress,
-        vsAccount: vsOperatorAccount.address,
+        signer: vsOperatorAccount.address,
         id: sessionId,
         issuerParticipantId: issuerParticipantId,
         verifierParticipantId: 0,
@@ -211,7 +211,7 @@ async function main() {
       typeUrl: typeUrls.MsgCreateOrUpdateParticipantSession,
       value: MsgCreateOrUpdateParticipantSession.fromPartial({
         corporation: setup.authorityAddress,
-        vsAccount: vsOperatorAccount.address,
+        signer: vsOperatorAccount.address,
         id: sessionId,
         issuerParticipantId: issuerParticipantId,
         verifierParticipantId: 0,

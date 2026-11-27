@@ -42,7 +42,7 @@ export async function createRootPermissionForTest(
     typeUrl: typeUrls.MsgCreateRootParticipant,
     value: MsgCreateRootParticipant.fromPartial({
       corporation: address,
-      delegate: "",
+      signer: "",
       schemaId: schemaId,
       did: did,
       effectiveFrom: effectiveFrom,
@@ -186,7 +186,7 @@ export async function createPermissionForTest(
     typeUrl: typeUrls.MsgSelfCreateParticipant,
     value: MsgSelfCreateParticipant.fromPartial({
       corporation: address,
-      delegate: "",
+      signer: "",
       role: type,
       validatorParticipantId: 0,
       did: did,
@@ -310,7 +310,7 @@ export async function createSchemaForTest(
     typeUrl: typeUrls.MsgCreateEcosystem,
     value: MsgCreateEcosystem.fromPartial({
       corporation: address,
-      delegate: "",
+      signer: "",
       did: did,
       language: "en",
       docUrl: "http://example-ecosystem.com/doc-v1",
@@ -385,7 +385,7 @@ export async function createSchemaForTest(
     typeUrl: typeUrls.MsgCreateCredentialSchema,
     value: MsgCreateCredentialSchema.fromPartial({
       corporation: address,
-      delegate: "",
+      signer: "",
       ecosystemId: ecId,
       jsonSchema: generateSimpleSchema(ecId.toString()),
       issuerGrantorValidationValidityPeriod: { value: 0 } as OptionalUInt32,
@@ -544,7 +544,7 @@ export async function createECWithDelegate(
     typeUrl: typeUrls.MsgCreateEcosystem,
     value: MsgCreateEcosystem.fromPartial({
       corporation,
-      delegate,
+      signer: delegate,
       did,
       language: "en",
       docUrl: "http://perm-test-ecosystem.com/doc-v1",
@@ -599,7 +599,7 @@ export async function createCSWithDelegate(
     typeUrl: typeUrls.MsgCreateCredentialSchema,
     value: MsgCreateCredentialSchema.fromPartial({
       corporation,
-      delegate,
+      signer: delegate,
       ecosystemId,
       jsonSchema,
       issuerGrantorValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 0 }),
@@ -650,7 +650,7 @@ export async function createRootPermWithDelegate(
     typeUrl: typeUrls.MsgCreateRootParticipant,
     value: MsgCreateRootParticipant.fromPartial({
       corporation,
-      delegate,
+      signer: delegate,
       schemaId,
       did,
       effectiveFrom,
@@ -720,7 +720,7 @@ export async function createValidatedPermission(
     typeUrl: typeUrls.MsgStartParticipantOP,
     value: MsgStartParticipantOP.fromPartial({
       corporation,
-      delegate,
+      signer: delegate,
       role: ParticipantRole.ISSUER,
       validatorParticipantId: rootPermId,
       did,
@@ -751,7 +751,7 @@ export async function createValidatedPermission(
     typeUrl: typeUrls.MsgSetParticipantOPToValidated,
     value: MsgSetParticipantOPToValidated.fromPartial({
       corporation,
-      delegate,
+      signer: delegate,
       id: vpPermId,
       effectiveUntil,
       validationFees: 5,

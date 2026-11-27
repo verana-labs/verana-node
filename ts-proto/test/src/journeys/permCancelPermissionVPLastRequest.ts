@@ -63,7 +63,7 @@ async function main() {
       typeUrl: typeUrls.MsgRenewParticipantOP,
       value: MsgRenewParticipantOP.fromPartial({
         corporation: authzSetup.authorityAddress,
-        delegate: authzSetup.delegateAddress,
+        signer: authzSetup.delegateAddress,
         id: permId,
       }),
     };
@@ -85,7 +85,7 @@ async function main() {
       typeUrl: typeUrls.MsgCancelParticipantOPLastRequest,
       value: MsgCancelParticipantOPLastRequest.fromPartial({
         corporation: authzSetup.authorityAddress,
-        delegate: authzSetup.delegateAddress,
+        signer: authzSetup.delegateAddress,
         id: permId,
       }),
     };

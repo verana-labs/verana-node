@@ -54,7 +54,7 @@ func TestCreateExchangeRate_NoUpperValidityBound(t *testing.T) {
 func TestCreateExchangeRate_InvalidAuthority(t *testing.T) {
 	f := initFixture(t)
 	msg := createMsg(t, f)
-	msg.Authority = testAccount("not_council")
+	msg.Signer = testAccount("not_council")
 	_, err := keeper.NewMsgServerImpl(f.keeper).CreateExchangeRate(f.ctx, msg)
 	require.ErrorIs(t, err, types.ErrInvalidSigner)
 }

@@ -22,20 +22,22 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 	}
 
 	// [AUTHZ-CHECK-5] (with GF-CHECK-1): AUTHZ-CHECK-1 consumes the co it resolves.
-	co, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, msg.Authority)
+	co, group, err := ms.coKeeper.ResolveSigner(ctx, msg.Corporation, msg.Signer)
 	if err != nil {
 		return nil, err
 	}
 
 	// [MOD-DI-MSG-1-2-1] [AUTHZ-CHECK-1] Verify delegate authorization.
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(
-		ctx,
-		co.Id,
-		msg.Delegate,
-		detypes.MsgType_MSG_TYPE_STORE_DIGEST,
-		now,
-	); err != nil {
-		return nil, fmt.Errorf("authorization check failed: %w", err)
+	if !group {
+		if err := ms.delegationKeeper.CheckDelegateAuthorization(
+			ctx,
+			co.Id,
+			msg.Signer,
+			detypes.MsgType_MSG_TYPE_STORE_DIGEST,
+			now,
+		); err != nil {
+			return nil, fmt.Errorf("authorization check failed: %w", err)
+		}
 	}
 
 	// [MOD-DI-MSG-1-3] A duplicate digest is an idempotent no-op (returns success).
@@ -55,7 +57,7 @@ func (ms msgServer) StoreDigest(goCtx context.Context, msg *types.MsgStoreDigest
 		return nil, fmt.Errorf("failed to store digest: %w", err)
 	}
 
-	emitStoreDigestEvent(ctx, msg.Authority, msg.Delegate, msg.Digest, types.AttributeValueSourceMsg, now)
+	emitStoreDigestEvent(ctx, msg.Corporation, msg.Signer, msg.Digest, types.AttributeValueSourceMsg, now)
 
 	return &types.MsgStoreDigestResponse{}, nil
 }
@@ -91,15 +93,15 @@ func (k Keeper) StoreDigestModuleCall(ctx context.Context, authority, digest str
 	return nil
 }
 
-func emitStoreDigestEvent(ctx sdk.Context, corporation, delegate, digest, source string, now time.Time) {
+func emitStoreDigestEvent(ctx sdk.Context, corporation, signer, digest, source string, now time.Time) {
 	attrs := []sdk.Attribute{
 		sdk.NewAttribute(types.AttributeKeyCorporation, corporation),
 		sdk.NewAttribute(types.AttributeKeyDigest, digest),
 		sdk.NewAttribute(types.AttributeKeySource, source),
 		sdk.NewAttribute(types.AttributeKeyTimestamp, now.UTC().Format(time.RFC3339Nano)),
 	}
-	if delegate != "" {
-		attrs = append(attrs, sdk.NewAttribute(types.AttributeKeyDelegate, delegate))
+	if signer != "" {
+		attrs = append(attrs, sdk.NewAttribute(types.AttributeKeySigner, signer))
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(types.EventTypeStoreDigest, attrs...))
 }
