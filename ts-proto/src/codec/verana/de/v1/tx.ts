@@ -17,18 +17,17 @@ export const protobufPackage = "verana.de.v1";
  * [MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization
  * to a grantee on behalf of a corporation.
  *
- * The signer is `delegate`. On the group-proposal path the corporation's
- * policy account executes the message and `delegate` equals `corporation`;
- * only AUTHZ-CHECK-5 then applies.
+ * On the group-proposal path the corporation's policy account executes the
+ * message and `signer` equals `corporation`; only AUTHZ-CHECK-5 then applies.
  */
 export interface MsgGrantDelegateAuthorization {
   /** corporation is the policy_address of the corporation granting the authorization. */
   corporation: string;
   /**
-   * delegate is the signer: an authorized delegate, or the corporation's
-   * policy_address itself on the group-proposal path.
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
    */
-  delegate: string;
+  signer: string;
   /** grantee is the account that receives the authorization from corporation. */
   grantee: string;
   /**
@@ -79,10 +78,10 @@ export interface MsgRevokeDelegateAuthorization {
   /** corporation is the policy_address of the corporation revoking the authorization. */
   corporation: string;
   /**
-   * delegate is the signer: an authorized delegate, or the corporation's
-   * policy_address itself on the group-proposal path.
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
    */
-  delegate: string;
+  signer: string;
   /** grantee is the account whose authorization is being revoked. */
   grantee: string;
 }
@@ -97,7 +96,7 @@ export interface MsgRevokeDelegateAuthorizationResponse {
 function createBaseMsgGrantDelegateAuthorization(): MsgGrantDelegateAuthorization {
   return {
     corporation: "",
-    delegate: "",
+    signer: "",
     grantee: "",
     msgTypes: [],
     expiration: undefined,
@@ -114,8 +113,8 @@ export const MsgGrantDelegateAuthorization = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.grantee !== "") {
       writer.uint32(26).string(message.grantee);
@@ -165,7 +164,7 @@ export const MsgGrantDelegateAuthorization = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -245,7 +244,7 @@ export const MsgGrantDelegateAuthorization = {
   fromJSON(object: any): MsgGrantDelegateAuthorization {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       grantee: isSet(object.grantee) ? globalThis.String(object.grantee) : "",
       msgTypes: globalThis.Array.isArray(object?.msgTypes) ? object.msgTypes.map((e: any) => msgTypeFromJSON(e)) : [],
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
@@ -270,8 +269,8 @@ export const MsgGrantDelegateAuthorization = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.grantee !== "") {
       obj.grantee = message.grantee;
@@ -308,7 +307,7 @@ export const MsgGrantDelegateAuthorization = {
   ): MsgGrantDelegateAuthorization {
     const message = createBaseMsgGrantDelegateAuthorization();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.grantee = object.grantee ?? "";
     message.msgTypes = object.msgTypes?.map((e) => e) || [];
     message.expiration = object.expiration ?? undefined;
@@ -375,7 +374,7 @@ export const MsgGrantDelegateAuthorizationResponse = {
 };
 
 function createBaseMsgRevokeDelegateAuthorization(): MsgRevokeDelegateAuthorization {
-  return { corporation: "", delegate: "", grantee: "" };
+  return { corporation: "", signer: "", grantee: "" };
 }
 
 export const MsgRevokeDelegateAuthorization = {
@@ -383,8 +382,8 @@ export const MsgRevokeDelegateAuthorization = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.grantee !== "") {
       writer.uint32(26).string(message.grantee);
@@ -411,7 +410,7 @@ export const MsgRevokeDelegateAuthorization = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -432,7 +431,7 @@ export const MsgRevokeDelegateAuthorization = {
   fromJSON(object: any): MsgRevokeDelegateAuthorization {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       grantee: isSet(object.grantee) ? globalThis.String(object.grantee) : "",
     };
   },
@@ -442,8 +441,8 @@ export const MsgRevokeDelegateAuthorization = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.grantee !== "") {
       obj.grantee = message.grantee;
@@ -459,7 +458,7 @@ export const MsgRevokeDelegateAuthorization = {
   ): MsgRevokeDelegateAuthorization {
     const message = createBaseMsgRevokeDelegateAuthorization();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.grantee = object.grantee ?? "";
     return message;
   },

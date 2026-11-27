@@ -21,8 +21,8 @@ func TestMsgUpdateParams(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 
 		_, err := ms.UpdateParams(ctx, &types.MsgUpdateParams{
-			Authority: govAuthority,
-			Params:    types.DefaultParams(),
+			Signer: govAuthority,
+			Params: types.DefaultParams(),
 		})
 		require.NoError(t, err)
 	})
@@ -32,8 +32,8 @@ func TestMsgUpdateParams(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 
 		_, err := ms.UpdateParams(ctx, &types.MsgUpdateParams{
-			Authority: govAuthority,
-			Params:    types.NewParams(0),
+			Signer: govAuthority,
+			Params: types.NewParams(0),
 		})
 		require.ErrorIs(t, err, types.ErrInvalidParams)
 	})
@@ -43,8 +43,8 @@ func TestMsgUpdateParams(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 
 		_, err := ms.UpdateParams(ctx, &types.MsgUpdateParams{
-			Authority: govAuthority,
-			Params:    types.NewParams(7 * 24 * time.Hour),
+			Signer: govAuthority,
+			Params: types.NewParams(7 * 24 * time.Hour),
 		})
 		require.NoError(t, err)
 		require.Equal(t, types.NewParams(7*24*time.Hour), k.GetParams(ctx))
@@ -58,8 +58,8 @@ func TestMsgUpdateParams(t *testing.T) {
 			}
 		}
 		require.Equal(t, map[string]string{
-			types.AttributeKeyAuthority: govAuthority,
-			"gf_acceptance_grace_min":   "168h0m0s",
+			types.AttributeKeySigner:  govAuthority,
+			"gf_acceptance_grace_min": "168h0m0s",
 		}, attrs)
 	})
 
@@ -68,8 +68,8 @@ func TestMsgUpdateParams(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 
 		_, err := ms.UpdateParams(ctx, &types.MsgUpdateParams{
-			Authority: testCorp, // not the gov module address
-			Params:    types.DefaultParams(),
+			Signer: testCorp, // not the gov module address
+			Params: types.DefaultParams(),
 		})
 		require.Error(t, err)
 	})

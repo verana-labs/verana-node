@@ -11,6 +11,5 @@ const (
 	AttributeKeyDID           = "did"
 	AttributeKeyLanguage      = "language"
 	AttributeKeyArchiveStatus = "archive_status"
-	AttributeKeyDelegate      = "delegate"
-	AttributeKeyAuthority     = "authority"
+	AttributeKeySigner        = "signer"
 )

@@ -12,9 +12,8 @@ const (
 	AttributeKeyGFDocID       = "gfd_id"
 	AttributeKeyVersion       = "version"
 	AttributeKeyLanguage      = "language"
-	AttributeKeyDelegate      = "delegate"
+	AttributeKeySigner        = "signer"
 	AttributeKeyDocURL        = "doc_url"
 	AttributeKeyDocDigestSRI  = "doc_digest_sri"
 	AttributeKeyActiveSince   = "active_since"
-	AttributeKeyAuthority     = "authority"
 )

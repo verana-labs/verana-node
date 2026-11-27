@@ -46,9 +46,9 @@ func RunXrRevokeExchangeRateAuthzJourney(ctx context.Context, client cosmosclien
 	fmt.Println("\n--- Step 2: Submit RevokeExchangeRateAuthorization council proposal ---")
 
 	revokeMsg := &xrtypes.MsgRevokeExchangeRateAuthorization{
-		Authority: council,
-		XrId:      exchangeRateID,
-		Feeder:    feederAddr,
+		Signer: council,
+		XrId:   exchangeRateID,
+		Feeder: feederAddr,
 	}
 
 	proposalID, err := lib.SubmitCouncilProposal(

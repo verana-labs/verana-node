@@ -18,9 +18,9 @@ func (ms msgServer) UpdateExchangeRate(ctx context.Context, msg *types.MsgUpdate
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	feeder, err := ms.addressCodec.StringToBytes(msg.Feeder)
+	feeder, err := ms.addressCodec.StringToBytes(msg.Signer)
 	if err != nil {
-		return nil, errorsmod.Wrap(err, "invalid feeder address")
+		return nil, errorsmod.Wrap(err, "invalid signer address")
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -36,7 +36,7 @@ func (ms msgServer) UpdateExchangeRate(ctx context.Context, msg *types.MsgUpdate
 
 	authz, err := ms.ExchangeRateAuthorizations.Get(ctx, collections.Join(msg.Id, sdk.AccAddress(feeder)))
 	if err != nil {
-		return nil, errorsmod.Wrapf(types.ErrAuthorizationNotFound, "feeder %s is not authorized to update exchange rate %d", msg.Feeder, msg.Id)
+		return nil, errorsmod.Wrapf(types.ErrAuthorizationNotFound, "feeder %s is not authorized to update exchange rate %d", msg.Signer, msg.Id)
 	}
 	if now >= authz.Expiration {
 		return nil, types.ErrAuthorizationExpired

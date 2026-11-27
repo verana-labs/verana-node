@@ -33,7 +33,7 @@ func RunXrCreateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	fmt.Println("\n--- Step 1: CreateExchangeRate council proposal ---")
 
 	createMsg := &xrtypes.MsgCreateExchangeRate{
-		Authority:        council,
+		Signer:           council,
 		BaseAssetType:    cstypes.PricingAssetType_FIAT,
 		BaseAsset:        "EUR",
 		QuoteAssetType:   cstypes.PricingAssetType_COIN,
@@ -84,7 +84,7 @@ func RunXrCreateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 
 	toggleID, err := lib.SubmitCouncilProposal(client, ctx, cooluser,
 		"Activate EUR/uvna Exchange Rate", "Set exchange rate state to true",
-		&xrtypes.MsgSetExchangeRateState{Authority: council, Id: exchangeRateID, State: true})
+		&xrtypes.MsgSetExchangeRateState{Signer: council, Id: exchangeRateID, State: true})
 	if err != nil {
 		return fmt.Errorf("step 3 failed: %w", err)
 	}
@@ -107,7 +107,7 @@ func RunXrCreateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 
 	rejectID, err := lib.SubmitCouncilProposal(client, ctx, cooluser,
 		"Deactivate EUR/uvna Exchange Rate", "Only one of three seats votes yes",
-		&xrtypes.MsgSetExchangeRateState{Authority: council, Id: exchangeRateID, State: false})
+		&xrtypes.MsgSetExchangeRateState{Signer: council, Id: exchangeRateID, State: false})
 	if err != nil {
 		return fmt.Errorf("step 4 failed: %w", err)
 	}

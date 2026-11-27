@@ -40,8 +40,8 @@ export interface ExchangeRateAuthorization {
 
 /** MsgCreateExchangeRate is the Msg/CreateExchangeRate request type. */
 export interface MsgCreateExchangeRate {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   baseAssetType: PricingAssetType;
   baseAsset: string;
   quoteAssetType: PricingAssetType;
@@ -58,8 +58,8 @@ export interface MsgCreateExchangeRateResponse {
 
 /** MsgUpdateExchangeRate is the Msg/UpdateExchangeRate request type. [MOD-XR-MSG-2] */
 export interface MsgUpdateExchangeRate {
-  /** feeder is the authorized feeder executing this message. */
-  feeder: string;
+  /** signer is a feeder of the exchange rate. */
+  signer: string;
   /** id is the exchange rate entry to update. */
   id: number;
   /** rate is the new exchange rate value. */
@@ -72,8 +72,8 @@ export interface MsgUpdateExchangeRateResponse {
 
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /**
    * params defines the module parameters to update.
    *
@@ -84,8 +84,8 @@ export interface MsgUpdateParams {
 
 /** MsgSetExchangeRateState is the Msg/SetExchangeRateState request type. */
 export interface MsgSetExchangeRateState {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /** id is the exchange rate entry to toggle. */
   id: number;
   /** state is the desired state: true for enabled, false for disabled. */
@@ -98,8 +98,8 @@ export interface MsgSetExchangeRateStateResponse {
 
 /** MsgGrantExchangeRateAuthorization is the Msg/GrantExchangeRateAuthorization request type. [MOD-XR-MSG-4] */
 export interface MsgGrantExchangeRateAuthorization {
-  /** authority is the gov module account. */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /** xr_id is the exchange rate the feeder is authorized to update. */
   xrId: number;
   /** feeder is the account authorized to update the exchange rate. */
@@ -122,8 +122,8 @@ export interface MsgGrantExchangeRateAuthorizationResponse {
 
 /** MsgRevokeExchangeRateAuthorization is the Msg/RevokeExchangeRateAuthorization request type. [MOD-XR-MSG-5] */
 export interface MsgRevokeExchangeRateAuthorization {
-  /** authority is the gov module account. */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /** xr_id is the exchange rate the authorization is for. */
   xrId: number;
   /** feeder is the account whose authorization is revoked. */
@@ -487,7 +487,7 @@ export const ExchangeRateAuthorization = {
 
 function createBaseMsgCreateExchangeRate(): MsgCreateExchangeRate {
   return {
-    authority: "",
+    signer: "",
     baseAssetType: 0,
     baseAsset: "",
     quoteAssetType: 0,
@@ -500,8 +500,8 @@ function createBaseMsgCreateExchangeRate(): MsgCreateExchangeRate {
 
 export const MsgCreateExchangeRate = {
   encode(message: MsgCreateExchangeRate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.baseAssetType !== 0) {
       writer.uint32(16).int32(message.baseAssetType);
@@ -539,7 +539,7 @@ export const MsgCreateExchangeRate = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 16) {
@@ -601,7 +601,7 @@ export const MsgCreateExchangeRate = {
 
   fromJSON(object: any): MsgCreateExchangeRate {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       baseAssetType: isSet(object.baseAssetType) ? pricingAssetTypeFromJSON(object.baseAssetType) : 0,
       baseAsset: isSet(object.baseAsset) ? globalThis.String(object.baseAsset) : "",
       quoteAssetType: isSet(object.quoteAssetType) ? pricingAssetTypeFromJSON(object.quoteAssetType) : 0,
@@ -614,8 +614,8 @@ export const MsgCreateExchangeRate = {
 
   toJSON(message: MsgCreateExchangeRate): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.baseAssetType !== 0) {
       obj.baseAssetType = pricingAssetTypeToJSON(message.baseAssetType);
@@ -646,7 +646,7 @@ export const MsgCreateExchangeRate = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgCreateExchangeRate>, I>>(object: I): MsgCreateExchangeRate {
     const message = createBaseMsgCreateExchangeRate();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.baseAssetType = object.baseAssetType ?? 0;
     message.baseAsset = object.baseAsset ?? "";
     message.quoteAssetType = object.quoteAssetType ?? 0;
@@ -720,13 +720,13 @@ export const MsgCreateExchangeRateResponse = {
 };
 
 function createBaseMsgUpdateExchangeRate(): MsgUpdateExchangeRate {
-  return { feeder: "", id: 0, rate: 0 };
+  return { signer: "", id: 0, rate: 0 };
 }
 
 export const MsgUpdateExchangeRate = {
   encode(message: MsgUpdateExchangeRate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.feeder !== "") {
-      writer.uint32(10).string(message.feeder);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(16).uint64(message.id);
@@ -749,7 +749,7 @@ export const MsgUpdateExchangeRate = {
             break;
           }
 
-          message.feeder = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 16) {
@@ -776,7 +776,7 @@ export const MsgUpdateExchangeRate = {
 
   fromJSON(object: any): MsgUpdateExchangeRate {
     return {
-      feeder: isSet(object.feeder) ? globalThis.String(object.feeder) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       rate: isSet(object.rate) ? globalThis.Number(object.rate) : 0,
     };
@@ -784,8 +784,8 @@ export const MsgUpdateExchangeRate = {
 
   toJSON(message: MsgUpdateExchangeRate): unknown {
     const obj: any = {};
-    if (message.feeder !== "") {
-      obj.feeder = message.feeder;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -801,7 +801,7 @@ export const MsgUpdateExchangeRate = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateExchangeRate>, I>>(object: I): MsgUpdateExchangeRate {
     const message = createBaseMsgUpdateExchangeRate();
-    message.feeder = object.feeder ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     message.rate = object.rate ?? 0;
     return message;
@@ -852,13 +852,13 @@ export const MsgUpdateExchangeRateResponse = {
 };
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
+  return { signer: "", params: undefined };
 }
 
 export const MsgUpdateParams = {
   encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -878,7 +878,7 @@ export const MsgUpdateParams = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -898,15 +898,15 @@ export const MsgUpdateParams = {
 
   fromJSON(object: any): MsgUpdateParams {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
     };
   },
 
   toJSON(message: MsgUpdateParams): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
@@ -919,7 +919,7 @@ export const MsgUpdateParams = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
@@ -928,13 +928,13 @@ export const MsgUpdateParams = {
 };
 
 function createBaseMsgSetExchangeRateState(): MsgSetExchangeRateState {
-  return { authority: "", id: 0, state: false };
+  return { signer: "", id: 0, state: false };
 }
 
 export const MsgSetExchangeRateState = {
   encode(message: MsgSetExchangeRateState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(16).uint64(message.id);
@@ -957,7 +957,7 @@ export const MsgSetExchangeRateState = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 16) {
@@ -984,7 +984,7 @@ export const MsgSetExchangeRateState = {
 
   fromJSON(object: any): MsgSetExchangeRateState {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       state: isSet(object.state) ? globalThis.Boolean(object.state) : false,
     };
@@ -992,8 +992,8 @@ export const MsgSetExchangeRateState = {
 
   toJSON(message: MsgSetExchangeRateState): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1009,7 +1009,7 @@ export const MsgSetExchangeRateState = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgSetExchangeRateState>, I>>(object: I): MsgSetExchangeRateState {
     const message = createBaseMsgSetExchangeRateState();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     message.state = object.state ?? false;
     return message;
@@ -1060,13 +1060,13 @@ export const MsgSetExchangeRateStateResponse = {
 };
 
 function createBaseMsgGrantExchangeRateAuthorization(): MsgGrantExchangeRateAuthorization {
-  return { authority: "", xrId: 0, feeder: "", expiration: undefined, minInterval: undefined, maxDeviationBps: 0 };
+  return { signer: "", xrId: 0, feeder: "", expiration: undefined, minInterval: undefined, maxDeviationBps: 0 };
 }
 
 export const MsgGrantExchangeRateAuthorization = {
   encode(message: MsgGrantExchangeRateAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.xrId !== 0) {
       writer.uint32(16).uint64(message.xrId);
@@ -1098,7 +1098,7 @@ export const MsgGrantExchangeRateAuthorization = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 16) {
@@ -1146,7 +1146,7 @@ export const MsgGrantExchangeRateAuthorization = {
 
   fromJSON(object: any): MsgGrantExchangeRateAuthorization {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       xrId: isSet(object.xrId) ? globalThis.Number(object.xrId) : 0,
       feeder: isSet(object.feeder) ? globalThis.String(object.feeder) : "",
       expiration: isSet(object.expiration) ? fromJsonTimestamp(object.expiration) : undefined,
@@ -1157,8 +1157,8 @@ export const MsgGrantExchangeRateAuthorization = {
 
   toJSON(message: MsgGrantExchangeRateAuthorization): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.xrId !== 0) {
       obj.xrId = Math.round(message.xrId);
@@ -1187,7 +1187,7 @@ export const MsgGrantExchangeRateAuthorization = {
     object: I,
   ): MsgGrantExchangeRateAuthorization {
     const message = createBaseMsgGrantExchangeRateAuthorization();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.xrId = object.xrId ?? 0;
     message.feeder = object.feeder ?? "";
     message.expiration = object.expiration ?? undefined;
@@ -1247,13 +1247,13 @@ export const MsgGrantExchangeRateAuthorizationResponse = {
 };
 
 function createBaseMsgRevokeExchangeRateAuthorization(): MsgRevokeExchangeRateAuthorization {
-  return { authority: "", xrId: 0, feeder: "" };
+  return { signer: "", xrId: 0, feeder: "" };
 }
 
 export const MsgRevokeExchangeRateAuthorization = {
   encode(message: MsgRevokeExchangeRateAuthorization, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.xrId !== 0) {
       writer.uint32(16).uint64(message.xrId);
@@ -1276,7 +1276,7 @@ export const MsgRevokeExchangeRateAuthorization = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 16) {
@@ -1303,7 +1303,7 @@ export const MsgRevokeExchangeRateAuthorization = {
 
   fromJSON(object: any): MsgRevokeExchangeRateAuthorization {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       xrId: isSet(object.xrId) ? globalThis.Number(object.xrId) : 0,
       feeder: isSet(object.feeder) ? globalThis.String(object.feeder) : "",
     };
@@ -1311,8 +1311,8 @@ export const MsgRevokeExchangeRateAuthorization = {
 
   toJSON(message: MsgRevokeExchangeRateAuthorization): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.xrId !== 0) {
       obj.xrId = Math.round(message.xrId);
@@ -1332,7 +1332,7 @@ export const MsgRevokeExchangeRateAuthorization = {
     object: I,
   ): MsgRevokeExchangeRateAuthorization {
     const message = createBaseMsgRevokeExchangeRateAuthorization();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.xrId = object.xrId ?? 0;
     message.feeder = object.feeder ?? "";
     return message;

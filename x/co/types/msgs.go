@@ -30,11 +30,11 @@ func (m MsgCreateCorporation) UnpackInterfaces(unpacker cdctypes.AnyUnpacker) er
 
 // ValidateBasic on MsgUpdateParams: authority must be a valid bech32 address.
 func (m *MsgUpdateParams) ValidateBasic() error {
-	if m.Authority == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "authority is required")
+	if m.Signer == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "signer is required")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Authority); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "authority: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "signer: %s", err)
 	}
 	return m.Params.Validate()
 }
@@ -105,11 +105,11 @@ func (m *MsgUpdateCorporation) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if m.Delegate == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "delegate is required")
+	if m.Signer == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "signer is required")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "signer: %s", err)
 	}
 	if m.Did == "" {
 		return errors.Wrap(ErrInvalidDID, "did is required")

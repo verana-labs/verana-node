@@ -18,8 +18,8 @@ export const protobufPackage = "verana.pp.v1";
 
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /**
    * params defines the module parameters to update.
    *
@@ -39,8 +39,11 @@ export interface MsgUpdateParamsResponse {
 export interface MsgStartParticipantOP {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** delegate is the account authorized by the corporation to run this Msg */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   role: ParticipantRole;
   validatorParticipantId: number;
   /** mandatory: MUST conform to DID Syntax */
@@ -67,9 +70,13 @@ export interface MsgStartParticipantOPResponse {
 
 /** MsgRenewParticipantOP represents a message to renew a participant onboarding process */
 export interface MsgRenewParticipantOP {
-  /** [MOD-PP-MSG-2-1] spec parameters: corporation, delegate, id. */
+  /** [MOD-PP-MSG-2-1] spec parameters: corporation, signer, id. */
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   /** ID of the participant to renew */
   id: number;
 }
@@ -82,8 +89,11 @@ export interface MsgRenewParticipantOPResponse {
 export interface MsgSetParticipantOPToValidated {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** delegate is the account authorized by the corporation to run this Msg */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   id: number;
   effectiveUntil: Date | undefined;
   validationFees: number;
@@ -106,8 +116,11 @@ export interface MsgSetParticipantOPToValidatedResponse {
 export interface MsgCancelParticipantOPLastRequest {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** delegate is the account authorized by the corporation to run this Msg */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   /** Participant ID */
   id: number;
 }
@@ -121,7 +134,11 @@ export interface MsgCreateRootParticipant {
    * participant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3].
    */
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   schemaId: number;
   did: string;
   effectiveFrom: Date | undefined;
@@ -149,7 +166,11 @@ export interface MsgCreateRootParticipantResponse {
 
 export interface MsgSetParticipantEffectiveUntil {
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   /** Participant ID */
   id: number;
   effectiveUntil: Date | undefined;
@@ -160,7 +181,11 @@ export interface MsgSetParticipantEffectiveUntilResponse {
 
 export interface MsgRevokeParticipant {
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   /** Participant ID */
   id: number;
 }
@@ -171,8 +196,8 @@ export interface MsgRevokeParticipantResponse {
 export interface MsgCreateOrUpdateParticipantSession {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** vs_account is the VS account of the entry that signs this Msg. */
-  vsAccount: string;
+  /** signer is the VS account of the entry. */
+  signer: string;
   /** UUID (mandatory) */
   id: string;
   /** optional: issuer participant id */
@@ -194,8 +219,11 @@ export interface MsgCreateOrUpdateParticipantSessionResponse {
 export interface MsgSlashParticipantTrustDeposit {
   /** corporation is the group account on whose behalf this message is executed */
   corporation: string;
-  /** delegate is the account authorized by the corporation to run this Msg */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   id: number;
   amount: number;
   /**
@@ -210,7 +238,11 @@ export interface MsgSlashParticipantTrustDepositResponse {
 
 export interface MsgRepayParticipantSlashedTrustDeposit {
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   id: number;
 }
 
@@ -219,7 +251,11 @@ export interface MsgRepayParticipantSlashedTrustDepositResponse {
 
 export interface MsgSelfCreateParticipant {
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   role: ParticipantRole;
   validatorParticipantId: number;
   did: string;
@@ -248,8 +284,11 @@ export interface MsgTriggerResolver {
    * message runs.
    */
   corporation: string;
-  /** delegate is the account authorized by the corporation to run this Msg. */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   /** id of the Participant entry for which a trust resolution must be triggered. */
   id: number;
 }
@@ -258,13 +297,13 @@ export interface MsgTriggerResolverResponse {
 }
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
+  return { signer: "", params: undefined };
 }
 
 export const MsgUpdateParams = {
   encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -284,7 +323,7 @@ export const MsgUpdateParams = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -304,15 +343,15 @@ export const MsgUpdateParams = {
 
   fromJSON(object: any): MsgUpdateParams {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
     };
   },
 
   toJSON(message: MsgUpdateParams): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
@@ -325,7 +364,7 @@ export const MsgUpdateParams = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
@@ -379,7 +418,7 @@ export const MsgUpdateParamsResponse = {
 function createBaseMsgStartParticipantOP(): MsgStartParticipantOP {
   return {
     corporation: "",
-    delegate: "",
+    signer: "",
     role: 0,
     validatorParticipantId: 0,
     did: "",
@@ -400,8 +439,8 @@ export const MsgStartParticipantOP = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.role !== 0) {
       writer.uint32(24).int32(message.role);
@@ -463,7 +502,7 @@ export const MsgStartParticipantOP = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -571,7 +610,7 @@ export const MsgStartParticipantOP = {
   fromJSON(object: any): MsgStartParticipantOP {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       role: isSet(object.role) ? participantRoleFromJSON(object.role) : 0,
       validatorParticipantId: isSet(object.validatorParticipantId)
         ? globalThis.Number(object.validatorParticipantId)
@@ -604,8 +643,8 @@ export const MsgStartParticipantOP = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.role !== 0) {
       obj.role = participantRoleToJSON(message.role);
@@ -652,7 +691,7 @@ export const MsgStartParticipantOP = {
   fromPartial<I extends Exact<DeepPartial<MsgStartParticipantOP>, I>>(object: I): MsgStartParticipantOP {
     const message = createBaseMsgStartParticipantOP();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.role = object.role ?? 0;
     message.validatorParticipantId = object.validatorParticipantId ?? 0;
     message.did = object.did ?? "";
@@ -738,7 +777,7 @@ export const MsgStartParticipantOPResponse = {
 };
 
 function createBaseMsgRenewParticipantOP(): MsgRenewParticipantOP {
-  return { corporation: "", delegate: "", id: 0 };
+  return { corporation: "", signer: "", id: 0 };
 }
 
 export const MsgRenewParticipantOP = {
@@ -746,8 +785,8 @@ export const MsgRenewParticipantOP = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -774,7 +813,7 @@ export const MsgRenewParticipantOP = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -795,7 +834,7 @@ export const MsgRenewParticipantOP = {
   fromJSON(object: any): MsgRenewParticipantOP {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -805,8 +844,8 @@ export const MsgRenewParticipantOP = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -820,7 +859,7 @@ export const MsgRenewParticipantOP = {
   fromPartial<I extends Exact<DeepPartial<MsgRenewParticipantOP>, I>>(object: I): MsgRenewParticipantOP {
     const message = createBaseMsgRenewParticipantOP();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     return message;
   },
@@ -872,7 +911,7 @@ export const MsgRenewParticipantOPResponse = {
 function createBaseMsgSetParticipantOPToValidated(): MsgSetParticipantOPToValidated {
   return {
     corporation: "",
-    delegate: "",
+    signer: "",
     id: 0,
     effectiveUntil: undefined,
     validationFees: 0,
@@ -889,8 +928,8 @@ export const MsgSetParticipantOPToValidated = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -938,7 +977,7 @@ export const MsgSetParticipantOPToValidated = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1008,7 +1047,7 @@ export const MsgSetParticipantOPToValidated = {
   fromJSON(object: any): MsgSetParticipantOPToValidated {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       effectiveUntil: isSet(object.effectiveUntil) ? fromJsonTimestamp(object.effectiveUntil) : undefined,
       validationFees: isSet(object.validationFees) ? globalThis.Number(object.validationFees) : 0,
@@ -1027,8 +1066,8 @@ export const MsgSetParticipantOPToValidated = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1065,7 +1104,7 @@ export const MsgSetParticipantOPToValidated = {
   ): MsgSetParticipantOPToValidated {
     const message = createBaseMsgSetParticipantOPToValidated();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     message.effectiveUntil = object.effectiveUntil ?? undefined;
     message.validationFees = object.validationFees ?? 0;
@@ -1126,7 +1165,7 @@ export const MsgSetParticipantOPToValidatedResponse = {
 };
 
 function createBaseMsgCancelParticipantOPLastRequest(): MsgCancelParticipantOPLastRequest {
-  return { corporation: "", delegate: "", id: 0 };
+  return { corporation: "", signer: "", id: 0 };
 }
 
 export const MsgCancelParticipantOPLastRequest = {
@@ -1134,8 +1173,8 @@ export const MsgCancelParticipantOPLastRequest = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -1162,7 +1201,7 @@ export const MsgCancelParticipantOPLastRequest = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1183,7 +1222,7 @@ export const MsgCancelParticipantOPLastRequest = {
   fromJSON(object: any): MsgCancelParticipantOPLastRequest {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -1193,8 +1232,8 @@ export const MsgCancelParticipantOPLastRequest = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1212,7 +1251,7 @@ export const MsgCancelParticipantOPLastRequest = {
   ): MsgCancelParticipantOPLastRequest {
     const message = createBaseMsgCancelParticipantOPLastRequest();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     return message;
   },
@@ -1268,7 +1307,7 @@ export const MsgCancelParticipantOPLastRequestResponse = {
 function createBaseMsgCreateRootParticipant(): MsgCreateRootParticipant {
   return {
     corporation: "",
-    delegate: "",
+    signer: "",
     schemaId: 0,
     did: "",
     effectiveFrom: undefined,
@@ -1290,8 +1329,8 @@ export const MsgCreateRootParticipant = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.schemaId !== 0) {
       writer.uint32(24).uint64(message.schemaId);
@@ -1356,7 +1395,7 @@ export const MsgCreateRootParticipant = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1471,7 +1510,7 @@ export const MsgCreateRootParticipant = {
   fromJSON(object: any): MsgCreateRootParticipant {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       schemaId: isSet(object.schemaId) ? globalThis.Number(object.schemaId) : 0,
       did: isSet(object.did) ? globalThis.String(object.did) : "",
       effectiveFrom: isSet(object.effectiveFrom) ? fromJsonTimestamp(object.effectiveFrom) : undefined,
@@ -1503,8 +1542,8 @@ export const MsgCreateRootParticipant = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.schemaId !== 0) {
       obj.schemaId = Math.round(message.schemaId);
@@ -1554,7 +1593,7 @@ export const MsgCreateRootParticipant = {
   fromPartial<I extends Exact<DeepPartial<MsgCreateRootParticipant>, I>>(object: I): MsgCreateRootParticipant {
     const message = createBaseMsgCreateRootParticipant();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.schemaId = object.schemaId ?? 0;
     message.did = object.did ?? "";
     message.effectiveFrom = object.effectiveFrom ?? undefined;
@@ -1637,7 +1676,7 @@ export const MsgCreateRootParticipantResponse = {
 };
 
 function createBaseMsgSetParticipantEffectiveUntil(): MsgSetParticipantEffectiveUntil {
-  return { corporation: "", delegate: "", id: 0, effectiveUntil: undefined };
+  return { corporation: "", signer: "", id: 0, effectiveUntil: undefined };
 }
 
 export const MsgSetParticipantEffectiveUntil = {
@@ -1645,8 +1684,8 @@ export const MsgSetParticipantEffectiveUntil = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -1676,7 +1715,7 @@ export const MsgSetParticipantEffectiveUntil = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1704,7 +1743,7 @@ export const MsgSetParticipantEffectiveUntil = {
   fromJSON(object: any): MsgSetParticipantEffectiveUntil {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       effectiveUntil: isSet(object.effectiveUntil) ? fromJsonTimestamp(object.effectiveUntil) : undefined,
     };
@@ -1715,8 +1754,8 @@ export const MsgSetParticipantEffectiveUntil = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1735,7 +1774,7 @@ export const MsgSetParticipantEffectiveUntil = {
   ): MsgSetParticipantEffectiveUntil {
     const message = createBaseMsgSetParticipantEffectiveUntil();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     message.effectiveUntil = object.effectiveUntil ?? undefined;
     return message;
@@ -1790,7 +1829,7 @@ export const MsgSetParticipantEffectiveUntilResponse = {
 };
 
 function createBaseMsgRevokeParticipant(): MsgRevokeParticipant {
-  return { corporation: "", delegate: "", id: 0 };
+  return { corporation: "", signer: "", id: 0 };
 }
 
 export const MsgRevokeParticipant = {
@@ -1798,8 +1837,8 @@ export const MsgRevokeParticipant = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -1826,7 +1865,7 @@ export const MsgRevokeParticipant = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -1847,7 +1886,7 @@ export const MsgRevokeParticipant = {
   fromJSON(object: any): MsgRevokeParticipant {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -1857,8 +1896,8 @@ export const MsgRevokeParticipant = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -1872,7 +1911,7 @@ export const MsgRevokeParticipant = {
   fromPartial<I extends Exact<DeepPartial<MsgRevokeParticipant>, I>>(object: I): MsgRevokeParticipant {
     const message = createBaseMsgRevokeParticipant();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     return message;
   },
@@ -1924,7 +1963,7 @@ export const MsgRevokeParticipantResponse = {
 function createBaseMsgCreateOrUpdateParticipantSession(): MsgCreateOrUpdateParticipantSession {
   return {
     corporation: "",
-    vsAccount: "",
+    signer: "",
     id: "",
     issuerParticipantId: 0,
     verifierParticipantId: 0,
@@ -1939,8 +1978,8 @@ export const MsgCreateOrUpdateParticipantSession = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.vsAccount !== "") {
-      writer.uint32(18).string(message.vsAccount);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== "") {
       writer.uint32(26).string(message.id);
@@ -1982,7 +2021,7 @@ export const MsgCreateOrUpdateParticipantSession = {
             break;
           }
 
-          message.vsAccount = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -2038,7 +2077,7 @@ export const MsgCreateOrUpdateParticipantSession = {
   fromJSON(object: any): MsgCreateOrUpdateParticipantSession {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      vsAccount: isSet(object.vsAccount) ? globalThis.String(object.vsAccount) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       issuerParticipantId: isSet(object.issuerParticipantId) ? globalThis.Number(object.issuerParticipantId) : 0,
       verifierParticipantId: isSet(object.verifierParticipantId) ? globalThis.Number(object.verifierParticipantId) : 0,
@@ -2055,8 +2094,8 @@ export const MsgCreateOrUpdateParticipantSession = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.vsAccount !== "") {
-      obj.vsAccount = message.vsAccount;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== "") {
       obj.id = message.id;
@@ -2089,7 +2128,7 @@ export const MsgCreateOrUpdateParticipantSession = {
   ): MsgCreateOrUpdateParticipantSession {
     const message = createBaseMsgCreateOrUpdateParticipantSession();
     message.corporation = object.corporation ?? "";
-    message.vsAccount = object.vsAccount ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? "";
     message.issuerParticipantId = object.issuerParticipantId ?? 0;
     message.verifierParticipantId = object.verifierParticipantId ?? 0;
@@ -2162,7 +2201,7 @@ export const MsgCreateOrUpdateParticipantSessionResponse = {
 };
 
 function createBaseMsgSlashParticipantTrustDeposit(): MsgSlashParticipantTrustDeposit {
-  return { corporation: "", delegate: "", id: 0, amount: 0, reason: "" };
+  return { corporation: "", signer: "", id: 0, amount: 0, reason: "" };
 }
 
 export const MsgSlashParticipantTrustDeposit = {
@@ -2170,8 +2209,8 @@ export const MsgSlashParticipantTrustDeposit = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -2204,7 +2243,7 @@ export const MsgSlashParticipantTrustDeposit = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2239,7 +2278,7 @@ export const MsgSlashParticipantTrustDeposit = {
   fromJSON(object: any): MsgSlashParticipantTrustDeposit {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       amount: isSet(object.amount) ? globalThis.Number(object.amount) : 0,
       reason: isSet(object.reason) ? globalThis.String(object.reason) : "",
@@ -2251,8 +2290,8 @@ export const MsgSlashParticipantTrustDeposit = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -2274,7 +2313,7 @@ export const MsgSlashParticipantTrustDeposit = {
   ): MsgSlashParticipantTrustDeposit {
     const message = createBaseMsgSlashParticipantTrustDeposit();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     message.amount = object.amount ?? 0;
     message.reason = object.reason ?? "";
@@ -2330,7 +2369,7 @@ export const MsgSlashParticipantTrustDepositResponse = {
 };
 
 function createBaseMsgRepayParticipantSlashedTrustDeposit(): MsgRepayParticipantSlashedTrustDeposit {
-  return { corporation: "", delegate: "", id: 0 };
+  return { corporation: "", signer: "", id: 0 };
 }
 
 export const MsgRepayParticipantSlashedTrustDeposit = {
@@ -2338,8 +2377,8 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -2366,7 +2405,7 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2387,7 +2426,7 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
   fromJSON(object: any): MsgRepayParticipantSlashedTrustDeposit {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -2397,8 +2436,8 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -2416,7 +2455,7 @@ export const MsgRepayParticipantSlashedTrustDeposit = {
   ): MsgRepayParticipantSlashedTrustDeposit {
     const message = createBaseMsgRepayParticipantSlashedTrustDeposit();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     return message;
   },
@@ -2472,7 +2511,7 @@ export const MsgRepayParticipantSlashedTrustDepositResponse = {
 function createBaseMsgSelfCreateParticipant(): MsgSelfCreateParticipant {
   return {
     corporation: "",
-    delegate: "",
+    signer: "",
     role: 0,
     validatorParticipantId: 0,
     did: "",
@@ -2494,8 +2533,8 @@ export const MsgSelfCreateParticipant = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.role !== 0) {
       writer.uint32(24).int32(message.role);
@@ -2560,7 +2599,7 @@ export const MsgSelfCreateParticipant = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2675,7 +2714,7 @@ export const MsgSelfCreateParticipant = {
   fromJSON(object: any): MsgSelfCreateParticipant {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       role: isSet(object.role) ? participantRoleFromJSON(object.role) : 0,
       validatorParticipantId: isSet(object.validatorParticipantId)
         ? globalThis.Number(object.validatorParticipantId)
@@ -2709,8 +2748,8 @@ export const MsgSelfCreateParticipant = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.role !== 0) {
       obj.role = participantRoleToJSON(message.role);
@@ -2760,7 +2799,7 @@ export const MsgSelfCreateParticipant = {
   fromPartial<I extends Exact<DeepPartial<MsgSelfCreateParticipant>, I>>(object: I): MsgSelfCreateParticipant {
     const message = createBaseMsgSelfCreateParticipant();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.role = object.role ?? 0;
     message.validatorParticipantId = object.validatorParticipantId ?? 0;
     message.did = object.did ?? "";
@@ -2843,7 +2882,7 @@ export const MsgSelfCreateParticipantResponse = {
 };
 
 function createBaseMsgTriggerResolver(): MsgTriggerResolver {
-  return { corporation: "", delegate: "", id: 0 };
+  return { corporation: "", signer: "", id: 0 };
 }
 
 export const MsgTriggerResolver = {
@@ -2851,8 +2890,8 @@ export const MsgTriggerResolver = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.id !== 0) {
       writer.uint32(24).uint64(message.id);
@@ -2879,7 +2918,7 @@ export const MsgTriggerResolver = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2900,7 +2939,7 @@ export const MsgTriggerResolver = {
   fromJSON(object: any): MsgTriggerResolver {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
     };
   },
@@ -2910,8 +2949,8 @@ export const MsgTriggerResolver = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
@@ -2925,7 +2964,7 @@ export const MsgTriggerResolver = {
   fromPartial<I extends Exact<DeepPartial<MsgTriggerResolver>, I>>(object: I): MsgTriggerResolver {
     const message = createBaseMsgTriggerResolver();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.id = object.id ?? 0;
     return message;
   },

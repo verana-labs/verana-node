@@ -43,9 +43,9 @@ func RunDiStoreDigestJourney(ctx context.Context, client cosmosclient.Client) er
 
 	testDigest := fmt.Sprintf("sha256-testdigest%d", time.Now().UnixNano())
 	storeMsg := &ditypes.MsgStoreDigest{
-		Authority: policyAddr,
-		Delegate:  delegateAddr,
-		Digest:    testDigest,
+		Corporation: policyAddr,
+		Signer:      delegateAddr,
+		Digest:      testDigest,
 	}
 
 	txResp, err := client.BroadcastTx(ctx, delegateAccount, storeMsg)
@@ -80,9 +80,9 @@ func RunDiStoreDigestJourney(ctx context.Context, client cosmosclient.Client) er
 	fmt.Println("\n--- Step 4: Delegate stores digest with auth ---")
 
 	storeMsg = &ditypes.MsgStoreDigest{
-		Authority: policyAddr,
-		Delegate:  delegateAddr,
-		Digest:    testDigest,
+		Corporation: policyAddr,
+		Signer:      delegateAddr,
+		Digest:      testDigest,
 	}
 
 	txResp, err = client.BroadcastTx(ctx, delegateAccount, storeMsg)

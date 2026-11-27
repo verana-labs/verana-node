@@ -35,7 +35,7 @@ func TestUpdateCorporation_RejectsDIDOwnedByForeignEcosystem(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:foreign",
 	})
 	require.ErrorIs(t, err, types.ErrDIDOwnershipConflict)
@@ -53,7 +53,7 @@ func TestUpdateCorporation_AllowsDIDOwnedBySelf(t *testing.T) {
 
 	_, err = ms.UpdateCorporation(ctx, &types.MsgUpdateCorporation{
 		Corporation: tkPolicy,
-		Delegate:    tkOp,
+		Signer:      tkOp,
 		Did:         "did:example:self",
 	})
 	require.NoError(t, err)

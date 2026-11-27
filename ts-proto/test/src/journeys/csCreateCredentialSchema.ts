@@ -116,7 +116,7 @@ async function main() {
     typeUrl: typeUrls.MsgCreateEcosystem,
     value: MsgCreateEcosystem.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       did: ecDid,
       language: "en",
       docUrl: "http://cs-ts-proto-test-ecosystem.com/doc-v1",
@@ -187,7 +187,7 @@ async function main() {
     typeUrl: typeUrls.MsgCreateCredentialSchema,
     value: MsgCreateCredentialSchema.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       ecosystemId: ecId!,
       jsonSchema: jsonSchema,
       issuerGrantorValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 0 }),

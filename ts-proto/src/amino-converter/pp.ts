@@ -30,7 +30,7 @@ export const MsgCreateRootParticipantAminoConverter: AminoConverter = {
   // [MOD-PP-MSG-7-3] spec v4 draft 13: perm.role is hardcoded to ECOSYSTEM.
   toAmino: (m: MsgCreateRootParticipant) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     schema_id: u64ToStr(m.schemaId),
     did: m.did ?? "",
     effective_from: dateToIsoAmino(m.effectiveFrom),
@@ -51,7 +51,7 @@ export const MsgCreateRootParticipantAminoConverter: AminoConverter = {
   fromAmino: (a: any): MsgCreateRootParticipant =>
     MsgCreateRootParticipant.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       schemaId: strToU64(a.schema_id) != null ? Number(strToU64(a.schema_id)!.toString()) : 0,
       did: a.did ?? "",
       effectiveFrom: isoToDate(a.effective_from),
@@ -72,14 +72,14 @@ export const MsgSetParticipantEffectiveUntilAminoConverter: AminoConverter = {
   aminoType: "verana/x/pp/MsgSetPartEffectiveUntil",
   toAmino: (m: MsgSetParticipantEffectiveUntil) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
     effective_until: dateToIsoAmino(m.effectiveUntil),
   }),
   fromAmino: (a: any): MsgSetParticipantEffectiveUntil =>
     MsgSetParticipantEffectiveUntil.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       effectiveUntil: isoToDate(a.effective_until),
     }),
@@ -89,13 +89,13 @@ export const MsgRevokeParticipantAminoConverter: AminoConverter = {
   aminoType: "verana/x/pp/MsgRevokeParticipant",
   toAmino: (m: MsgRevokeParticipant) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
   }),
   fromAmino: (a: any): MsgRevokeParticipant =>
     MsgRevokeParticipant.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
     }),
 };
@@ -104,7 +104,7 @@ export const MsgStartParticipantOPAminoConverter: AminoConverter = {
   aminoType: "verana/x/pp/MsgStartParticipantOP",
   toAmino: (m: MsgStartParticipantOP) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     role: m.role ?? ParticipantRole.UNSPECIFIED,
     validator_participant_id: u64ToStr(m.validatorParticipantId),
     did: m.did ?? "",
@@ -121,7 +121,7 @@ export const MsgStartParticipantOPAminoConverter: AminoConverter = {
   fromAmino: (a: any): MsgStartParticipantOP =>
     MsgStartParticipantOP.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       role: a.role ?? ParticipantRole.UNSPECIFIED,
       validatorParticipantId: strToU64(a.validator_participant_id) != null ? Number(strToU64(a.validator_participant_id)!.toString()) : 0,
       did: a.did ?? "",
@@ -139,16 +139,16 @@ export const MsgStartParticipantOPAminoConverter: AminoConverter = {
 
 export const MsgRenewParticipantOPAminoConverter: AminoConverter = {
   aminoType: "verana/x/pp/MsgRenewParticipantOP",
-  // [MOD-PP-MSG-2-1] spec v4 draft 13 parameters: corporation, delegate, id.
+  // [MOD-PP-MSG-2-1] spec v4 draft 13 parameters: corporation, signer, id.
   toAmino: (m: MsgRenewParticipantOP) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
   }),
   fromAmino: (a: any): MsgRenewParticipantOP =>
     MsgRenewParticipantOP.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
     }),
 };
@@ -157,7 +157,7 @@ export const MsgSetParticipantOPToValidatedAminoConverter: AminoConverter = {
   aminoType: "verana/x/pp/MsgSetPartOPValidated",
   toAmino: (m: MsgSetParticipantOPToValidated) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
     effective_until: dateToIsoAmino(m.effectiveUntil),
     validation_fees: u64ToStr(m.validationFees),
@@ -170,7 +170,7 @@ export const MsgSetParticipantOPToValidatedAminoConverter: AminoConverter = {
   fromAmino: (a: any): MsgSetParticipantOPToValidated =>
     MsgSetParticipantOPToValidated.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       effectiveUntil: isoToDate(a.effective_until),
       validationFees: strToU64(a.validation_fees) != null ? Number(strToU64(a.validation_fees)!.toString()) : 0,
@@ -190,13 +190,13 @@ export const MsgCancelParticipantOPLastRequestAminoConverter: AminoConverter = {
   aminoType: "verana/x/pp/MsgCancelPartOPLastReq",
   toAmino: (m: MsgCancelParticipantOPLastRequest) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
   }),
   fromAmino: (a: any): MsgCancelParticipantOPLastRequest =>
     MsgCancelParticipantOPLastRequest.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
     }),
 };
@@ -205,7 +205,7 @@ export const MsgCreateOrUpdateParticipantSessionAminoConverter: AminoConverter =
   aminoType: "verana/x/pp/MsgCreateOrUpdatePartSess",
   toAmino: (m: MsgCreateOrUpdateParticipantSession) => clean({
     corporation: m.corporation ?? "",
-    vs_account: m.vsAccount ?? "",
+    signer: m.signer ?? "",
     id: m.id ?? "",
     issuer_participant_id: u64ToStrIfNonZero(m.issuerParticipantId),
     verifier_participant_id: u64ToStrIfNonZero(m.verifierParticipantId),
@@ -216,7 +216,7 @@ export const MsgCreateOrUpdateParticipantSessionAminoConverter: AminoConverter =
   fromAmino: (a: any): MsgCreateOrUpdateParticipantSession =>
     MsgCreateOrUpdateParticipantSession.fromPartial({
       corporation: a.corporation ?? "",
-      vsAccount: a.vs_account ?? "",
+      signer: a.signer ?? "",
       id: a.id ?? "",
       issuerParticipantId: strToU64(a.issuer_participant_id) != null ? Number(strToU64(a.issuer_participant_id)!.toString()) : 0,
       verifierParticipantId: strToU64(a.verifier_participant_id) != null ? Number(strToU64(a.verifier_participant_id)!.toString()) : 0,
@@ -233,7 +233,7 @@ export const MsgSlashParticipantTrustDepositAminoConverter: AminoConverter = {
   // [MOD-PP-MSG-12-1] spec v4 draft 13 adds mandatory reason.
   toAmino: (m: MsgSlashParticipantTrustDeposit) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
     amount: u64ToStr(m.amount),
     reason: m.reason ?? "",
@@ -241,7 +241,7 @@ export const MsgSlashParticipantTrustDepositAminoConverter: AminoConverter = {
   fromAmino: (a: any): MsgSlashParticipantTrustDeposit =>
     MsgSlashParticipantTrustDeposit.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       amount: strToU64(a.amount) != null ? Number(strToU64(a.amount)!.toString()) : 0,
       reason: a.reason ?? "",
@@ -252,13 +252,13 @@ export const MsgRepayParticipantSlashedTrustDepositAminoConverter: AminoConverte
   aminoType: "verana/x/pp/MsgRepayPartSlashedTD",
   toAmino: (m: MsgRepayParticipantSlashedTrustDeposit) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
   }),
   fromAmino: (a: any): MsgRepayParticipantSlashedTrustDeposit =>
     MsgRepayParticipantSlashedTrustDeposit.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
     }),
 };
@@ -267,7 +267,7 @@ export const MsgSelfCreateParticipantAminoConverter: AminoConverter = {
   aminoType: "verana/x/pp/MsgSelfCreateParticipant",
   toAmino: (m: MsgSelfCreateParticipant) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     role: m.role ?? 0,
     validator_participant_id: u64ToStr(m.validatorParticipantId),
     did: m.did ?? "",
@@ -285,7 +285,7 @@ export const MsgSelfCreateParticipantAminoConverter: AminoConverter = {
   fromAmino: (a: any): MsgSelfCreateParticipant =>
     MsgSelfCreateParticipant.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       role: a.role ?? 0,
       validatorParticipantId: strToU64(a.validator_participant_id) != null ? Number(strToU64(a.validator_participant_id)!.toString()) : 0,
       did: a.did ?? "",
@@ -304,16 +304,16 @@ export const MsgSelfCreateParticipantAminoConverter: AminoConverter = {
 
 export const MsgTriggerResolverAminoConverter: AminoConverter = {
   aminoType: "verana/x/pp/MsgTriggerResolver",
-  // [MOD-PP-MSG-15] parameters: corporation, delegate, id.
+  // [MOD-PP-MSG-15] parameters: corporation, signer, id.
   toAmino: (m: MsgTriggerResolver) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
   }),
   fromAmino: (a: any): MsgTriggerResolver =>
     MsgTriggerResolver.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
     }),
 };

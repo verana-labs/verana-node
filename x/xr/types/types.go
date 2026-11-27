@@ -23,8 +23,8 @@ var iso4217Regex = regexp.MustCompile(`^[A-Z]{3}$`)
 
 // ValidateBasic performs stateless validation on MsgCreateExchangeRate.
 func (msg *MsgCreateExchangeRate) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
-		return fmt.Errorf("invalid authority address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
+		return fmt.Errorf("invalid signer address: %w", err)
 	}
 	if err := validatePair(msg.BaseAssetType, msg.BaseAsset, msg.QuoteAssetType, msg.QuoteAsset); err != nil {
 		return err
@@ -34,8 +34,8 @@ func (msg *MsgCreateExchangeRate) ValidateBasic() error {
 
 // ValidateBasic performs stateless validation on MsgUpdateExchangeRate.
 func (msg *MsgUpdateExchangeRate) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {
-		return fmt.Errorf("invalid feeder address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
+		return fmt.Errorf("invalid signer address: %w", err)
 	}
 	if msg.Id == 0 {
 		return fmt.Errorf("id must be greater than 0")
@@ -48,8 +48,8 @@ func (msg *MsgUpdateExchangeRate) ValidateBasic() error {
 
 // ValidateBasic performs stateless validation on MsgSetExchangeRateState.
 func (msg *MsgSetExchangeRateState) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
-		return fmt.Errorf("invalid authority address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
+		return fmt.Errorf("invalid signer address: %w", err)
 	}
 	if msg.Id == 0 {
 		return fmt.Errorf("id must be greater than 0")
@@ -59,8 +59,8 @@ func (msg *MsgSetExchangeRateState) ValidateBasic() error {
 
 // ValidateBasic performs stateless validation on MsgGrantExchangeRateAuthorization.
 func (msg *MsgGrantExchangeRateAuthorization) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
-		return fmt.Errorf("invalid authority address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
+		return fmt.Errorf("invalid signer address: %w", err)
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {
 		return fmt.Errorf("invalid feeder address: %w", err)
@@ -83,8 +83,8 @@ func (msg *MsgGrantExchangeRateAuthorization) ValidateBasic() error {
 
 // ValidateBasic performs stateless validation on MsgRevokeExchangeRateAuthorization.
 func (msg *MsgRevokeExchangeRateAuthorization) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
-		return fmt.Errorf("invalid authority address: %w", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
+		return fmt.Errorf("invalid signer address: %w", err)
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {
 		return fmt.Errorf("invalid feeder address: %w", err)

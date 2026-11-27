@@ -26,23 +26,23 @@ func TestMsgUpdateParams(t *testing.T) {
 		expErr error
 	}{
 		{
-			name:   "invalid authority",
-			input:  &types.MsgUpdateParams{Authority: "invalid", Params: params},
+			name:   "invalid signer",
+			input:  &types.MsgUpdateParams{Signer: "invalid", Params: params},
 			expErr: types.ErrInvalidSigner,
 		},
 		{
 			name:   "zero twap_window is rejected",
-			input:  &types.MsgUpdateParams{Authority: authorityStr, Params: types.Params{}},
+			input:  &types.MsgUpdateParams{Signer: authorityStr, Params: types.Params{}},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name:   "negative twap_window is rejected",
-			input:  &types.MsgUpdateParams{Authority: authorityStr, Params: types.NewParams(-time.Minute)},
+			input:  &types.MsgUpdateParams{Signer: authorityStr, Params: types.NewParams(-time.Minute)},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name:  "all good",
-			input: &types.MsgUpdateParams{Authority: authorityStr, Params: types.NewParams(15 * time.Minute)},
+			input: &types.MsgUpdateParams{Signer: authorityStr, Params: types.NewParams(15 * time.Minute)},
 		},
 	}
 
@@ -65,7 +65,7 @@ func TestMsgUpdateParams_EmitsMsg(t *testing.T) {
 	f := initFixture(t)
 	ms := keeper.NewMsgServerImpl(f.keeper)
 
-	_, err := ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Authority: f.authority(t), Params: types.NewParams(15 * time.Minute)})
+	_, err := ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Signer: f.authority(t), Params: types.NewParams(15 * time.Minute)})
 	require.NoError(t, err)
 
 	attrs := eventAttrs(t, f, types.EventTypeUpdateModuleParameters)

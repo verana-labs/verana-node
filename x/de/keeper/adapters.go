@@ -29,6 +29,10 @@ func (StubCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context
 	return types.CorporationView{}, fmt.Errorf("corporation keeper not wired: cannot resolve signing account %s", policyAddress)
 }
 
+func (StubCorporationKeeper) ResolveSigner(_ context.Context, corporation, _ string) (types.CorporationView, bool, error) {
+	return types.CorporationView{}, false, fmt.Errorf("corporation keeper not wired: cannot resolve signing account %s", corporation)
+}
+
 func (StubCorporationKeeper) ResolveCorporationByID(_ context.Context, id uint64) (types.CorporationView, error) {
 	return types.CorporationView{}, fmt.Errorf("corporation keeper not wired: cannot resolve corporation id %d", id)
 }

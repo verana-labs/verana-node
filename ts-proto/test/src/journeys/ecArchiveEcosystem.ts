@@ -63,7 +63,7 @@ async function main() {
     typeUrl: typeUrls.MsgArchiveEcosystem,
     value: MsgArchiveEcosystem.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       id: activeEC.ecosystemId,
       archive: true,
     }),

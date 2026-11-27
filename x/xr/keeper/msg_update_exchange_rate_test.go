@@ -19,7 +19,7 @@ func TestUpdateExchangeRate_HappyPath(t *testing.T) {
 	grantAuthz(t, f, id, feeder, 0, 0)
 
 	f.at(testNow.Add(time.Minute))
-	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 200})
+	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 200})
 	require.NoError(t, err)
 
 	xr, err := f.keeper.ExchangeRates.Get(f.ctx, id)
@@ -40,7 +40,7 @@ func TestUpdateExchangeRate_HappyPath(t *testing.T) {
 
 func TestUpdateExchangeRate_NotFound(t *testing.T) {
 	f := initFixture(t)
-	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: testAccount("feeder"), Id: 999, Rate: 200})
+	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: testAccount("feeder"), Id: 999, Rate: 200})
 	require.ErrorIs(t, err, types.ErrExchangeRateNotFound)
 }
 
@@ -49,7 +49,7 @@ func TestUpdateExchangeRate_NotAuthorized(t *testing.T) {
 	id := createRate(t, f, createMsg(t, f), true)
 	grantAuthz(t, f, id, testAccount("feeder"), 0, 0)
 
-	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: testAccount("other"), Id: id, Rate: 200})
+	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: testAccount("other"), Id: id, Rate: 200})
 	require.ErrorIs(t, err, types.ErrAuthorizationNotFound)
 }
 
@@ -59,7 +59,7 @@ func TestUpdateExchangeRate_NotActive(t *testing.T) {
 	feeder := testAccount("feeder")
 	grantAuthz(t, f, id, feeder, 0, 0)
 
-	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 200})
+	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 200})
 	require.ErrorIs(t, err, types.ErrExchangeRateNotActive)
 }
 
@@ -69,7 +69,7 @@ func TestUpdateExchangeRate_InvalidRate(t *testing.T) {
 	feeder := testAccount("feeder")
 	grantAuthz(t, f, id, feeder, 0, 0)
 
-	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 0})
+	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 0})
 	require.ErrorIs(t, err, types.ErrInvalidRate)
 }
 
@@ -80,7 +80,7 @@ func TestUpdateExchangeRate_ExpiredStillUpdatable(t *testing.T) {
 	grantAuthz(t, f, id, feeder, 0, 0)
 
 	f.at(testNow.Add(30 * time.Minute))
-	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 200})
+	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 200})
 	require.NoError(t, err)
 
 	xr, err := f.keeper.ExchangeRates.Get(f.ctx, id)
@@ -95,7 +95,7 @@ func TestUpdateExchangeRate_AuthzExpired(t *testing.T) {
 	grantAuthz(t, f, id, feeder, 0, 0)
 
 	f.at(testNow.Add(time.Hour))
-	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 200})
+	_, err := keeper.NewMsgServerImpl(f.keeper).UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 200})
 	require.ErrorIs(t, err, types.ErrAuthorizationExpired)
 }
 
@@ -107,11 +107,11 @@ func TestUpdateExchangeRate_MinIntervalAntiSpam(t *testing.T) {
 	grantAuthz(t, f, id, feeder, 5*time.Minute, 0)
 
 	f.at(testNow.Add(5*time.Minute - time.Second))
-	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 200})
+	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 200})
 	require.ErrorIs(t, err, types.ErrUpdateTooSoon)
 
 	f.at(testNow.Add(5 * time.Minute))
-	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 200})
+	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 200})
 	require.NoError(t, err)
 }
 
@@ -124,11 +124,11 @@ func TestUpdateExchangeRate_MinIntervalAnyFeeder(t *testing.T) {
 	grantAuthz(t, f, id, second, 5*time.Minute, 0)
 
 	f.at(testNow.Add(10 * time.Minute))
-	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: first, Id: id, Rate: 200})
+	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: first, Id: id, Rate: 200})
 	require.NoError(t, err)
 
 	f.at(testNow.Add(14 * time.Minute))
-	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: second, Id: id, Rate: 210})
+	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: second, Id: id, Rate: 210})
 	require.ErrorIs(t, err, types.ErrUpdateTooSoon)
 }
 
@@ -140,13 +140,13 @@ func TestUpdateExchangeRate_StateChangeKeepsUpdated(t *testing.T) {
 	grantAuthz(t, f, id, feeder, 5*time.Minute, 0)
 
 	f.at(testNow.Add(4 * time.Minute))
-	_, err := ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Authority: f.authority(t), Id: id, State: false})
+	_, err := ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Signer: f.authority(t), Id: id, State: false})
 	require.NoError(t, err)
-	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Authority: f.authority(t), Id: id, State: true})
+	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Signer: f.authority(t), Id: id, State: true})
 	require.NoError(t, err)
 
 	f.at(testNow.Add(5 * time.Minute))
-	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 200})
+	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 200})
 	require.NoError(t, err)
 }
 
@@ -158,11 +158,11 @@ func TestUpdateExchangeRate_MaxDeviationCircuitBreaker(t *testing.T) {
 	grantAuthz(t, f, id, feeder, 0, 1000)
 
 	for _, rate := range []uint64{111, 89} {
-		_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: rate})
+		_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: rate})
 		require.ErrorIs(t, err, types.ErrRateDeviationExceeded)
 	}
 	for _, rate := range []uint64{110, 99} {
-		_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: rate})
+		_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: rate})
 		require.NoError(t, err)
 	}
 }
@@ -176,6 +176,6 @@ func TestUpdateExchangeRate_MaxDeviationNoOverflow(t *testing.T) {
 	feeder := testAccount("feeder")
 	grantAuthz(t, f, id, feeder, 0, 10000)
 
-	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: math.MaxUint64 - 1})
+	_, err := ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: math.MaxUint64 - 1})
 	require.NoError(t, err)
 }

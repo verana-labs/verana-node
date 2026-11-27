@@ -51,6 +51,7 @@ type CorporationView struct {
 // (referencing MOD-CO-MSG-1) for an unregistered account.
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+	ResolveSigner(ctx context.Context, corporation, signer string) (CorporationView, bool, error)
 	GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
 }
 

@@ -49,7 +49,7 @@ func CreateEcosystem(client cosmosclient.Client, ctx context.Context, creator co
 
 	msg := &types.MsgCreateEcosystem{
 		Corporation:  addr,
-		Delegate:     addr,
+		Signer:       addr,
 		Did:          did,
 		Language:     language,
 		DocUrl:       docURL,
@@ -96,7 +96,7 @@ func CreateCredentialSchema(client cosmosclient.Client, ctx context.Context, cre
 
 	msg := &cschema.MsgCreateCredentialSchema{
 		Corporation: creatorAddr,
-		Delegate:    creatorAddr,
+		Signer:      creatorAddr,
 		EcosystemId: override.EcosystemId,
 		JsonSchema:  override.JsonSchema,
 	}
@@ -179,7 +179,7 @@ func CreateRootPermission(client cosmosclient.Client, ctx context.Context, creat
 	_ = creatorAddr
 	msg := &permtypes.MsgCreateRootParticipant{
 		Corporation:      creatorAddr,
-		Delegate:         creatorAddr,
+		Signer:           creatorAddr,
 		SchemaId:         override.SchemaId,
 		Did:              override.Did,
 		EffectiveFrom:    override.EffectiveFrom,
@@ -229,7 +229,7 @@ func StartPermissionVP(client cosmosclient.Client, ctx context.Context, creator 
 
 	msg := &permtypes.MsgStartParticipantOP{
 		Corporation:                  override.Corporation,
-		Delegate:                     creatorAddr,
+		Signer:                       creatorAddr,
 		Role:                         override.Role,
 		Did:                          override.Did,
 		ValidatorParticipantId:       override.ValidatorParticipantId,
@@ -287,7 +287,7 @@ func SetPermissionVPToValidated(client cosmosclient.Client, ctx context.Context,
 
 	msg := &permtypes.MsgSetParticipantOPToValidated{
 		Corporation:             override.Corporation,
-		Delegate:                creatorAddr,
+		Signer:                  creatorAddr,
 		Id:                      override.Id,
 		ValidationFees:          override.ValidationFees,
 		IssuanceFees:            override.IssuanceFees,

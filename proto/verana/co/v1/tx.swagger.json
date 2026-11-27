@@ -52,7 +52,7 @@
     },
     "/verana.co.v1.Msg/UpdateCorporation": {
       "post": {
-        "summary": "[MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing\nCorporation. Signer: delegate.",
+        "summary": "[MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing\nCorporation.",
         "operationId": "Msg_UpdateCorporation",
         "responses": {
           "200": {
@@ -229,8 +229,9 @@
         "corporation": {
           "type": "string"
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "did": {
           "type": "string"
@@ -244,8 +245,9 @@
     "verana.co.v1.MsgUpdateParams": {
       "type": "object",
       "properties": {
-        "authority": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is the council account."
         },
         "params": {
           "$ref": "#/definitions/verana.co.v1.Params"

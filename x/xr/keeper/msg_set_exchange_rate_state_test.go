@@ -16,7 +16,7 @@ func TestSetExchangeRateState_HappyPath_Enable(t *testing.T) {
 	id := createRate(t, f, createMsg(t, f), false)
 
 	f.at(testNow.Add(time.Minute))
-	_, err := ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Authority: f.authority(t), Id: id, State: true})
+	_, err := ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Signer: f.authority(t), Id: id, State: true})
 	require.NoError(t, err)
 
 	xr, err := f.keeper.ExchangeRates.Get(f.ctx, id)
@@ -33,7 +33,7 @@ func TestSetExchangeRateState_HappyPath_Disable(t *testing.T) {
 	f := initFixture(t)
 	id := createRate(t, f, createMsg(t, f), true)
 
-	_, err := keeper.NewMsgServerImpl(f.keeper).SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Authority: f.authority(t), Id: id, State: false})
+	_, err := keeper.NewMsgServerImpl(f.keeper).SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Signer: f.authority(t), Id: id, State: false})
 	require.NoError(t, err)
 
 	xr, err := f.keeper.ExchangeRates.Get(f.ctx, id)
@@ -45,12 +45,12 @@ func TestSetExchangeRateState_InvalidAuthority(t *testing.T) {
 	f := initFixture(t)
 	id := createRate(t, f, createMsg(t, f), false)
 
-	_, err := keeper.NewMsgServerImpl(f.keeper).SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Authority: testAccount("not_council"), Id: id, State: true})
+	_, err := keeper.NewMsgServerImpl(f.keeper).SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Signer: testAccount("not_council"), Id: id, State: true})
 	require.ErrorIs(t, err, types.ErrInvalidSigner)
 }
 
 func TestSetExchangeRateState_NotFound(t *testing.T) {
 	f := initFixture(t)
-	_, err := keeper.NewMsgServerImpl(f.keeper).SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Authority: f.authority(t), Id: 999, State: true})
+	_, err := keeper.NewMsgServerImpl(f.keeper).SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{Signer: f.authority(t), Id: 999, State: true})
 	require.ErrorIs(t, err, types.ErrExchangeRateNotFound)
 }

@@ -50,7 +50,7 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 	fmt.Println("\n--- Step 2: Feeder tries UpdateExchangeRate without auth (expect failure) ---")
 
 	updateMsg := &xrtypes.MsgUpdateExchangeRate{
-		Feeder: feederAddr,
+		Signer: feederAddr,
 		Id:     exchangeRateID,
 		Rate:   2_000_000,
 	}
@@ -88,7 +88,7 @@ func RunXrUpdateExchangeRateJourney(ctx context.Context, client cosmosclient.Cli
 
 	newRate := uint64(2_000_000)
 	updateMsg = &xrtypes.MsgUpdateExchangeRate{
-		Feeder: feederAddr,
+		Signer: feederAddr,
 		Id:     exchangeRateID,
 		Rate:   newRate,
 	}

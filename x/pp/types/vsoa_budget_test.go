@@ -32,7 +32,7 @@ func TestMsgStartParticipantOP_ValidateBasic_Budget(t *testing.T) {
 	vsOp := sdk.AccAddress([]byte("start_op_vsop_______")).String()
 	base := func() *MsgStartParticipantOP {
 		return &MsgStartParticipantOP{
-			Corporation: addr, Delegate: addr, Role: ParticipantRole_ISSUER, ValidatorParticipantId: 1,
+			Corporation: addr, Signer: addr, Role: ParticipantRole_ISSUER, ValidatorParticipantId: 1,
 			Did: "did:example:budget", VsOperator: vsOp,
 			VsOperatorAuthzMsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE},
 		}

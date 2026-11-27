@@ -114,7 +114,7 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 	}
 
 	// if participant.vs_operator is not equal to vs_account, abort
-	if primaryParticipant.VsOperator != msg.VsAccount {
+	if primaryParticipant.VsOperator != msg.Signer {
 		return fmt.Errorf("%s participant vs_operator does not match vs_account", primaryRole)
 	}
 
@@ -140,7 +140,7 @@ func (ms msgServer) validateCreateOrUpdateParticipantSessionPreconditions(ctx sd
 	if err := ms.delegationKeeper.CheckVSOperatorAuthorizationOnParticipant(
 		ctx,
 		primaryCorpID,
-		msg.VsAccount,
+		msg.Signer,
 		primaryParticipant.Id,
 		primaryMsgType,
 	); err != nil {
@@ -543,8 +543,8 @@ func (ms msgServer) validateSessionAccess(ctx sdk.Context, msg *types.MsgCreateO
 	}
 
 	// existing_entry.vs_operator MUST be equal to vs_account
-	if existingSession.VsOperator != msg.VsAccount {
-		return fmt.Errorf("session vs_operator does not match: expected %s, got %s", existingSession.VsOperator, msg.VsAccount)
+	if existingSession.VsOperator != msg.Signer {
+		return fmt.Errorf("session vs_operator does not match: expected %s, got %s", existingSession.VsOperator, msg.Signer)
 	}
 
 	return nil
@@ -558,7 +558,7 @@ func (ms msgServer) createOrUpdateSession(ctx sdk.Context, msg *types.MsgCreateO
 	session := &types.ParticipantSession{
 		Id:            msg.Id,
 		CorporationId: corporationId,
-		VsOperator:    msg.VsAccount,
+		VsOperator:    msg.Signer,
 		Modified:      &now,
 	}
 

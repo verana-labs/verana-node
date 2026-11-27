@@ -34,6 +34,11 @@ func (genStub) CheckDelegateAuthorization(_ context.Context, _ uint64, _ string,
 func (genStub) ResolveCorporationByPolicyAddress(_ context.Context, _ string) (types.CorporationView, error) {
 	return types.CorporationView{}, errors.New("corporation not registered")
 }
+
+func (m genStub) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
 func (genStub) ResolveDIDOwner(_ context.Context, _ string) (uint64, bool, error) {
 	return 0, false, nil
 }
