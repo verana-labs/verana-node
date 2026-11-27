@@ -13,12 +13,15 @@ export const protobufPackage = "verana.di.v1";
 /** [MOD-DI-MSG-1] MsgStoreDigest stores a digest on behalf of a corporation. */
 export interface MsgStoreDigest {
   /**
-   * authority is the corporation (group account) on whose behalf this message
-   * is executed.
+   * corporation is the policy_address of the corporation on whose behalf
+   * this message is executed.
    */
-  authority: string;
-  /** delegate is the account authorized by the corporation to run this Msg. */
-  delegate: string;
+  corporation: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   /**
    * digest is the digest string to store. It is opaque to the chain: bounded at
    * 256 bytes, but no format is imposed and it is never recomputed against any
@@ -41,16 +44,16 @@ export interface Digest {
 }
 
 function createBaseMsgStoreDigest(): MsgStoreDigest {
-  return { authority: "", delegate: "", digest: "" };
+  return { corporation: "", signer: "", digest: "" };
 }
 
 export const MsgStoreDigest = {
   encode(message: MsgStoreDigest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.corporation !== "") {
+      writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.digest !== "") {
       writer.uint32(26).string(message.digest);
@@ -70,14 +73,14 @@ export const MsgStoreDigest = {
             break;
           }
 
-          message.authority = reader.string();
+          message.corporation = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -97,19 +100,19 @@ export const MsgStoreDigest = {
 
   fromJSON(object: any): MsgStoreDigest {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       digest: isSet(object.digest) ? globalThis.String(object.digest) : "",
     };
   },
 
   toJSON(message: MsgStoreDigest): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.corporation !== "") {
+      obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.digest !== "") {
       obj.digest = message.digest;
@@ -122,8 +125,8 @@ export const MsgStoreDigest = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgStoreDigest>, I>>(object: I): MsgStoreDigest {
     const message = createBaseMsgStoreDigest();
-    message.authority = object.authority ?? "";
-    message.delegate = object.delegate ?? "";
+    message.corporation = object.corporation ?? "";
+    message.signer = object.signer ?? "";
     message.digest = object.digest ?? "";
     return message;
   },

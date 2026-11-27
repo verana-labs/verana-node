@@ -67,7 +67,7 @@ func TestTriggerResolver_FeeGrantCheck(t *testing.T) {
 			if tc.tx != nil {
 				ctx = anteCtx(t, ctx, tc.tx)
 			}
-			_, err = ms.TriggerResolver(ctx, &types.MsgTriggerResolver{Corporation: corporation.String(), Delegate: delegate, Id: pid})
+			_, err = ms.TriggerResolver(ctx, &types.MsgTriggerResolver{Corporation: corporation.String(), Signer: delegate, Id: pid})
 			if tc.wantErr != "" {
 				require.ErrorContains(t, err, tc.wantErr)
 			} else {
@@ -96,7 +96,7 @@ func TestTriggerResolver_FeeGrantCheckSkippedOnPath2(t *testing.T) {
 	del.FeeGrantErr = errors.New("unused")
 
 	ctx = anteCtx(t, ctx, feeTxStub{granter: corporation})
-	_, err = ms.TriggerResolver(ctx, &types.MsgTriggerResolver{Corporation: corporation.String(), Delegate: delegate, Id: pid})
+	_, err = ms.TriggerResolver(ctx, &types.MsgTriggerResolver{Corporation: corporation.String(), Signer: delegate, Id: pid})
 	require.NoError(t, err)
 	require.Empty(t, del.FeeGrantCheckCalls)
 }
@@ -146,7 +146,7 @@ func TestSetParticipantOPToValidated_FeeGrantCheck(t *testing.T) {
 			del.FeeGrantErr = tc.feeErr
 			ctx = anteCtx(t, ctx, feeTxStub{granter: validatorCorp})
 			_, err = ms.SetParticipantOPToValidated(ctx, &types.MsgSetParticipantOPToValidated{
-				Corporation: validatorCorp.String(), Delegate: vsOperator, Id: applicantID,
+				Corporation: validatorCorp.String(), Signer: vsOperator, Id: applicantID,
 				ValidationFees: 10, IssuanceFees: 5, VerificationFees: 3,
 				EffectiveUntil: &future, OpSummaryDigest: "sha384-validDigest",
 			})
@@ -215,7 +215,7 @@ func TestCreateOrUpdateParticipantSession_FeeGrantCheck(t *testing.T) {
 				require.NoError(t, err)
 				return id
 			}
-			msg := &types.MsgCreateOrUpdateParticipantSession{Corporation: corporation.String(), VsAccount: delegate, Id: uuid.New().String()}
+			msg := &types.MsgCreateOrUpdateParticipantSession{Corporation: corporation.String(), Signer: delegate, Id: uuid.New().String()}
 			wantID := newVS(types.ParticipantRole_ISSUER)
 			msg.IssuerParticipantId = wantID
 			if tc.verifier {

@@ -131,7 +131,7 @@ func NewMsgCreateCredentialSchema(
 ) *MsgCreateCredentialSchema {
 	msg := &MsgCreateCredentialSchema{
 		Corporation:                             authority,
-		Delegate:                                delegate,
+		Signer:                                  delegate,
 		EcosystemId:                             ecosystemId,
 		JsonSchema:                              jsonSchema,
 		IssuerGrantorValidationValidityPeriod:   &OptionalUInt32{Value: issuerGrantorValidationValidityPeriod},
@@ -162,7 +162,7 @@ func (msg *MsgCreateCredentialSchema) Type() string {
 
 // GetSigners implements sdk.Msg
 func (msg *MsgCreateCredentialSchema) GetSigners() []sdk.AccAddress {
-	delegate, err := sdk.AccAddressFromBech32(msg.Delegate)
+	delegate, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		panic(err)
 	}
@@ -177,10 +177,10 @@ func (msg *MsgCreateCredentialSchema) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
 
-	// Validate delegate address
-	_, err = sdk.AccAddressFromBech32(msg.Delegate)
+	// Validate signer address
+	_, err = sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid signer address (%s)", err)
 	}
 
 	// Check mandatory parameters
@@ -718,10 +718,10 @@ func (msg *MsgUpdateCredentialSchema) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
 
-	// Validate delegate address
-	_, err = sdk.AccAddressFromBech32(msg.Delegate)
+	// Validate signer address
+	_, err = sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid signer address (%s)", err)
 	}
 
 	if msg.Id == 0 {
@@ -754,10 +754,10 @@ func (msg *MsgArchiveCredentialSchema) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
 
-	// Validate delegate address
-	_, err = sdk.AccAddressFromBech32(msg.Delegate)
+	// Validate signer address
+	_, err = sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid signer address (%s)", err)
 	}
 
 	if msg.Id == 0 {

@@ -29,11 +29,11 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
 					RpcMethod: "StoreDigest",
-					Use:       "store-digest [authority] [digest]",
+					Use:       "store-digest [corporation] [digest]",
 					Short:     "Store a digest on behalf of a corporation",
-					Long:      "[MOD-DI-MSG-1] Store Digest. The delegate (--from) stores a digest on behalf of the authority (corporation).",
+					Long:      "[MOD-DI-MSG-1] Store Digest. The signer (--from) stores a digest on behalf of the corporation.",
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
-						{ProtoField: "authority"},
+						{ProtoField: "corporation"},
 						{ProtoField: "digest"},
 					},
 				},

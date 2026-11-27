@@ -68,7 +68,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.\n[MOD-TD-MSG-6] Any authorized delegate CAN execute this on behalf of a corporation.",
+            "description": "MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.\n[MOD-TD-MSG-6] An authorized delegate, or the corporation itself through a\ngroup proposal, CAN execute this.",
             "in": "body",
             "required": true,
             "schema": {
@@ -198,9 +198,9 @@
           "type": "string",
           "description": "corporation is the group address that owns the trust deposit."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by the corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         }
       },
       "title": "MsgReclaimTrustDepositYield defines the request type\n[MOD-TD-MSG-2] Reclaim Trust Deposit Yield"
@@ -222,9 +222,9 @@
           "type": "string",
           "description": "corporation is the group address that owns the slashed trust deposit."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by the corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "deposit": {
           "type": "string",
@@ -232,7 +232,7 @@
           "description": "deposit is the repayment amount (must equal outstanding slashed amount)."
         }
       },
-      "description": "MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.\n[MOD-TD-MSG-6] Any authorized delegate CAN execute this on behalf of a corporation."
+      "description": "MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.\n[MOD-TD-MSG-6] An authorized delegate, or the corporation itself through a\ngroup proposal, CAN execute this."
     },
     "verana.td.v1.MsgRepaySlashedTrustDepositResponse": {
       "type": "object"
@@ -240,9 +240,9 @@
     "verana.td.v1.MsgSlashTrustDeposit": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov unless overwritten)."
+          "description": "signer is the council account."
         },
         "corporation_id": {
           "type": "string",
@@ -267,9 +267,9 @@
     "verana.td.v1.MsgUpdateParams": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov unless overwritten)."
+          "description": "signer is the council account."
         },
         "params": {
           "$ref": "#/definitions/verana.td.v1.Params",

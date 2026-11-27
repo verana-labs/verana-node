@@ -26,9 +26,9 @@ func (msg *MsgGrantDelegateAuthorization) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// delegate is the signer; mandatory
-	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
-		return fmt.Errorf("invalid delegate address: %w", err)
+	// signer is mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
+		return fmt.Errorf("invalid signer address: %w", err)
 	}
 
 	// grantee is mandatory
@@ -86,9 +86,9 @@ func (msg *MsgRevokeDelegateAuthorization) ValidateBasic() error {
 		return fmt.Errorf("invalid corporation address: %w", err)
 	}
 
-	// delegate is the signer; mandatory
-	if _, err := sdk.AccAddressFromBech32(msg.Delegate); err != nil {
-		return fmt.Errorf("invalid delegate address: %w", err)
+	// signer is mandatory
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
+		return fmt.Errorf("invalid signer address: %w", err)
 	}
 
 	// grantee is mandatory

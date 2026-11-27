@@ -41,12 +41,12 @@ func (k Keeper) CheckDelegateAuthorization(
 }
 
 // ConsumeDelegateSpend implements [AUTHZ-CHECK-1] step 3: it verifies the
-// delegate authorization's remaining_spend covers `amount` and debits it.
-// Callers pass the operation's nominal fund commitment (fees + face-value trust
-// deposit). It is a no-op when no spend_limit is configured. It reuses
-// checkDelegateAuthorizationCore so the period-reset / expiry / msg_type
-// invariant holds at debit time. The debit is reverted with the transaction if
-// any later step in the handler fails.
+// delegate authorization's remaining_spend covers the consumed amount and
+// debits it, per denom the spend_limit lists. Callers pass what the method
+// debits for the corporation, in every denom. It is a no-op when no spend_limit
+// is configured. It reuses checkDelegateAuthorizationCore so the period-reset /
+// expiry / msg_type invariant holds at debit time. The debit is reverted with
+// the transaction if any later step in the handler fails.
 func (k Keeper) ConsumeDelegateSpend(
 	ctx context.Context,
 	corporationID uint64,
@@ -62,7 +62,8 @@ func (k Keeper) ConsumeDelegateSpend(
 	if err != nil {
 		return err
 	}
-	if len(da.SpendLimit) == 0 {
+	amount = limitedDenoms(amount, da.SpendLimit)
+	if amount.IsZero() {
 		return nil
 	}
 	if !da.RemainingSpend.IsAllGTE(amount) {
@@ -75,6 +76,17 @@ func (k Keeper) ConsumeDelegateSpend(
 	}
 	k.emitDelegateAuthzUpdated(ctx, da.Id)
 	return nil
+}
+
+// limitedDenoms returns the coins of amount whose denom limit lists.
+func limitedDenoms(amount, limit sdk.Coins) sdk.Coins {
+	var out sdk.Coins
+	for _, c := range amount {
+		if found, _ := limit.Find(c.Denom); found {
+			out = append(out, c)
+		}
+	}
+	return out
 }
 
 // checkDelegateAuthorizationCore performs the period-renewal / expiration +

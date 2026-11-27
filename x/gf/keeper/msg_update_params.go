@@ -12,8 +12,8 @@ import (
 
 // [MOD-GF-MSG-5] Update Module Parameters
 func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
-	if ms.GetAuthority() != msg.Authority {
-		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "expected %s got %s", ms.GetAuthority(), msg.Authority)
+	if ms.GetAuthority() != msg.Signer {
+		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "expected %s got %s", ms.GetAuthority(), msg.Signer)
 	}
 	if err := msg.Params.Validate(); err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateParams,
-		append([]sdk.Attribute{sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority)}, msg.Params.EventAttributes()...)...,
+		append([]sdk.Attribute{sdk.NewAttribute(types.AttributeKeySigner, msg.Signer)}, msg.Params.EventAttributes()...)...,
 	))
 	return &types.MsgUpdateParamsResponse{}, nil
 }

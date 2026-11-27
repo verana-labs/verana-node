@@ -181,7 +181,7 @@ func TestQueryListGovernanceFrameworkVersions(t *testing.T) {
 		require.NoError(t, err)
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:    testDelegate,
 		})
 		require.NoError(t, err)
 		corp.view.ActiveVersion = 1 // simulate ecosystem-side bump

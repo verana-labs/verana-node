@@ -19,13 +19,13 @@ func (ms msgServer) RevokeExchangeRateAuthorization(ctx context.Context, msg *ty
 	}
 
 	// authority MUST equal the council account.
-	authority, err := ms.addressCodec.StringToBytes(msg.Authority)
+	authority, err := ms.addressCodec.StringToBytes(msg.Signer)
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "invalid authority address")
 	}
 	if !bytes.Equal(ms.GetAuthority(), authority) {
 		expected, _ := ms.addressCodec.BytesToString(ms.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expected, msg.Authority)
+		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid signer; expected %s, got %s", expected, msg.Signer)
 	}
 
 	// (xr_id, feeder) MUST exist.

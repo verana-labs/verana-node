@@ -73,7 +73,7 @@ async function main() {
     typeUrl: typeUrls.MsgArchiveCredentialSchema,
     value: MsgArchiveCredentialSchema.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       id: activeCS.schemaId,
       archive: true,
     }),

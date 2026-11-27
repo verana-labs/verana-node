@@ -14,8 +14,8 @@ func (m *MsgCreateEcosystem) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "signer: %s", err)
 	}
 	if m.Did == "" {
 		return errors.Wrap(ErrInvalidDID, "did is required")
@@ -50,8 +50,8 @@ func (m *MsgUpdateEcosystem) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "signer: %s", err)
 	}
 	if m.Id == 0 {
 		return errors.Wrap(ErrInvalidSubject, "id is required")
@@ -74,8 +74,8 @@ func (m *MsgArchiveEcosystem) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Corporation); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "corporation: %s", err)
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Delegate); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "delegate: %s", err)
+	if _, err := sdk.AccAddressFromBech32(m.Signer); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "signer: %s", err)
 	}
 	if m.Id == 0 {
 		return errors.Wrap(ErrInvalidSubject, "id is required")

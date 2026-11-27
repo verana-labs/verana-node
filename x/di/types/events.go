@@ -4,7 +4,7 @@ const (
 	EventTypeStoreDigest = "store_digest"
 
 	AttributeKeyCorporation = "corporation"
-	AttributeKeyDelegate    = "delegate"
+	AttributeKeySigner      = "signer"
 	AttributeKeyDigest      = "digest"
 	AttributeKeySource      = "source"
 	AttributeKeyTimestamp   = "timestamp"

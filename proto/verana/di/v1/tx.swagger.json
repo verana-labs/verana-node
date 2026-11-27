@@ -83,13 +83,13 @@
     "verana.di.v1.MsgStoreDigest": {
       "type": "object",
       "properties": {
-        "authority": {
+        "corporation": {
           "type": "string",
-          "description": "authority is the corporation (group account) on whose behalf this message\nis executed."
+          "description": "corporation is the policy_address of the corporation on whose behalf\nthis message is executed."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by the corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "digest": {
           "type": "string",

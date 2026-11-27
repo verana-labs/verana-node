@@ -61,9 +61,9 @@ func TestStoreDigest_HappyPath(t *testing.T) {
 	digest := "sha256-abc123def456"
 
 	resp, err := ms.StoreDigest(f.ctx, &types.MsgStoreDigest{
-		Authority: authority,
-		Delegate:  delegate,
-		Digest:    digest,
+		Corporation: authority,
+		Signer:      delegate,
+		Digest:      digest,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -80,35 +80,35 @@ func TestStoreDigest_EmptyDigest(t *testing.T) {
 	delegate := sdk.AccAddress([]byte("delegate_address__")).String()
 
 	msg := &types.MsgStoreDigest{
-		Authority: authority,
-		Delegate:  delegate,
-		Digest:    "",
+		Corporation: authority,
+		Signer:      delegate,
+		Digest:      "",
 	}
 	err := msg.ValidateBasic()
 	require.Error(t, err)
 	require.ErrorIs(t, err, types.ErrDigestEmpty)
 }
 
-func TestStoreDigest_InvalidAuthority(t *testing.T) {
+func TestStoreDigest_InvalidCorporation(t *testing.T) {
 	msg := &types.MsgStoreDigest{
-		Authority: "bad-address",
-		Delegate:  sdk.AccAddress([]byte("delegate_address__")).String(),
-		Digest:    "sha256-abc123",
+		Corporation: "bad-address",
+		Signer:      sdk.AccAddress([]byte("delegate_address__")).String(),
+		Digest:      "sha256-abc123",
 	}
 	err := msg.ValidateBasic()
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "invalid authority address")
+	require.Contains(t, err.Error(), "invalid corporation address")
 }
 
-func TestStoreDigest_InvalidDelegate(t *testing.T) {
+func TestStoreDigest_InvalidSigner(t *testing.T) {
 	msg := &types.MsgStoreDigest{
-		Authority: sdk.AccAddress([]byte("authority_address_")).String(),
-		Delegate:  "bad-delegate",
-		Digest:    "sha256-abc123",
+		Corporation: sdk.AccAddress([]byte("authority_address_")).String(),
+		Signer:      "bad-delegate",
+		Digest:      "sha256-abc123",
 	}
 	err := msg.ValidateBasic()
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "invalid delegate address")
+	require.Contains(t, err.Error(), "invalid signer address")
 }
 
 func TestStoreDigest_AuthzFailure(t *testing.T) {
@@ -122,9 +122,9 @@ func TestStoreDigest_AuthzFailure(t *testing.T) {
 	delegate := sdk.AccAddress([]byte("delegate_address__")).String()
 
 	resp, err := ms.StoreDigest(f.ctx, &types.MsgStoreDigest{
-		Authority: authority,
-		Delegate:  delegate,
-		Digest:    "sha256-abc123",
+		Corporation: authority,
+		Signer:      delegate,
+		Digest:      "sha256-abc123",
 	})
 	require.Error(t, err)
 	require.Nil(t, resp)
@@ -142,9 +142,9 @@ func TestStoreDigest_AuthzSuccess(t *testing.T) {
 	digest := "sha256-authzsuccess"
 
 	resp, err := ms.StoreDigest(f.ctx, &types.MsgStoreDigest{
-		Authority: authority,
-		Delegate:  delegate,
-		Digest:    digest,
+		Corporation: authority,
+		Signer:      delegate,
+		Digest:      digest,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, resp)
@@ -165,9 +165,9 @@ func TestStoreDigest_DuplicateDigest(t *testing.T) {
 	digest := "sha256-duplicate"
 
 	msg := &types.MsgStoreDigest{
-		Authority: authority,
-		Delegate:  delegate,
-		Digest:    digest,
+		Corporation: authority,
+		Signer:      delegate,
+		Digest:      digest,
 	}
 
 	// Store first time

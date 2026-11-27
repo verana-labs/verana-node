@@ -37,7 +37,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "[MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization\nto a grantee on behalf of a corporation.\n\nThe signer is `delegate`. On the group-proposal path the corporation's\npolicy account executes the message and `delegate` equals `corporation`;\nonly AUTHZ-CHECK-5 then applies.",
+            "description": "[MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization\nto a grantee on behalf of a corporation.\n\nOn the group-proposal path the corporation's policy account executes the\nmessage and `signer` equals `corporation`; only AUTHZ-CHECK-5 then applies.",
             "in": "body",
             "required": true,
             "schema": {
@@ -133,9 +133,9 @@
           "type": "string",
           "description": "corporation is the policy_address of the corporation granting the authorization."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the signer: an authorized delegate, or the corporation's\npolicy_address itself on the group-proposal path."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "grantee": {
           "type": "string",
@@ -182,7 +182,7 @@
           "description": "feegrant_spend_limit_period is the optional reset period for\nfeegrant_spend_limit. Ignored if with_feegrant is false."
         }
       },
-      "description": "[MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization\nto a grantee on behalf of a corporation.\n\nThe signer is `delegate`. On the group-proposal path the corporation's\npolicy account executes the message and `delegate` equals `corporation`;\nonly AUTHZ-CHECK-5 then applies."
+      "description": "[MOD-DE-MSG-3] MsgGrantDelegateAuthorization grants a delegate authorization\nto a grantee on behalf of a corporation.\n\nOn the group-proposal path the corporation's policy account executes the\nmessage and `signer` equals `corporation`; only AUTHZ-CHECK-5 then applies."
     },
     "verana.de.v1.MsgGrantDelegateAuthorizationResponse": {
       "type": "object",
@@ -195,9 +195,9 @@
           "type": "string",
           "description": "corporation is the policy_address of the corporation revoking the authorization."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the signer: an authorized delegate, or the corporation's\npolicy_address itself on the group-proposal path."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "grantee": {
           "type": "string",
