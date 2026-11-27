@@ -82,7 +82,7 @@ async function main() {
       typeUrl: typeUrls.MsgSetParticipantEffectiveUntil,
       value: MsgSetParticipantEffectiveUntil.fromPartial({
         corporation: authzSetup.authorityAddress,
-        delegate: authzSetup.delegateAddress,
+        signer: authzSetup.delegateAddress,
         id: rootSetup.rootPermId,
         effectiveUntil: newEffectiveUntil,
       }),

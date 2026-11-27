@@ -30,14 +30,14 @@ type resolvedSubject struct {
 	activeVersion uint32
 }
 
-// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
-// delegate, and returns the resolved corporation.
-func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (types.CorporationView, error) {
-	coView, err := ms.corporationKeeper().ResolveCorporationByPolicyAddress(ctx, corporation)
-	if err != nil {
-		return types.CorporationView{}, err
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for a
+// delegate signer, and returns the resolved corporation.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, signer string, msgType detypes.MsgType) (types.CorporationView, error) {
+	coView, group, err := ms.corporationKeeper().ResolveSigner(ctx, corporation, signer)
+	if err != nil || group {
+		return coView, err
 	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, coView.Id, delegate, msgType, ctx.BlockTime()); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, coView.Id, signer, msgType, ctx.BlockTime()); err != nil {
 		return types.CorporationView{}, err
 	}
 	return coView, nil
@@ -138,12 +138,12 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	if msg.Authority != "" {
-		return nil, ms.checkNetworkPath(msg.Authority)
+	if msg.Network {
+		return nil, ms.checkNetworkPath(msg.Signer)
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	coView, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT)
+	coView, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_ADD_GOVERNANCE_FRAMEWORK_DOCUMENT)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +241,7 @@ func (ms msgServer) AddGovernanceFrameworkDocument(goCtx context.Context, msg *t
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddGFDocument,
 		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
+		sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", msg.EcosystemId)),
 		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
 		sdk.NewAttribute(types.AttributeKeyGFDocID, fmt.Sprintf("%d", gfd.Id)),

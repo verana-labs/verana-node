@@ -83,7 +83,7 @@ async function main() {
     typeUrl: typeUrls.MsgCreateEcosystem,
     value: MsgCreateEcosystem.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       did,
       language: "en",
       docUrl: "http://ts-proto-test-ecosystem.com/doc-v1",

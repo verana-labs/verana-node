@@ -7,23 +7,23 @@ import (
 )
 
 // ValidateBasic implements sdk.Msg
-// [MOD-TD-MSG-2-1] spec: parameters are corporation + delegate only.
+// [MOD-TD-MSG-2-1] spec: parameters are corporation + signer only.
 func (msg *MsgReclaimTrustDepositYield) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Corporation)
 	if err != nil {
 		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
-	_, err = sdk.AccAddressFromBech32(msg.Delegate)
+	_, err = sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid signer address (%s)", err)
 	}
 	return nil
 }
 
 func (msg *MsgSlashTrustDeposit) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Authority)
+	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid signer address (%s)", err)
 	}
 
 	if msg.CorporationId == 0 {
@@ -49,9 +49,9 @@ func (msg *MsgRepaySlashedTrustDeposit) ValidateBasic() error {
 		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid corporation address (%s)", err)
 	}
 
-	_, err = sdk.AccAddressFromBech32(msg.Delegate)
+	_, err = sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid delegate address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid signer address (%s)", err)
 	}
 
 	if msg.Deposit == 0 {

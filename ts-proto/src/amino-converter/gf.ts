@@ -13,49 +13,49 @@ export const MsgAddGovernanceFrameworkDocumentAminoConverter: AminoConverter = {
   aminoType: "verana/x/gf/MsgAddGovernanceFrameworkDocument",
   toAmino: ({
     corporation,
-    delegate,
+    signer,
     ecosystemId,
     docLanguage,
     docUrl,
     docDigestSri,
     version,
-    authority,
+    network,
   }: MsgAddGovernanceFrameworkDocument) => clean({
     corporation: corporation || undefined,
-    delegate: delegate || undefined,
+    signer: signer || undefined,
     ecosystem_id: u64ToStr(ecosystemId as any),
     doc_language: docLanguage || undefined,
     doc_url: docUrl || undefined,
     doc_digest_sri: docDigestSri || undefined,
     version: version || undefined,
-    authority: authority || undefined,
+    network: network || undefined,
   }),
   fromAmino: (value: any) =>
     MsgAddGovernanceFrameworkDocument.fromPartial({
       corporation: value.corporation ?? "",
-      delegate: value.delegate ?? "",
+      signer: value.signer ?? "",
       ecosystemId: value.ecosystem_id != null ? Number(value.ecosystem_id) : 0,
       docLanguage: value.doc_language ?? "",
       docUrl: value.doc_url ?? "",
       docDigestSri: value.doc_digest_sri ?? "",
       version: value.version ?? 0,
-      authority: value.authority ?? "",
+      network: value.network ?? false,
     }),
 };
 
 export const MsgIncreaseActiveGovernanceFrameworkVersionAminoConverter: AminoConverter = {
   aminoType: "verana/x/gf/MsgIncreaseActiveGovernanceFrameworkVersion",
-  toAmino: ({ corporation, delegate, ecosystemId, authority }: MsgIncreaseActiveGovernanceFrameworkVersion) => clean({
+  toAmino: ({ corporation, signer, ecosystemId, network }: MsgIncreaseActiveGovernanceFrameworkVersion) => clean({
     corporation: corporation || undefined,
-    delegate: delegate || undefined,
+    signer: signer || undefined,
     ecosystem_id: u64ToStr(ecosystemId as any),
-    authority: authority || undefined,
+    network: network || undefined,
   }),
   fromAmino: (value: any) =>
     MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({
       corporation: value.corporation ?? "",
-      delegate: value.delegate ?? "",
+      signer: value.signer ?? "",
       ecosystemId: value.ecosystem_id != null ? Number(value.ecosystem_id) : 0,
-      authority: value.authority ?? "",
+      network: value.network ?? false,
     }),
 };

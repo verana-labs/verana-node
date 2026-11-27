@@ -174,12 +174,12 @@ func newSelfGrantEnv(t *testing.T) selfGrantEnv {
 	e.rootID = rootID
 
 	_, err = e.des.GrantDelegateAuthorization(ctx, &detypes.MsgGrantDelegateAuthorization{
-		Corporation: e.pX.String(), Delegate: e.pX.String(), Grantee: e.opX.String(),
+		Corporation: e.pX.String(), Signer: e.pX.String(), Grantee: e.opX.String(),
 		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_SELF_CREATE_ACCREDITATION, detypes.MsgType_MSG_TYPE_SET_ACCREDITATION_EFFECTIVE_UNTIL},
 	})
 	require.NoError(t, err)
 	_, err = e.des.GrantDelegateAuthorization(ctx, &detypes.MsgGrantDelegateAuthorization{
-		Corporation: e.pE.String(), Delegate: e.pE.String(), Grantee: e.opE.String(),
+		Corporation: e.pE.String(), Signer: e.pE.String(), Grantee: e.opE.String(),
 		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_REVOKE_ACCREDITATION},
 	})
 	require.NoError(t, err)
@@ -237,7 +237,7 @@ func TestSelfFeeGrant_RevokeParticipant(t *testing.T) {
 	e := newSelfGrantEnv(t)
 	id := e.selfCreate(t, nil)
 
-	msg := &pptypes.MsgRevokeParticipant{Corporation: e.pE.String(), Delegate: e.opE.String(), Id: id}
+	msg := &pptypes.MsgRevokeParticipant{Corporation: e.pE.String(), Signer: e.opE.String(), Id: id}
 	_, err := e.a.MsgServiceRouter().Handler(msg)(e.ctx, msg)
 	require.NoError(t, err)
 
@@ -264,10 +264,10 @@ func TestSelfFeeGrant_DelegateAuthorization(t *testing.T) {
 	_, err = e.a.FeeGrantKeeper.GetAllowance(e.ctx, e.pX, e.pX)
 	require.NoError(t, err)
 
-	_, err = e.des.GrantDelegateAuthorization(e.ctx, &detypes.MsgGrantDelegateAuthorization{Corporation: X, Delegate: X, Grantee: X, MsgTypes: msgTypes})
+	_, err = e.des.GrantDelegateAuthorization(e.ctx, &detypes.MsgGrantDelegateAuthorization{Corporation: X, Signer: X, Grantee: X, MsgTypes: msgTypes})
 	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
 
-	_, err = e.des.RevokeDelegateAuthorization(e.ctx, &detypes.MsgRevokeDelegateAuthorization{Corporation: X, Delegate: X, Grantee: X})
+	_, err = e.des.RevokeDelegateAuthorization(e.ctx, &detypes.MsgRevokeDelegateAuthorization{Corporation: X, Signer: X, Grantee: X})
 	require.NoError(t, err)
 	e.requireNoSelfGrant(t, e.ctx)
 }
@@ -280,7 +280,7 @@ func TestSelfFeeGrant_Refused(t *testing.T) {
 	limit := sdk.NewCoins(sdk.NewInt64Coin("uvna", 1))
 
 	_, err := e.pps.SelfCreateParticipant(e.ctx, &pptypes.MsgSelfCreateParticipant{
-		Corporation: X, Delegate: e.opX.String(), Role: pptypes.ParticipantRole_ISSUER,
+		Corporation: X, Signer: e.opX.String(), Role: pptypes.ParticipantRole_ISSUER,
 		ValidatorParticipantId: e.rootID, Did: "did:example:issuerx", VsOperator: X,
 	})
 	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
@@ -292,7 +292,7 @@ func TestSelfFeeGrant_Refused(t *testing.T) {
 	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
 
 	_, err = e.des.GrantDelegateAuthorization(e.ctx, &detypes.MsgGrantDelegateAuthorization{
-		Corporation: X, Delegate: X, Grantee: X, MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
+		Corporation: X, Signer: X, Grantee: X, MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM},
 		WithFeegrant: true, FeegrantSpendLimit: limit,
 	})
 	require.ErrorIs(t, err, detypes.ErrOwnPolicyAddress)
@@ -325,7 +325,7 @@ func TestSelfFeeGrant_SetEffectiveUntil(t *testing.T) {
 	id := e.selfCreate(t, nil)
 
 	until := e.ctx.BlockTime().Add(48 * time.Hour)
-	_, err := e.pps.SetParticipantEffectiveUntil(e.ctx, &pptypes.MsgSetParticipantEffectiveUntil{Corporation: e.pX.String(), Delegate: e.opX.String(), Id: id, EffectiveUntil: &until})
+	_, err := e.pps.SetParticipantEffectiveUntil(e.ctx, &pptypes.MsgSetParticipantEffectiveUntil{Corporation: e.pX.String(), Signer: e.opX.String(), Id: id, EffectiveUntil: &until})
 	require.NoError(t, err)
 
 	_, err = e.a.FeeGrantKeeper.GetAllowance(e.ctx, e.pX, e.pX)
@@ -364,12 +364,12 @@ func TestSelfFeeGrant_ValidatedEntry(t *testing.T) {
 	require.NoError(t, a.BankKeeper.SendCoinsFromModuleToAccount(ctx, ibctransfertypes.ModuleName, e.pX, fund))
 
 	_, err = e.des.GrantDelegateAuthorization(ctx, &detypes.MsgGrantDelegateAuthorization{
-		Corporation: e.pX.String(), Delegate: e.pX.String(), Grantee: e.opX.String(),
+		Corporation: e.pX.String(), Signer: e.pX.String(), Grantee: e.opX.String(),
 		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RENEW_ONBOARDING},
 	})
 	require.NoError(t, err)
 	_, err = e.des.GrantDelegateAuthorization(ctx, &detypes.MsgGrantDelegateAuthorization{
-		Corporation: e.pE.String(), Delegate: e.pE.String(), Grantee: e.opE.String(),
+		Corporation: e.pE.String(), Signer: e.pE.String(), Grantee: e.opE.String(),
 		MsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING, detypes.MsgType_MSG_TYPE_SLASH_PARTICIPATION_TRUST_DEPOSIT},
 	})
 	require.NoError(t, err)
@@ -379,13 +379,13 @@ func TestSelfFeeGrant_ValidatedEntry(t *testing.T) {
 		Role: pptypes.ParticipantRole_ISSUER, SchemaId: 2, ValidatorParticipantId: rootID, Did: "did:example:issuerx2",
 		Created: &now, Modified: &now, OpState: pptypes.OnboardingState_PENDING, OpLastStateChange: &now,
 	})
-	validate := &pptypes.MsgSetParticipantOPToValidated{Corporation: e.pE.String(), Delegate: e.opE.String(), Id: id}
+	validate := &pptypes.MsgSetParticipantOPToValidated{Corporation: e.pE.String(), Signer: e.opE.String(), Id: id}
 	_, err = e.pps.SetParticipantOPToValidated(ctx, validate)
 	require.NoError(t, err)
 	_, err = a.FeeGrantKeeper.GetAllowance(ctx, e.pX, e.pX)
 	require.NoError(t, err)
 
-	_, err = e.pps.RenewParticipantOP(ctx, &pptypes.MsgRenewParticipantOP{Corporation: e.pX.String(), Delegate: e.opX.String(), Id: id})
+	_, err = e.pps.RenewParticipantOP(ctx, &pptypes.MsgRenewParticipantOP{Corporation: e.pX.String(), Signer: e.opX.String(), Id: id})
 	require.NoError(t, err)
 	_, err = e.pps.SetParticipantOPToValidated(ctx, validate)
 	require.NoError(t, err)
@@ -395,7 +395,7 @@ func TestSelfFeeGrant_ValidatedEntry(t *testing.T) {
 	p, err := a.ParticipantKeeper.GetParticipantByID(ctx, id)
 	require.NoError(t, err)
 	require.Positive(t, p.Deposit)
-	_, err = e.pps.SlashParticipantTrustDeposit(ctx, &pptypes.MsgSlashParticipantTrustDeposit{Corporation: e.pE.String(), Delegate: e.opE.String(), Id: id, Amount: p.Deposit, Reason: "test"})
+	_, err = e.pps.SlashParticipantTrustDeposit(ctx, &pptypes.MsgSlashParticipantTrustDeposit{Corporation: e.pE.String(), Signer: e.opE.String(), Id: id, Amount: p.Deposit, Reason: "test"})
 	require.NoError(t, err)
 	e.requireNoSelfGrant(t, ctx)
 }

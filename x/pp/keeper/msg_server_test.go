@@ -127,7 +127,7 @@ func TestStartParticipantVP(t *testing.T) {
 			name: "Valid ISSUER Participant Request",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator,
-				Delegate:               creator,
+				Signer:                 creator,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: validatorParticipantID,
 				Did:                    validDid,
@@ -139,7 +139,7 @@ func TestStartParticipantVP(t *testing.T) {
 			name: "Valid ISSUER Participant Request with optional fees",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator2,
-				Delegate:               creator2,
+				Signer:                 creator2,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: validatorParticipantID,
 				Did:                    "did:example:start-fees-optional",
@@ -157,7 +157,7 @@ func TestStartParticipantVP(t *testing.T) {
 			name: "Valid ISSUER Participant Request with partial fees",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator3,
-				Delegate:               creator3,
+				Signer:                 creator3,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: validatorParticipantID,
 				Did:                    "did:example:start-fees-partial",
@@ -173,7 +173,7 @@ func TestStartParticipantVP(t *testing.T) {
 			name: "Valid ISSUER Participant Request with zero fees",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator4,
-				Delegate:               creator4,
+				Signer:                 creator4,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: validatorParticipantID,
 				Did:                    "did:example:start-fees-zero",
@@ -191,7 +191,7 @@ func TestStartParticipantVP(t *testing.T) {
 			name: "Valid ISSUER Participant Request without country on validator",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator,
-				Delegate:               creator,
+				Signer:                 creator,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: validatorParticipantNoCountryID,
 				Did:                    validDid,
@@ -203,7 +203,7 @@ func TestStartParticipantVP(t *testing.T) {
 			name: "Non-existent Validator Participant",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator,
-				Delegate:               creator,
+				Signer:                 creator,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: 999,
 				Did:                    validDid,
@@ -215,7 +215,7 @@ func TestStartParticipantVP(t *testing.T) {
 			name: "Invalid Participant Type Combination - ISSUER with wrong validator",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator,
-				Delegate:               creator,
+				Signer:                 creator,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: verifierGrantorParticipantID, // Wrong validator type
 				Did:                    validDid,
@@ -324,7 +324,7 @@ func TestRenewParticipantVP(t *testing.T) {
 			name: "Non-existent Participant",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: creator,
-				Delegate:    creator,
+				Signer:      creator,
 				Id:          999,
 			},
 			err: "participant not found",
@@ -333,7 +333,7 @@ func TestRenewParticipantVP(t *testing.T) {
 			name: "Wrong Authority",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: sdk.AccAddress([]byte("wrong_creator")).String(),
-				Delegate:    sdk.AccAddress([]byte("wrong_creator")).String(),
+				Signer:      sdk.AccAddress([]byte("wrong_creator")).String(),
 				Id:          applicantParticipantID,
 			},
 			err: "authority is not the participant authority",
@@ -342,7 +342,7 @@ func TestRenewParticipantVP(t *testing.T) {
 			name: "Successful Renewal",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: creator,
-				Delegate:    creator,
+				Signer:      creator,
 				Id:          applicantParticipantID,
 			},
 			err: "",
@@ -380,6 +380,7 @@ func TestRenewParticipantVP_AuthzCheck(t *testing.T) {
 	ctx = sdk.WrapSDKContext(sdkCtx)
 
 	creator := sdk.AccAddress([]byte("test_creator")).String()
+	delegate := sdk.AccAddress([]byte("test_delegate")).String()
 
 	csKeeper.CreateMockCredentialSchema(1,
 		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
@@ -418,7 +419,7 @@ func TestRenewParticipantVP_AuthzCheck(t *testing.T) {
 		mockDelegation.ErrToReturn = fmt.Errorf("delegate not authorized")
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 		})
 		require.Error(t, err)
@@ -430,7 +431,7 @@ func TestRenewParticipantVP_AuthzCheck(t *testing.T) {
 		mockDelegation.ErrToReturn = nil
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 		})
 		require.NoError(t, err)
@@ -490,7 +491,7 @@ func TestRenewParticipantVP_VpStatePrecondition(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          pendingParticipantID,
 		})
 		require.Error(t, err)
@@ -520,7 +521,7 @@ func TestRenewParticipantVP_VpStatePrecondition(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          unspecParticipantID,
 		})
 		require.Error(t, err)
@@ -544,7 +545,7 @@ func TestRenewParticipantVP_VpStatePrecondition(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          validatedParticipantID,
 		})
 		require.NoError(t, err)
@@ -607,7 +608,7 @@ func TestRenewParticipantVP_ValidatorParticipantChecks(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          applicantParticipantID,
 		})
 		require.Error(t, err)
@@ -645,7 +646,7 @@ func TestRenewParticipantVP_ValidatorParticipantChecks(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          applicantParticipantID,
 		})
 		require.Error(t, err)
@@ -681,7 +682,7 @@ func TestRenewParticipantVP_ValidatorParticipantChecks(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          applicantParticipantID,
 		})
 		require.Error(t, err)
@@ -705,7 +706,7 @@ func TestRenewParticipantVP_ValidatorParticipantChecks(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          applicantParticipantID,
 		})
 		require.Error(t, err)
@@ -765,7 +766,7 @@ func TestRenewParticipantVP_FeeAndDepositAccumulation(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          applicantParticipantID,
 		})
 		require.NoError(t, err)
@@ -797,7 +798,7 @@ func TestRenewParticipantVP_FeeAndDepositAccumulation(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 		})
 		require.NoError(t, err)
@@ -819,7 +820,7 @@ func TestRenewParticipantVP_ValidateBasic(t *testing.T) {
 			name: "Empty authority address",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: "",
-				Delegate:    sdk.AccAddress([]byte("test_delegate")).String(),
+				Signer:      sdk.AccAddress([]byte("test_delegate")).String(),
 				Id:          1,
 			},
 			err: "invalid corporation address",
@@ -828,7 +829,7 @@ func TestRenewParticipantVP_ValidateBasic(t *testing.T) {
 			name: "Invalid authority address",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: "invalid_address",
-				Delegate:    sdk.AccAddress([]byte("test_delegate")).String(),
+				Signer:      sdk.AccAddress([]byte("test_delegate")).String(),
 				Id:          1,
 			},
 			err: "invalid corporation address",
@@ -837,25 +838,25 @@ func TestRenewParticipantVP_ValidateBasic(t *testing.T) {
 			name: "Empty delegate address",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: sdk.AccAddress([]byte("test_authority")).String(),
-				Delegate:    "",
+				Signer:      "",
 				Id:          1,
 			},
-			err: "invalid delegate address",
+			err: "invalid signer address",
 		},
 		{
 			name: "Invalid delegate address",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: sdk.AccAddress([]byte("test_authority")).String(),
-				Delegate:    "invalid_address",
+				Signer:      "invalid_address",
 				Id:          1,
 			},
-			err: "invalid delegate address",
+			err: "invalid signer address",
 		},
 		{
 			name: "Zero participant ID",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: sdk.AccAddress([]byte("test_authority")).String(),
-				Delegate:    sdk.AccAddress([]byte("test_delegate")).String(),
+				Signer:      sdk.AccAddress([]byte("test_delegate")).String(),
 				Id:          0,
 			},
 			err: "participant ID cannot be 0",
@@ -864,7 +865,7 @@ func TestRenewParticipantVP_ValidateBasic(t *testing.T) {
 			name: "Valid message",
 			msg: &types.MsgRenewParticipantOP{
 				Corporation: sdk.AccAddress([]byte("test_authority")).String(),
-				Delegate:    sdk.AccAddress([]byte("test_delegate")).String(),
+				Signer:      sdk.AccAddress([]byte("test_delegate")).String(),
 				Id:          1,
 			},
 			err: "",
@@ -923,7 +924,7 @@ func TestRenewParticipantVP_ModeRoleChecks(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          selfID,
 		})
 		require.Error(t, err)
@@ -946,7 +947,7 @@ func TestRenewParticipantVP_ModeRoleChecks(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          selfID,
 		})
 		require.Error(t, err)
@@ -963,7 +964,7 @@ func TestRenewParticipantVP_ModeRoleChecks(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          oddID,
 		})
 		require.Error(t, err)
@@ -980,7 +981,7 @@ func TestRenewParticipantVP_ModeRoleChecks(t *testing.T) {
 
 		resp, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          opManagedID,
 		})
 		require.NoError(t, err)
@@ -1050,7 +1051,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		// Set participant to validated
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      newParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -1115,7 +1116,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		// Set participant to validated with same fees
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      renewalParticipantID,
 			ValidationFees:          10, // Same as existing
 			IssuanceFees:            5,  // Same as existing
@@ -1148,7 +1149,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 	t.Run("Invalid Participant ID", func(t *testing.T) {
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation: validatorAddr,
-			Delegate:    validatorAddr,
+			Signer:      validatorAddr,
 			Id:          9999, // Non-existent ID
 		}
 
@@ -1176,7 +1177,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation: validatorAddr,
-			Delegate:    validatorAddr,
+			Signer:      validatorAddr,
 			Id:          notPendingParticipantID,
 		}
 
@@ -1204,7 +1205,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation: otherAddr, // Not the validator
-			Delegate:    otherAddr,
+			Signer:      otherAddr,
 			Id:          pendingParticipantID,
 		}
 
@@ -1232,7 +1233,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      holderParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -1266,7 +1267,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      grantorParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -1320,7 +1321,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		// Can set discount up to validator's discount (7000)
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      issuerParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -1373,7 +1374,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		// Try to set discount exceeding validator's discount
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      issuerParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -1407,7 +1408,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      grantorParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -1448,7 +1449,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		// Try to change discount during renewal
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      renewalParticipantID,
 			ValidationFees:          10, // Must match
 			IssuanceFees:            5,  // Must match
@@ -1512,7 +1513,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             validatorAddr,
-			Delegate:                validatorAddr,
+			Signer:                  validatorAddr,
 			Id:                      issuerParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -1551,7 +1552,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		pastEffUntil := now.Add(-1 * time.Hour) // in the past
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               participantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -1609,7 +1610,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		farFuture := now.Add(60 * 24 * time.Hour)
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      vpAddr,
-			Delegate:         vpAddr,
+			Signer:           vpAddr,
 			Id:               participantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -1660,7 +1661,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      vpAddr,
-			Delegate:         vpAddr,
+			Signer:           vpAddr,
 			Id:               participantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -1710,7 +1711,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 		smallerEffUntil := now.Add(10 * 24 * time.Hour)
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               participantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -1750,7 +1751,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               participantID,
 			ValidationFees:   20, // Different from existing 10
 			IssuanceFees:     5,
@@ -1790,7 +1791,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               participantID,
 			ValidationFees:   10,
 			IssuanceFees:     99, // Different from existing 5
@@ -1830,7 +1831,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               participantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -1882,7 +1883,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               newParticipantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -1936,7 +1937,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               newParticipantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -1984,7 +1985,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               participantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -2019,7 +2020,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               participantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -2078,7 +2079,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             vgAddr,
-			Delegate:                vgAddr,
+			Signer:                  vgAddr,
 			Id:                      vgParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -2131,7 +2132,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             vgAddr2,
-			Delegate:                vgAddr2,
+			Signer:                  vgAddr2,
 			Id:                      verParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -2185,7 +2186,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         validatorAddr,
+			Signer:           validatorAddr,
 			Id:               newParticipantID,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -2232,7 +2233,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             sdk.AccAddress([]byte("vfd_max_validato")).String(),
-			Delegate:                sdk.AccAddress([]byte("vfd_max_validato")).String(),
+			Signer:                  sdk.AccAddress([]byte("vfd_max_validato")).String(),
 			Id:                      grantorParticipantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -2289,7 +2290,7 @@ func TestSetParticipantVPToValidated(t *testing.T) {
 
 		msg := &types.MsgSetParticipantOPToValidated{
 			Corporation:             sdk.AccAddress([]byte("rvd_validator_ad")).String(),
-			Delegate:                sdk.AccAddress([]byte("rvd_validator_ad")).String(),
+			Signer:                  sdk.AccAddress([]byte("rvd_validator_ad")).String(),
 			Id:                      participantID,
 			ValidationFees:          10,
 			IssuanceFees:            5,
@@ -2362,7 +2363,7 @@ func TestSetParticipantVPToValidated_AuthzCheckFailure(t *testing.T) {
 
 	msg := &types.MsgSetParticipantOPToValidated{
 		Corporation:      validatorAddr,
-		Delegate:         delegateAddr,
+		Signer:           delegateAddr,
 		Id:               participantID,
 		ValidationFees:   10,
 		IssuanceFees:     5,
@@ -2384,6 +2385,58 @@ func TestSetParticipantVPToValidated_AuthzCheckFailure(t *testing.T) {
 	resp, err = ms.SetParticipantOPToValidated(ctx, msg)
 	require.NoError(t, err)
 	require.NotNil(t, resp)
+}
+
+// On the group-proposal path the validator corporation validates alone: no
+// delegate or VS operator check, no spend.
+func TestSetParticipantVPToValidated_GroupPath(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC))
+	ctx = sdkCtx
+	validatorAddr := sdk.AccAddress([]byte("test_validator")).String()
+	creatorAddr := sdk.AccAddress([]byte("test_creator")).String()
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	futureTime := now.Add(365 * 24 * time.Hour)
+
+	csKeeper.CreateMockCredentialSchema(1,
+		cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS)
+	validatorID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId:      1,
+		Role:          types.ParticipantRole_ISSUER_GRANTOR,
+		CorporationId: trkKeeper.RegisterCorp(validatorAddr),
+		Created:       &now,
+		Modified:      &now,
+		OpState:       types.OnboardingState_VALIDATED,
+		EffectiveFrom: &pastTime,
+	})
+	require.NoError(t, err)
+	participantID, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId:               1,
+		Role:                   types.ParticipantRole_ISSUER,
+		CorporationId:          trkKeeper.RegisterCorp(creatorAddr),
+		Created:                &now,
+		Modified:               &now,
+		ValidatorParticipantId: validatorID,
+		OpState:                types.OnboardingState_PENDING,
+		OpCurrentDeposit:       10,
+	})
+	require.NoError(t, err)
+
+	delKeeper.DelegateAuthErr = fmt.Errorf("delegate not authorized")
+	delKeeper.VSOperatorAuthErr = fmt.Errorf("not a vs operator")
+	_, err = ms.SetParticipantOPToValidated(ctx, &types.MsgSetParticipantOPToValidated{
+		Corporation:     validatorAddr,
+		Signer:          validatorAddr,
+		Id:              participantID,
+		EffectiveUntil:  &futureTime,
+		OpSummaryDigest: "sha384-validDigest",
+	})
+	require.NoError(t, err)
+	require.Empty(t, delKeeper.DelegateAuthCorpIDs)
+	require.Empty(t, delKeeper.VSOACheckMsgTypes)
+	require.Empty(t, delKeeper.DelegateSpendCalls)
 }
 
 // TestMsgServerCreateRootParticipant is superseded by TestCreateRootParticipant which has
@@ -2412,7 +2465,7 @@ func TestMsgServerCreateRootParticipant(t *testing.T) {
 
 	// Valid creation
 	resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-		Corporation: authority, Delegate: delegate,
+		Corporation: authority, Signer: delegate,
 		SchemaId: 1, Did: validDid,
 		ValidationFees: 100, IssuanceFees: 50, VerificationFees: 25,
 		EffectiveFrom: &futureTime, EffectiveUntil: &farFuture,
@@ -2491,7 +2544,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 
 		msg := &types.MsgCancelParticipantOPLastRequest{
 			Corporation: neverAddr,
-			Delegate:    neverAddr,
+			Signer:      neverAddr,
 			Id:          participantID,
 		}
 
@@ -2529,7 +2582,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 
 		msg := &types.MsgCancelParticipantOPLastRequest{
 			Corporation: prevAddr,
-			Delegate:    prevAddr,
+			Signer:      prevAddr,
 			Id:          participantID,
 		}
 
@@ -2548,7 +2601,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 	t.Run("Invalid - participant not found", func(t *testing.T) {
 		msg := &types.MsgCancelParticipantOPLastRequest{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          9999,
 		}
 
@@ -2575,7 +2628,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 
 		msg := &types.MsgCancelParticipantOPLastRequest{
 			Corporation: otherAddr, // Not the participant authority
-			Delegate:    otherAddr,
+			Signer:      otherAddr,
 			Id:          participantID,
 		}
 
@@ -2602,7 +2655,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 
 		msg := &types.MsgCancelParticipantOPLastRequest{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          participantID,
 		}
 
@@ -2632,7 +2685,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 
 		msg := &types.MsgCancelParticipantOPLastRequest{
 			Corporation: creator,
-			Delegate:    creator,
+			Signer:      creator,
 			Id:          participantID,
 		}
 
@@ -2666,7 +2719,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 
 		msg := &types.MsgCancelParticipantOPLastRequest{
 			Corporation: repaidAddr,
-			Delegate:    repaidAddr,
+			Signer:      repaidAddr,
 			Id:          participantID,
 		}
 
@@ -2700,7 +2753,7 @@ func TestCancelParticipantVPLastRequest(t *testing.T) {
 
 		msg := &types.MsgCancelParticipantOPLastRequest{
 			Corporation: zeroFeesAddr,
-			Delegate:    zeroFeesAddr,
+			Signer:      zeroFeesAddr,
 			Id:          participantID,
 		}
 
@@ -2760,7 +2813,7 @@ func TestCancelParticipantVPLastRequest_AuthzCheckFailure(t *testing.T) {
 
 	msg := &types.MsgCancelParticipantOPLastRequest{
 		Corporation: creatorAddr,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          participantID,
 	}
 
@@ -2951,7 +3004,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Valid adjustment by validator authority (VP managed)",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    validatorAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             applicantParticipantID,
 				EffectiveUntil: &newEffectiveUntil,
 			},
@@ -2961,7 +3014,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Valid adjustment by ecosystem authority",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    ecosystemAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             ecosystemParticipantID,
 				EffectiveUntil: &newEffectiveUntil,
 			},
@@ -2971,7 +3024,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Invalid - participant not found",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    validatorAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             9999,
 				EffectiveUntil: &newEffectiveUntil,
 			},
@@ -2982,7 +3035,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Invalid - effective_until in the past",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    validatorAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             applicantParticipantID,
 				EffectiveUntil: &pastEffectiveUntil,
 			},
@@ -2993,7 +3046,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Invalid - effective_until equal to now",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    validatorAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             applicantParticipantID,
 				EffectiveUntil: &equalToNowEffectiveUntil,
 			},
@@ -3004,7 +3057,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Invalid - effective_until beyond validation expiration (VP managed)",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    validatorAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             applicantParticipantID,
 				EffectiveUntil: &tooFarEffectiveUntil,
 			},
@@ -3015,7 +3068,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Invalid - wrong authority (VP managed)",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    wrongAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             wrongAuthTestParticipantID,
 				EffectiveUntil: &newEffectiveUntil,
 			},
@@ -3026,7 +3079,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Valid - adjust participant with NULL effective_until (VP managed)",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    validatorAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             nullEffectiveUntilParticipantID,
 				EffectiveUntil: &newEffectiveUntil,
 			},
@@ -3036,7 +3089,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Valid - adjust participant with NULL effective_until (ecosystem)",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    ecosystemAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             nullEffectiveUntilEcosystemParticipantID,
 				EffectiveUntil: &newEffectiveUntil,
 			},
@@ -3046,7 +3099,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Invalid - effective_until in the past (NULL current effective_until)",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    validatorAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             nullEffUntilPastTestParticipantID,
 				EffectiveUntil: &pastEffectiveUntil,
 			},
@@ -3057,7 +3110,7 @@ func TestAdjustParticipant(t *testing.T) {
 			name: "Valid - reduce effective_until (v4 allows reduction)",
 			msg: &types.MsgSetParticipantEffectiveUntil{
 				Corporation:    validatorAddr,
-				Delegate:       delegateAddr,
+				Signer:         delegateAddr,
 				Id:             reduceParticipantID,
 				EffectiveUntil: &reducedEffectiveUntil,
 			},
@@ -3169,7 +3222,7 @@ func TestRevokeParticipant(t *testing.T) {
 			name: "Valid revocation by validator ancestor",
 			msg: &types.MsgRevokeParticipant{
 				Corporation: validatorAddr,
-				Delegate:    delegateAddr,
+				Signer:      delegateAddr,
 				Id:          applicantParticipantID,
 			},
 			expectErr: false,
@@ -3178,7 +3231,7 @@ func TestRevokeParticipant(t *testing.T) {
 			name: "Invalid - participant not found",
 			msg: &types.MsgRevokeParticipant{
 				Corporation: validatorAddr,
-				Delegate:    delegateAddr,
+				Signer:      delegateAddr,
 				Id:          9999,
 			},
 			expectErr:  true,
@@ -3188,7 +3241,7 @@ func TestRevokeParticipant(t *testing.T) {
 			name: "Invalid - wrong authority (not validator, not self, not TR controller)",
 			msg: &types.MsgRevokeParticipant{
 				Corporation: wrongAddr,
-				Delegate:    delegateAddr,
+				Signer:      delegateAddr,
 				Id:          wrongAuthParticipantID,
 			},
 			expectErr:  true,
@@ -3417,7 +3470,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Happy path with issuer",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       sessionUUID,
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    0,
@@ -3430,7 +3483,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Happy path with verifier",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      0,
 				VerifierParticipantId:    verifierParticipantID,
@@ -3443,7 +3496,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "AUTHZ check failure",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    0,
@@ -3459,7 +3512,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Both participants missing",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      0,
 				VerifierParticipantId:    0,
@@ -3473,7 +3526,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Issuer participant not found",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      9999,
 				VerifierParticipantId:    0,
@@ -3487,7 +3540,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Issuer wrong type",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      trustParticipantID, // ECOSYSTEM type, not ISSUER
 				VerifierParticipantId:    0,
@@ -3501,7 +3554,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Issuer vs_operator mismatch",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate, // does not match issuerParticipantDiffOp.VsOperator
+				Signer:                   delegate, // does not match issuerParticipantDiffOp.VsOperator
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantDiffOpID,
 				VerifierParticipantId:    0,
@@ -3515,7 +3568,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Issuer authority mismatch",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority, // does not match issuerParticipantDiffAuth.Authority
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantDiffAuthID,
 				VerifierParticipantId:    0,
@@ -3529,7 +3582,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "VS operator authz check fails on participant",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantNoAuthzID,
 				VerifierParticipantId:    0,
@@ -3544,7 +3597,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Agent participant not found",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    0,
@@ -3558,7 +3611,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Wallet agent participant not found",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    0,
@@ -3572,7 +3625,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Session update - authority mismatch",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              otherAuthority, // different from session creator
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       sessionUUID, // same ID as first test case (already created)
 				IssuerParticipantId:      issuerParticipantDiffAuthID,
 				VerifierParticipantId:    0,
@@ -3586,7 +3639,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Valid update of existing session",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       sessionUUID, // same ID as first test case (already created)
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    0,
@@ -3599,7 +3652,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Happy path with issuer and verifier",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    verifierParticipantID,
@@ -3612,7 +3665,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Verification with issuer of another vs_operator",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantDiffOpID,
 				VerifierParticipantId:    verifierParticipantID,
@@ -3625,7 +3678,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Verification with issuer of another authority",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantDiffAuthID,
 				VerifierParticipantId:    verifierParticipantID,
@@ -3638,7 +3691,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Verification with expired issuer of another authority",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantExpiredID,
 				VerifierParticipantId:    verifierParticipantID,
@@ -3652,7 +3705,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Verifier vs_operator mismatch",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate, // does not match verifierParticipantDiffOp.VsOperator
+				Signer:                   delegate, // does not match verifierParticipantDiffOp.VsOperator
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    verifierParticipantDiffOpID,
@@ -3666,7 +3719,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Verifier authority mismatch",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority, // not the corporation of verifierParticipantDiffAuth
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    verifierParticipantDiffAuthID,
@@ -3680,7 +3733,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Issuer and verifier schema mismatch",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    otherSchemaVerifierID,
@@ -3694,7 +3747,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 			name: "Agent participants of another schema",
 			msg: &types.MsgCreateOrUpdateParticipantSession{
 				Corporation:              authority,
-				VsAccount:                delegate,
+				Signer:                   delegate,
 				Id:                       uuid.New().String(),
 				IssuerParticipantId:      issuerParticipantID,
 				VerifierParticipantId:    verifierParticipantID,
@@ -3727,7 +3780,7 @@ func TestCreateOrUpdateParticipantSession(t *testing.T) {
 				require.NoError(t, err)
 				require.Equal(t, tc.msg.AgentParticipantId, session.SessionRecords[len(session.SessionRecords)-1].AgentParticipantId)
 				require.NotZero(t, session.CorporationId)
-				require.Equal(t, tc.msg.VsAccount, session.VsOperator)
+				require.Equal(t, tc.msg.Signer, session.VsOperator)
 
 				// Check that the session contains an appropriate session record
 				foundRecord := false
@@ -3825,7 +3878,7 @@ func TestDiscountApplicationInFeeCalculation(t *testing.T) {
 
 		msg := &types.MsgCreateOrUpdateParticipantSession{
 			Corporation:              authority,
-			VsAccount:                delegate,
+			Signer:                   delegate,
 			Id:                       uuid.New().String(),
 			IssuerParticipantId:      issuerParticipantID,
 			VerifierParticipantId:    0,
@@ -3860,7 +3913,7 @@ func TestDiscountApplicationInFeeCalculation(t *testing.T) {
 		// Expected: fees from validatorParticipant (100) * (1 - 0.3) = 70
 		msg := &types.MsgCreateOrUpdateParticipantSession{
 			Corporation:              authority,
-			VsAccount:                delegate,
+			Signer:                   delegate,
 			Id:                       uuid.New().String(),
 			IssuerParticipantId:      issuerParticipant2ID,
 			VerifierParticipantId:    0,
@@ -3915,7 +3968,7 @@ func TestDiscountApplicationInFeeCalculation(t *testing.T) {
 
 		msg := &types.MsgCreateOrUpdateParticipantSession{
 			Corporation:              authority,
-			VsAccount:                delegate,
+			Signer:                   delegate,
 			Id:                       uuid.New().String(),
 			IssuerParticipantId:      issuerWithDiscountID,
 			VerifierParticipantId:    0,
@@ -4283,7 +4336,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 		delKeeper.ErrToReturn = fmt.Errorf("delegate authorization not found")
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: validatorAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 			Amount:      100,
 		})
@@ -4296,7 +4349,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("Valid slash by validator ancestor", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: validatorAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 			Amount:      100,
 		})
@@ -4312,7 +4365,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("Valid slash by TR controller", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: trControllerAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 			Amount:      100,
 		})
@@ -4327,7 +4380,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("Valid slash on expired participant (still slashable per spec)", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: validatorAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          expiredParticipantID,
 			Amount:      50,
 		})
@@ -4343,7 +4396,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("Valid slash on revoked participant (still slashable per spec)", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: validatorAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          revokedParticipantID,
 			Amount:      50,
 		})
@@ -4358,7 +4411,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("VS operator revocation on VERIFIER participant", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: validatorAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          verifierParticipantID,
 			Amount:      50,
 		})
@@ -4369,7 +4422,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("No VS operator revocation on ECOSYSTEM participant", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: trControllerAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          ecosystemParticipantID,
 			Amount:      50,
 		})
@@ -4380,7 +4433,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("Participant not found", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: validatorAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          9999,
 			Amount:      100,
 		})
@@ -4392,7 +4445,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("Amount exceeds deposit", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: validatorAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 			Amount:      999999,
 		})
@@ -4404,7 +4457,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 	t.Run("Unauthorized authority - not validator ancestor, not TR controller", func(t *testing.T) {
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: unauthorizedAddr,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 			Amount:      10,
 		})
@@ -4417,7 +4470,7 @@ func TestSlashParticipantTrustDeposit(t *testing.T) {
 		// Unlike revoke, slash does NOT have Option #3 (self-authority)
 		resp, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: applicantAuthority,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 			Amount:      10,
 		})
@@ -4473,7 +4526,7 @@ func TestSlashParticipantTrustDeposit_CumulativeBound(t *testing.T) {
 	slash := func(id, amount uint64) error {
 		_, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: controller,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          id,
 			Amount:      amount,
 		})
@@ -4507,7 +4560,7 @@ func TestSlashParticipantTrustDeposit_CumulativeBound(t *testing.T) {
 		require.NoError(t, slash(id, 100))
 		_, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
 			Corporation: corp,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          id,
 		})
 		require.NoError(t, err)
@@ -4620,7 +4673,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 	// Slash the applicant participant first
 	slashMsg := &types.MsgSlashParticipantTrustDeposit{
 		Corporation: validatorAddr,
-		Delegate:    validatorAddr,
+		Signer:      validatorAddr,
 		Id:          applicantParticipantID,
 		Amount:      500,
 	}
@@ -4636,7 +4689,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 		delKeeper.ErrToReturn = fmt.Errorf("delegate authorization not found")
 		resp, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
 			Corporation: authority,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 		})
 		require.Error(t, err)
@@ -4648,7 +4701,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 	t.Run("Valid repayment by owner authority", func(t *testing.T) {
 		resp, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
 			Corporation: authority,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 		})
 		require.NoError(t, err)
@@ -4665,7 +4718,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 	t.Run("Invalid - already fully repaid", func(t *testing.T) {
 		resp, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
 			Corporation: authority,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          applicantParticipantID,
 		})
 		require.Error(t, err)
@@ -4676,7 +4729,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 	t.Run("Invalid - participant not found", func(t *testing.T) {
 		resp, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
 			Corporation: authority,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          9999,
 		})
 		require.Error(t, err)
@@ -4702,7 +4755,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 		// Slash it
 		_, err = ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
 			Corporation: validatorAddr,
-			Delegate:    validatorAddr,
+			Signer:      validatorAddr,
 			Id:          otherParticipantID,
 			Amount:      100,
 		})
@@ -4711,7 +4764,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 		// Try to repay with wrong authority
 		resp, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
 			Corporation: authority, // wrong - participant belongs to otherAuthority
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          otherParticipantID,
 		})
 		require.Error(t, err)
@@ -4722,7 +4775,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 	t.Run("Invalid - no slashed deposit to repay", func(t *testing.T) {
 		resp, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
 			Corporation: authority,
-			Delegate:    delegate,
+			Signer:      delegate,
 			Id:          unslashedParticipantID,
 		})
 		require.Error(t, err)
@@ -4743,7 +4796,7 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 		adjustsBefore := len(tdKeeper.AdjustAmounts)
 		spendsBefore := len(delKeeper.DelegateSpendCalls)
 		resp, err := ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
-			Corporation: authority, Delegate: delegate, Id: applicantParticipantID,
+			Corporation: authority, Signer: delegate, Id: applicantParticipantID,
 		})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
@@ -4785,10 +4838,24 @@ func TestRepayParticipantSlashedTrustDeposit(t *testing.T) {
 		defer func() { bankKeeper.HasBalanceCap = nil }()
 
 		_, err = ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
-			Corporation: authority, Delegate: delegate, Id: applicantParticipantID,
+			Corporation: authority, Signer: delegate, Id: applicantParticipantID,
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "required 100")
+	})
+
+	t.Run("Group-proposal path consumes no delegate spend", func(t *testing.T) {
+		participant, err := k.GetParticipantByID(sdkCtx, applicantParticipantID)
+		require.NoError(t, err)
+		participant.SlashedDeposit = participant.RepaidDeposit + 100
+		require.NoError(t, k.UpdateParticipant(sdkCtx, participant))
+
+		spendsBefore := len(delKeeper.DelegateSpendCalls)
+		_, err = ms.RepayParticipantSlashedTrustDeposit(ctx, &types.MsgRepayParticipantSlashedTrustDeposit{
+			Corporation: authority, Signer: authority, Id: applicantParticipantID,
+		})
+		require.NoError(t, err)
+		require.Len(t, delKeeper.DelegateSpendCalls, spendsBefore)
 	})
 }
 
@@ -4848,7 +4915,7 @@ func TestCreateParticipant(t *testing.T) {
 		delKeeper.ErrToReturn = fmt.Errorf("delegate authorization not found")
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemParticipantID,
 			Did:                    validDid,
@@ -4864,7 +4931,7 @@ func TestCreateParticipant(t *testing.T) {
 	t.Run("Valid ISSUER participant", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemParticipantID,
 			Did:                    validDid,
@@ -4895,7 +4962,7 @@ func TestCreateParticipant(t *testing.T) {
 		futureTime2 := futureTime.Add(1 * time.Hour)
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_VERIFIER,
 			ValidatorParticipantId: ecosystemParticipantID,
 			Did:                    "did:example:verifier1",
@@ -4915,7 +4982,7 @@ func TestCreateParticipant(t *testing.T) {
 	t.Run("Invalid - validator participant not found", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: 9999,
 			Did:                    validDid,
@@ -4944,7 +5011,7 @@ func TestCreateParticipant(t *testing.T) {
 
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: issuerParticipantID,
 			Did:                    validDid,
@@ -4959,7 +5026,7 @@ func TestCreateParticipant(t *testing.T) {
 	t.Run("Invalid - effective_from before block time", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemParticipantID,
 			Did:                    validDid,
@@ -4975,7 +5042,7 @@ func TestCreateParticipant(t *testing.T) {
 		beforeFuture := futureTime.Add(-1 * time.Minute)
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemParticipantID,
 			Did:                    validDid,
@@ -4991,7 +5058,7 @@ func TestCreateParticipant(t *testing.T) {
 		wayFuture := farFuture.Add(24 * time.Hour)
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemParticipantID,
 			Did:                    validDid,
@@ -5006,7 +5073,7 @@ func TestCreateParticipant(t *testing.T) {
 	t.Run("Invalid - effective_until null but validator_participant has effective_until", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemParticipantID,
 			Did:                    validDid,
@@ -5021,7 +5088,7 @@ func TestCreateParticipant(t *testing.T) {
 	t.Run("Valid - both effective_until null when validator_participant never expires", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            otherAuthority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: neverExpireParticipantID,
 			Did:                    "did:example:neverexpire",
@@ -5035,7 +5102,7 @@ func TestCreateParticipant(t *testing.T) {
 	t.Run("Invalid - VERIFIER with validation_fees", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_VERIFIER,
 			ValidatorParticipantId: ecosystemParticipantID,
 			Did:                    "did:example:verifier2",
@@ -5069,7 +5136,7 @@ func TestCreateParticipant(t *testing.T) {
 
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
 			Corporation:            authority,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecoParticipantS2ID,
 			Did:                    validDid,
@@ -5124,7 +5191,7 @@ func TestSelfCreateParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("nil effective_from resolves to block time", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: activeValidatorID,
 			Did:                    validDid,
@@ -5155,7 +5222,7 @@ func TestSelfCreateParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("effective_from equal to block time accepted", func(t *testing.T) {
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			Role:                   types.ParticipantRole_VERIFIER,
 			ValidatorParticipantId: activeValidatorID,
 			Did:                    validDid,
@@ -5181,7 +5248,7 @@ func TestSelfCreateParticipant_EffectiveFromResolution(t *testing.T) {
 		require.NoError(t, err)
 
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: boundaryValidatorID,
 			Did:                    validDid,
@@ -5195,7 +5262,7 @@ func TestSelfCreateParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("effective_from before block time rejected", func(t *testing.T) {
 		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: activeValidatorID,
 			Did:                    validDid,
@@ -5208,7 +5275,7 @@ func TestSelfCreateParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("nil effective_from with future validator rejected", func(t *testing.T) {
 		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: futureValidatorID,
 			Did:                    validDid,
@@ -5220,7 +5287,7 @@ func TestSelfCreateParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("nil effective_from with effective_until at block time rejected", func(t *testing.T) {
 		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: activeValidatorID,
 			Did:                    "did:example:untilnow",
@@ -5274,7 +5341,7 @@ func TestCreateRootParticipant(t *testing.T) {
 		{
 			name: "2. Reject past effective_from",
 			msg: &types.MsgCreateRootParticipant{
-				Corporation: authority, Delegate: delegate,
+				Corporation: authority, Signer: delegate,
 				SchemaId: 1, Did: validDid,
 
 				EffectiveFrom: &pastTime,
@@ -5285,7 +5352,7 @@ func TestCreateRootParticipant(t *testing.T) {
 		{
 			name: "4. Reject effective_until <= effective_from",
 			msg: &types.MsgCreateRootParticipant{
-				Corporation: authority, Delegate: delegate,
+				Corporation: authority, Signer: delegate,
 				SchemaId: 1, Did: validDid,
 
 				EffectiveFrom:  &futureTime,
@@ -5297,7 +5364,7 @@ func TestCreateRootParticipant(t *testing.T) {
 		{
 			name: "5. Reject invalid schema ID (not found)",
 			msg: &types.MsgCreateRootParticipant{
-				Corporation: authority, Delegate: delegate,
+				Corporation: authority, Signer: delegate,
 				SchemaId: 999, Did: validDid,
 				EffectiveFrom: &futureTime,
 			},
@@ -5308,7 +5375,7 @@ func TestCreateRootParticipant(t *testing.T) {
 		{
 			name: "6. Reject authority not TR controller",
 			msg: &types.MsgCreateRootParticipant{
-				Corporation: otherAddr, Delegate: otherAddr,
+				Corporation: otherAddr, Signer: otherAddr,
 				SchemaId: 1, Did: validDid,
 
 				EffectiveFrom:  &futureTime,
@@ -5321,7 +5388,7 @@ func TestCreateRootParticipant(t *testing.T) {
 		{
 			name: "7. Happy path with effective_until",
 			msg: &types.MsgCreateRootParticipant{
-				Corporation: authority, Delegate: delegate,
+				Corporation: authority, Signer: delegate,
 				SchemaId: 1, Did: validDid,
 				EffectiveFrom:    &futureTime,
 				EffectiveUntil:   &farFutureTime,
@@ -5334,7 +5401,7 @@ func TestCreateRootParticipant(t *testing.T) {
 		{
 			name: "8. Happy path with nil effective_until (never expires)",
 			msg: &types.MsgCreateRootParticipant{
-				Corporation: authority, Delegate: delegate,
+				Corporation: authority, Signer: delegate,
 				SchemaId: 1, Did: "did:example:second",
 				EffectiveFrom:  &veryFarFuture,
 				EffectiveUntil: nil,
@@ -5409,7 +5476,7 @@ func TestCreateRootParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("nil effective_from resolves to block time", func(t *testing.T) {
 		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: authority,
+			Corporation: authority, Signer: authority,
 			SchemaId: 1, Did: validDid,
 			EffectiveUntil: &farFuture,
 		})
@@ -5438,7 +5505,7 @@ func TestCreateRootParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("effective_from equal to block time accepted", func(t *testing.T) {
 		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: authority,
+			Corporation: authority, Signer: authority,
 			SchemaId: 2, Did: validDid,
 			EffectiveFrom: &now, EffectiveUntil: &farFuture,
 		})
@@ -5451,7 +5518,7 @@ func TestCreateRootParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("effective_from before block time rejected", func(t *testing.T) {
 		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: authority,
+			Corporation: authority, Signer: authority,
 			SchemaId: 3, Did: validDid,
 			EffectiveFrom: &pastTime, EffectiveUntil: &farFuture,
 		})
@@ -5461,7 +5528,7 @@ func TestCreateRootParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("nil effective_from with effective_until at block time rejected", func(t *testing.T) {
 		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: authority,
+			Corporation: authority, Signer: authority,
 			SchemaId: 4, Did: validDid,
 			EffectiveUntil: &now,
 		})
@@ -5471,7 +5538,7 @@ func TestCreateRootParticipant_EffectiveFromResolution(t *testing.T) {
 
 	t.Run("nil effective_from and nil effective_until never expires", func(t *testing.T) {
 		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: authority,
+			Corporation: authority, Signer: authority,
 			SchemaId: 5, Did: validDid,
 		})
 		require.NoError(t, err)
@@ -5486,7 +5553,7 @@ func TestCreateRootParticipant_EffectiveFromResolution(t *testing.T) {
 		// (effective until farFuture), so the resolved block-time value overlaps it
 		later := now.Add(48 * time.Hour)
 		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: authority,
+			Corporation: authority, Signer: authority,
 			SchemaId: 1, Did: validDid,
 			EffectiveUntil: &later,
 		})
@@ -5518,7 +5585,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 	existingFrom := now.Add(1 * time.Hour)
 	existingUntil := now.Add(24 * time.Hour)
 	resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-		Corporation: authority, Delegate: delegate,
+		Corporation: authority, Signer: delegate,
 		SchemaId: 1, Did: validDid,
 
 		EffectiveFrom:  &existingFrom,
@@ -5533,7 +5600,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		newFrom := now.Add(12 * time.Hour)
 		newUntil := now.Add(48 * time.Hour)
 		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 1, Did: validDid,
 
 			EffectiveFrom:  &newFrom,
@@ -5548,7 +5615,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		newFrom := now.Add(25 * time.Hour)
 		newUntil := now.Add(48 * time.Hour)
 		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 1, Did: validDid,
 
 			EffectiveFrom:  &newFrom,
@@ -5566,7 +5633,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 
 		neverExpiresFrom := now.Add(1 * time.Hour)
 		resp2, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 2, Did: validDid,
 
 			EffectiveFrom:  &neverExpiresFrom,
@@ -5579,7 +5646,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		newFrom := now.Add(48 * time.Hour)
 		newUntil := now.Add(72 * time.Hour)
 		_, err = ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 2, Did: validDid,
 
 			EffectiveFrom:  &newFrom,
@@ -5599,7 +5666,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		revokedFrom := now.Add(1 * time.Hour)
 		revokedUntil := now.Add(100 * time.Hour)
 		resp3, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 3, Did: validDid,
 
 			EffectiveFrom:  &revokedFrom,
@@ -5619,7 +5686,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		newFrom := now.Add(2 * time.Hour)
 		newUntil := now.Add(50 * time.Hour)
 		_, err = ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 3, Did: validDid,
 
 			EffectiveFrom:  &newFrom,
@@ -5636,7 +5703,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		firstFrom := now.Add(1 * time.Hour)
 		firstUntil := now.Add(5 * time.Hour)
 		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 4, Did: validDid,
 
 			EffectiveFrom:  &firstFrom,
@@ -5648,7 +5715,7 @@ func TestCreateRootParticipant_OverlapChecks(t *testing.T) {
 		secondFrom := now.Add(6 * time.Hour)
 		secondUntil := now.Add(10 * time.Hour)
 		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 4, Did: validDid,
 
 			EffectiveFrom:  &secondFrom,
@@ -5669,7 +5736,7 @@ func TestCreateRootParticipant_AuthzCheck(t *testing.T) {
 
 	validDid := "did:example:authzcheck"
 	authority := sdk.AccAddress([]byte("test_authority______")).String()
-	delegate := authority
+	delegate := sdk.AccAddress([]byte("test_delegate_______")).String()
 
 	trID := trkKeeper.CreateMockEcosystem(authority, validDid)
 	csKeeper.UpdateMockCredentialSchema(1, trID,
@@ -5684,7 +5751,7 @@ func TestCreateRootParticipant_AuthzCheck(t *testing.T) {
 		defer func() { delKeeper.ErrToReturn = nil }()
 
 		_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 1, Did: validDid,
 
 			EffectiveFrom:  &futureTime,
@@ -5696,7 +5763,7 @@ func TestCreateRootParticipant_AuthzCheck(t *testing.T) {
 
 	t.Run("AUTHZ-CHECK success allows creation", func(t *testing.T) {
 		resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-			Corporation: authority, Delegate: delegate,
+			Corporation: authority, Signer: delegate,
 			SchemaId: 1, Did: validDid,
 
 			EffectiveFrom:  &futureTime,
@@ -5809,7 +5876,7 @@ func TestStartParticipantVP_ValidatorMustBeActive(t *testing.T) {
 			name: "Issue #193: Accept ACTIVE validator - valid case",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator,
-				Delegate:               creator,
+				Signer:                 creator,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: activeValidatorParticipantID,
 				Did:                    validDid,
@@ -5822,7 +5889,7 @@ func TestStartParticipantVP_ValidatorMustBeActive(t *testing.T) {
 			name: "Issue #193: Reject INACTIVE validator - effective_from is null",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator,
-				Delegate:               creator,
+				Signer:                 creator,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: inactiveValidatorParticipantID,
 				Did:                    validDid,
@@ -5835,7 +5902,7 @@ func TestStartParticipantVP_ValidatorMustBeActive(t *testing.T) {
 			name: "Issue #193: Reject FUTURE validator - effective_from is in the future",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator,
-				Delegate:               creator,
+				Signer:                 creator,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: futureValidatorParticipantID,
 				Did:                    validDid,
@@ -5848,7 +5915,7 @@ func TestStartParticipantVP_ValidatorMustBeActive(t *testing.T) {
 			name: "Issue #193: Reject EXPIRED validator - effective_until has passed",
 			msg: &types.MsgStartParticipantOP{
 				Corporation:            creator,
-				Delegate:               creator,
+				Signer:                 creator,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: expiredValidatorParticipantID,
 				Did:                    validDid,
@@ -5958,7 +6025,7 @@ func TestRevokeParticipant_RequiresActiveParticipant(t *testing.T) {
 			name: "Revoke ACTIVE participant - valid case",
 			msg: &types.MsgRevokeParticipant{
 				Corporation: authority,
-				Delegate:    delegateAddr,
+				Signer:      delegateAddr,
 				Id:          activeParticipantID,
 			},
 			expectErr: false,
@@ -5969,7 +6036,7 @@ func TestRevokeParticipant_RequiresActiveParticipant(t *testing.T) {
 			name: "Revoke FUTURE participant - not yet active should be rejected",
 			msg: &types.MsgRevokeParticipant{
 				Corporation: authority,
-				Delegate:    delegateAddr,
+				Signer:      delegateAddr,
 				Id:          futureParticipantID,
 			},
 			expectErr: true,
@@ -5980,7 +6047,7 @@ func TestRevokeParticipant_RequiresActiveParticipant(t *testing.T) {
 			name: "Revoke INACTIVE participant - null effective_from should be rejected",
 			msg: &types.MsgRevokeParticipant{
 				Corporation: authority,
-				Delegate:    delegateAddr,
+				Signer:      delegateAddr,
 				Id:          inactiveParticipantID,
 			},
 			expectErr: true,
@@ -6042,16 +6109,16 @@ func TestRevokeParticipant_KeepsDeposit(t *testing.T) {
 		return p
 	}
 	revoke := func(id uint64) error {
-		_, err := ms.RevokeParticipant(ctx, &types.MsgRevokeParticipant{Corporation: owner, Delegate: delegate, Id: id})
+		_, err := ms.RevokeParticipant(ctx, &types.MsgRevokeParticipant{Corporation: owner, Signer: delegate, Id: id})
 		return err
 	}
 	cancel := func(id uint64) error {
-		_, err := ms.CancelParticipantOPLastRequest(ctx, &types.MsgCancelParticipantOPLastRequest{Corporation: owner, Delegate: delegate, Id: id})
+		_, err := ms.CancelParticipantOPLastRequest(ctx, &types.MsgCancelParticipantOPLastRequest{Corporation: owner, Signer: delegate, Id: id})
 		return err
 	}
 	slash := func(id, amount uint64) error {
 		_, err := ms.SlashParticipantTrustDeposit(ctx, &types.MsgSlashParticipantTrustDeposit{
-			Corporation: ecoCtrl, Delegate: delegate, Id: id, Amount: amount, Reason: "fraud",
+			Corporation: ecoCtrl, Signer: delegate, Id: id, Amount: amount, Reason: "fraud",
 		})
 		return err
 	}
@@ -6150,7 +6217,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 	// First VP should succeed
 	msg := &types.MsgStartParticipantOP{
 		Corporation:            creator,
-		Delegate:               creator,
+		Signer:                 creator,
 		Role:                   types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorParticipantID,
 		Did:                    validDid,
@@ -6163,7 +6230,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 	t.Run("Duplicate PENDING OP in same context", func(t *testing.T) {
 		msg2 := &types.MsgStartParticipantOP{
 			Corporation:            creator,
-			Delegate:               creator,
+			Signer:                 creator,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    validDid,
@@ -6179,7 +6246,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 	t.Run("Same validator different did no overlap", func(t *testing.T) {
 		msg2 := &types.MsgStartParticipantOP{
 			Corporation:            creator,
-			Delegate:               creator,
+			Signer:                 creator,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    "did:example:different-did",
@@ -6194,7 +6261,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 		otherCreator := sdk.AccAddress([]byte("other_creator")).String()
 		msg3 := &types.MsgStartParticipantOP{
 			Corporation:            otherCreator,
-			Delegate:               otherCreator,
+			Signer:                 otherCreator,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    "did:example:overlap-other-authority",
@@ -6225,7 +6292,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		msg4 := &types.MsgStartParticipantOP{
 			Corporation:            creator,
-			Delegate:               creator,
+			Signer:                 creator,
 			Role:                   types.ParticipantRole_VERIFIER,
 			ValidatorParticipantId: vgParticipantID,
 			Did:                    validDid,
@@ -6252,7 +6319,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		msg5 := &types.MsgStartParticipantOP{
 			Corporation:            creator,
-			Delegate:               creator,
+			Signer:                 creator,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: secondValidatorID,
 			Did:                    validDid,
@@ -6283,7 +6350,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		msg6 := &types.MsgStartParticipantOP{
 			Corporation:            expCorp,
-			Delegate:               expCorp,
+			Signer:                 expCorp,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    "did:example:expiring-entry",
@@ -6312,7 +6379,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		msg7 := &types.MsgStartParticipantOP{
 			Corporation:            nevCorp,
-			Delegate:               nevCorp,
+			Signer:                 nevCorp,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    "did:example:never-entry",
@@ -6346,7 +6413,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		resp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
 			Corporation:            stillCorp,
-			Delegate:               stillCorp,
+			Signer:                 stillCorp,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    "did:example:still-entry",
@@ -6373,7 +6440,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		resp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
 			Corporation:            termCorp,
-			Delegate:               termCorp,
+			Signer:                 termCorp,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    "did:example:terminated-entry",
@@ -6405,7 +6472,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		issuerResp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
 			Corporation:            roleCorp,
-			Delegate:               roleCorp,
+			Signer:                 roleCorp,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecoValidatorID,
 			Did:                    "did:example:role-entry",
@@ -6415,7 +6482,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		verifierResp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
 			Corporation:            roleCorp,
-			Delegate:               roleCorp,
+			Signer:                 roleCorp,
 			Role:                   types.ParticipantRole_VERIFIER,
 			ValidatorParticipantId: ecoValidatorID,
 			Did:                    "did:example:role-entry",
@@ -6429,7 +6496,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 		foreignCorp := sdk.AccAddress([]byte("foreign_corp_addr_")).String()
 		_, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
 			Corporation:            foreignCorp,
-			Delegate:               foreignCorp,
+			Signer:                 foreignCorp,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    validDid,
@@ -6464,7 +6531,7 @@ func TestStartParticipantVP_OverlapCheck(t *testing.T) {
 
 		_, err = ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
 			Corporation:            bothCorp,
-			Delegate:               bothCorp,
+			Signer:                 bothCorp,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    "did:example:both-entry",
@@ -6561,7 +6628,7 @@ func TestStartParticipantVP_OverlapCheck_ExcludesInactive(t *testing.T) {
 			// A new onboarding process in the same context must succeed
 			msg := &types.MsgStartParticipantOP{
 				Corporation:            tc.corp,
-				Delegate:               tc.corp,
+				Signer:                 tc.corp,
 				Role:                   types.ParticipantRole_ISSUER,
 				ValidatorParticipantId: validatorParticipantID,
 				Did:                    tc.did,
@@ -6611,7 +6678,7 @@ func TestStartParticipantVP_AuthzCheck(t *testing.T) {
 
 		msg := &types.MsgStartParticipantOP{
 			Corporation:            creator,
-			Delegate:               sdk.AccAddress([]byte("unauthorized_op")).String(),
+			Signer:                 sdk.AccAddress([]byte("unauthorized_op")).String(),
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: 1,
 			Did:                    validDid,
@@ -6628,7 +6695,7 @@ func TestStartParticipantVP_AuthzCheck(t *testing.T) {
 
 		msg := &types.MsgStartParticipantOP{
 			Corporation:            creator,
-			Delegate:               creator,
+			Signer:                 creator,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: 1,
 			Did:                    validDid,
@@ -6637,6 +6704,53 @@ func TestStartParticipantVP_AuthzCheck(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 	})
+}
+
+// [AUTHZ-CHECK-1] step 3: the consumed amount carries the fee in its own denom;
+// the group-proposal path consumes nothing.
+func TestStartParticipantVP_ConsumedAmount(t *testing.T) {
+	k, ms, csKeeper, trkKeeper, ctx, delKeeper := setupMsgServerWithDelegation(t)
+	sdkCtx := sdk.UnwrapSDKContext(ctx).WithBlockTime(time.Date(2023, 1, 15, 0, 0, 0, 0, time.UTC))
+	ctx = sdkCtx
+	creator := sdk.AccAddress([]byte("test_creator")).String()
+	delegate := sdk.AccAddress([]byte("test_delegate")).String()
+
+	trID := trkKeeper.CreateMockEcosystem(creator, "did:example:consumed")
+	csKeeper.CreateMockCredentialSchemaFull(cstypes.CredentialSchema{
+		Id:                     1,
+		EcosystemId:            trID,
+		IssuerOnboardingMode:   cstypes.IssuerOnboardingMode_ISSUER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		VerifierOnboardingMode: cstypes.VerifierOnboardingMode_VERIFIER_ONBOARDING_MODE_GRANTOR_ONBOARDING_PROCESS,
+		PricingAssetType:       cstypes.PricingAssetType_COIN,
+		PricingAsset:           "uusdc",
+	})
+	now := sdkCtx.BlockTime()
+	pastTime := now.Add(-1 * time.Hour)
+	_, err := k.CreateParticipant(sdkCtx, types.Participant{
+		SchemaId:       1,
+		Role:           types.ParticipantRole_ISSUER_GRANTOR,
+		CorporationId:  trkKeeper.RegisterCorp(creator),
+		Created:        &now,
+		Modified:       &now,
+		OpState:        types.OnboardingState_VALIDATED,
+		EffectiveFrom:  &pastTime,
+		ValidationFees: 50,
+	})
+	require.NoError(t, err)
+
+	start := func(signer, did string) {
+		_, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
+			Corporation: creator, Signer: signer, Role: types.ParticipantRole_ISSUER, ValidatorParticipantId: 1, Did: did,
+		})
+		require.NoError(t, err)
+	}
+
+	start(delegate, "did:example:delegate-path")
+	require.Len(t, delKeeper.DelegateSpendCalls, 1)
+	require.Equal(t, int64(50), delKeeper.DelegateSpendCalls[0].AmountOf("uusdc").Int64())
+
+	start(creator, "did:example:group-path")
+	require.Len(t, delKeeper.DelegateSpendCalls, 1)
 }
 
 // TestStartParticipantVP_VsOperatorAndFields tests that vs_operator fields and DID are correctly
@@ -6676,7 +6790,7 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 		delegate := sdk.AccAddress([]byte("diff_delegate_aa")).String()
 		msg := &types.MsgStartParticipantOP{
 			Corporation:            creator,
-			Delegate:               delegate,
+			Signer:                 delegate,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorParticipantID,
 			Did:                    validDid,
@@ -6711,7 +6825,7 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 		verifierCreator := sdk.AccAddress([]byte("verifier_creator")).String()
 		msg := &types.MsgStartParticipantOP{
 			Corporation:            verifierCreator,
-			Delegate:               verifierCreator,
+			Signer:                 verifierCreator,
 			Role:                   types.ParticipantRole_VERIFIER,
 			ValidatorParticipantId: vgParticipantID,
 			Did:                    "did:example:verifier-did-123",
@@ -6744,7 +6858,7 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 		holderCreator := sdk.AccAddress([]byte("holder_creator_a")).String()
 		msg := &types.MsgStartParticipantOP{
 			Corporation:            holderCreator,
-			Delegate:               holderCreator,
+			Signer:                 holderCreator,
 			Role:                   types.ParticipantRole_HOLDER,
 			ValidatorParticipantId: issuerParticipantID,
 			Did:                    "did:example:holder-did-456",
@@ -6764,7 +6878,7 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 		holderCreator := sdk.AccAddress([]byte("holder_bad_val_a")).String()
 		msg := &types.MsgStartParticipantOP{
 			Corporation:            holderCreator,
-			Delegate:               holderCreator,
+			Signer:                 holderCreator,
 			Role:                   types.ParticipantRole_HOLDER,
 			ValidatorParticipantId: validatorParticipantID, // ISSUER_GRANTOR, not ISSUER
 			Did:                    "did:example:holder-bad-val",
@@ -6796,7 +6910,7 @@ func TestStartParticipantVP_VsOperatorAndFields(t *testing.T) {
 		grantorCreator := sdk.AccAddress([]byte("grantor_eco_crea")).String()
 		msg := &types.MsgStartParticipantOP{
 			Corporation:            grantorCreator,
-			Delegate:               grantorCreator,
+			Signer:                 grantorCreator,
 			Role:                   types.ParticipantRole_ISSUER_GRANTOR,
 			ValidatorParticipantId: ecoParticipantID,
 			Did:                    "did:example:issuer-grantor-eco",
@@ -6848,7 +6962,7 @@ func TestVSOA_StartParticipantOPGrantsDisabledRecord(t *testing.T) {
 
 	resp, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
 		Corporation:             creator,
-		Delegate:                creator,
+		Signer:                  creator,
 		Role:                    types.ParticipantRole_ISSUER,
 		ValidatorParticipantId:  validatorPermID,
 		Did:                     "did:example:vsoa-issuer",
@@ -6879,7 +6993,7 @@ func TestVSOA_StartParticipantOPSkipsWithoutMsgTypes(t *testing.T) {
 
 	_, err := ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
 		Corporation:            creator,
-		Delegate:               creator,
+		Signer:                 creator,
 		Role:                   types.ParticipantRole_ISSUER,
 		ValidatorParticipantId: validatorPermID,
 		Did:                    "did:example:vsoa-issuer2",
@@ -6918,7 +7032,7 @@ func TestVSOA_ValidatedSyncsRecord(t *testing.T) {
 
 	_, err = ms.SetParticipantOPToValidated(ctx, &types.MsgSetParticipantOPToValidated{
 		Corporation:      validatorAddr,
-		Delegate:         validatorAddr,
+		Signer:           validatorAddr,
 		Id:               applicantPermID,
 		ValidationFees:   10,
 		IssuanceFees:     5,
@@ -6961,7 +7075,7 @@ func TestVSOA_SetEffectiveUntilSyncsRecord(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.SetParticipantOPToValidated(ctx, &types.MsgSetParticipantOPToValidated{
-		Corporation: validatorAddr, Delegate: validatorAddr, Id: applicantPermID,
+		Corporation: validatorAddr, Signer: validatorAddr, Id: applicantPermID,
 		ValidationFees: 10, IssuanceFees: 5, VerificationFees: 3,
 		EffectiveUntil: &future, OpSummaryDigest: "sha384-validDigest",
 	})
@@ -6969,7 +7083,7 @@ func TestVSOA_SetEffectiveUntilSyncsRecord(t *testing.T) {
 	delKeeper.Reset()
 
 	_, err = ms.SetParticipantEffectiveUntil(ctx, &types.MsgSetParticipantEffectiveUntil{
-		Corporation: validatorAddr, Delegate: validatorAddr, Id: applicantPermID, EffectiveUntil: &future2,
+		Corporation: validatorAddr, Signer: validatorAddr, Id: applicantPermID, EffectiveUntil: &future2,
 	})
 	require.NoError(t, err)
 
@@ -7006,7 +7120,7 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 		trkKeeper.RegisterCorp(corp)
 		vsOp := sdk.AccAddress([]byte("vsoa_self_vsop_a____")).String()
 		resp, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: corp, Delegate: corp, Role: types.ParticipantRole_ISSUER,
+			Corporation: corp, Signer: corp, Role: types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemPermID, Did: "did:example:vsoa-self-a",
 			EffectiveFrom: &future, EffectiveUntil: &farFuture, VerificationFees: 100, ValidationFees: 50,
 			VsOperator: vsOp, VsOperatorAuthzMsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE},
@@ -7023,7 +7137,7 @@ func TestVSOA_SelfCreateActiveRecord(t *testing.T) {
 		corp := sdk.AccAddress([]byte("vsoa_self_issuer_b__")).String()
 		trkKeeper.RegisterCorp(corp)
 		_, err := ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: corp, Delegate: corp, Role: types.ParticipantRole_ISSUER,
+			Corporation: corp, Signer: corp, Role: types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: ecosystemPermID, Did: "did:example:vsoa-self-b",
 			EffectiveFrom: &future, EffectiveUntil: &farFuture, VerificationFees: 100, ValidationFees: 50,
 		})
@@ -7054,7 +7168,7 @@ func TestVSOA_CreateRootActiveRecord(t *testing.T) {
 	vsOp := sdk.AccAddress([]byte("vsoa_root_vsop_a____")).String()
 	period := 30 * 24 * time.Hour
 	resp, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-		Corporation: authority, Delegate: authority, SchemaId: 1, Did: did,
+		Corporation: authority, Signer: authority, SchemaId: 1, Did: did,
 		ValidationFees: 100, IssuanceFees: 50, VerificationFees: 25,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 		VsOperator: vsOp, VsOperatorAuthzMsgTypes: []detypes.MsgType{detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING},
@@ -7088,7 +7202,7 @@ func TestVSOA_CreateRootSkipsWithoutMsgTypes(t *testing.T) {
 	delKeeper.Reset()
 
 	_, err := ms.CreateRootParticipant(ctx, &types.MsgCreateRootParticipant{
-		Corporation: authority, Delegate: authority, SchemaId: 1, Did: did,
+		Corporation: authority, Signer: authority, SchemaId: 1, Did: did,
 		ValidationFees: 100, IssuanceFees: 50, VerificationFees: 25,
 		EffectiveFrom: &future, EffectiveUntil: &farFuture,
 	})
@@ -7121,7 +7235,7 @@ func TestStartParticipantVP_VsOperatorOwnPolicy(t *testing.T) {
 		for _, msgTypes := range [][]detypes.MsgType{nil, {detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE}} {
 			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
 				msg := &types.MsgStartParticipantOP{
-					Corporation: corp, Delegate: delegate, Role: types.ParticipantRole_ISSUER,
+					Corporation: corp, Signer: delegate, Role: types.ParticipantRole_ISSUER,
 					ValidatorParticipantId: validatorID, Did: "did:example:own-policy-start",
 					VsOperator: vsOp, VsOperatorAuthzMsgTypes: msgTypes,
 				}
@@ -7156,7 +7270,7 @@ func TestCreateRootParticipant_VsOperatorOwnPolicy(t *testing.T) {
 		for _, msgTypes := range [][]detypes.MsgType{nil, {detypes.MsgType_MSG_TYPE_VALIDATE_ONBOARDING}} {
 			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
 				msg := &types.MsgCreateRootParticipant{
-					Corporation: corp, Delegate: delegate, SchemaId: 1, Did: did,
+					Corporation: corp, Signer: delegate, SchemaId: 1, Did: did,
 					VsOperator: vsOp, VsOperatorAuthzMsgTypes: msgTypes,
 				}
 				require.NoError(t, msg.ValidateBasic())
@@ -7199,7 +7313,7 @@ func TestSelfCreateParticipant_VsOperatorOwnPolicy(t *testing.T) {
 		for _, msgTypes := range [][]detypes.MsgType{nil, {detypes.MsgType_MSG_TYPE_RECORD_CREDENTIAL_ISSUANCE}} {
 			t.Run(fmt.Sprintf("%s/%d msg types", name, len(msgTypes)), func(t *testing.T) {
 				msg := &types.MsgSelfCreateParticipant{
-					Corporation: corp, Delegate: delegate, Role: types.ParticipantRole_ISSUER,
+					Corporation: corp, Signer: delegate, Role: types.ParticipantRole_ISSUER,
 					ValidatorParticipantId: rootID, Did: "did:example:own-policy-self",
 					VsOperator: vsOp, VsOperatorAuthzMsgTypes: msgTypes,
 				}
@@ -7267,7 +7381,7 @@ func TestSetParticipantVPToValidated_ViaVSOperatorDelegation(t *testing.T) {
 	msgFor := func(id uint64) *types.MsgSetParticipantOPToValidated {
 		return &types.MsgSetParticipantOPToValidated{
 			Corporation:      validatorAddr,
-			Delegate:         vsOperator,
+			Signer:           vsOperator,
 			Id:               id,
 			ValidationFees:   10,
 			IssuanceFees:     5,
@@ -7349,7 +7463,7 @@ func TestStartParticipantOP_UnrepaidSlashGate(t *testing.T) {
 
 	startOP := func(corp string, validatorID uint64, did string) (*types.MsgStartParticipantOPResponse, error) {
 		return ms.StartParticipantOP(ctx, &types.MsgStartParticipantOP{
-			Corporation: corp, Delegate: corp,
+			Corporation: corp, Signer: corp,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: validatorID,
 			Did:                    did,
@@ -7484,7 +7598,7 @@ func TestRenewParticipantOP_UnrepaidSlashGate(t *testing.T) {
 
 	renew := func() error {
 		_, err := ms.RenewParticipantOP(ctx, &types.MsgRenewParticipantOP{
-			Corporation: authority, Delegate: authority, Id: applicantID,
+			Corporation: authority, Signer: authority, Id: applicantID,
 		})
 		return err
 	}
@@ -7562,7 +7676,7 @@ func TestSelfCreateParticipant_UnrepaidSlashGate(t *testing.T) {
 
 	selfCreate := func() (*types.MsgSelfCreateParticipantResponse, error) {
 		return ms.SelfCreateParticipant(ctx, &types.MsgSelfCreateParticipant{
-			Corporation: authority, Delegate: authority,
+			Corporation: authority, Signer: authority,
 			Role:                   types.ParticipantRole_ISSUER,
 			ValidatorParticipantId: v1ID,
 			Did:                    "did:example:gate-sc",

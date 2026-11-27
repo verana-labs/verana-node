@@ -24,7 +24,7 @@ func authzKey(t *testing.T, id uint64, feeder string) collections.Pair[uint64, s
 func grantMsg(t *testing.T, f *fixture, id uint64) *types.MsgGrantExchangeRateAuthorization {
 	exp := testNow.Add(time.Hour)
 	return &types.MsgGrantExchangeRateAuthorization{
-		Authority:  f.authority(t),
+		Signer:     f.authority(t),
 		XrId:       id,
 		Feeder:     testAccount("feeder"),
 		Expiration: &exp,
@@ -65,7 +65,7 @@ func TestGrantExchangeRateAuthorization_Success(t *testing.T) {
 func TestGrantExchangeRateAuthorization_NonAuthority(t *testing.T) {
 	f := initFixture(t)
 	msg := grantMsg(t, f, createRate(t, f, createMsg(t, f), true))
-	msg.Authority = testAccount("not_council")
+	msg.Signer = testAccount("not_council")
 	_, err := keeper.NewMsgServerImpl(f.keeper).GrantExchangeRateAuthorization(f.ctx, msg)
 	require.ErrorIs(t, err, types.ErrInvalidSigner)
 }
@@ -130,10 +130,10 @@ func TestGrantExchangeRateAuthorization_CanonicalFeeder(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, feeder, eventAttrs(t, f, types.EventTypeGrantExchangeRateAuthorization)[types.AttributeKeyFeeder])
 
-	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Feeder: feeder, Id: id, Rate: 101})
+	_, err = ms.UpdateExchangeRate(f.ctx, &types.MsgUpdateExchangeRate{Signer: feeder, Id: id, Rate: 101})
 	require.NoError(t, err)
 
-	_, err = ms.RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Authority: f.authority(t), XrId: id, Feeder: msg.Feeder})
+	_, err = ms.RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Signer: f.authority(t), XrId: id, Feeder: msg.Feeder})
 	require.NoError(t, err)
 	require.Equal(t, feeder, eventAttrs(t, f, types.EventTypeRevokeExchangeRateAuthorization)[types.AttributeKeyFeeder])
 }
@@ -163,7 +163,7 @@ func TestRevokeExchangeRateAuthorization_Success(t *testing.T) {
 	feeder := testAccount("feeder")
 	grantAuthz(t, f, id, feeder, 0, 0)
 
-	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Authority: f.authority(t), XrId: id, Feeder: feeder})
+	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Signer: f.authority(t), XrId: id, Feeder: feeder})
 	require.NoError(t, err)
 
 	has, err := f.keeper.ExchangeRateAuthorizations.Has(f.ctx, authzKey(t, id, feeder))
@@ -178,12 +178,12 @@ func TestRevokeExchangeRateAuthorization_Success(t *testing.T) {
 
 func TestRevokeExchangeRateAuthorization_Missing(t *testing.T) {
 	f := initFixture(t)
-	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Authority: f.authority(t), XrId: 1, Feeder: testAccount("feeder")})
+	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Signer: f.authority(t), XrId: 1, Feeder: testAccount("feeder")})
 	require.ErrorIs(t, err, types.ErrAuthorizationNotFound)
 }
 
 func TestRevokeExchangeRateAuthorization_NonAuthority(t *testing.T) {
 	f := initFixture(t)
-	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Authority: testAccount("not_council"), XrId: 1, Feeder: testAccount("feeder")})
+	_, err := keeper.NewMsgServerImpl(f.keeper).RevokeExchangeRateAuthorization(f.ctx, &types.MsgRevokeExchangeRateAuthorization{Signer: testAccount("not_council"), XrId: 1, Feeder: testAccount("feeder")})
 	require.ErrorIs(t, err, types.ErrInvalidSigner)
 }

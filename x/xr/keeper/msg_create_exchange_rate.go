@@ -18,7 +18,7 @@ func (ms msgServer) CreateExchangeRate(ctx context.Context, msg *types.MsgCreate
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	if err := ms.checkAuthority(msg.Authority); err != nil {
+	if err := ms.checkAuthority(msg.Signer); err != nil {
 		return nil, err
 	}
 

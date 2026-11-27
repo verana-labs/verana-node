@@ -28,7 +28,7 @@ func TestDelegateAuthzPeriodRenewal(t *testing.T) {
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
 		Corporation:           corporation,
-		Delegate:              corporation,
+		Signer:                corporation,
 		Grantee:               grantee,
 		MsgTypes:              []types.MsgType{mtEcosystem},
 		AuthzSpendLimit:       spend,
@@ -63,7 +63,7 @@ func TestDelegateAuthzExpiresWithoutPeriod(t *testing.T) {
 	exp := now.Add(time.Hour)
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem}, Expiration: &exp,
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem}, Expiration: &exp,
 	})
 	require.NoError(t, err)
 
@@ -79,7 +79,7 @@ func TestDelegateAuthzMsgTypeMembership(t *testing.T) {
 	now := ctx.BlockTime()
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
@@ -132,7 +132,7 @@ func TestConsumeDelegateSpend(t *testing.T) {
 	now := ctx.BlockTime()
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 		AuthzSpendLimit: sdk.NewCoins(sdk.NewInt64Coin("uvna", 100)),
 	})
 	require.NoError(t, err)
@@ -151,6 +151,13 @@ func TestConsumeDelegateSpend(t *testing.T) {
 		f.keeper.ConsumeDelegateSpend(ctx, testCorpID, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 60))),
 		types.ErrAuthzSpendLimitExceeded)
 
+	// Only the denoms the limit lists are counted.
+	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, testCorpID, grantee, mtEcosystem, now,
+		sdk.NewCoins(sdk.NewInt64Coin("uvna", 10), sdk.NewInt64Coin("uusd", 500))))
+	got, err = qs.GetDelegateAuthorization(ctx, &types.QueryGetDelegateAuthorizationRequest{Id: id})
+	require.NoError(t, err)
+	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uvna", 30)), got.DelegateAuthorization.RemainingSpend)
+
 	// Empty delegate is not a path.
 	require.ErrorIs(t,
 		f.keeper.ConsumeDelegateSpend(ctx, testCorpID, "", mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))),
@@ -165,7 +172,7 @@ func TestDelegateAuthzGFCheck2(t *testing.T) {
 	grantee := acc("grantee_____________")
 	now := ctx.BlockTime()
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 
@@ -189,7 +196,7 @@ func TestDelegateAuthzGFCheck2NotApplied(t *testing.T) {
 	now := ctx.BlockTime()
 
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: acc("grantee_____________"), MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: acc("grantee_____________"), MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 	require.ErrorIs(t, f.keeper.CheckDelegateAuthorization(ctx, testCorpID, acc("stranger____________"), mtEcosystem, now), types.ErrAuthzNotFound)
@@ -226,7 +233,7 @@ func TestConsumeDelegateSpend_NoLimit(t *testing.T) {
 	grantee := acc("grantee_____________")
 	now := ctx.BlockTime()
 	_, err := ms.GrantDelegateAuthorization(ctx, &types.MsgGrantDelegateAuthorization{
-		Corporation: corporation, Delegate: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
+		Corporation: corporation, Signer: corporation, Grantee: grantee, MsgTypes: []types.MsgType{mtEcosystem},
 	})
 	require.NoError(t, err)
 	require.NoError(t, f.keeper.ConsumeDelegateSpend(ctx, testCorpID, grantee, mtEcosystem, now, sdk.NewCoins(sdk.NewInt64Coin("uvna", 999))))

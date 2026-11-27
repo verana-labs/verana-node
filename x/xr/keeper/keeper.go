@@ -105,11 +105,11 @@ func (k Keeper) GetAuthority() []byte {
 	return k.authority
 }
 
-func (k Keeper) checkAuthority(authority string) error {
-	bz, err := k.addressCodec.StringToBytes(authority)
+func (k Keeper) checkAuthority(signer string) error {
+	bz, err := k.addressCodec.StringToBytes(signer)
 	if err != nil || !bytes.Equal(k.authority, bz) {
 		expected, _ := k.addressCodec.BytesToString(k.authority)
-		return errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expected, authority)
+		return errorsmod.Wrapf(types.ErrInvalidSigner, "invalid signer; expected %s, got %s", expected, signer)
 	}
 	return nil
 }

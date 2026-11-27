@@ -18,12 +18,12 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	if msg.Authority != "" {
-		return nil, ms.checkNetworkPath(msg.Authority)
+	if msg.Network {
+		return nil, ms.checkNetworkPath(msg.Signer)
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	coView, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION)
+	coView, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_INCREASE_ACTIVE_GOVERNANCE_FRAMEWORK_VERSION)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (ms msgServer) IncreaseActiveGovernanceFrameworkVersion(goCtx context.Conte
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeIncreaseGFActive,
 		sdk.NewAttribute(types.AttributeKeyCorporation, msg.Corporation),
-		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
+		sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", msg.EcosystemId)),
 		sdk.NewAttribute(types.AttributeKeyGFVersionID, fmt.Sprintf("%d", gfv.Id)),
 		sdk.NewAttribute(types.AttributeKeyVersion, fmt.Sprintf("%d", nextVersion)),

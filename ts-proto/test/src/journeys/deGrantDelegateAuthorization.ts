@@ -130,9 +130,9 @@ async function main() {
   const innerMsgValue = MsgGrantDelegateAuthorization.encode(
     MsgGrantDelegateAuthorization.fromPartial({
       corporation: corp.policyAddress,
-      // Group-proposal path: delegate == corporation policy_address (the group
+      // Group-proposal path: signer == corporation policy_address (the group
       // account is the signer), so AUTHZ-CHECK-1 is skipped.
-      delegate: corp.policyAddress,
+      signer: corp.policyAddress,
       grantee: delegateAccount.address,
       msgTypes: allMsgTypes,
       withFeegrant: false,

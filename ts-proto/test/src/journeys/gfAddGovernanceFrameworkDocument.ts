@@ -65,7 +65,7 @@ async function main() {
     typeUrl: typeUrls.MsgAddGovernanceFrameworkDocument,
     value: MsgAddGovernanceFrameworkDocument.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       ecosystemId: activeEC.ecosystemId,
       docLanguage: "en",
       docUrl: "https://example.com/governance-framework-v2.pdf",

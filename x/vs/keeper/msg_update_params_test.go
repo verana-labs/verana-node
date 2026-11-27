@@ -23,23 +23,23 @@ func TestMsgUpdateParams(t *testing.T) {
 		expErr error
 	}{
 		{
-			name:   "invalid authority",
-			input:  &types.MsgUpdateParams{Authority: "invalid", Params: valid},
+			name:   "invalid signer",
+			input:  &types.MsgUpdateParams{Signer: "invalid", Params: valid},
 			expErr: types.ErrInvalidSigner,
 		},
 		{
 			name:   "empty params",
-			input:  &types.MsgUpdateParams{Authority: authority, Params: types.Params{}},
+			input:  &types.MsgUpdateParams{Signer: authority, Params: types.Params{}},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name:   "vs_account_fee_period zero",
-			input:  &types.MsgUpdateParams{Authority: authority, Params: types.NewParams(0, 0, time.Hour, 0)},
+			input:  &types.MsgUpdateParams{Signer: authority, Params: types.NewParams(0, 0, time.Hour, 0)},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name:  "all good",
-			input: &types.MsgUpdateParams{Authority: authority, Params: valid},
+			input: &types.MsgUpdateParams{Signer: authority, Params: valid},
 		},
 	}
 
@@ -66,7 +66,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 	ms := keeper.NewMsgServerImpl(f.keeper)
 	authority := f.authority(t)
 
-	_, err := ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Authority: authority, Params: types.NewParams(500, 10000, time.Hour, 2*time.Hour)})
+	_, err := ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Signer: authority, Params: types.NewParams(500, 10000, time.Hour, 2*time.Hour)})
 	require.NoError(t, err)
 
 	attrs := map[string]string{}
@@ -78,7 +78,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 		}
 	}
 	require.Equal(t, map[string]string{
-		types.AttributeKeyAuthority:   authority,
+		types.AttributeKeySigner:      authority,
 		"vs_registration_deposit":     "500",
 		"ecosystem_creation_deposit":  "10000",
 		"vid_rotation_max_transition": "1h0m0s",

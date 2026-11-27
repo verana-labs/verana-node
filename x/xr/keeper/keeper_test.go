@@ -94,7 +94,7 @@ func testAccount(name string) string {
 // createMsg prices uverana in USD, which is not the genesis pair.
 func createMsg(t *testing.T, f *fixture) *types.MsgCreateExchangeRate {
 	return &types.MsgCreateExchangeRate{
-		Authority:        f.authority(t),
+		Signer:           f.authority(t),
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -108,7 +108,7 @@ func createMsg(t *testing.T, f *fixture) *types.MsgCreateExchangeRate {
 // genesisPairMsg prices the main fiat currency in the native denom.
 func genesisPairMsg(t *testing.T, f *fixture) *types.MsgCreateExchangeRate {
 	return &types.MsgCreateExchangeRate{
-		Authority:        f.authority(t),
+		Signer:           f.authority(t),
 		BaseAssetType:    cstypes.PricingAssetType_FIAT,
 		BaseAsset:        "USD",
 		QuoteAssetType:   cstypes.PricingAssetType_COIN,
@@ -136,7 +136,7 @@ func grantAuthz(t *testing.T, f *fixture, id uint64, feeder string, minInterval 
 	t.Helper()
 	exp := sdk.UnwrapSDKContext(f.ctx).BlockTime().Add(time.Hour)
 	msg := &types.MsgGrantExchangeRateAuthorization{
-		Authority:       f.authority(t),
+		Signer:          f.authority(t),
 		XrId:            id,
 		Feeder:          feeder,
 		Expiration:      &exp,

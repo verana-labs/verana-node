@@ -11,7 +11,7 @@ import (
 
 // [MOD-XR-MSG-6] Update Module Parameters
 func (k msgServer) UpdateParams(ctx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
-	if err := k.checkAuthority(req.Authority); err != nil {
+	if err := k.checkAuthority(req.Signer); err != nil {
 		return nil, err
 	}
 	if err := req.Params.Validate(); err != nil {

@@ -71,7 +71,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `delegate`;\nAUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the\ncontrolling Corporation entry. Seeds v1 of the Ecosystem's Governance\nFramework via MOD-GF.",
+            "description": "MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `signer`;\nAUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the\ncontrolling Corporation entry. Seeds v1 of the Ecosystem's Governance\nFramework via MOD-GF.",
             "in": "body",
             "required": true,
             "schema": {
@@ -188,8 +188,9 @@
         "corporation": {
           "type": "string"
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -210,8 +211,9 @@
         "corporation": {
           "type": "string"
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "did": {
           "type": "string"
@@ -226,7 +228,7 @@
           "type": "string"
         }
       },
-      "description": "MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `delegate`;\nAUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the\ncontrolling Corporation entry. Seeds v1 of the Ecosystem's Governance\nFramework via MOD-GF."
+      "description": "MsgCreateEcosystem implements MOD-ES-MSG-1. Signed by `signer`;\nAUTHZ-CHECK-5 resolves the signing `corporation` policy_address to the\ncontrolling Corporation entry. Seeds v1 of the Ecosystem's Governance\nFramework via MOD-GF."
     },
     "verana.ec.v1.MsgCreateEcosystemResponse": {
       "type": "object",
@@ -243,8 +245,9 @@
         "corporation": {
           "type": "string"
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -262,8 +265,9 @@
     "verana.ec.v1.MsgUpdateParams": {
       "type": "object",
       "properties": {
-        "authority": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is the council account."
         },
         "params": {
           "$ref": "#/definitions/verana.ec.v1.Params"
