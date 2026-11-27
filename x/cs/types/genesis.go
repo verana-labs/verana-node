@@ -98,23 +98,23 @@ func (gs GenesisState) Validate() error {
 		seenCredentialSchemaIDs[cs.Id] = true
 
 		// Additional validations for validity periods
-		if cs.IssuerGrantorValidationValidityPeriod > gs.Params.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays {
+		if cs.IssuerGrantorValidationValidityPeriod > gs.Params.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has issuer grantor validation validity period exceeding maximum", i)
 		}
 
-		if cs.VerifierGrantorValidationValidityPeriod > gs.Params.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays {
+		if cs.VerifierGrantorValidationValidityPeriod > gs.Params.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has verifier grantor validation validity period exceeding maximum", i)
 		}
 
-		if cs.IssuerValidationValidityPeriod > gs.Params.CredentialSchemaIssuerValidationValidityPeriodMaxDays {
+		if cs.IssuerValidationValidityPeriod > gs.Params.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has issuer validation validity period exceeding maximum", i)
 		}
 
-		if cs.VerifierValidationValidityPeriod > gs.Params.CredentialSchemaVerifierValidationValidityPeriodMaxDays {
+		if cs.VerifierValidationValidityPeriod > gs.Params.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has verifier validation validity period exceeding maximum", i)
 		}
 
-		if cs.HolderValidationValidityPeriod > gs.Params.CredentialSchemaHolderValidationValidityPeriodMaxDays {
+		if cs.HolderValidationValidityPeriod > gs.Params.CredentialSchemaHolderAccreditationValidityPeriodMaxDays {
 			return fmt.Errorf("credential schema at index %d has holder validation validity period exceeding maximum", i)
 		}
 

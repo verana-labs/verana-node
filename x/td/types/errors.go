@@ -14,4 +14,6 @@ var (
 	ErrTrustDepositNotFound     = errors.Register(ModuleName, 1104, "trust deposit not found")
 	ErrInsufficientTrustDeposit = errors.Register(ModuleName, 1105, "insufficient trust deposit")
 	ErrMsgVoid                  = errors.Register(ModuleName, 1106, "message is void in v5")
+	ErrInvalidParams            = errors.Register(ModuleName, 1107, "invalid parameters")
+	ErrImmutableParam           = errors.Register(ModuleName, 1108, "immutable parameter cannot be changed")
 )

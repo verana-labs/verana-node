@@ -236,7 +236,12 @@
     },
     "verana.gf.v1.Params": {
       "type": "object",
-      "description": "Params defines the parameters for the x/gf module.\nThe module has no parameters at this time; the message is kept for forward compat\nso that gov-proposed parameter changes can land without proto migrations."
+      "properties": {
+        "gf_acceptance_grace_min": {
+          "type": "string"
+        }
+      },
+      "description": "Params defines the parameters for the x/gf module."
     }
   }
 }

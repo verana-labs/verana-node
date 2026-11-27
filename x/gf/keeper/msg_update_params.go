@@ -10,6 +10,7 @@ import (
 	"github.com/verana-labs/verana-node/x/gf/types"
 )
 
+// [MOD-GF-MSG-5] Update Module Parameters
 func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if ms.GetAuthority() != msg.Authority {
 		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "expected %s got %s", ms.GetAuthority(), msg.Authority)
@@ -23,7 +24,7 @@ func (ms msgServer) UpdateParams(goCtx context.Context, msg *types.MsgUpdatePara
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateParams,
-		sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority),
+		append([]sdk.Attribute{sdk.NewAttribute(types.AttributeKeyAuthority, msg.Authority)}, msg.Params.EventAttributes()...)...,
 	))
 	return &types.MsgUpdateParamsResponse{}, nil
 }

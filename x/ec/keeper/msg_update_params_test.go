@@ -32,12 +32,13 @@ func TestMsgUpdateParams(t *testing.T) {
 			expErrMsg: "invalid authority",
 		},
 		{
-			name: "all good",
+			name: "aborts for the authority: the module owns no parameter",
 			input: &types.MsgUpdateParams{
 				Authority: k.GetAuthority(),
 				Params:    params,
 			},
-			expErr: false,
+			expErr:    true,
+			expErrMsg: types.ErrNoParams.Error(),
 		},
 	}
 

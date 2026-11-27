@@ -45,9 +45,7 @@ func (k Keeper) BurnEcosystemSlashedTrustDeposit(ctx sdk.Context, account string
 }
 
 func (k Keeper) executeBurnEcosystemSlashedTrustDeposit(ctx sdk.Context, corpID uint64, account string, td types.TrustDeposit, amount uint64) error {
-	// Get trust deposit share value from params
-	params := k.GetParams(ctx)
-	trustDepositShareValue := params.TrustDepositShareValue
+	trustDepositShareValue := k.GetTrustDepositShareValue(ctx)
 
 	if trustDepositShareValue.IsZero() {
 		return fmt.Errorf("trust deposit share value cannot be zero")

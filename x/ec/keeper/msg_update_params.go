@@ -4,25 +4,14 @@ import (
 	"context"
 
 	errorsmod "cosmossdk.io/errors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/verana-labs/verana-node/x/ec/types"
 )
 
-func (ms msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+// [MOD-ES-MSG-4] Update Module Parameters: the module owns no parameter, so any key aborts.
+func (ms msgServer) UpdateParams(_ context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if ms.GetAuthority() != req.Authority {
 		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.GetAuthority(), req.Authority)
 	}
-	if err := req.Params.Validate(); err != nil {
-		return nil, err
-	}
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := ms.SetParams(ctx, req.Params); err != nil {
-		return nil, err
-	}
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUpdateParams,
-		sdk.NewAttribute(types.AttributeKeyAuthority, req.Authority),
-	))
-	return &types.MsgUpdateParamsResponse{}, nil
+	return nil, types.ErrNoParams
 }

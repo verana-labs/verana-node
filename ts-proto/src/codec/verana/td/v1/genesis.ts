@@ -19,6 +19,8 @@ export interface GenesisState {
   trustDeposits: TrustDepositRecord[];
   /** dust is the accumulated fractional yield carried forward */
   dust: string;
+  /** pending_tu_decay_rate is the tu_decay_rate applied at the next epoch boundary; null when none. */
+  pendingTuDecayRate: string;
 }
 
 /** TrustDepositRecord defines a trust deposit entry for genesis state */
@@ -38,7 +40,7 @@ export interface TrustDepositRecord {
 }
 
 function createBaseGenesisState(): GenesisState {
-  return { params: undefined, trustDeposits: [], dust: "" };
+  return { params: undefined, trustDeposits: [], dust: "", pendingTuDecayRate: "" };
 }
 
 export const GenesisState = {
@@ -51,6 +53,9 @@ export const GenesisState = {
     }
     if (message.dust !== "") {
       writer.uint32(26).string(message.dust);
+    }
+    if (message.pendingTuDecayRate !== "") {
+      writer.uint32(34).string(message.pendingTuDecayRate);
     }
     return writer;
   },
@@ -83,6 +88,13 @@ export const GenesisState = {
 
           message.dust = reader.string();
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.pendingTuDecayRate = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -99,6 +111,7 @@ export const GenesisState = {
         ? object.trustDeposits.map((e: any) => TrustDepositRecord.fromJSON(e))
         : [],
       dust: isSet(object.dust) ? globalThis.String(object.dust) : "",
+      pendingTuDecayRate: isSet(object.pendingTuDecayRate) ? globalThis.String(object.pendingTuDecayRate) : "",
     };
   },
 
@@ -113,6 +126,9 @@ export const GenesisState = {
     if (message.dust !== "") {
       obj.dust = message.dust;
     }
+    if (message.pendingTuDecayRate !== "") {
+      obj.pendingTuDecayRate = message.pendingTuDecayRate;
+    }
     return obj;
   },
 
@@ -126,6 +142,7 @@ export const GenesisState = {
       : undefined;
     message.trustDeposits = object.trustDeposits?.map((e) => TrustDepositRecord.fromPartial(e)) || [];
     message.dust = object.dust ?? "";
+    message.pendingTuDecayRate = object.pendingTuDecayRate ?? "";
     return message;
   },
 };

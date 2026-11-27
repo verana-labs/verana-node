@@ -19,12 +19,10 @@ type Keeper struct {
 	storeService corestore.KVStoreService
 	cdc          codec.Codec
 	addressCodec address.Codec
-	// Address capable of executing a MsgUpdateParams message.
-	// Typically, this should be the council account.
+	// authority is the council account.
 	authority []byte
 
 	Schema collections.Schema
-	Params collections.Item[types.Params]
 
 	// DelegateAuthorization: keyed by its own uint64 id; (corporation_id,
 	// delegate) is a unique secondary index. Runtime spend balances live
@@ -64,6 +62,9 @@ type Keeper struct {
 
 	// vsBudgetRef backs AUTHZ-CHECK-3 steps 5 and 6 on the VS account path.
 	vsBudgetRef *vsAccountBudgetStoreRef
+
+	// vsRef serves vs_account_fee_period; wired via SetVerifiableServiceKeeper.
+	vsRef *vsKeeperRef
 }
 
 func NewKeeper(
@@ -91,8 +92,7 @@ func NewKeeper(
 		participantRef: &participantKeeperRef{K: StubParticipantKeeper{}},
 		gfRef:          &gfKeeperRef{K: StubGovernanceFrameworkKeeper{}},
 		vsBudgetRef:    &vsAccountBudgetStoreRef{S: StubVsAccountBudgetStore{}},
-
-		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		vsRef:          &vsKeeperRef{K: StubVerifiableServiceKeeper{}},
 
 		DelegateAuthorizations: collections.NewMap(sb, types.DelegateAuthorizationKey, "delegate_authorization",
 			collections.Uint64Key, codec.CollValue[types.DelegateAuthorization](cdc)),
@@ -161,6 +161,11 @@ func (k Keeper) SetGovernanceFrameworkKeeper(g types.GovernanceFrameworkKeeper) 
 // SetVsAccountBudgetStore wires the VsAccountBudget store read by AUTHZ-CHECK-3.
 func (k Keeper) SetVsAccountBudgetStore(s types.VsAccountBudgetStore) {
 	k.vsBudgetRef.S = s
+}
+
+// SetVerifiableServiceKeeper wires the MOD-VS keeper after both keepers exist.
+func (k Keeper) SetVerifiableServiceKeeper(v types.VerifiableServiceKeeper) {
+	k.vsRef.K = v
 }
 
 // participantKeeper returns the wired participant view (real or stub).

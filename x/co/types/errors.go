@@ -18,4 +18,5 @@ var (
 	ErrInvalidActiveVersion      = errors.Register(ModuleName, 1112, "invalid active_version")
 	ErrInvalidCounter            = errors.Register(ModuleName, 1113, "invalid corporation_counter")
 	ErrDIDOwnershipConflict      = errors.Register(ModuleName, 1114, "did is claimed by an entity owned by a different corporation")
+	ErrNoParams                  = errors.Register(ModuleName, 1115, "the module owns no parameter")
 )

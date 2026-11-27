@@ -31,13 +31,6 @@ type ParamSubspace interface {
 	Set(context.Context, []byte, interface{})
 }
 
-// MintKeeper defines the expected interface for the Mint module.
-// Mint keeper has Params collections.Item[types.Params] where Params has BlocksPerYear field
-type MintKeeper interface {
-	// GetBlocksPerYear returns the blocks_per_year parameter from mint module
-	GetBlocksPerYear(ctx context.Context) (uint64, error)
-}
-
 // DelegationKeeper defines the expected interface for the Delegation (DE) module.
 // Used to perform [AUTHZ-CHECK] for (authority, delegate) pairs.
 type DelegationKeeper interface {

@@ -21,6 +21,7 @@ import (
 	"github.com/verana-labs/verana-node/x/de/keeper"
 	module "github.com/verana-labs/verana-node/x/de/module"
 	"github.com/verana-labs/verana-node/x/de/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 // mockCorpKeeper backs AUTHZ-CHECK-5 in MOD-DE tests. It resolves any signing
@@ -152,6 +153,7 @@ type fixture struct {
 	feegrants    *memFeegrantKeeper
 	gf           *mockGFKeeper
 	budgets      memVsAccountBudgets
+	vs           *mockVsKeeper
 }
 
 func initFixture(t *testing.T) *fixture {
@@ -185,11 +187,8 @@ func initFixture(t *testing.T) *fixture {
 	k.SetGovernanceFrameworkKeeper(gf)
 	budgets := memVsAccountBudgets{}
 	k.SetVsAccountBudgetStore(budgets)
-
-	// Initialize params
-	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
-		t.Fatalf("failed to set params: %v", err)
-	}
+	vs := &mockVsKeeper{period: vstypes.DefaultVsAccountFeePeriod}
+	k.SetVerifiableServiceKeeper(vs)
 
 	return &fixture{
 		ctx:          ctx,
@@ -200,5 +199,12 @@ func initFixture(t *testing.T) *fixture {
 		feegrants:    feegrants,
 		gf:           gf,
 		budgets:      budgets,
+		vs:           vs,
 	}
+}
+
+type mockVsKeeper struct{ period time.Duration }
+
+func (m *mockVsKeeper) VsAccountFeePeriod(context.Context) (time.Duration, error) {
+	return m.period, nil
 }

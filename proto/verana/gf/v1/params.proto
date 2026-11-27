@@ -3,13 +3,17 @@ package verana.gf.v1;
 
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
 
 option go_package = "github.com/verana-labs/verana-node/x/gf/types";
 
 // Params defines the parameters for the x/gf module.
-// The module has no parameters at this time; the message is kept for forward compat
-// so that gov-proposed parameter changes can land without proto migrations.
 message Params {
   option (amino.name) = "verana/x/gf/Params";
   option (gogoproto.equal) = true;
+
+  google.protobuf.Duration gf_acceptance_grace_min = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
 }

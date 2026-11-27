@@ -19,7 +19,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "empty params is invalid (zero max_validity_duration)",
+			desc:     "empty params is invalid (zero twap_window)",
 			genState: &types.GenesisState{},
 			valid:    false,
 		},

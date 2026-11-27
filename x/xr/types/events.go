@@ -6,6 +6,7 @@ const (
 	EventTypeSetExchangeRateState    = "set_exchange_rate_state"
 	EventTypeGrantExchangeRateAuthz  = "grant_exchange_rate_authz"
 	EventTypeRevokeExchangeRateAuthz = "revoke_exchange_rate_authz"
+	EventTypeUpdateParams            = "update_params"
 
 	AttributeKeyID               = "id"
 	AttributeKeyBaseAssetType    = "base_asset_type"

@@ -43,10 +43,6 @@ func initFixtureWithMock(t *testing.T, mock *keepertest.MockDelegationKeeper) *f
 		corpKeeper,
 	)
 
-	if err := k.Params.Set(ctx, types.DefaultParams()); err != nil {
-		t.Fatalf("failed to set params: %v", err)
-	}
-
 	return &fixture{
 		ctx:          ctx,
 		keeper:       k,

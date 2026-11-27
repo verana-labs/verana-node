@@ -11,17 +11,17 @@ import (
 func TestGenesisState_Validate(t *testing.T) {
 	addr := sdk.AccAddress([]byte("delegate____________")).String()
 	withOA := func(mts ...types.MsgType) *types.GenesisState {
-		return &types.GenesisState{Params: types.DefaultParams(), DelegateAuthorizations: []types.DelegateAuthorization{
+		return &types.GenesisState{DelegateAuthorizations: []types.DelegateAuthorization{
 			{Id: 1, CorporationId: 1, Delegate: addr, MsgTypes: mts},
 		}}
 	}
 	withFG := func(mts ...types.MsgType) *types.GenesisState {
-		return &types.GenesisState{Params: types.DefaultParams(), FeeGrants: []types.FeeGrant{
+		return &types.GenesisState{FeeGrants: []types.FeeGrant{
 			{GrantorCorporationId: 1, Grantee: addr, MsgTypes: mts},
 		}}
 	}
 	withRecord := func(mts ...types.MsgType) *types.GenesisState {
-		return &types.GenesisState{Params: types.DefaultParams(), VsOperatorAuthorizations: []types.VSOperatorAuthorization{
+		return &types.GenesisState{VsOperatorAuthorizations: []types.VSOperatorAuthorization{
 			{Id: 1, CorporationId: 1, VsOperator: addr, Records: []types.ParticipantAuthorizationRecord{{ParticipantId: 1, MsgTypes: mts}}},
 		}}
 	}
@@ -36,19 +36,13 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
-			genState: &types.GenesisState{Params: types.DefaultParams()},
-			valid:    true,
-		},
-		{
-			desc:     "zero fee period is invalid",
+			desc:     "empty genesis state",
 			genState: &types.GenesisState{},
-			valid:    false,
+			valid:    true,
 		},
 		{
 			desc: "queue entry without participant is invalid",
 			genState: &types.GenesisState{
-				Params:         types.DefaultParams(),
 				WindowEndQueue: []types.WindowEndQueueEntry{{ParticipantId: 0}},
 			},
 			valid: false,

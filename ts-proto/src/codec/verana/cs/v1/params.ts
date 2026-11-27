@@ -13,21 +13,23 @@ export const protobufPackage = "verana.cs.v1";
 /** Params defines the parameters for the module. */
 export interface Params {
   credentialSchemaSchemaMaxSize: number;
-  credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays: number;
-  credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays: number;
-  credentialSchemaIssuerValidationValidityPeriodMaxDays: number;
-  credentialSchemaVerifierValidationValidityPeriodMaxDays: number;
-  credentialSchemaHolderValidationValidityPeriodMaxDays: number;
+  credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays: number;
+  credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays: number;
+  credentialSchemaIssuerAccreditationValidityPeriodMaxDays: number;
+  credentialSchemaVerifierAccreditationValidityPeriodMaxDays: number;
+  credentialSchemaHolderAccreditationValidityPeriodMaxDays: number;
+  credentialSchemaPresentationValidityPeriodMaxDays: number;
 }
 
 function createBaseParams(): Params {
   return {
     credentialSchemaSchemaMaxSize: 0,
-    credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays: 0,
-    credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays: 0,
-    credentialSchemaIssuerValidationValidityPeriodMaxDays: 0,
-    credentialSchemaVerifierValidationValidityPeriodMaxDays: 0,
-    credentialSchemaHolderValidationValidityPeriodMaxDays: 0,
+    credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays: 0,
+    credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays: 0,
+    credentialSchemaIssuerAccreditationValidityPeriodMaxDays: 0,
+    credentialSchemaVerifierAccreditationValidityPeriodMaxDays: 0,
+    credentialSchemaHolderAccreditationValidityPeriodMaxDays: 0,
+    credentialSchemaPresentationValidityPeriodMaxDays: 0,
   };
 }
 
@@ -36,20 +38,23 @@ export const Params = {
     if (message.credentialSchemaSchemaMaxSize !== 0) {
       writer.uint32(8).uint64(message.credentialSchemaSchemaMaxSize);
     }
-    if (message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(16).uint32(message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays);
+    if (message.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays !== 0) {
+      writer.uint32(16).uint32(message.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays);
     }
-    if (message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(24).uint32(message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays);
+    if (message.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays !== 0) {
+      writer.uint32(24).uint32(message.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays);
     }
-    if (message.credentialSchemaIssuerValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(32).uint32(message.credentialSchemaIssuerValidationValidityPeriodMaxDays);
+    if (message.credentialSchemaIssuerAccreditationValidityPeriodMaxDays !== 0) {
+      writer.uint32(32).uint32(message.credentialSchemaIssuerAccreditationValidityPeriodMaxDays);
     }
-    if (message.credentialSchemaVerifierValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(40).uint32(message.credentialSchemaVerifierValidationValidityPeriodMaxDays);
+    if (message.credentialSchemaVerifierAccreditationValidityPeriodMaxDays !== 0) {
+      writer.uint32(40).uint32(message.credentialSchemaVerifierAccreditationValidityPeriodMaxDays);
     }
-    if (message.credentialSchemaHolderValidationValidityPeriodMaxDays !== 0) {
-      writer.uint32(48).uint32(message.credentialSchemaHolderValidationValidityPeriodMaxDays);
+    if (message.credentialSchemaHolderAccreditationValidityPeriodMaxDays !== 0) {
+      writer.uint32(48).uint32(message.credentialSchemaHolderAccreditationValidityPeriodMaxDays);
+    }
+    if (message.credentialSchemaPresentationValidityPeriodMaxDays !== 0) {
+      writer.uint32(56).uint32(message.credentialSchemaPresentationValidityPeriodMaxDays);
     }
     return writer;
   },
@@ -73,35 +78,42 @@ export const Params = {
             break;
           }
 
-          message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays = reader.uint32();
+          message.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays = reader.uint32();
           continue;
         case 3:
           if (tag !== 24) {
             break;
           }
 
-          message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays = reader.uint32();
+          message.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays = reader.uint32();
           continue;
         case 4:
           if (tag !== 32) {
             break;
           }
 
-          message.credentialSchemaIssuerValidationValidityPeriodMaxDays = reader.uint32();
+          message.credentialSchemaIssuerAccreditationValidityPeriodMaxDays = reader.uint32();
           continue;
         case 5:
           if (tag !== 40) {
             break;
           }
 
-          message.credentialSchemaVerifierValidationValidityPeriodMaxDays = reader.uint32();
+          message.credentialSchemaVerifierAccreditationValidityPeriodMaxDays = reader.uint32();
           continue;
         case 6:
           if (tag !== 48) {
             break;
           }
 
-          message.credentialSchemaHolderValidationValidityPeriodMaxDays = reader.uint32();
+          message.credentialSchemaHolderAccreditationValidityPeriodMaxDays = reader.uint32();
+          continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.credentialSchemaPresentationValidityPeriodMaxDays = reader.uint32();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -117,26 +129,29 @@ export const Params = {
       credentialSchemaSchemaMaxSize: isSet(object.credentialSchemaSchemaMaxSize)
         ? globalThis.Number(object.credentialSchemaSchemaMaxSize)
         : 0,
-      credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays:
-        isSet(object.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays)
-          ? globalThis.Number(object.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays)
+      credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays:
+        isSet(object.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays)
+          ? globalThis.Number(object.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays)
           : 0,
-      credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays:
-        isSet(object.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays)
-          ? globalThis.Number(object.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays)
+      credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays:
+        isSet(object.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays)
+          ? globalThis.Number(object.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays)
           : 0,
-      credentialSchemaIssuerValidationValidityPeriodMaxDays:
-        isSet(object.credentialSchemaIssuerValidationValidityPeriodMaxDays)
-          ? globalThis.Number(object.credentialSchemaIssuerValidationValidityPeriodMaxDays)
+      credentialSchemaIssuerAccreditationValidityPeriodMaxDays:
+        isSet(object.credentialSchemaIssuerAccreditationValidityPeriodMaxDays)
+          ? globalThis.Number(object.credentialSchemaIssuerAccreditationValidityPeriodMaxDays)
           : 0,
-      credentialSchemaVerifierValidationValidityPeriodMaxDays:
-        isSet(object.credentialSchemaVerifierValidationValidityPeriodMaxDays)
-          ? globalThis.Number(object.credentialSchemaVerifierValidationValidityPeriodMaxDays)
+      credentialSchemaVerifierAccreditationValidityPeriodMaxDays:
+        isSet(object.credentialSchemaVerifierAccreditationValidityPeriodMaxDays)
+          ? globalThis.Number(object.credentialSchemaVerifierAccreditationValidityPeriodMaxDays)
           : 0,
-      credentialSchemaHolderValidationValidityPeriodMaxDays:
-        isSet(object.credentialSchemaHolderValidationValidityPeriodMaxDays)
-          ? globalThis.Number(object.credentialSchemaHolderValidationValidityPeriodMaxDays)
+      credentialSchemaHolderAccreditationValidityPeriodMaxDays:
+        isSet(object.credentialSchemaHolderAccreditationValidityPeriodMaxDays)
+          ? globalThis.Number(object.credentialSchemaHolderAccreditationValidityPeriodMaxDays)
           : 0,
+      credentialSchemaPresentationValidityPeriodMaxDays: isSet(object.credentialSchemaPresentationValidityPeriodMaxDays)
+        ? globalThis.Number(object.credentialSchemaPresentationValidityPeriodMaxDays)
+        : 0,
     };
   },
 
@@ -145,29 +160,34 @@ export const Params = {
     if (message.credentialSchemaSchemaMaxSize !== 0) {
       obj.credentialSchemaSchemaMaxSize = Math.round(message.credentialSchemaSchemaMaxSize);
     }
-    if (message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays !== 0) {
-      obj.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays = Math.round(
-        message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays,
+    if (message.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays !== 0) {
+      obj.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays = Math.round(
+        message.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays,
       );
     }
-    if (message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays !== 0) {
-      obj.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays = Math.round(
-        message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays,
+    if (message.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays !== 0) {
+      obj.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays = Math.round(
+        message.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays,
       );
     }
-    if (message.credentialSchemaIssuerValidationValidityPeriodMaxDays !== 0) {
-      obj.credentialSchemaIssuerValidationValidityPeriodMaxDays = Math.round(
-        message.credentialSchemaIssuerValidationValidityPeriodMaxDays,
+    if (message.credentialSchemaIssuerAccreditationValidityPeriodMaxDays !== 0) {
+      obj.credentialSchemaIssuerAccreditationValidityPeriodMaxDays = Math.round(
+        message.credentialSchemaIssuerAccreditationValidityPeriodMaxDays,
       );
     }
-    if (message.credentialSchemaVerifierValidationValidityPeriodMaxDays !== 0) {
-      obj.credentialSchemaVerifierValidationValidityPeriodMaxDays = Math.round(
-        message.credentialSchemaVerifierValidationValidityPeriodMaxDays,
+    if (message.credentialSchemaVerifierAccreditationValidityPeriodMaxDays !== 0) {
+      obj.credentialSchemaVerifierAccreditationValidityPeriodMaxDays = Math.round(
+        message.credentialSchemaVerifierAccreditationValidityPeriodMaxDays,
       );
     }
-    if (message.credentialSchemaHolderValidationValidityPeriodMaxDays !== 0) {
-      obj.credentialSchemaHolderValidationValidityPeriodMaxDays = Math.round(
-        message.credentialSchemaHolderValidationValidityPeriodMaxDays,
+    if (message.credentialSchemaHolderAccreditationValidityPeriodMaxDays !== 0) {
+      obj.credentialSchemaHolderAccreditationValidityPeriodMaxDays = Math.round(
+        message.credentialSchemaHolderAccreditationValidityPeriodMaxDays,
+      );
+    }
+    if (message.credentialSchemaPresentationValidityPeriodMaxDays !== 0) {
+      obj.credentialSchemaPresentationValidityPeriodMaxDays = Math.round(
+        message.credentialSchemaPresentationValidityPeriodMaxDays,
       );
     }
     return obj;
@@ -179,16 +199,18 @@ export const Params = {
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
     const message = createBaseParams();
     message.credentialSchemaSchemaMaxSize = object.credentialSchemaSchemaMaxSize ?? 0;
-    message.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays =
-      object.credentialSchemaIssuerGrantorValidationValidityPeriodMaxDays ?? 0;
-    message.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays =
-      object.credentialSchemaVerifierGrantorValidationValidityPeriodMaxDays ?? 0;
-    message.credentialSchemaIssuerValidationValidityPeriodMaxDays =
-      object.credentialSchemaIssuerValidationValidityPeriodMaxDays ?? 0;
-    message.credentialSchemaVerifierValidationValidityPeriodMaxDays =
-      object.credentialSchemaVerifierValidationValidityPeriodMaxDays ?? 0;
-    message.credentialSchemaHolderValidationValidityPeriodMaxDays =
-      object.credentialSchemaHolderValidationValidityPeriodMaxDays ?? 0;
+    message.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays =
+      object.credentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays ?? 0;
+    message.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays =
+      object.credentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays ?? 0;
+    message.credentialSchemaIssuerAccreditationValidityPeriodMaxDays =
+      object.credentialSchemaIssuerAccreditationValidityPeriodMaxDays ?? 0;
+    message.credentialSchemaVerifierAccreditationValidityPeriodMaxDays =
+      object.credentialSchemaVerifierAccreditationValidityPeriodMaxDays ?? 0;
+    message.credentialSchemaHolderAccreditationValidityPeriodMaxDays =
+      object.credentialSchemaHolderAccreditationValidityPeriodMaxDays ?? 0;
+    message.credentialSchemaPresentationValidityPeriodMaxDays =
+      object.credentialSchemaPresentationValidityPeriodMaxDays ?? 0;
     return message;
   },
 };

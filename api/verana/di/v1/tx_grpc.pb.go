@@ -19,8 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Msg_UpdateParams_FullMethodName = "/verana.di.v1.Msg/UpdateParams"
-	Msg_StoreDigest_FullMethodName  = "/verana.di.v1.Msg/StoreDigest"
+	Msg_StoreDigest_FullMethodName = "/verana.di.v1.Msg/StoreDigest"
 )
 
 // MsgClient is the client API for Msg service.
@@ -29,9 +28,6 @@ const (
 //
 // Msg defines the Msg service.
 type MsgClient interface {
-	// UpdateParams defines a (governance) operation for updating the module
-	// parameters. The authority defaults to the x/gov module account.
-	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 	// [MOD-DI-MSG-1] Store Digest
 	StoreDigest(ctx context.Context, in *MsgStoreDigest, opts ...grpc.CallOption) (*MsgStoreDigestResponse, error)
 }
@@ -42,16 +38,6 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
-}
-
-func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgUpdateParamsResponse)
-	err := c.cc.Invoke(ctx, Msg_UpdateParams_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *msgClient) StoreDigest(ctx context.Context, in *MsgStoreDigest, opts ...grpc.CallOption) (*MsgStoreDigestResponse, error) {
@@ -70,9 +56,6 @@ func (c *msgClient) StoreDigest(ctx context.Context, in *MsgStoreDigest, opts ..
 //
 // Msg defines the Msg service.
 type MsgServer interface {
-	// UpdateParams defines a (governance) operation for updating the module
-	// parameters. The authority defaults to the x/gov module account.
-	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	// [MOD-DI-MSG-1] Store Digest
 	StoreDigest(context.Context, *MsgStoreDigest) (*MsgStoreDigestResponse, error)
 	mustEmbedUnimplementedMsgServer()
@@ -85,9 +68,6 @@ type MsgServer interface {
 // pointer dereference when methods are called.
 type UnimplementedMsgServer struct{}
 
-func (UnimplementedMsgServer) UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
-}
 func (UnimplementedMsgServer) StoreDigest(context.Context, *MsgStoreDigest) (*MsgStoreDigestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StoreDigest not implemented")
 }
@@ -110,24 +90,6 @@ func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&Msg_ServiceDesc, srv)
-}
-
-func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateParams)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).UpdateParams(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_UpdateParams_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateParams(ctx, req.(*MsgUpdateParams))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_StoreDigest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -155,10 +117,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "verana.di.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "UpdateParams",
-			Handler:    _Msg_UpdateParams_Handler,
-		},
 		{
 			MethodName: "StoreDigest",
 			Handler:    _Msg_StoreDigest_Handler,

@@ -11,9 +11,6 @@ const (
 )
 
 var (
-	// ParamsKey is the prefix to retrieve all Params
-	ParamsKey = collections.NewPrefix("p_de")
-
 	// DelegateAuthorizationKey is the prefix for DelegateAuthorization storage,
 	// keyed by its own uint64 id.
 	DelegateAuthorizationKey = collections.NewPrefix("oa_de")

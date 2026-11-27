@@ -1,0 +1,48 @@
+syntax = "proto3";
+package verana.ds.v1;
+
+import "amino/amino.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/ds/types";
+
+// Params holds the Distribution group of GlobalVariables. Budgets are per
+// epoch, in minor units of the main fiat currency.
+message Params {
+  option (amino.name) = "verana/x/ds/Params";
+  option (gogoproto.equal) = true;
+
+  string validator_node_budget = 1 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string validator_target_uptime = 2 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string validator_min_uptime = 3 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string council_budget = 4 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string foundation_budget = 5 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  string foundation_account = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // yearly cap, as a fraction of the bonded amount
+  string vna_holder_max_yield_rate = 7 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  google.protobuf.Duration unbonding_period = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true
+  ];
+  bool bonding_enabled = 9;
+}

@@ -14,12 +14,14 @@ import (
 	_ "github.com/verana-labs/verana-node/x/cs/module" // import for side-effects
 	demodulekeeper "github.com/verana-labs/verana-node/x/de/keeper"
 	dimodulekeeper "github.com/verana-labs/verana-node/x/di/keeper"
+	dsmodulekeeper "github.com/verana-labs/verana-node/x/ds/keeper"
 	_ "github.com/verana-labs/verana-node/x/ec/module" // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/gf/module" // import for side-effects
 	poamodulekeeper "github.com/verana-labs/verana-node/x/poa/keeper"
 	_ "github.com/verana-labs/verana-node/x/poa/module" // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/pp/module"  // import for side-effects
 	_ "github.com/verana-labs/verana-node/x/td/module"  // import for side-effects
+	vsmodulekeeper "github.com/verana-labs/verana-node/x/vs/keeper"
 	xrmodulekeeper "github.com/verana-labs/verana-node/x/xr/keeper"
 
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -158,6 +160,8 @@ type App struct {
 	DeKeeper               demodulekeeper.Keeper
 	DiKeeper               dimodulekeeper.Keeper
 	XrKeeper               xrmodulekeeper.Keeper
+	VsKeeper               vsmodulekeeper.Keeper
+	DsKeeper               dsmodulekeeper.Keeper
 	PoaKeeper              poamodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -277,6 +281,8 @@ func New(
 		&app.DeKeeper,
 		&app.DiKeeper,
 		&app.XrKeeper,
+		&app.VsKeeper,
+		&app.DsKeeper,
 		&app.PoaKeeper,
 
 		// this line is used by starport scaffolding # stargate/app/keeperDefinition
@@ -290,6 +296,8 @@ func New(
 	app.DeKeeper.SetParticipantKeeper(ppkeeper.NewPpAsDeParticipantKeeper(app.ParticipantKeeper))
 	// Wire MOD-GF into MOD-DE for GF-CHECK-2 (AUTHZ-CHECK-1 step 4).
 	app.DeKeeper.SetGovernanceFrameworkKeeper(app.GfKeeper)
+	// Wire MOD-VS into MOD-DE (vs_account_fee_period, MOD-DE-MSG-5-5).
+	app.DeKeeper.SetVerifiableServiceKeeper(app.VsKeeper)
 
 	// add to default baseapp options
 	// enable optimistic execution

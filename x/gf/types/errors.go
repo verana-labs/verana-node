@@ -15,4 +15,5 @@ var (
 	ErrNoActivatableVersion   = errors.Register(ModuleName, 1108, "no governance framework version available to activate")
 	ErrMissingDefaultLang     = errors.Register(ModuleName, 1109, "no document found for the default language of this version")
 	ErrNetworkPathUnavailable = errors.Register(ModuleName, 1110, "network governance framework path is not available")
+	ErrInvalidParams          = errors.Register(ModuleName, 1111, "invalid parameters")
 )
