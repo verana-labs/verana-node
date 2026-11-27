@@ -168,7 +168,7 @@ func RunPermissionTriggerResolverJourney(ctx context.Context, client cosmosclien
 
 	msg := &permtypes.MsgTriggerResolver{
 		Corporation: policyAddr,
-		Delegate:    delegateAddr,
+		Signer:      delegateAddr,
 		Id:          childID,
 	}
 	txResp, err := client.BroadcastTx(ctx, delegateAccount, msg)

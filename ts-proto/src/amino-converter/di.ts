@@ -5,14 +5,14 @@ import { clean } from "./util/helpers";
 export const MsgStoreDigestAminoConverter: AminoConverter = {
   aminoType: "verana/x/di/MsgStoreDigest",
   toAmino: (m: MsgStoreDigest) => clean({
-    authority: m.authority || undefined,
-    delegate: m.delegate || undefined,
+    corporation: m.corporation || undefined,
+    signer: m.signer || undefined,
     digest: m.digest || undefined,
   }),
   fromAmino: (a: any): MsgStoreDigest =>
     MsgStoreDigest.fromPartial({
-      authority: a.authority ?? "",
-      delegate: a.delegate ?? "",
+      corporation: a.corporation ?? "",
+      signer: a.signer ?? "",
       digest: a.digest ?? "",
     }),
 };

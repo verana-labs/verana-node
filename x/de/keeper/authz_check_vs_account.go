@@ -60,9 +60,9 @@ func (k Keeper) CheckVSAccountAuthorization(
 }
 
 // ConsumeVSAccountSpend implements [AUTHZ-CHECK-3] step 6: when entry vsID has a
-// budget, its remaining spend MUST cover amount, which is then deducted per
-// denom. The entry itself is not written. Callers run
-// CheckVSAccountAuthorization first, so the cycle is current.
+// budget, its remaining spend MUST cover the consumed amount, which is then
+// deducted per denom the spend limit lists. The entry itself is not written.
+// Callers run CheckVSAccountAuthorization first, so the cycle is current.
 func (k Keeper) ConsumeVSAccountSpend(ctx context.Context, vsID uint64, amount sdk.Coins) error {
 	if amount.IsZero() {
 		return nil
@@ -70,6 +70,10 @@ func (k Keeper) ConsumeVSAccountSpend(ctx context.Context, vsID uint64, amount s
 	budget, found, err := k.getVsAccountBudget(ctx, vsID)
 	if err != nil || !found {
 		return err
+	}
+	amount = limitedDenoms(amount, budget.SpendLimit)
+	if amount.IsZero() {
+		return nil
 	}
 	if !budget.RemainingSpend.IsAllGTE(amount) {
 		return fmt.Errorf("%w: spend %s exceeds remaining %s",

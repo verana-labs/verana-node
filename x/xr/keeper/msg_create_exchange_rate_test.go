@@ -20,7 +20,7 @@ func TestCreateExchangeRate_HappyPath(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -55,7 +55,7 @@ func TestCreateExchangeRate_NoUpperValidityBound(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -73,7 +73,7 @@ func TestCreateExchangeRate_InvalidAuthority(t *testing.T) {
 
 	nonGovAddr := sdk.AccAddress([]byte("not_gov_authority___")).String()
 	_, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        nonGovAddr,
+		Signer:           nonGovAddr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -94,7 +94,7 @@ func TestCreateExchangeRate_InvalidAssetType(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_PRICING_ASSET_TYPE_UNSPECIFIED,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -115,7 +115,7 @@ func TestCreateExchangeRate_TrustUnitMustBeTU(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_TU,
 		BaseAsset:        "WRONG",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -137,7 +137,7 @@ func TestCreateExchangeRate_FiatMustBeISO4217(t *testing.T) {
 
 	// lowercase fiat code
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -151,7 +151,7 @@ func TestCreateExchangeRate_FiatMustBeISO4217(t *testing.T) {
 
 	// too long fiat code
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -172,7 +172,7 @@ func TestCreateExchangeRate_IdenticalPair(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_FIAT,
 		BaseAsset:        "USD",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -193,7 +193,7 @@ func TestCreateExchangeRate_DuplicatePair(t *testing.T) {
 	require.NoError(t, err)
 
 	msg := &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -234,7 +234,7 @@ func TestCreateExchangeRate_InvalidRate(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-				Authority:        authorityStr,
+				Signer:           authorityStr,
 				BaseAssetType:    cstypes.PricingAssetType_COIN,
 				BaseAsset:        "uverana",
 				QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -257,7 +257,7 @@ func TestCreateExchangeRate_InvalidRateScale(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -278,7 +278,7 @@ func TestCreateExchangeRate_InvalidDuration(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,

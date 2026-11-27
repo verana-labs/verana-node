@@ -17,8 +17,8 @@ func TestMsgUpdateParams_AuthorityGating(t *testing.T) {
 		k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, &mockGroup{}, &mockGF{})
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.UpdateParams(ctx, &types.MsgUpdateParams{
-			Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-			Params:    types.DefaultParams(),
+			Signer: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+			Params: types.DefaultParams(),
 		})
 		require.ErrorIs(t, err, types.ErrNoParams)
 	})
@@ -27,8 +27,8 @@ func TestMsgUpdateParams_AuthorityGating(t *testing.T) {
 		k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, &mockGroup{}, &mockGF{})
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.UpdateParams(ctx, &types.MsgUpdateParams{
-			Authority: "cosmos1somebodyelse",
-			Params:    types.DefaultParams(),
+			Signer: "cosmos1somebodyelse",
+			Params: types.DefaultParams(),
 		})
 		require.Error(t, err)
 	})

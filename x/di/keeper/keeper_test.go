@@ -38,6 +38,11 @@ func (m *mockCorpKeeper) ResolveCorporationByPolicyAddress(_ context.Context, ad
 	return types.CorporationView{Id: 1, PolicyAddress: addr}, nil
 }
 
+func (m *mockCorpKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
+
 type fixture struct {
 	ctx          context.Context
 	keeper       keeper.Keeper

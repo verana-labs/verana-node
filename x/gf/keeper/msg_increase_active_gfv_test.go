@@ -38,7 +38,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		// Now bump active_version 0 → 1.
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 			EcosystemId: 0,
 		})
 		require.NoError(t, err)
@@ -64,7 +64,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		// No MSG-1 first — nothing to activate.
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 		})
 		require.ErrorIs(t, err, types.ErrNoActivatableVersion)
 	})
@@ -81,7 +81,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		// MSG-1 adds an "fr" doc — default language is "en".
 		_, err := ms.AddGovernanceFrameworkDocument(ctx, &types.MsgAddGovernanceFrameworkDocument{
 			Corporation:  testCorp,
-			Delegate:     testDelegate,
+			Signer:       testDelegate,
 			EcosystemId:  0,
 			DocLanguage:  "fr",
 			DocUrl:       testURL,
@@ -92,7 +92,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 		})
 		require.ErrorIs(t, err, types.ErrMissingDefaultLang)
 	})
@@ -102,7 +102,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: "",
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 		})
 		require.Error(t, err)
 	})
@@ -119,7 +119,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 		})
 		require.Error(t, err)
 	})
@@ -131,7 +131,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 		})
 		require.ErrorIs(t, err, cotypes.ErrCorporationNotRegistered)
 		require.Zero(t, del.calls)
@@ -150,7 +150,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 		ms := keeper.NewMsgServerImpl(k)
 		_, err := ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 			EcosystemId: 5,
 		})
 		require.ErrorIs(t, err, types.ErrSubjectNotControlled)
@@ -173,7 +173,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "forced setter failure")
@@ -200,7 +200,7 @@ func TestIncreaseActiveGovernanceFrameworkVersion(t *testing.T) {
 
 		_, err = ms.IncreaseActiveGovernanceFrameworkVersion(ctx, &types.MsgIncreaseActiveGovernanceFrameworkVersion{
 			Corporation: testCorp,
-			Delegate:    testDelegate,
+			Signer:      testDelegate,
 			EcosystemId: 7,
 		})
 		require.Error(t, err)

@@ -12,10 +12,10 @@ import (
 
 // [MOD-XR-MSG-6] Update Module Parameters
 func (k msgServer) UpdateParams(ctx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
-	authority, err := k.addressCodec.StringToBytes(req.Authority)
+	authority, err := k.addressCodec.StringToBytes(req.Signer)
 	if err != nil || !bytes.Equal(k.GetAuthority(), authority) {
 		expected, _ := k.addressCodec.BytesToString(k.GetAuthority())
-		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid authority; expected %s, got %s", expected, req.Authority)
+		return nil, errorsmod.Wrapf(types.ErrInvalidSigner, "invalid signer; expected %s, got %s", expected, req.Signer)
 	}
 	if err := req.Params.Validate(); err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func (k msgServer) UpdateParams(ctx context.Context, req *types.MsgUpdateParams)
 
 	sdk.UnwrapSDKContext(ctx).EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateParams,
-		append([]sdk.Attribute{sdk.NewAttribute(types.AttributeKeyAuthority, req.Authority)}, req.Params.EventAttributes()...)...,
+		append([]sdk.Attribute{sdk.NewAttribute(types.AttributeKeySigner, req.Signer)}, req.Params.EventAttributes()...)...,
 	))
 
 	return &types.MsgUpdateParamsResponse{}, nil

@@ -18,14 +18,14 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer { return &msgServer{Keeper:
 
 var _ types.MsgServer = msgServer{}
 
-// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for the
-// delegate, and returns the resolved corporation.
-func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msgType detypes.MsgType) (types.CorporationView, error) {
-	co, err := ms.coKeeper.ResolveCorporationByPolicyAddress(ctx, corporation)
-	if err != nil {
-		return types.CorporationView{}, err
+// authorize runs AUTHZ-CHECK-5 (with GF-CHECK-1), then AUTHZ-CHECK-1 for a
+// delegate signer, and returns the resolved corporation.
+func (ms msgServer) authorize(ctx sdk.Context, corporation, signer string, msgType detypes.MsgType) (types.CorporationView, error) {
+	co, group, err := ms.coKeeper.ResolveSigner(ctx, corporation, signer)
+	if err != nil || group {
+		return co, err
 	}
-	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, delegate, msgType, ctx.BlockTime()); err != nil {
+	if err := ms.delegationKeeper.CheckDelegateAuthorization(ctx, co.Id, signer, msgType, ctx.BlockTime()); err != nil {
 		return types.CorporationView{}, fmt.Errorf("authorization check failed: %w", err)
 	}
 	return co, nil
@@ -36,7 +36,7 @@ func (ms msgServer) authorize(ctx sdk.Context, corporation, delegate string, msg
 // Order of operations (atomic — any error rolls back the whole tx):
 //  1. ValidateBasic.
 //  2. AUTHZ-CHECK: delegationKeeper.CheckDelegateAuthorization for the
-//     (corporation, delegate, msgTypeURL) tuple.
+//     (corporation, signer, msgTypeURL) tuple, skipped on the group-proposal path.
 //  3. AUTHZ-CHECK-5: resolve msg.Corporation policy_address → co.id; reject
 //     if no Corporation is registered for the signing account.
 //  4. DID consistency precondition (MOD-ES-MSG-1-2-1): for every existing
@@ -53,7 +53,7 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	co, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM)
+	co, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_CREATE_ECOSYSTEM)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (ms msgServer) CreateEcosystem(goCtx context.Context, msg *types.MsgCreateE
 		types.EventTypeCreateEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
-		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
+		sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		sdk.NewAttribute(types.AttributeKeyDID, msg.Did),
 		sdk.NewAttribute(types.AttributeKeyLanguage, msg.Language),
 	))
@@ -123,7 +123,7 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	co, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM)
+	co, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_UPDATE_ECOSYSTEM)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +169,7 @@ func (ms msgServer) UpdateEcosystem(goCtx context.Context, msg *types.MsgUpdateE
 		types.EventTypeUpdateEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
-		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
+		sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		sdk.NewAttribute(types.AttributeKeyDID, ec.Did),
 	))
 
@@ -184,7 +184,7 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	now := ctx.BlockTime()
 
-	co, err := ms.authorize(ctx, msg.Corporation, msg.Delegate, detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM)
+	co, err := ms.authorize(ctx, msg.Corporation, msg.Signer, detypes.MsgType_MSG_TYPE_ARCHIVE_ECOSYSTEM)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +218,7 @@ func (ms msgServer) ArchiveEcosystem(goCtx context.Context, msg *types.MsgArchiv
 		types.EventTypeArchiveEcosystem,
 		sdk.NewAttribute(types.AttributeKeyEcosystemID, fmt.Sprintf("%d", ec.Id)),
 		sdk.NewAttribute(types.AttributeKeyCorporationID, fmt.Sprintf("%d", co.Id)),
-		sdk.NewAttribute(types.AttributeKeyDelegate, msg.Delegate),
+		sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		sdk.NewAttribute(types.AttributeKeyDID, ec.Did),
 		sdk.NewAttribute(types.AttributeKeyArchiveStatus, status),
 	))

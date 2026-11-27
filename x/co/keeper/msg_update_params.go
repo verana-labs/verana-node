@@ -13,9 +13,9 @@ func (ms msgServer) UpdateParams(_ context.Context, msg *types.MsgUpdateParams) 
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, err
 	}
-	if ms.GetAuthority() != msg.Authority {
+	if ms.GetAuthority() != msg.Signer {
 		return nil, errors.Wrapf(types.ErrInvalidSigner,
-			"invalid authority; expected %s, got %s", ms.GetAuthority(), msg.Authority)
+			"invalid signer; expected %s, got %s", ms.GetAuthority(), msg.Signer)
 	}
 	return nil, types.ErrNoParams
 }

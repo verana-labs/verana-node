@@ -51,6 +51,11 @@ func (m *mockCorporation) ResolveCorporationByPolicyAddress(_ context.Context, a
 	return v, nil
 }
 
+func (m *mockCorporation) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := m.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
+
 func (m *mockCorporation) ResolveDIDOwner(_ context.Context, did string) (uint64, bool, error) {
 	if id, ok := m.didOwners[did]; ok {
 		return id, true, nil

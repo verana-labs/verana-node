@@ -19,7 +19,7 @@ func TestMsgRenewParticipantOP_ValidateBasic(t *testing.T) {
 	valid := func() *types.MsgRenewParticipantOP {
 		return &types.MsgRenewParticipantOP{
 			Corporation: validAddr,
-			Delegate:    validAddr,
+			Signer:      validAddr,
 			Id:          1,
 		}
 	}
@@ -32,7 +32,7 @@ func TestMsgRenewParticipantOP_ValidateBasic(t *testing.T) {
 		{"valid baseline", func(m *types.MsgRenewParticipantOP) {}, ""},
 		{"empty corporation", func(m *types.MsgRenewParticipantOP) { m.Corporation = "" }, "invalid corporation address"},
 		{"invalid corporation bech32", func(m *types.MsgRenewParticipantOP) { m.Corporation = "not-bech32" }, "invalid corporation address"},
-		{"empty delegate", func(m *types.MsgRenewParticipantOP) { m.Delegate = "" }, "invalid delegate address"},
+		{"empty delegate", func(m *types.MsgRenewParticipantOP) { m.Signer = "" }, "invalid signer address"},
 		{"id = 0", func(m *types.MsgRenewParticipantOP) { m.Id = 0 }, "participant ID cannot be 0"},
 	}
 

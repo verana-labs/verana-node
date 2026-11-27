@@ -13,8 +13,8 @@ export const protobufPackage = "verana.gf.v1";
 
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov). */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /**
    * params defines the module parameters to update.
    * NOTE: All parameters must be supplied.
@@ -30,10 +30,16 @@ export interface MsgUpdateParamsResponse {
  * version owned by an Ecosystem or a Corporation.
  */
 export interface MsgAddGovernanceFrameworkDocument {
-  /** corporation is the signing corporation (group_policy_address). */
+  /**
+   * corporation is the policy_address of the corporation; absent on the
+   * network path.
+   */
   corporation: string;
-  /** delegate is the account authorized by corporation to run this Msg. */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, corporation itself on the
+   * group-proposal path, or the council account on the network path.
+   */
+  signer: string;
   /**
    * ecosystem_id is optional. If set, the GF target is an Ecosystem owned by
    * `corporation`. If zero, the GF target is the signing Corporation's own CGF.
@@ -47,8 +53,8 @@ export interface MsgAddGovernanceFrameworkDocument {
   docDigestSri: string;
   /** version is the target governance framework version. */
   version: number;
-  /** authority is the council account, set on the network path only. */
-  authority: string;
+  /** network targets the network governance framework. */
+  network: boolean;
 }
 
 export interface MsgAddGovernanceFrameworkDocumentResponse {
@@ -59,30 +65,36 @@ export interface MsgAddGovernanceFrameworkDocumentResponse {
  * Ecosystem or Corporation owned by the signing corporation.
  */
 export interface MsgIncreaseActiveGovernanceFrameworkVersion {
-  /** corporation is the signing corporation (group_policy_address). */
+  /**
+   * corporation is the policy_address of the corporation; absent on the
+   * network path.
+   */
   corporation: string;
-  /** delegate is the account authorized by corporation to run this Msg. */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, corporation itself on the
+   * group-proposal path, or the council account on the network path.
+   */
+  signer: string;
   /**
    * ecosystem_id is optional. If set, target is the Ecosystem; otherwise the
    * signing Corporation's own CGF.
    */
   ecosystemId: number;
-  /** authority is the council account, set on the network path only. */
-  authority: string;
+  /** network targets the network governance framework. */
+  network: boolean;
 }
 
 export interface MsgIncreaseActiveGovernanceFrameworkVersionResponse {
 }
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
+  return { signer: "", params: undefined };
 }
 
 export const MsgUpdateParams = {
   encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -102,7 +114,7 @@ export const MsgUpdateParams = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -122,15 +134,15 @@ export const MsgUpdateParams = {
 
   fromJSON(object: any): MsgUpdateParams {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
     };
   },
 
   toJSON(message: MsgUpdateParams): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
@@ -143,7 +155,7 @@ export const MsgUpdateParams = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
@@ -197,13 +209,13 @@ export const MsgUpdateParamsResponse = {
 function createBaseMsgAddGovernanceFrameworkDocument(): MsgAddGovernanceFrameworkDocument {
   return {
     corporation: "",
-    delegate: "",
+    signer: "",
     ecosystemId: 0,
     docLanguage: "",
     docUrl: "",
     docDigestSri: "",
     version: 0,
-    authority: "",
+    network: false,
   };
 }
 
@@ -212,8 +224,8 @@ export const MsgAddGovernanceFrameworkDocument = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.ecosystemId !== 0) {
       writer.uint32(24).uint64(message.ecosystemId);
@@ -230,8 +242,8 @@ export const MsgAddGovernanceFrameworkDocument = {
     if (message.version !== 0) {
       writer.uint32(56).uint32(message.version);
     }
-    if (message.authority !== "") {
-      writer.uint32(66).string(message.authority);
+    if (message.network !== false) {
+      writer.uint32(64).bool(message.network);
     }
     return writer;
   },
@@ -255,7 +267,7 @@ export const MsgAddGovernanceFrameworkDocument = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -293,11 +305,11 @@ export const MsgAddGovernanceFrameworkDocument = {
           message.version = reader.uint32();
           continue;
         case 8:
-          if (tag !== 66) {
+          if (tag !== 64) {
             break;
           }
 
-          message.authority = reader.string();
+          message.network = reader.bool();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -311,13 +323,13 @@ export const MsgAddGovernanceFrameworkDocument = {
   fromJSON(object: any): MsgAddGovernanceFrameworkDocument {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       ecosystemId: isSet(object.ecosystemId) ? globalThis.Number(object.ecosystemId) : 0,
       docLanguage: isSet(object.docLanguage) ? globalThis.String(object.docLanguage) : "",
       docUrl: isSet(object.docUrl) ? globalThis.String(object.docUrl) : "",
       docDigestSri: isSet(object.docDigestSri) ? globalThis.String(object.docDigestSri) : "",
       version: isSet(object.version) ? globalThis.Number(object.version) : 0,
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      network: isSet(object.network) ? globalThis.Boolean(object.network) : false,
     };
   },
 
@@ -326,8 +338,8 @@ export const MsgAddGovernanceFrameworkDocument = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.ecosystemId !== 0) {
       obj.ecosystemId = Math.round(message.ecosystemId);
@@ -344,8 +356,8 @@ export const MsgAddGovernanceFrameworkDocument = {
     if (message.version !== 0) {
       obj.version = Math.round(message.version);
     }
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.network !== false) {
+      obj.network = message.network;
     }
     return obj;
   },
@@ -360,13 +372,13 @@ export const MsgAddGovernanceFrameworkDocument = {
   ): MsgAddGovernanceFrameworkDocument {
     const message = createBaseMsgAddGovernanceFrameworkDocument();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.ecosystemId = object.ecosystemId ?? 0;
     message.docLanguage = object.docLanguage ?? "";
     message.docUrl = object.docUrl ?? "";
     message.docDigestSri = object.docDigestSri ?? "";
     message.version = object.version ?? 0;
-    message.authority = object.authority ?? "";
+    message.network = object.network ?? false;
     return message;
   },
 };
@@ -419,7 +431,7 @@ export const MsgAddGovernanceFrameworkDocumentResponse = {
 };
 
 function createBaseMsgIncreaseActiveGovernanceFrameworkVersion(): MsgIncreaseActiveGovernanceFrameworkVersion {
-  return { corporation: "", delegate: "", ecosystemId: 0, authority: "" };
+  return { corporation: "", signer: "", ecosystemId: 0, network: false };
 }
 
 export const MsgIncreaseActiveGovernanceFrameworkVersion = {
@@ -427,14 +439,14 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.ecosystemId !== 0) {
       writer.uint32(24).uint64(message.ecosystemId);
     }
-    if (message.authority !== "") {
-      writer.uint32(34).string(message.authority);
+    if (message.network !== false) {
+      writer.uint32(32).bool(message.network);
     }
     return writer;
   },
@@ -458,7 +470,7 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -468,11 +480,11 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
           message.ecosystemId = longToNumber(reader.uint64() as Long);
           continue;
         case 4:
-          if (tag !== 34) {
+          if (tag !== 32) {
             break;
           }
 
-          message.authority = reader.string();
+          message.network = reader.bool();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -486,9 +498,9 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
   fromJSON(object: any): MsgIncreaseActiveGovernanceFrameworkVersion {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       ecosystemId: isSet(object.ecosystemId) ? globalThis.Number(object.ecosystemId) : 0,
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      network: isSet(object.network) ? globalThis.Boolean(object.network) : false,
     };
   },
 
@@ -497,14 +509,14 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.ecosystemId !== 0) {
       obj.ecosystemId = Math.round(message.ecosystemId);
     }
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.network !== false) {
+      obj.network = message.network;
     }
     return obj;
   },
@@ -519,9 +531,9 @@ export const MsgIncreaseActiveGovernanceFrameworkVersion = {
   ): MsgIncreaseActiveGovernanceFrameworkVersion {
     const message = createBaseMsgIncreaseActiveGovernanceFrameworkVersion();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.ecosystemId = object.ecosystemId ?? 0;
-    message.authority = object.authority ?? "";
+    message.network = object.network ?? false;
     return message;
   },
 };

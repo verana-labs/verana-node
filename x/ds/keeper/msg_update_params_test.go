@@ -28,25 +28,25 @@ func TestMsgUpdateParams(t *testing.T) {
 		expErr error
 	}{
 		{
-			name:   "invalid authority",
-			input:  &types.MsgUpdateParams{Authority: "invalid", Params: types.DefaultParams()},
+			name:   "invalid signer",
+			input:  &types.MsgUpdateParams{Signer: "invalid", Params: types.DefaultParams()},
 			expErr: types.ErrInvalidSigner,
 		},
 		{
 			name:   "empty params",
-			input:  &types.MsgUpdateParams{Authority: authority, Params: types.Params{}},
+			input:  &types.MsgUpdateParams{Signer: authority, Params: types.Params{}},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name: "resulting min uptime above target",
-			input: &types.MsgUpdateParams{Authority: authority, Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: authority, Params: withEdit(func(p *types.Params) {
 				p.ValidatorMinUptime = math.LegacyMustNewDecFromStr("0.995")
 			})},
 			expErr: types.ErrInvalidParams,
 		},
 		{
 			name: "all good",
-			input: &types.MsgUpdateParams{Authority: authority, Params: withEdit(func(p *types.Params) {
+			input: &types.MsgUpdateParams{Signer: authority, Params: withEdit(func(p *types.Params) {
 				p.ValidatorNodeBudget = math.LegacyMustNewDecFromStr("5000")
 				p.CouncilBudget = math.LegacyMustNewDecFromStr("100000")
 				p.FoundationBudget = math.LegacyMustNewDecFromStr("200000")
@@ -81,7 +81,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 
 	p := types.DefaultParams()
 	p.BondingEnabled = true
-	_, err := ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Authority: authority, Params: p})
+	_, err := ms.UpdateParams(f.ctx, &types.MsgUpdateParams{Signer: authority, Params: p})
 	require.NoError(t, err)
 
 	attrs := map[string]string{}
@@ -92,7 +92,7 @@ func TestMsgUpdateParams_EmitsParamValues(t *testing.T) {
 			}
 		}
 	}
-	require.Equal(t, authority, attrs[types.AttributeKeyAuthority])
+	require.Equal(t, authority, attrs[types.AttributeKeySigner])
 	require.Equal(t, "true", attrs["bonding_enabled"])
 	require.Equal(t, p.FoundationAccount, attrs["foundation_account"])
 	require.Equal(t, "0.990000000000000000", attrs["validator_target_uptime"])

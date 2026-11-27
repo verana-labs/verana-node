@@ -42,6 +42,7 @@ type CorporationView struct {
 // break the MOD-DE ↔ MOD-CO depinject cycle.
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+	ResolveSigner(ctx context.Context, corporation, signer string) (CorporationView, bool, error)
 	ResolveCorporationByID(ctx context.Context, id uint64) (CorporationView, error)
 }
 

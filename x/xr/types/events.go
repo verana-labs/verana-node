@@ -13,7 +13,7 @@ const (
 	AttributeKeyBaseAsset        = "base_asset"
 	AttributeKeyQuoteAssetType   = "quote_asset_type"
 	AttributeKeyQuoteAsset       = "quote_asset"
-	AttributeKeyAuthority        = "authority"
+	AttributeKeySigner           = "signer"
 	AttributeKeyFeeder           = "feeder"
 	AttributeKeyRate             = "rate"
 	AttributeKeyState            = "state"

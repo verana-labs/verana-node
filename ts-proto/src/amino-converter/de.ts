@@ -15,7 +15,7 @@ export const MsgGrantDelegateAuthorizationAminoConverter: AminoConverter = {
   aminoType: "verana/x/de/MsgGrantDelegateAuthz",
   toAmino: (m: MsgGrantDelegateAuthorization) => clean({
     corporation: m.corporation || undefined,
-    delegate: m.delegate || undefined,
+    signer: m.signer || undefined,
     grantee: m.grantee || undefined,
     msg_types: m.msgTypes?.length ? m.msgTypes : undefined,
     expiration: dateToIsoAmino(m.expiration),
@@ -28,7 +28,7 @@ export const MsgGrantDelegateAuthorizationAminoConverter: AminoConverter = {
   fromAmino: (a: any): MsgGrantDelegateAuthorization =>
     MsgGrantDelegateAuthorization.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       grantee: a.grantee ?? "",
       msgTypes: a.msg_types ?? [],
       expiration: isoToDate(a.expiration),
@@ -42,15 +42,15 @@ export const MsgGrantDelegateAuthorizationAminoConverter: AminoConverter = {
 
 export const MsgRevokeDelegateAuthorizationAminoConverter: AminoConverter = {
   aminoType: "verana/x/de/MsgRevokeDelegateAuthz",
-  toAmino: ({ corporation, delegate, grantee }: MsgRevokeDelegateAuthorization) => clean({
+  toAmino: ({ corporation, signer, grantee }: MsgRevokeDelegateAuthorization) => clean({
     corporation: corporation || undefined,
-    delegate: delegate || undefined,
+    signer: signer || undefined,
     grantee: grantee || undefined,
   }),
   fromAmino: (value: any) =>
     MsgRevokeDelegateAuthorization.fromPartial({
       corporation: value.corporation,
-      delegate: value.delegate,
+      signer: value.signer,
       grantee: value.grantee,
     }),
 };

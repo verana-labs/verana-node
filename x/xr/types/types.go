@@ -16,7 +16,7 @@ var iso4217Regex = regexp.MustCompile(`^[A-Z]{3}$`)
 // ValidateBasic performs stateless validation on MsgCreateExchangeRate.
 func (msg *MsgCreateExchangeRate) ValidateBasic() error {
 	// Validate authority address
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
 		return fmt.Errorf("invalid authority address: %w", err)
 	}
 
@@ -78,7 +78,7 @@ func (msg *MsgCreateExchangeRate) ValidateBasic() error {
 // ValidateBasic performs stateless validation on MsgUpdateExchangeRate.
 func (msg *MsgUpdateExchangeRate) ValidateBasic() error {
 	// [MOD-XR-MSG-2-1] params are feeder (signer), id, rate.
-	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
 		return fmt.Errorf("invalid feeder address: %w", err)
 	}
 
@@ -102,7 +102,7 @@ func (msg *MsgUpdateExchangeRate) ValidateBasic() error {
 // ValidateBasic performs stateless validation on MsgSetExchangeRateState.
 func (msg *MsgSetExchangeRateState) ValidateBasic() error {
 	// Validate authority address
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
 		return fmt.Errorf("invalid authority address: %w", err)
 	}
 
@@ -116,7 +116,7 @@ func (msg *MsgSetExchangeRateState) ValidateBasic() error {
 
 // ValidateBasic performs stateless validation on MsgGrantExchangeRateAuthorization. [MOD-XR-MSG-4-2-1]
 func (msg *MsgGrantExchangeRateAuthorization) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
 		return fmt.Errorf("invalid authority address: %w", err)
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {
@@ -142,7 +142,7 @@ func (msg *MsgGrantExchangeRateAuthorization) ValidateBasic() error {
 
 // ValidateBasic performs stateless validation on MsgRevokeExchangeRateAuthorization. [MOD-XR-MSG-5]
 func (msg *MsgRevokeExchangeRateAuthorization) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Authority); err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.Signer); err != nil {
 		return fmt.Errorf("invalid authority address: %w", err)
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Feeder); err != nil {

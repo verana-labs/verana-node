@@ -59,7 +59,7 @@ async function main() {
       typeUrl: typeUrls.MsgReclaimTrustDepositYield,
       value: MsgReclaimTrustDepositYield.fromPartial({
         corporation: setup.authorityAddress,
-        delegate: setup.delegateAddress,
+        signer: setup.delegateAddress,
       }),
     };
 

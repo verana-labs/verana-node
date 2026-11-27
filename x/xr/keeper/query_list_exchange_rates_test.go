@@ -19,7 +19,7 @@ func seedMultipleExchangeRates(t *testing.T, f *fixture) {
 
 	// Rate 1: COIN/uverana -> FIAT/USD (left disabled per [MOD-XR-MSG-1-3])
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -32,7 +32,7 @@ func seedMultipleExchangeRates(t *testing.T, f *fixture) {
 
 	// Rate 2: COIN/uverana -> FIAT/EUR (left disabled per [MOD-XR-MSG-1-3])
 	_, err = ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -45,7 +45,7 @@ func seedMultipleExchangeRates(t *testing.T, f *fixture) {
 
 	// Rate 3: TU/TU -> FIAT/USD (explicitly enabled for the active-filter test)
 	resp3, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_TU,
 		BaseAsset:        "tu",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,
@@ -56,9 +56,9 @@ func seedMultipleExchangeRates(t *testing.T, f *fixture) {
 	})
 	require.NoError(t, err)
 	_, err = ms.SetExchangeRateState(f.ctx, &types.MsgSetExchangeRateState{
-		Authority: authorityStr,
-		Id:        resp3.Id,
-		State:     true,
+		Signer: authorityStr,
+		Id:     resp3.Id,
+		State:  true,
 	})
 	require.NoError(t, err)
 }
