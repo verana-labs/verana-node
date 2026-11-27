@@ -24,20 +24,20 @@ func TestGovernanceFrameworkSigners(t *testing.T) {
 		want   sdk.AccAddress
 	}{
 		"add document, delegate": {
-			&gftypes.MsgAddGovernanceFrameworkDocument{Delegate: delegate.String()},
-			&gfv1.MsgAddGovernanceFrameworkDocument{Delegate: delegate.String()}, delegate,
+			&gftypes.MsgAddGovernanceFrameworkDocument{Signer: delegate.String()},
+			&gfv1.MsgAddGovernanceFrameworkDocument{Signer: delegate.String()}, delegate,
 		},
 		"add document, council": {
-			&gftypes.MsgAddGovernanceFrameworkDocument{Authority: council.String()},
-			&gfv1.MsgAddGovernanceFrameworkDocument{Authority: council.String()}, council,
+			&gftypes.MsgAddGovernanceFrameworkDocument{Signer: council.String()},
+			&gfv1.MsgAddGovernanceFrameworkDocument{Signer: council.String()}, council,
 		},
 		"increase version, delegate": {
-			&gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{Delegate: delegate.String()},
-			&gfv1.MsgIncreaseActiveGovernanceFrameworkVersion{Delegate: delegate.String()}, delegate,
+			&gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: delegate.String()},
+			&gfv1.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: delegate.String()}, delegate,
 		},
 		"increase version, council": {
-			&gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: council.String()},
-			&gfv1.MsgIncreaseActiveGovernanceFrameworkVersion{Authority: council.String()}, council,
+			&gftypes.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: council.String()},
+			&gfv1.MsgIncreaseActiveGovernanceFrameworkVersion{Signer: council.String()}, council,
 		},
 	} {
 		t.Run(name, func(t *testing.T) {

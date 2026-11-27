@@ -86,7 +86,7 @@ async function main() {
       typeUrl: typeUrls.MsgRevokeParticipant,
       value: MsgRevokeParticipant.fromPartial({
         corporation: setup.authorityAddress,
-        delegate: setup.delegateAddress,
+        signer: setup.delegateAddress,
         id: rootPermId,
       }),
     };

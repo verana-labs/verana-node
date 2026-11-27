@@ -13,9 +13,9 @@ option go_package = "github.com/verana-labs/verana-node/x/poa/types";
 service Msg {
   option (cosmos.msg.v1.service) = true;
 
-  // AddValidator seats a council member as a validator with the fixed bond.
+  // AddValidator seats a council member as a validator, bonding the fixed bond from its balance.
   rpc AddValidator(MsgAddValidator) returns (MsgAddValidatorResponse);
-  // RemoveValidator unseats a validator and burns its bond.
+  // RemoveValidator unseats a validator; its bond returns after the unbonding time.
   rpc RemoveValidator(MsgRemoveValidator) returns (MsgRemoveValidatorResponse);
   // SelfRemoveValidator lets an operator unseat its own validator.
   rpc SelfRemoveValidator(MsgSelfRemoveValidator) returns (MsgSelfRemoveValidatorResponse);

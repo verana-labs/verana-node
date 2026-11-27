@@ -66,7 +66,7 @@ async function main() {
     typeUrl: typeUrls.MsgUpdateEcosystem,
     value: MsgUpdateEcosystem.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       id: activeEC.ecosystemId,
       did: newDid,
     }),

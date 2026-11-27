@@ -95,7 +95,7 @@ async function main() {
       typeUrl: typeUrls.MsgRenewParticipantOP,
       value: MsgRenewParticipantOP.fromPartial({
         corporation: setup.authorityAddress,
-        delegate: setup.delegateAddress,
+        signer: setup.delegateAddress,
         id: participantId,
       }),
     };

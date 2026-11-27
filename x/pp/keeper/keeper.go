@@ -21,7 +21,7 @@ type (
 		logger       log.Logger
 
 		// the address capable of executing a MsgUpdateParams message. Typically, this
-		// should be the x/gov module account.
+		// should be the council account.
 		authority string
 		// state
 		Participant                 collections.Map[uint64, types.Participant]

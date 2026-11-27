@@ -27,6 +27,15 @@ func (a CoAsTDCorporationKeeper) ResolveCorporationByPolicyAddress(ctx context.C
 	return types.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, nil
 }
 
+// ResolveSigner backs the group-proposal path.
+func (a CoAsTDCorporationKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	co, group, err := a.k.ResolveSigner(ctx, corporation, signer)
+	if err != nil {
+		return types.CorporationView{}, false, err
+	}
+	return types.CorporationView{Id: co.Id, PolicyAddress: co.PolicyAddress}, group, nil
+}
+
 func (a CoAsTDCorporationKeeper) GetCorporationByPolicyAddress(ctx context.Context, policyAddress string) (types.CorporationView, error) {
 	co, err := a.k.GetCorporationByPolicyAddress(ctx, policyAddress)
 	if err != nil {

@@ -63,7 +63,7 @@ async function main() {
     typeUrl: typeUrls.MsgIncreaseActiveGovernanceFrameworkVersion,
     value: MsgIncreaseActiveGovernanceFrameworkVersion.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       ecosystemId: activeEC.ecosystemId,
     }),
   };

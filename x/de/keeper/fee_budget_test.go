@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/verana-labs/verana-node/x/de/types"
+	vstypes "github.com/verana-labs/verana-node/x/vs/types"
 )
 
 // [MOD-DE-MSG-5-5] The aggregate allowance is re-granted on every recompute,
@@ -45,12 +46,24 @@ func TestRecomputeFeeAllowance_RealizesPeriodicAllowance(t *testing.T) {
 	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 10)))
 
 	pa := periodic(t, f, 1, vsOp)
-	require.Equal(t, types.DefaultVsOperatorFeePeriod, pa.Period)
+	require.Equal(t, vstypes.DefaultVsAccountFeePeriod, pa.Period)
 	require.Equal(t, uvna(10), pa.PeriodSpendLimit)
 	require.Equal(t, uvna(10), pa.PeriodCanSpend)
-	require.True(t, pa.PeriodReset.Equal(now.Add(types.DefaultVsOperatorFeePeriod)))
+	require.True(t, pa.PeriodReset.Equal(now.Add(vstypes.DefaultVsAccountFeePeriod)))
 	require.Nil(t, pa.Basic.SpendLimit)
 	require.Nil(t, pa.Basic.Expiration)
+}
+
+// The period is read from vs_account_fee_period when the allowance is adjusted.
+func TestRecomputeFeeAllowance_UsesVsAccountFeePeriod(t *testing.T) {
+	f, _, ctx := setupMsgServer(t)
+	vsOp := acc("vsop________________")
+	f.vs.period = 6 * time.Hour
+	require.NoError(t, f.keeper.GrantVSOperatorAuthorization(ctx, 1, vsOp, feegrantRecord(10, 10)))
+
+	pa := periodic(t, f, 1, vsOp)
+	require.Equal(t, 6*time.Hour, pa.Period)
+	require.True(t, pa.PeriodReset.Equal(ctx.BlockTime().Add(6*time.Hour)))
 }
 
 // A recompute mid-period refreshes the budget and starts a new period.
@@ -64,7 +77,7 @@ func TestRecomputeFeeAllowance_ResetsBudget(t *testing.T) {
 	later := ctx.WithBlockTime(ctx.BlockTime().Add(10 * time.Minute))
 	require.NoError(t, k.GrantVSOperatorAuthorization(later, 1, vsOp, feegrantRecord(11, 5)))
 
-	reset := later.BlockTime().Add(types.DefaultVsOperatorFeePeriod)
+	reset := later.BlockTime().Add(vstypes.DefaultVsAccountFeePeriod)
 	pa := periodic(t, f, 1, vsOp)
 	require.Equal(t, uvna(15), pa.PeriodSpendLimit)
 	require.Equal(t, uvna(15), pa.PeriodCanSpend)

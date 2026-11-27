@@ -526,9 +526,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "title": "delegate is the account authorized by the corporation to run this Msg"
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -547,9 +547,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "vs_account": {
+        "signer": {
           "type": "string",
-          "description": "vs_account is the VS account of the entry that signs this Msg."
+          "description": "signer is the VS account of the entry."
         },
         "id": {
           "type": "string",
@@ -596,8 +596,9 @@
           "type": "string",
           "description": "[MOD-PP-MSG-7-1] spec parameters.\nparticipant.role is hardcoded to ECOSYSTEM by the handler per [MOD-PP-MSG-7-3]."
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "schema_id": {
           "type": "string",
@@ -674,10 +675,11 @@
       "properties": {
         "corporation": {
           "type": "string",
-          "description": "[MOD-PP-MSG-2-1] spec parameters: corporation, delegate, id."
+          "description": "[MOD-PP-MSG-2-1] spec parameters: corporation, signer, id."
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -697,8 +699,9 @@
         "corporation": {
           "type": "string"
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -715,8 +718,9 @@
         "corporation": {
           "type": "string"
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -734,8 +738,9 @@
         "corporation": {
           "type": "string"
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "role": {
           "$ref": "#/definitions/verana.pp.v1.ParticipantRole"
@@ -811,8 +816,9 @@
         "corporation": {
           "type": "string"
         },
-        "delegate": {
-          "type": "string"
+        "signer": {
+          "type": "string",
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -835,9 +841,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "title": "delegate is the account authorized by the corporation to run this Msg"
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -887,9 +893,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "title": "delegate is the account authorized by the corporation to run this Msg"
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -915,9 +921,9 @@
           "type": "string",
           "title": "corporation is the group account on whose behalf this message is executed"
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "title": "delegate is the account authorized by the corporation to run this Msg"
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "role": {
           "$ref": "#/definitions/verana.pp.v1.ParticipantRole"
@@ -990,9 +996,9 @@
           "type": "string",
           "description": "corporation is the policy_address of the corporation on whose behalf this\nmessage runs."
         },
-        "delegate": {
+        "signer": {
           "type": "string",
-          "description": "delegate is the account authorized by the corporation to run this Msg."
+          "description": "signer is a delegate authorized by corporation, or corporation itself\non the group-proposal path."
         },
         "id": {
           "type": "string",
@@ -1008,9 +1014,9 @@
     "verana.pp.v1.MsgUpdateParams": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov unless overwritten)."
+          "description": "signer is the council account."
         },
         "params": {
           "$ref": "#/definitions/verana.pp.v1.Params",
@@ -1035,6 +1041,12 @@
     },
     "verana.pp.v1.Params": {
       "type": "object",
+      "properties": {
+        "accreditation_max_entries_per_participation": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
       "description": "Params defines the parameters for the module."
     },
     "verana.pp.v1.ParticipantRole": {

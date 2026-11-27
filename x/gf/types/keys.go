@@ -8,10 +8,6 @@ const (
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
-
-	// GovModuleName duplicates the x/gov module name to avoid a dependency.
-	// MUST be synced if upstream renames it.
-	GovModuleName = "gov"
 )
 
 var (

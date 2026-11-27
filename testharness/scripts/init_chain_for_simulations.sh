@@ -3,8 +3,7 @@
 # 
 # This script initializes a fresh Verana blockchain chain optimized for TD yield simulations.
 # It sets up:
-# - A 3-seat council (cooluser + 2 voting members), 30s ballot, no min execution delay
-# - Reduced blocks_per_year (17280 = 1 day = 1 year) for faster yield accumulation
+# - A council of 3 corporations (one per key: cooluser, council_member1, council_member2), 30s ballot, no min execution delay
 # - All necessary configuration for running simulations
 
 set -e
@@ -27,13 +26,9 @@ APP_TOML_PATH="$HOME_DIR/config/app.toml"
 CONFIG_TOML_PATH="$HOME_DIR/config/config.toml"
 VALIDATOR_NAME="cooluser"
 VALIDATOR_AMOUNT="1000000000000000000000uvna"
-GENTX_AMOUNT="1000000uvna"
 SEED_PHRASE_COOLUSER="pink glory help gown abstract eight nice crazy forward ketchup skill cheese"
 SEED_PHRASE_COUNCIL_MEMBER1="answer effort virtual mother muffin stadium buddy air enact luggage burger slim couch brass sight merge legend aspect clown boss august wish unknown wasp"
 SEED_PHRASE_COUNCIL_MEMBER2="kitchen enough rough enforce bamboo easily exchange bullet error phone please razor claim quarter bounce stereo execute path pool series invite lucky warfare next"
-
-# Simulation-specific parameters
-BLOCKS_PER_YEAR="${BLOCKS_PER_YEAR:-17280}"  # 1 day = 1 year (default, can be overridden via env var)
 
 # Default ports for primary validator
 P2P_PORT="26656"
@@ -43,7 +38,6 @@ GRPC_PORT="9090"
 GRPC_WEB_PORT="9091"
 
 log "Starting Primary Validator setup for TD Yield Simulations..."
-log "Configuration: blocks_per_year = $BLOCKS_PER_YEAR (1 day = 1 year)"
 
 # Initialize the chain
 log "Initializing the chain..."
@@ -83,27 +77,24 @@ echo "$SEED_PHRASE_COUNCIL_MEMBER2" | $BINARY keys add council_member2 --recover
 $BINARY add-genesis-account council_member1 1000000000000uvna --keyring-backend test
 $BINARY add-genesis-account council_member2 1000000000000uvna --keyring-backend test
 
-# Seat the council: 3 weight-1 members, 2/3 policy, short windows for simulations
-log "Seating the council in genesis..."
-$BINARY genesis add-council cooluser,council_member1,council_member2 \
+# Seat the council: one corporation per key, cooluser's runs this node; short windows for simulations
+log "Seating the council of corporations in genesis..."
+COUNCIL_FILE="$HOME_DIR/config/council.json"
+PUBKEY=$($BINARY comet show-validator)
+cat > "$COUNCIL_FILE" <<EOF
+{"corporations":[
+ {"did":"did:example:council-1","language":"en","members":["$VALIDATOR_NAME"],"funds":"10000000uvna","validator":{"moniker":"$MONIKER","pubkey":$PUBKEY}},
+ {"did":"did:example:council-2","language":"en","members":["council_member1"],"funds":"10000000uvna"},
+ {"did":"did:example:council-3","language":"en","members":["council_member2"],"funds":"10000000uvna"}]}
+EOF
+$BINARY genesis add-council "$COUNCIL_FILE" \
     --voting-period 30s \
     --min-execution-period 0s \
     --unbonding-time 60s \
     --keyring-backend test
 
-# Create gentx
-log "Creating genesis transaction..."
-$BINARY gentx $VALIDATOR_NAME $GENTX_AMOUNT \
-    --chain-id $CHAIN_ID \
-    --moniker $MONIKER \
-    --commission-rate "0.10" \
-    --commission-max-rate "0.20" \
-    --commission-max-change-rate "0.01" \
-    --min-self-delegation "1" \
-    --keyring-backend test
-
 if [ $? -ne 0 ]; then
-    log "Error: Failed to create genesis transaction."
+    log "Error: Failed to seat the council."
     exit 1
 fi
 
@@ -115,26 +106,6 @@ sedi 's/^minimum-gas-prices = .*/minimum-gas-prices = "0uvna"/' "$APP_TOML_PATH"
 sedi "s/:1317/:$API_PORT/" "$APP_TOML_PATH"
 sedi "s/:9090/:$GRPC_PORT/" "$APP_TOML_PATH"
 sedi "s/:9091/:$GRPC_WEB_PORT/" "$APP_TOML_PATH"
-
-# Update blocks_per_year for fast simulations
-log "Updating blocks_per_year to $BLOCKS_PER_YEAR for fast simulations..."
-if command -v jq &> /dev/null; then
-    # Use jq if available (more reliable)
-    jq ".app_state.mint.params.blocks_per_year = \"$BLOCKS_PER_YEAR\"" "$GENESIS_JSON_PATH" > "$GENESIS_JSON_PATH.tmp"
-    mv "$GENESIS_JSON_PATH.tmp" "$GENESIS_JSON_PATH"
-    log "✅ Updated blocks_per_year using jq"
-else
-    # Fallback to sed if jq not available
-    log "⚠️  jq not found, using sed (less reliable)"
-    sedi "s/\"blocks_per_year\": \"[0-9]*\"/\"blocks_per_year\": \"$BLOCKS_PER_YEAR\"/" "$GENESIS_JSON_PATH"
-    log "✅ Updated blocks_per_year using sed"
-fi
-
-# Verify blocks_per_year was updated
-if command -v jq &> /dev/null; then
-    ACTUAL_VALUE=$(jq -r '.app_state.mint.params.blocks_per_year' "$GENESIS_JSON_PATH")
-    log "Verified blocks_per_year: $ACTUAL_VALUE"
-fi
 
 # Configure ports in config.toml
 sedi "s/:26656/:$P2P_PORT/" "$CONFIG_TOML_PATH"
@@ -217,10 +188,6 @@ else
     log "Please add 1uvna to $YIELD_POOL_ADDR in $GENESIS_JSON_PATH manually."
 fi
 
-# Collect genesis transactions
-log "Collecting genesis transactions..."
-$BINARY collect-gentxs
-
 # Validate genesis file
 log "Validating genesis file..."
 $BINARY validate-genesis
@@ -240,17 +207,8 @@ echo "P2P Address: localhost:$P2P_PORT" >> $HOME/primary_validator_info.txt
 log "=========================================="
 log "Simulation Configuration Summary"
 log "=========================================="
-log "blocks_per_year: $BLOCKS_PER_YEAR (1 day = 1 year)"
-log "Council: cooluser, council_member1, council_member2 (2 of 3 to pass)"
+log "Council: corporations of cooluser, council_member1, council_member2 (2 of 3 to pass)"
 log "Ballot: 30s, min execution: 0s"
-log ""
-log "Expected per-block yield (for 5M uvna TD, 15% rate):"
-if command -v bc &> /dev/null; then
-    PER_BLOCK=$(echo "scale=2; 5000000 * 0.15 / $BLOCKS_PER_YEAR" | bc)
-    log "  ~$PER_BLOCK uvna per block"
-else
-    log "  Calculate: 5000000 * 0.15 / $BLOCKS_PER_YEAR"
-fi
 log ""
 log "Next steps:"
 log "  1. Set FEES=0 environment variable for accurate balance tracking:"

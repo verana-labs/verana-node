@@ -41,6 +41,7 @@ type CorporationView struct {
 // its uint64 id for `ecosystem.corporation_id` writes / ownership checks.
 type CorporationKeeper interface {
 	ResolveCorporationByPolicyAddress(ctx context.Context, policyAddress string) (CorporationView, error)
+	ResolveSigner(ctx context.Context, corporation, signer string) (CorporationView, bool, error)
 	GetByID(ctx context.Context, corporationID uint64) (CorporationView, bool)
 	// ResolveDIDOwner reports the corporation whose own `did` equals `did`,
 	// for the global DID ownership invariant.

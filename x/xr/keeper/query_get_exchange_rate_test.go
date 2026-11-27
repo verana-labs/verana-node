@@ -18,7 +18,7 @@ func seedExchangeRate(t *testing.T, f *fixture, state bool, expiresFromNow time.
 	require.NoError(t, err)
 
 	resp, err := ms.CreateExchangeRate(f.ctx, &types.MsgCreateExchangeRate{
-		Authority:        authorityStr,
+		Signer:           authorityStr,
 		BaseAssetType:    cstypes.PricingAssetType_COIN,
 		BaseAsset:        "uverana",
 		QuoteAssetType:   cstypes.PricingAssetType_FIAT,

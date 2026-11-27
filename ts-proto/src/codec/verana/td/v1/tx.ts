@@ -13,8 +13,8 @@ export const protobufPackage = "verana.td.v1";
 
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParams {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /**
    * params defines the module parameters to update.
    *
@@ -37,8 +37,11 @@ export interface MsgUpdateParamsResponse {
 export interface MsgReclaimTrustDepositYield {
   /** corporation is the group address that owns the trust deposit. */
   corporation: string;
-  /** delegate is the account authorized by the corporation to run this Msg. */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
 }
 
 /** MsgReclaimTrustDepositYieldResponse defines the response type */
@@ -51,8 +54,8 @@ export interface MsgReclaimTrustDepositYieldResponse {
  * This can only be executed by the governance module
  */
 export interface MsgSlashTrustDeposit {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   /** corporation_id is the registered Corporation id whose trust deposit will be slashed */
   corporationId: number;
   /** deposit is the deposit amount to slash (in base denom) */
@@ -70,13 +73,17 @@ export interface MsgSlashTrustDepositResponse {
 
 /**
  * MsgRepaySlashedTrustDeposit defines the message for repaying a slashed trust deposit.
- * [MOD-TD-MSG-6] Any authorized delegate CAN execute this on behalf of a corporation.
+ * [MOD-TD-MSG-6] An authorized delegate, or the corporation itself through a
+ * group proposal, CAN execute this.
  */
 export interface MsgRepaySlashedTrustDeposit {
   /** corporation is the group address that owns the slashed trust deposit. */
   corporation: string;
-  /** delegate is the account authorized by the corporation to run this Msg. */
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   /** deposit is the repayment amount (must equal outstanding slashed amount). */
   deposit: number;
 }
@@ -85,13 +92,13 @@ export interface MsgRepaySlashedTrustDepositResponse {
 }
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
+  return { signer: "", params: undefined };
 }
 
 export const MsgUpdateParams = {
   encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -111,7 +118,7 @@ export const MsgUpdateParams = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -131,15 +138,15 @@ export const MsgUpdateParams = {
 
   fromJSON(object: any): MsgUpdateParams {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
     };
   },
 
   toJSON(message: MsgUpdateParams): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
@@ -152,7 +159,7 @@ export const MsgUpdateParams = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
@@ -204,7 +211,7 @@ export const MsgUpdateParamsResponse = {
 };
 
 function createBaseMsgReclaimTrustDepositYield(): MsgReclaimTrustDepositYield {
-  return { corporation: "", delegate: "" };
+  return { corporation: "", signer: "" };
 }
 
 export const MsgReclaimTrustDepositYield = {
@@ -212,8 +219,8 @@ export const MsgReclaimTrustDepositYield = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     return writer;
   },
@@ -237,7 +244,7 @@ export const MsgReclaimTrustDepositYield = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -251,7 +258,7 @@ export const MsgReclaimTrustDepositYield = {
   fromJSON(object: any): MsgReclaimTrustDepositYield {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
     };
   },
 
@@ -260,8 +267,8 @@ export const MsgReclaimTrustDepositYield = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     return obj;
   },
@@ -272,7 +279,7 @@ export const MsgReclaimTrustDepositYield = {
   fromPartial<I extends Exact<DeepPartial<MsgReclaimTrustDepositYield>, I>>(object: I): MsgReclaimTrustDepositYield {
     const message = createBaseMsgReclaimTrustDepositYield();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     return message;
   },
 };
@@ -339,13 +346,13 @@ export const MsgReclaimTrustDepositYieldResponse = {
 };
 
 function createBaseMsgSlashTrustDeposit(): MsgSlashTrustDeposit {
-  return { authority: "", corporationId: 0, deposit: "", reason: "" };
+  return { signer: "", corporationId: 0, deposit: "", reason: "" };
 }
 
 export const MsgSlashTrustDeposit = {
   encode(message: MsgSlashTrustDeposit, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.corporationId !== 0) {
       writer.uint32(40).uint64(message.corporationId);
@@ -371,7 +378,7 @@ export const MsgSlashTrustDeposit = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 5:
           if (tag !== 40) {
@@ -405,7 +412,7 @@ export const MsgSlashTrustDeposit = {
 
   fromJSON(object: any): MsgSlashTrustDeposit {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       corporationId: isSet(object.corporationId) ? globalThis.Number(object.corporationId) : 0,
       deposit: isSet(object.deposit) ? globalThis.String(object.deposit) : "",
       reason: isSet(object.reason) ? globalThis.String(object.reason) : "",
@@ -414,8 +421,8 @@ export const MsgSlashTrustDeposit = {
 
   toJSON(message: MsgSlashTrustDeposit): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.corporationId !== 0) {
       obj.corporationId = Math.round(message.corporationId);
@@ -434,7 +441,7 @@ export const MsgSlashTrustDeposit = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgSlashTrustDeposit>, I>>(object: I): MsgSlashTrustDeposit {
     const message = createBaseMsgSlashTrustDeposit();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.corporationId = object.corporationId ?? 0;
     message.deposit = object.deposit ?? "";
     message.reason = object.reason ?? "";
@@ -486,7 +493,7 @@ export const MsgSlashTrustDepositResponse = {
 };
 
 function createBaseMsgRepaySlashedTrustDeposit(): MsgRepaySlashedTrustDeposit {
-  return { corporation: "", delegate: "", deposit: 0 };
+  return { corporation: "", signer: "", deposit: 0 };
 }
 
 export const MsgRepaySlashedTrustDeposit = {
@@ -494,8 +501,8 @@ export const MsgRepaySlashedTrustDeposit = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.deposit !== 0) {
       writer.uint32(24).uint64(message.deposit);
@@ -522,7 +529,7 @@ export const MsgRepaySlashedTrustDeposit = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
@@ -543,7 +550,7 @@ export const MsgRepaySlashedTrustDeposit = {
   fromJSON(object: any): MsgRepaySlashedTrustDeposit {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       deposit: isSet(object.deposit) ? globalThis.Number(object.deposit) : 0,
     };
   },
@@ -553,8 +560,8 @@ export const MsgRepaySlashedTrustDeposit = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.deposit !== 0) {
       obj.deposit = Math.round(message.deposit);
@@ -568,7 +575,7 @@ export const MsgRepaySlashedTrustDeposit = {
   fromPartial<I extends Exact<DeepPartial<MsgRepaySlashedTrustDeposit>, I>>(object: I): MsgRepaySlashedTrustDeposit {
     const message = createBaseMsgRepaySlashedTrustDeposit();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.deposit = object.deposit ?? 0;
     return message;
   },

@@ -15,7 +15,6 @@ APP_TOML_PATH="$HOME_DIR/config/app.toml"
 CONFIG_TOML_PATH="$HOME_DIR/config/config.toml"
 VALIDATOR_NAME="cooluser"
 VALIDATOR_AMOUNT="1000000000000000000000uvna"
-GENTX_AMOUNT="1000000uvna"
 SEED_PHRASE_COOLUSER="pink glory help gown abstract eight nice crazy forward ketchup skill cheese"
 SEED_PHRASE_COUNCIL_MEMBER1="answer effort virtual mother muffin stadium buddy air enact luggage burger slim couch brass sight merge legend aspect clown boss august wish unknown wasp"
 SEED_PHRASE_COUNCIL_MEMBER2="kitchen enough rough enforce bamboo easily exchange bullet error phone please razor claim quarter bounce stereo execute path pool series invite lucky warfare next"
@@ -53,7 +52,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Replace remaining "stake" references BEFORE gentx
+# Replace remaining "stake" references BEFORE seating the council
 # Use Python for reliable cross-platform editing
 log "Replacing 'stake' with 'uvna' in genesis.json..."
 python3 - <<'PYEOF'
@@ -103,28 +102,36 @@ echo "$SEED_PHRASE_COUNCIL_MEMBER2" | $BINARY keys add council_member2 --recover
 $BINARY add-genesis-account council_member1 1000000000000uvna --keyring-backend test
 $BINARY add-genesis-account council_member2 1000000000000uvna --keyring-backend test
 
-# Seat the council: 3 seats, 2/3 policy; windows are short for devnet and overridable
-log "Seating the council in genesis..."
-$BINARY genesis add-council "$VALIDATOR_NAME,council_member1,council_member2${COUNCIL_MEMBERS:+,$COUNCIL_MEMBERS}" \
+# Seat the council: one corporation per key, the first runs this node; each holds funds for a later validator bond.
+# Windows are short for devnet and overridable.
+log "Seating the council of corporations in genesis..."
+COUNCIL_FILE="$HOME_DIR/config/council.json"
+SEATS="$VALIDATOR_NAME council_member1 council_member2${COUNCIL_MEMBERS:+ ${COUNCIL_MEMBERS//,/ }}"
+PUBKEY=$($BINARY comet show-validator)
+{
+    echo '{"corporations":['
+    i=0
+    for key in $SEATS; do
+        i=$((i + 1))
+        [ $i -gt 1 ] && echo ','
+        if [ $i -eq 1 ]; then
+            echo "{\"did\":\"did:example:council-$i\",\"language\":\"en\",\"members\":[\"$key\"],\"funds\":\"10000000uvna\",\"validator\":{\"moniker\":\"$MONIKER\",\"pubkey\":$PUBKEY}}"
+        else
+            echo "{\"did\":\"did:example:council-$i\",\"language\":\"en\",\"members\":[\"$key\"],\"funds\":\"10000000uvna\"}"
+        fi
+    done
+    echo ']}'
+} > "$COUNCIL_FILE"
+$BINARY genesis add-council "$COUNCIL_FILE" \
     --voting-period "${COUNCIL_VOTING_PERIOD:-30s}" \
     --min-execution-period "${COUNCIL_MIN_EXECUTION_PERIOD:-10s}" \
     --unbonding-time "${COUNCIL_UNBONDING_TIME:-60s}" \
-    --keyring-backend test
-
-# Create gentx (bond_denom=uvna is now set in genesis)
-log "Creating genesis transaction..."
-$BINARY gentx $VALIDATOR_NAME $GENTX_AMOUNT \
-    --chain-id $CHAIN_ID \
-    --moniker $MONIKER \
-    --commission-rate "0.10" \
-    --commission-max-rate "0.20" \
-    --commission-max-change-rate "0.01" \
-    --min-self-delegation "1" \
-    --keyring-backend test
+    --keyring-backend test > "$HOME_DIR/config/council.txt"
 if [ $? -ne 0 ]; then
-    log "Error: Failed to create genesis transaction."
+    log "Error: Failed to seat the council."
     exit 1
 fi
+cat "$HOME_DIR/config/council.txt"
 
 # Configure app.toml and config.toml using Python for reliable cross-platform editing
 log "Updating app.toml and config.toml..."
@@ -231,10 +238,6 @@ else
     log "Warning: python3 not found; cannot auto-initialize YieldIntermediatePool."
     log "Please add 1uvna to $YIELD_POOL_ADDR in $GENESIS_JSON_PATH manually."
 fi
-
-# Collect genesis transactions
-log "Collecting genesis transactions..."
-$BINARY collect-gentxs
 
 # Validate genesis file
 log "Validating genesis file..."

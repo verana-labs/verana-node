@@ -83,7 +83,7 @@ async function main() {
     typeUrl: typeUrls.MsgUpdateCredentialSchema,
     value: MsgUpdateCredentialSchema.fromPartial({
       corporation: setup.authorityAddress,
-      delegate: account.address,
+      signer: account.address,
       id: activeCS.schemaId,
       issuerGrantorValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 730 }),
       verifierGrantorValidationValidityPeriod: OptionalUInt32.fromPartial({ value: 730 }),

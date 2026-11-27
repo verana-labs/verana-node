@@ -67,7 +67,7 @@ func TestAppModule_InitExportGenesis(t *testing.T) {
 	in := co.ModuleInputs{
 		StoreService:     runtime.NewKVStoreService(storeKey),
 		Cdc:              cdc,
-		Config:           &modulev1.Module{},
+		Config:           &modulev1.Module{Authority: authority},
 		Logger:           log.NewNopLogger(),
 		DelegationKeeper: stubDelegation{},
 		GroupKeeper:      groupkeeper.Keeper{},

@@ -32,7 +32,8 @@ export interface Member {
 
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 export interface MsgUpdateParams {
-  authority: string;
+  /** signer is the council account. */
+  signer: string;
   params: Params | undefined;
 }
 
@@ -82,7 +83,11 @@ export interface MsgCreateCorporationResponse {
  */
 export interface MsgUpdateCorporation {
   corporation: string;
-  delegate: string;
+  /**
+   * signer is a delegate authorized by corporation, or corporation itself
+   * on the group-proposal path.
+   */
+  signer: string;
   did: string;
 }
 
@@ -179,13 +184,13 @@ export const Member = {
 };
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return { authority: "", params: undefined };
+  return { signer: "", params: undefined };
 }
 
 export const MsgUpdateParams = {
   encode(message: MsgUpdateParams, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
+    if (message.signer !== "") {
+      writer.uint32(10).string(message.signer);
     }
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(18).fork()).ldelim();
@@ -205,7 +210,7 @@ export const MsgUpdateParams = {
             break;
           }
 
-          message.authority = reader.string();
+          message.signer = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -225,15 +230,15 @@ export const MsgUpdateParams = {
 
   fromJSON(object: any): MsgUpdateParams {
     return {
-      authority: isSet(object.authority) ? globalThis.String(object.authority) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
     };
   },
 
   toJSON(message: MsgUpdateParams): unknown {
     const obj: any = {};
-    if (message.authority !== "") {
-      obj.authority = message.authority;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.params !== undefined) {
       obj.params = Params.toJSON(message.params);
@@ -246,7 +251,7 @@ export const MsgUpdateParams = {
   },
   fromPartial<I extends Exact<DeepPartial<MsgUpdateParams>, I>>(object: I): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
+    message.signer = object.signer ?? "";
     message.params = (object.params !== undefined && object.params !== null)
       ? Params.fromPartial(object.params)
       : undefined;
@@ -563,7 +568,7 @@ export const MsgCreateCorporationResponse = {
 };
 
 function createBaseMsgUpdateCorporation(): MsgUpdateCorporation {
-  return { corporation: "", delegate: "", did: "" };
+  return { corporation: "", signer: "", did: "" };
 }
 
 export const MsgUpdateCorporation = {
@@ -571,8 +576,8 @@ export const MsgUpdateCorporation = {
     if (message.corporation !== "") {
       writer.uint32(10).string(message.corporation);
     }
-    if (message.delegate !== "") {
-      writer.uint32(18).string(message.delegate);
+    if (message.signer !== "") {
+      writer.uint32(18).string(message.signer);
     }
     if (message.did !== "") {
       writer.uint32(26).string(message.did);
@@ -599,7 +604,7 @@ export const MsgUpdateCorporation = {
             break;
           }
 
-          message.delegate = reader.string();
+          message.signer = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
@@ -620,7 +625,7 @@ export const MsgUpdateCorporation = {
   fromJSON(object: any): MsgUpdateCorporation {
     return {
       corporation: isSet(object.corporation) ? globalThis.String(object.corporation) : "",
-      delegate: isSet(object.delegate) ? globalThis.String(object.delegate) : "",
+      signer: isSet(object.signer) ? globalThis.String(object.signer) : "",
       did: isSet(object.did) ? globalThis.String(object.did) : "",
     };
   },
@@ -630,8 +635,8 @@ export const MsgUpdateCorporation = {
     if (message.corporation !== "") {
       obj.corporation = message.corporation;
     }
-    if (message.delegate !== "") {
-      obj.delegate = message.delegate;
+    if (message.signer !== "") {
+      obj.signer = message.signer;
     }
     if (message.did !== "") {
       obj.did = message.did;
@@ -645,7 +650,7 @@ export const MsgUpdateCorporation = {
   fromPartial<I extends Exact<DeepPartial<MsgUpdateCorporation>, I>>(object: I): MsgUpdateCorporation {
     const message = createBaseMsgUpdateCorporation();
     message.corporation = object.corporation ?? "";
-    message.delegate = object.delegate ?? "";
+    message.signer = object.signer ?? "";
     message.did = object.did ?? "";
     return message;
   },
@@ -709,7 +714,7 @@ export interface Msg {
   CreateCorporation(request: MsgCreateCorporation): Promise<MsgCreateCorporationResponse>;
   /**
    * [MOD-CO-MSG-2] Update Corporation — rotate the DID of an existing
-   * Corporation. Signer: delegate.
+   * Corporation.
    */
   UpdateCorporation(request: MsgUpdateCorporation): Promise<MsgUpdateCorporationResponse>;
 }

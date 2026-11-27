@@ -462,7 +462,7 @@ Parameters:
 - id: ID of the participant for which a trust resolution must be triggered
 - corporation: The group policy address (corporation) on whose behalf this message is executed
 
-The delegate (signer) is taken from --from.`,
+The signer is taken from --from.`,
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
 						{
 							ProtoField: "id",

@@ -158,6 +158,11 @@ func (k *MockCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Cont
 	return types.CorporationView{Id: mockUnregisteredCorpID, PolicyAddress: policyAddress}, nil
 }
 
+func (k *MockCorporationKeeper) ResolveSigner(ctx context.Context, corporation, signer string) (types.CorporationView, bool, error) {
+	v, err := k.ResolveCorporationByPolicyAddress(ctx, corporation)
+	return v, err == nil && signer == corporation, err
+}
+
 func CredentialschemaKeeper(t testing.TB) (keeper.Keeper, *MockEcosystemKeeper, sdk.Context) {
 	k, ecosystemKeeper, _, _, ctx := CredentialschemaKeeperWithMocks(t)
 	return k, ecosystemKeeper, ctx

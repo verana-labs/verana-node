@@ -12,18 +12,17 @@ export const protobufPackage = "verana.xr.v1";
 
 /** Params defines the parameters for the module. */
 export interface Params {
-  /** max_validity_duration is the maximum allowed validity duration for an exchange rate. */
-  maxValidityDuration: Duration | undefined;
+  twapWindow: Duration | undefined;
 }
 
 function createBaseParams(): Params {
-  return { maxValidityDuration: undefined };
+  return { twapWindow: undefined };
 }
 
 export const Params = {
   encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.maxValidityDuration !== undefined) {
-      Duration.encode(message.maxValidityDuration, writer.uint32(10).fork()).ldelim();
+    if (message.twapWindow !== undefined) {
+      Duration.encode(message.twapWindow, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -40,7 +39,7 @@ export const Params = {
             break;
           }
 
-          message.maxValidityDuration = Duration.decode(reader, reader.uint32());
+          message.twapWindow = Duration.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -52,17 +51,13 @@ export const Params = {
   },
 
   fromJSON(object: any): Params {
-    return {
-      maxValidityDuration: isSet(object.maxValidityDuration)
-        ? Duration.fromJSON(object.maxValidityDuration)
-        : undefined,
-    };
+    return { twapWindow: isSet(object.twapWindow) ? Duration.fromJSON(object.twapWindow) : undefined };
   },
 
   toJSON(message: Params): unknown {
     const obj: any = {};
-    if (message.maxValidityDuration !== undefined) {
-      obj.maxValidityDuration = Duration.toJSON(message.maxValidityDuration);
+    if (message.twapWindow !== undefined) {
+      obj.twapWindow = Duration.toJSON(message.twapWindow);
     }
     return obj;
   },
@@ -72,8 +67,8 @@ export const Params = {
   },
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
     const message = createBaseParams();
-    message.maxValidityDuration = (object.maxValidityDuration !== undefined && object.maxValidityDuration !== null)
-      ? Duration.fromPartial(object.maxValidityDuration)
+    message.twapWindow = (object.twapWindow !== undefined && object.twapWindow !== null)
+      ? Duration.fromPartial(object.twapWindow)
       : undefined;
     return message;
   },

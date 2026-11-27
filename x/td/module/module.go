@@ -15,8 +15,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
@@ -35,9 +33,8 @@ var (
 	_ module.HasInvariants       = (*AppModule)(nil)
 	_ module.HasConsensusVersion = (*AppModule)(nil)
 
-	_ appmodule.AppModule       = (*AppModule)(nil)
-	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
-	_ appmodule.HasEndBlocker   = (*AppModule)(nil)
+	_ appmodule.AppModule     = (*AppModule)(nil)
+	_ appmodule.HasEndBlocker = (*AppModule)(nil)
 )
 
 // ----------------------------------------------------------------------------
@@ -148,12 +145,6 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 // To avoid wrong/empty versions, the initial version should be set to 1.
 func (AppModule) ConsensusVersion() uint64 { return 1 }
 
-// BeginBlock contains the logic that is automatically triggered at the beginning of each block.
-// The begin block implementation is optional.
-func (am AppModule) BeginBlock(ctx context.Context) error {
-	return am.keeper.BeginBlocker(ctx)
-}
-
 // EndBlock contains the logic that is automatically triggered at the end of each block.
 // The end block implementation is optional.
 func (am AppModule) EndBlock(_ context.Context) error {
@@ -196,7 +187,6 @@ type ModuleInputs struct {
 
 	AccountKeeper     types.AccountKeeper
 	BankKeeper        types.BankKeeper
-	MintKeeper        mintkeeper.Keeper
 	DelegationKeeper  types.DelegationKeeper
 	CorporationKeeper types.CorporationKeeper
 }
@@ -208,28 +198,11 @@ type ModuleOutputs struct {
 	Module             appmodule.AppModule
 }
 
-// mintKeeperAdapter adapts the Cosmos SDK mint keeper to our MintKeeper interface
-type mintKeeperAdapter struct {
-	mintKeeper mintkeeper.Keeper
-}
-
-func (a *mintKeeperAdapter) GetBlocksPerYear(ctx context.Context) (uint64, error) {
-	params, err := a.mintKeeper.Params.Get(ctx)
-	if err != nil {
-		return 0, err
-	}
-	return params.BlocksPerYear, nil
-}
-
 func ProvideModule(in ModuleInputs) ModuleOutputs {
-	// default to governance authority if not provided
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	if in.Config.Authority != "" {
-		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
+	if in.Config.Authority == "" {
+		panic("x/td requires an explicit authority")
 	}
-
-	// Create adapter for mint keeper
-	mintAdapter := &mintKeeperAdapter{mintKeeper: in.MintKeeper}
+	authority := authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
 
 	k := keeper.NewKeeper(
 		in.Cdc,
@@ -237,7 +210,6 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.Logger,
 		authority.String(),
 		in.BankKeeper,
-		mintAdapter,
 		in.DelegationKeeper,
 		in.CorporationKeeper,
 	)

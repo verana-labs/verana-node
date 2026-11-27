@@ -34,13 +34,13 @@ func validDecisionPolicy(t *testing.T) *cdctypes.Any {
 
 func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		require.NoError(t, (&types.MsgUpdateParams{Authority: tAuthority, Params: types.DefaultParams()}).ValidateBasic())
+		require.NoError(t, (&types.MsgUpdateParams{Signer: tAuthority, Params: types.DefaultParams()}).ValidateBasic())
 	})
 	t.Run("empty authority", func(t *testing.T) {
-		require.ErrorIs(t, (&types.MsgUpdateParams{Authority: ""}).ValidateBasic(), sdkerrors.ErrInvalidAddress)
+		require.ErrorIs(t, (&types.MsgUpdateParams{Signer: ""}).ValidateBasic(), sdkerrors.ErrInvalidAddress)
 	})
 	t.Run("malformed bech32 authority", func(t *testing.T) {
-		require.ErrorIs(t, (&types.MsgUpdateParams{Authority: "cosmos1signer", Params: types.DefaultParams()}).ValidateBasic(), sdkerrors.ErrInvalidAddress)
+		require.ErrorIs(t, (&types.MsgUpdateParams{Signer: "cosmos1signer", Params: types.DefaultParams()}).ValidateBasic(), sdkerrors.ErrInvalidAddress)
 	})
 }
 
@@ -94,7 +94,7 @@ func TestMsgCreateCorporation_ValidateBasic(t *testing.T) {
 
 func TestMsgUpdateCorporation_ValidateBasic(t *testing.T) {
 	base := func() *types.MsgUpdateCorporation {
-		return &types.MsgUpdateCorporation{Corporation: tCorp, Delegate: tDelegate, Did: "did:example:2"}
+		return &types.MsgUpdateCorporation{Corporation: tCorp, Signer: tDelegate, Did: "did:example:2"}
 	}
 	require.NoError(t, base().ValidateBasic())
 
@@ -105,8 +105,8 @@ func TestMsgUpdateCorporation_ValidateBasic(t *testing.T) {
 	}{
 		{"empty corporation", func(m *types.MsgUpdateCorporation) { m.Corporation = "" }, sdkerrors.ErrInvalidAddress},
 		{"malformed bech32 corporation", func(m *types.MsgUpdateCorporation) { m.Corporation = "cosmos1corp" }, sdkerrors.ErrInvalidAddress},
-		{"empty delegate", func(m *types.MsgUpdateCorporation) { m.Delegate = "" }, sdkerrors.ErrInvalidAddress},
-		{"malformed bech32 delegate", func(m *types.MsgUpdateCorporation) { m.Delegate = "cosmos1op" }, sdkerrors.ErrInvalidAddress},
+		{"empty delegate", func(m *types.MsgUpdateCorporation) { m.Signer = "" }, sdkerrors.ErrInvalidAddress},
+		{"malformed bech32 delegate", func(m *types.MsgUpdateCorporation) { m.Signer = "cosmos1op" }, sdkerrors.ErrInvalidAddress},
 		{"empty did", func(m *types.MsgUpdateCorporation) { m.Did = "" }, types.ErrInvalidDID},
 		{"bad did", func(m *types.MsgUpdateCorporation) { m.Did = "not-a-did" }, types.ErrInvalidDID},
 	}

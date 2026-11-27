@@ -38,7 +38,7 @@ func TestMsgGrantDelegateAuthorization_ValidateBasicMsgTypes(t *testing.T) {
 		{"unspecified", []types.MsgType{types.MsgType_MSG_TYPE_UNSPECIFIED}, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			msg := &types.MsgGrantDelegateAuthorization{Corporation: corp, Delegate: corp, Grantee: op, MsgTypes: tc.mts}
+			msg := &types.MsgGrantDelegateAuthorization{Corporation: corp, Signer: corp, Grantee: op, MsgTypes: tc.mts}
 			err := msg.ValidateBasic()
 			if tc.ok {
 				require.NoError(t, err)

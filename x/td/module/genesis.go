@@ -16,6 +16,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		panic(fmt.Sprintf("failed to set params: %s", err))
 	}
 
+	if genState.PendingTuDecayRate != nil {
+		if err := k.PendingTuDecayRate.Set(ctx, *genState.PendingTuDecayRate); err != nil {
+			panic(fmt.Sprintf("failed to set pending tu_decay_rate: %s", err))
+		}
+	}
+
 	// Initialize dust
 	if genState.Dust != "" {
 		if err := k.Dust.Set(ctx, genState.Dust); err != nil {
@@ -75,9 +81,16 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.TrustDeposits = trustDeposits
 
 	// Export dust
-	dust, err := k.Dust.Get(ctx)
-	if err == nil {
+	if dust, err := k.Dust.Get(ctx); err == nil {
 		genesis.Dust = dust
+	}
+
+	pending, found, err := k.GetPendingTuDecayRate(ctx)
+	if err != nil {
+		panic(fmt.Errorf("failed to export pending tu_decay_rate: %w", err))
+	}
+	if found {
+		genesis.PendingTuDecayRate = &pending
 	}
 
 	return genesis

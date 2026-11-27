@@ -1,0 +1,28 @@
+syntax = "proto3";
+package verana.vs.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "verana/vs/v1/params.proto";
+
+option go_package = "github.com/verana-labs/verana-node/x/vs/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // [MOD-VS-QRY-3] List Module Parameters.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/vs/v1/params";
+  }
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}

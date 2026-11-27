@@ -1,141 +1,89 @@
 package types
 
 import (
-	"fmt"
+	"strconv"
 
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	errorsmod "cosmossdk.io/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
-
-var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	// Default parameter values
-	DefaultCredentialSchemaSchemaMaxSize                                  = uint64(8192) // 8KB
-	DefaultCredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays   = uint32(3650) // 10 years
-	DefaultCredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays = uint32(3650)
-	DefaultCredentialSchemaIssuerValidationValidityPeriodMaxDays          = uint32(3650)
-	DefaultCredentialSchemaVerifierValidationValidityPeriodMaxDays        = uint32(3650)
-	DefaultCredentialSchemaHolderValidationValidityPeriodMaxDays          = uint32(3650)
+	DefaultCredentialSchemaSchemaMaxSize                                     = uint64(8192)
+	DefaultCredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays   = uint32(3650)
+	DefaultCredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays = uint32(3650)
+	DefaultCredentialSchemaIssuerAccreditationValidityPeriodMaxDays          = uint32(3650)
+	DefaultCredentialSchemaVerifierAccreditationValidityPeriodMaxDays        = uint32(3650)
+	DefaultCredentialSchemaHolderAccreditationValidityPeriodMaxDays          = uint32(3650)
+	DefaultCredentialSchemaPresentationValidityPeriodMaxDays                 = uint32(3650)
 )
 
-// ParamKeyTable the param key table for launch module
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
-}
-
-// NewParams creates a new Params instance
+// NewParams creates a new Params instance.
 func NewParams(
 	schemaMaxSize uint64,
-	issuerGrantorValidityPeriod uint32,
-	verifierGrantorValidityPeriod uint32,
-	issuerValidityPeriod uint32,
-	verifierValidityPeriod uint32,
-	holderValidityPeriod uint32,
+	issuerGrantorMaxDays uint32,
+	verifierGrantorMaxDays uint32,
+	issuerMaxDays uint32,
+	verifierMaxDays uint32,
+	holderMaxDays uint32,
+	presentationMaxDays uint32,
 ) Params {
 	return Params{
-		CredentialSchemaSchemaMaxSize:                                  schemaMaxSize,
-		CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays:   issuerGrantorValidityPeriod,
-		CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays: verifierGrantorValidityPeriod,
-		CredentialSchemaIssuerValidationValidityPeriodMaxDays:          issuerValidityPeriod,
-		CredentialSchemaVerifierValidationValidityPeriodMaxDays:        verifierValidityPeriod,
-		CredentialSchemaHolderValidationValidityPeriodMaxDays:          holderValidityPeriod,
+		CredentialSchemaSchemaMaxSize:                                     schemaMaxSize,
+		CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays:   issuerGrantorMaxDays,
+		CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays: verifierGrantorMaxDays,
+		CredentialSchemaIssuerAccreditationValidityPeriodMaxDays:          issuerMaxDays,
+		CredentialSchemaVerifierAccreditationValidityPeriodMaxDays:        verifierMaxDays,
+		CredentialSchemaHolderAccreditationValidityPeriodMaxDays:          holderMaxDays,
+		CredentialSchemaPresentationValidityPeriodMaxDays:                 presentationMaxDays,
 	}
 }
 
-// DefaultParams returns a default set of parameters
+// DefaultParams returns the GLO defaults.
 func DefaultParams() Params {
 	return NewParams(
 		DefaultCredentialSchemaSchemaMaxSize,
-		DefaultCredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays,
-		DefaultCredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays,
-		DefaultCredentialSchemaIssuerValidationValidityPeriodMaxDays,
-		DefaultCredentialSchemaVerifierValidationValidityPeriodMaxDays,
-		DefaultCredentialSchemaHolderValidationValidityPeriodMaxDays,
+		DefaultCredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays,
+		DefaultCredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays,
+		DefaultCredentialSchemaIssuerAccreditationValidityPeriodMaxDays,
+		DefaultCredentialSchemaVerifierAccreditationValidityPeriodMaxDays,
+		DefaultCredentialSchemaHolderAccreditationValidityPeriodMaxDays,
+		DefaultCredentialSchemaPresentationValidityPeriodMaxDays,
 	)
 }
 
-// ParamSetPairs get the params.ParamSet
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(
-			[]byte("CredentialSchemaSchemaMaxSize"),
-			&p.CredentialSchemaSchemaMaxSize,
-			validatePositiveUint64,
-		),
-		paramtypes.NewParamSetPair(
-			[]byte("CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays"),
-			&p.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays,
-			validatePositiveUint32,
-		),
-		paramtypes.NewParamSetPair(
-			[]byte("CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays"),
-			&p.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays,
-			validatePositiveUint32,
-		),
-		paramtypes.NewParamSetPair(
-			[]byte("CredentialSchemaIssuerValidationValidityPeriodMaxDays"),
-			&p.CredentialSchemaIssuerValidationValidityPeriodMaxDays,
-			validatePositiveUint32,
-		),
-		paramtypes.NewParamSetPair(
-			[]byte("CredentialSchemaVerifierValidationValidityPeriodMaxDays"),
-			&p.CredentialSchemaVerifierValidationValidityPeriodMaxDays,
-			validatePositiveUint32,
-		),
-		paramtypes.NewParamSetPair(
-			[]byte("CredentialSchemaHolderValidationValidityPeriodMaxDays"),
-			&p.CredentialSchemaHolderValidationValidityPeriodMaxDays,
-			validatePositiveUint32,
-		),
-	}
-}
-
-// Validate validates the set of params
+// Validate checks [MOD-CS-MSG-4-2-1]: every value MUST be > 0.
 func (p Params) Validate() error {
 	if p.CredentialSchemaSchemaMaxSize == 0 {
-		return fmt.Errorf("credential schema max size must be positive")
+		return errorsmod.Wrap(ErrInvalidParams, "credential_schema_schema_max_size must be positive")
 	}
-	if p.CredentialSchemaIssuerGrantorValidationValidityPeriodMaxDays == 0 {
-		return fmt.Errorf("issuer grantor validation validity period max days must be positive")
-	}
-	if p.CredentialSchemaVerifierGrantorValidationValidityPeriodMaxDays == 0 {
-		return fmt.Errorf("verifier grantor validation validity period max days must be positive")
-	}
-	if p.CredentialSchemaIssuerValidationValidityPeriodMaxDays == 0 {
-		return fmt.Errorf("issuer validation validity period max days must be positive")
-	}
-	if p.CredentialSchemaVerifierValidationValidityPeriodMaxDays == 0 {
-		return fmt.Errorf("verifier validation validity period max days must be positive")
-	}
-	if p.CredentialSchemaHolderValidationValidityPeriodMaxDays == 0 {
-		return fmt.Errorf("holder validation validity period max days must be positive")
+	for _, f := range []struct {
+		name string
+		v    uint32
+	}{
+		{"credential_schema_issuer_grantor_accreditation_validity_period_max_days", p.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays},
+		{"credential_schema_verifier_grantor_accreditation_validity_period_max_days", p.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays},
+		{"credential_schema_issuer_accreditation_validity_period_max_days", p.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays},
+		{"credential_schema_verifier_accreditation_validity_period_max_days", p.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays},
+		{"credential_schema_holder_accreditation_validity_period_max_days", p.CredentialSchemaHolderAccreditationValidityPeriodMaxDays},
+		{"credential_schema_presentation_validity_period_max_days", p.CredentialSchemaPresentationValidityPeriodMaxDays},
+	} {
+		if f.v == 0 {
+			return errorsmod.Wrapf(ErrInvalidParams, "%s must be positive", f.name)
+		}
 	}
 	return nil
 }
 
-// Parameter validation helpers
-func validatePositiveUint64(i interface{}) error {
-	v, ok := i.(uint64)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+// EventAttributes lists every parameter value for the update event.
+func (p Params) EventAttributes() []sdk.Attribute {
+	u32 := func(v uint32) string { return strconv.FormatUint(uint64(v), 10) }
+	return []sdk.Attribute{
+		sdk.NewAttribute("credential_schema_schema_max_size", strconv.FormatUint(p.CredentialSchemaSchemaMaxSize, 10)),
+		sdk.NewAttribute("credential_schema_issuer_grantor_accreditation_validity_period_max_days", u32(p.CredentialSchemaIssuerGrantorAccreditationValidityPeriodMaxDays)),
+		sdk.NewAttribute("credential_schema_verifier_grantor_accreditation_validity_period_max_days", u32(p.CredentialSchemaVerifierGrantorAccreditationValidityPeriodMaxDays)),
+		sdk.NewAttribute("credential_schema_issuer_accreditation_validity_period_max_days", u32(p.CredentialSchemaIssuerAccreditationValidityPeriodMaxDays)),
+		sdk.NewAttribute("credential_schema_verifier_accreditation_validity_period_max_days", u32(p.CredentialSchemaVerifierAccreditationValidityPeriodMaxDays)),
+		sdk.NewAttribute("credential_schema_holder_accreditation_validity_period_max_days", u32(p.CredentialSchemaHolderAccreditationValidityPeriodMaxDays)),
+		sdk.NewAttribute("credential_schema_presentation_validity_period_max_days", u32(p.CredentialSchemaPresentationValidityPeriodMaxDays)),
 	}
-
-	if v == 0 {
-		return fmt.Errorf("value must be positive: %d", v)
-	}
-
-	return nil
-}
-
-func validatePositiveUint32(i interface{}) error {
-	v, ok := i.(uint32)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if v == 0 {
-		return fmt.Errorf("value must be positive: %d", v)
-	}
-
-	return nil
 }

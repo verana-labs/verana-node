@@ -29,6 +29,10 @@ func (StubCorporationKeeper) ResolveCorporationByPolicyAddress(_ context.Context
 	return types.CorporationView{}, fmt.Errorf("corporation keeper not wired: cannot resolve signing account %s", policyAddress)
 }
 
+func (StubCorporationKeeper) ResolveSigner(_ context.Context, corporation, _ string) (types.CorporationView, bool, error) {
+	return types.CorporationView{}, false, fmt.Errorf("corporation keeper not wired: cannot resolve signing account %s", corporation)
+}
+
 func (StubCorporationKeeper) ResolveCorporationByID(_ context.Context, id uint64) (types.CorporationView, error) {
 	return types.CorporationView{}, fmt.Errorf("corporation keeper not wired: cannot resolve corporation id %d", id)
 }
@@ -81,4 +85,16 @@ func (StubVsAccountBudgetStore) Get(_ context.Context, _ uint64) (types.VsAccoun
 
 func (StubVsAccountBudgetStore) Set(_ context.Context, vsID uint64, _ types.VsAccountBudget) error {
 	return fmt.Errorf("VS account budget store not wired: cannot write the budget of entry %d", vsID)
+}
+
+// vsKeeperRef holds the VerifiableServiceKeeper behind a shared pointer.
+type vsKeeperRef struct {
+	K types.VerifiableServiceKeeper
+}
+
+// StubVerifiableServiceKeeper is the pre-wiring default: the fee period is unknown.
+type StubVerifiableServiceKeeper struct{}
+
+func (StubVerifiableServiceKeeper) VsAccountFeePeriod(context.Context) (time.Duration, error) {
+	return 0, fmt.Errorf("verifiable service keeper not wired: vs_account_fee_period unknown")
 }

@@ -37,7 +37,7 @@ func main() {
 	address := "verana16mzeyu9l6kua2cdg9x0jk5g6e7h0kk8q6uadu4"
 	msg := &permtypes.MsgSelfCreateParticipant{
 		Corporation:      address,
-		Delegate:         address,
+		Signer:         address,
 		Role:             permtypes.ParticipantRole_VERIFIER,
 		ValidatorParticipantId:  1,
 		Did:              "did:verana:test:bench",

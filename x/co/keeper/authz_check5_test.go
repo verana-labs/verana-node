@@ -51,6 +51,31 @@ func TestAuthzCheck5_GFCheck1Aborts(t *testing.T) {
 	require.ErrorIs(t, err, gf.ngfErr)
 }
 
+func TestResolveSigner(t *testing.T) {
+	gf := &mockGF{}
+	k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, &mockGroup{policy: tkPolicy}, gf)
+	_, err := keeper.NewMsgServerImpl(k).CreateCorporation(ctx, validCreateMsg(t))
+	require.NoError(t, err)
+
+	co, group, err := k.ResolveSigner(ctx, tkPolicy, tkPolicy)
+	require.NoError(t, err)
+	require.True(t, group)
+	require.Equal(t, uint64(1), co.Id)
+
+	co, group, err = k.ResolveSigner(ctx, tkPolicy, tkOp)
+	require.NoError(t, err)
+	require.False(t, group)
+	require.Equal(t, uint64(1), co.Id)
+	require.Equal(t, 2, gf.ngfCalls)
+
+	_, _, err = k.ResolveSigner(ctx, tkCorp, tkCorp)
+	require.ErrorIs(t, err, types.ErrCorporationNotRegistered)
+
+	gf.ngfErr = errors.New("accept network governance framework version 2")
+	_, _, err = k.ResolveSigner(ctx, tkPolicy, tkPolicy)
+	require.ErrorIs(t, err, gf.ngfErr)
+}
+
 func TestGetCorporationByPolicyAddress_NoGFCheck1(t *testing.T) {
 	gf := &mockGF{ngfErr: errors.New("not accepted")}
 	k, ctx := keepertest.CoKeeper(t, &mockDelegation{}, &mockGroup{policy: tkPolicy}, gf)

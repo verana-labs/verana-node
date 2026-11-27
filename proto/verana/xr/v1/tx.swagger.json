@@ -262,9 +262,9 @@
     "verana.xr.v1.MsgCreateExchangeRate": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov unless overwritten)."
+          "description": "signer is the council account."
         },
         "base_asset_type": {
           "$ref": "#/definitions/verana.cs.v1.PricingAssetType"
@@ -307,9 +307,9 @@
     "verana.xr.v1.MsgGrantExchangeRateAuthorization": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the gov module account."
+          "description": "signer is the council account."
         },
         "xr_id": {
           "type": "string",
@@ -344,9 +344,9 @@
     "verana.xr.v1.MsgRevokeExchangeRateAuthorization": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the gov module account."
+          "description": "signer is the council account."
         },
         "xr_id": {
           "type": "string",
@@ -367,9 +367,9 @@
     "verana.xr.v1.MsgSetExchangeRateState": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov unless overwritten)."
+          "description": "signer is the council account."
         },
         "id": {
           "type": "string",
@@ -390,9 +390,9 @@
     "verana.xr.v1.MsgUpdateExchangeRate": {
       "type": "object",
       "properties": {
-        "feeder": {
+        "signer": {
           "type": "string",
-          "description": "feeder is the authorized feeder executing this message."
+          "description": "signer is a feeder of the exchange rate."
         },
         "id": {
           "type": "string",
@@ -413,9 +413,9 @@
     "verana.xr.v1.MsgUpdateParams": {
       "type": "object",
       "properties": {
-        "authority": {
+        "signer": {
           "type": "string",
-          "description": "authority is the address that controls the module (defaults to x/gov unless overwritten)."
+          "description": "signer is the council account."
         },
         "params": {
           "$ref": "#/definitions/verana.xr.v1.Params",
@@ -431,9 +431,8 @@
     "verana.xr.v1.Params": {
       "type": "object",
       "properties": {
-        "max_validity_duration": {
-          "type": "string",
-          "description": "max_validity_duration is the maximum allowed validity duration for an exchange rate."
+        "twap_window": {
+          "type": "string"
         }
       },
       "description": "Params defines the parameters for the module."

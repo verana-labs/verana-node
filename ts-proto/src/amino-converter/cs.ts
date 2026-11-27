@@ -19,7 +19,7 @@ export const MsgCreateCredentialSchemaAminoConverter: AminoConverter = {
   aminoType: "verana/x/cs/MsgCreateCredentialSchema",
   toAmino: (m: MsgCreateCredentialSchema) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     ecosystem_id: u64ToStr(m.ecosystemId),
     json_schema: m.jsonSchema ?? "",
     issuer_grantor_validation_validity_period: toOptU32Amino(m.issuerGrantorValidationValidityPeriod),
@@ -37,7 +37,7 @@ export const MsgCreateCredentialSchemaAminoConverter: AminoConverter = {
   fromAmino: (a: any): MsgCreateCredentialSchema =>
     MsgCreateCredentialSchema.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       ecosystemId: strToU64(a.ecosystem_id) != null ? Number(strToU64(a.ecosystem_id)!.toString()) : 0,
       jsonSchema: a.json_schema ?? "",
       issuerGrantorValidationValidityPeriod: fromOptU32Amino(a.issuer_grantor_validation_validity_period),
@@ -58,7 +58,7 @@ export const MsgUpdateCredentialSchemaAminoConverter: AminoConverter = {
   aminoType: "verana/x/cs/MsgUpdateCredentialSchema",
   toAmino: (m: MsgUpdateCredentialSchema) => clean({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
     issuer_grantor_validation_validity_period: toOptU32Amino(m.issuerGrantorValidationValidityPeriod),
     verifier_grantor_validation_validity_period: toOptU32Amino(m.verifierGrantorValidationValidityPeriod),
@@ -69,7 +69,7 @@ export const MsgUpdateCredentialSchemaAminoConverter: AminoConverter = {
   fromAmino: (a: any) =>
     MsgUpdateCredentialSchema.fromPartial({
       corporation: a.corporation ?? "",
-      delegate: a.delegate ?? "",
+      signer: a.signer ?? "",
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       issuerGrantorValidationValidityPeriod: fromOptU32Amino(a.issuer_grantor_validation_validity_period),
       verifierGrantorValidationValidityPeriod: fromOptU32Amino(a.verifier_grantor_validation_validity_period),
@@ -83,14 +83,14 @@ export const MsgArchiveCredentialSchemaAminoConverter: AminoConverter = {
   aminoType: "verana/x/cs/MsgArchiveCredentialSchema",
   toAmino: (m: MsgArchiveCredentialSchema) => ({
     corporation: m.corporation ?? "",
-    delegate: m.delegate ?? "",
+    signer: m.signer ?? "",
     id: u64ToStr(m.id),
     archive: m.archive ?? false,
   }),
   fromAmino: (a: any): MsgArchiveCredentialSchema =>
     MsgArchiveCredentialSchema.fromPartial({
       corporation: a.corporation,
-      delegate: a.delegate,
+      signer: a.signer,
       id: strToU64(a.id) != null ? Number(strToU64(a.id)!.toString()) : 0,
       archive: a.archive ?? false,
     }),
