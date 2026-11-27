@@ -38,10 +38,10 @@ func TestSponsoredFees(t *testing.T) {
 			a := e.app
 			ctx := e.nextBlockCtx()
 			require.NoError(t, a.BankKeeper.SendCoins(ctx, e.other, sponsor, sdk.NewCoins(sdk.NewInt64Coin("uvna", tc.sponsorBal))))
-			sp := cotypes.Corporation{Id: 2, PolicyAddress: sponsor.String(), Did: "did:example:sponsor"}
+			sp := cotypes.Corporation{Id: 9, PolicyAddress: sponsor.String(), Did: "did:example:sponsor"}
 			require.NoError(t, a.CoKeeper.Corporation.Set(ctx, sp.Id, sp))
 			require.NoError(t, a.CoKeeper.CorporationByPolicyAddr.Set(ctx, sp.PolicyAddress, sp.Id))
-			corp, err := a.CoKeeper.Corporation.Get(ctx, 1)
+			corp, err := a.CoKeeper.GetCorporationByPolicyAddress(ctx, e.corp.String())
 			require.NoError(t, err)
 			corp.SponsorCorporationId = sp.Id
 			require.NoError(t, a.CoKeeper.Corporation.Set(ctx, corp.Id, corp))
